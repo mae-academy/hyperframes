@@ -49,10 +49,10 @@ wire("C0", [(620, 760), (810, 760)], RED, RED)
 wire("FA", [(160, 470), (250, 470)], BLUE, BLUE)
 wire("FB", [(160, 570), (250, 570)], BLUE, PUR)
 wire("FS1", [(430, 470), (550, 470)], BLUE, BLUE)
-wire("FCIN", [(160, 960), (490, 960), (490, 570), (550, 570)], RED, RED)
+wire("FCIN", [(160, 960), (490, 960), (490, 570), (550, 570)], BLUE, BLUE)
 wire("FS2", [(730, 470), (990, 470)], BLUE, BLUE)
-wire("FC2", [(730, 570), (760, 570), (760, 820), (780, 820)], RED, RED)
-wire("FC1", [(430, 570), (450, 570), (450, 860), (780, 860)], RED, RED, hop={2: 490})
+wire("FC2", [(730, 570), (760, 570), (760, 820), (780, 820)], BLUE, BLUE)
+wire("FC1", [(430, 570), (450, 570), (450, 860), (780, 860)], BLUE, BLUE, hop={2: 490})
 wire("FOR", [(980, 840), (990, 840)], RED, RED)
 
 
@@ -197,7 +197,7 @@ world.append(ic("ha2", 640, 520, "HALF", "ADDER 2"))
 world.append(gate("gOr", 880, 840, "or"))
 cin_label = ('<text class="fv" x="-82" y="14" text-anchor="middle" font-size="44" fill="#fff">C'
              '<tspan class="fv" font-size="27" dy="9">in</tspan></text>')
-world.append(toggle("tgC", 100, 960, cin_label, RED))
+world.append(toggle("tgC", 100, 960, cin_label, BLUE))
 
 fw = []
 for wid in ["FA", "FB", "FS1", "FCIN", "FS2", "FC2", "FC1", "FOR"]:
@@ -210,8 +210,8 @@ def badge(bid, x, y, color, base, subs):
 
 
 world.append(badge("bdS1", 450, 470, BLUE, "S", "1"))   # integrated terminal badges on the HA output pins
-world.append(badge("bdC1", 450, 570, RED, "C", "1"))
-world.append(badge("bdC2", 750, 570, RED, "C", "2"))
+world.append(badge("bdC1", 450, 570, BLUE, "C", "1"))
+world.append(badge("bdC2", 750, 570, BLUE, "C", "2"))
 world.append("</g>")  # /circ  (only the circuit dissolves at the loop point; the dot grid stays)
 
 # ---------------------------------------------------------------- dock tiles
@@ -232,7 +232,7 @@ dock_html = ""
 for i, (k, lab) in enumerate(tiles):
     x = 106 + i * 176
     dock_html += (
-        f'<div class="tile" id="tile_{k}" style="left:{x}px;top:326px">'
+        f'<div class="tile" id="tile_{k}" style="left:{x}px;top:346px">'
         f'<svg width="52" height="44" viewBox="-26 -22 52 44" overflow="visible">{mini(k)}</svg>'
         f'<span>{lab}</span></div>'
     )
@@ -251,29 +251,36 @@ CHECK = ('<svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="v
 BOLT = ('<svg class="bolt" width="22" height="30" viewBox="0 0 22 30" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" '
         f'fill="{BLUE}"/></svg>')
 
-WID = [110, 110, 130, 110, 150]
-
-
 def cell(txt, cls, w):
     return f'<b class="c {cls}" style="flex-basis:{w}px">{txt}</b>'
 
 
+WID = [110, 110, 130, 110, 150]
 fa_rows = ""
 for idx in range(8):
     a, b_, ci = (idx >> 2) & 1, (idx >> 1) & 1, idx & 1
     s, c = a ^ b_ ^ ci, (a & b_) | ((a ^ b_) & ci)
     fa_rows += (f'<div class="tr" id="faR{idx}"><i class="bg"></i>' + cell(a, "ci", WID[0]) + cell(b_, "ci", WID[1]) + cell(ci, "ci", WID[2])
                 + '<b class="ts"></b>' + cell(s, "os", WID[3]) + cell(c, "oc", WID[4]) + (CHECK if idx == 7 else "") + "</div>")
-hdr = ('<div class="th">' + cell(v("A"), "", WID[0]) + cell(v("B"), "", WID[1]) + cell(v("C") + '<sub class="v">in</sub>', "", WID[2])
-       + '<b class="ts"></b>' + cell(v("S"), "", WID[3]) + cell(v("C") + '<sub class="v">out</sub>', "", WID[4]) + "</div>")
-table_html = f'<div id="ttFA" class="tt"><div class="grp">{hdr}{fa_rows}</div></div>'
+fa_hdr = ('<div class="th">' + cell(v("A"), "", WID[0]) + cell(v("B"), "", WID[1]) + cell(v("C") + '<sub class="v">in</sub>', "", WID[2])
+          + '<b class="ts"></b>' + cell(v("S"), "", WID[3]) + cell(v("C") + '<sub class="v">out</sub>', "", WID[4]) + "</div>")
+HW = 130  # half-adder table: A B | S C only (no C_in column while the half adder is tested)
+ha_rows = ""
+for idx in range(4):
+    a, b_ = idx >> 1, idx & 1
+    ha_rows += (f'<div class="tr" id="haR{idx}"><i class="bg"></i>' + cell(a, "ci", HW) + cell(b_, "ci", HW) + '<b class="ts"></b>'
+                + cell(a ^ b_, "os", HW) + cell(a & b_, "oc", HW) + "</div>")
+ha_hdr = ('<div class="th">' + cell(v("A"), "", HW) + cell(v("B"), "", HW) + '<b class="ts"></b>' + cell(v("S"), "", HW) + cell(v("C"), "", HW) + "</div>")
+table_html = (f'<div id="ttHA" class="tt"><div class="grp ha">{ha_hdr}{ha_rows}</div></div>'
+              f'<div id="ttFA" class="tt"><div class="grp">{fa_hdr}{fa_rows}</div></div>')
 
 banner_html = f"""
-<div class="pg col" id="bn0"><span class="t t42">HOW COMPUTERS ACTUALLY</span><span class="l"><span class="t t42">ADD NUMBERS</span>{BOLT}</span></div>
-<div class="pg" id="bn1"><span class="t">HALF ADDER:</span><span class="q"></span><span class="m">{v("S")} = {v("A")} ⊕ {v("B")}</span><span class="q sep">|</span><span class="m">{v("C")}<sub class="v">out</sub> = {v("A")} ⋅ {v("B")}</span></div>
-<div class="pg" id="bn2"><span class="t">BINARY 1 + 1 = 10<sub>2</sub> (SUM = 0, CARRY = 1)</span>{CHECK}</div>
-<div class="pg col" id="bn3"><span class="t">BUT WHAT IF WE HAVE A CARRY FROM</span><span class="t">A PREVIOUS BIT ({v("C")}<sub class="v">in</sub>)?</span></div>
+<div class="pg" id="bn0"><span class="t">CAN WE ADD NUMBERS USING LIGHT?</span>{BOLT}</div>
+<div class="pg" id="bn1"><span class="t">HALF ADDER:</span><span class="q"></span><span class="m">{v("S")} = {v("A")} ⊕ {v("B")}</span><span class="q sep">|</span><span class="m">{v("C")} = {v("A")} ⋅ {v("B")}</span></div>
+<div class="pg" id="bn2"><span class="m">1 + 1 = 10<sub>2</sub></span><span class="q"></span><span class="m">(S = 0, C = 1)</span>{CHECK}</div>
+<div class="pg col" id="bn3"><span class="t">HOW TO ADD A PREVIOUS</span><span class="t">CARRY ({v("C")}<sub class="v">in</sub>)?</span></div>
 <div class="pg col" id="bn4"><span class="l"><span class="t">FULL ADDER:</span><span class="q"></span><span class="m">{v("S")} = {v("A")} ⊕ {v("B")} ⊕ {v("C")}<sub class="v">in</sub></span></span><span class="l"><span class="m">{v("C")}<sub class="v">out</sub> = ({v("A")} ⋅ {v("B")}) + ({v("S")}<sub>1</sub> ⋅ {v("C")}<sub class="v">in</sub>)</span></span></div>
+<div class="pg col" id="bn6"><span class="l"><span class="m">{v("C")}<sub class="v">out</sub> = {v("C")}<sub>1</sub> + {v("C")}<sub>2</sub></span></span><span class="l"><span class="t t24">({v("C")}<sub>1</sub> ⋅ {v("C")}<sub>2</sub> = 0 ⟹ OR is equivalent to ADD)</span></span></div>
 <div class="pg" id="bn5"><span class="m">1 + 1 + 1 = 3<sub>10</sub> = 11<sub>2</sub></span><span class="q"></span><span class="m">({v("S")} = 1,</span><span class="m">{v("C")}<sub class="v">out</sub> = 1)</span>{CHECK}</div>
 """
 
@@ -288,7 +295,6 @@ for key, val in {
     "@@DOCK@@": dock_html,
     "@@TABLES@@": table_html,
     "@@BANNER@@": banner_html,
-    "@@PIN@@": PIN_ICON,
     "@@WP@@": json.dumps({k: w["pts"] for k, w in WIRES.items()}),
     "@@TIMELINE@@": timeline_js,
 }.items():

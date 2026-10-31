@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Bakes assets/sfx.wav (20.0 s, STEREO, 44.1 kHz, 16-bit) from the CUES block in index.html.
+"""Bakes assets/sfx.wav (27.0 s, STEREO, 44.1 kHz, 16-bit) from the CUES block in index.html.
 
 Procedural only — pure sine/shaped-sine voices, no noise buffers, no samples, no external files.
 Voices mirror the live Web Audio engine inside index.html (SFX object):
 
-  drone        permanent CMOS sub-bass: 50 Hz (gain 0.05 = -26 dBFS) + 100 Hz (0.03), whole 20.0 s
+  drone        permanent lab drone: 50 Hz at -24 dBFS (0.0631) + 100 Hz (0.02), whole 27.0 s
                (whole cycles -> loops click-free); right channel phase-offset for a stereo field
   click        mouse/toggle: down 1400 Hz transient, up 1800 Hz transient 60 ms later
   snap         terminal wire snap: sharp 2200 Hz micro-click (+4400 Hz overtone)
@@ -22,7 +22,7 @@ import wave
 import numpy as np
 
 SR = 44100
-DUR = 20.0
+DUR = 27.0
 MASTER = 0.5
 
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -80,8 +80,8 @@ for t0, kind in CUES:
         mix[i:j] += sig[: j - i]
 mix *= MASTER
 t = np.arange(n_total) / SR
-left = mix + 0.05 * np.sin(2 * np.pi * 50 * t) + 0.03 * np.sin(2 * np.pi * 100 * t)
-right = mix + 0.05 * np.sin(2 * np.pi * 50 * t + 0.35) + 0.03 * np.sin(2 * np.pi * 100 * t + 0.9)
+left = mix + 0.0631 * np.sin(2 * np.pi * 50 * t) + 0.02 * np.sin(2 * np.pi * 100 * t)
+right = mix + 0.0631 * np.sin(2 * np.pi * 50 * t + 0.35) + 0.02 * np.sin(2 * np.pi * 100 * t + 0.9)
 st = np.stack([left, right], axis=1)
 
 peak = float(np.max(np.abs(st)))
