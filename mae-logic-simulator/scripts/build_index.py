@@ -50,10 +50,10 @@ wire("FA", [(160, 470), (250, 470)], BLUE, BLUE)
 wire("FB", [(160, 570), (250, 570)], BLUE, PUR)
 wire("FS1", [(430, 470), (550, 470)], BLUE, BLUE)
 wire("FCIN", [(160, 960), (490, 960), (490, 570), (550, 570)], RED, RED)
-wire("FS2", [(730, 470), (1010, 470)], BLUE, BLUE)
+wire("FS2", [(730, 470), (990, 470)], BLUE, BLUE)
 wire("FC2", [(730, 570), (760, 570), (760, 820), (780, 820)], RED, RED)
 wire("FC1", [(430, 570), (450, 570), (450, 860), (780, 860)], RED, RED, hop={2: 490})
-wire("FOR", [(980, 840), (1010, 840)], RED, RED)
+wire("FOR", [(980, 840), (990, 840)], RED, RED)
 
 
 def wire_svg(wid):
@@ -189,6 +189,7 @@ world.append(led("ledS", 840, 560, BLUE, sum_top, sum_bot))
 world.append(led("ledC", 840, 760, RED, car_top, car_bot))
 
 # marquee + IC blocks
+world.append(f'<rect id="mq0" x="110" y="440" width="790" height="440" rx="10" fill="rgba(0,136,255,.10)" stroke="{BLUE}" stroke-width="2.5" stroke-dasharray="10 8" opacity="0"/>')
 world.append(f'<rect id="mq" x="320" y="470" width="350" height="380" rx="10" fill="rgba(0,136,255,.10)" stroke="{BLUE}" stroke-width="2.5" stroke-dasharray="10 8" opacity="0"/>')
 world.append(f'<rect id="mq2" x="320" y="470" width="350" height="380" rx="10" fill="rgba(0,136,255,.10)" stroke="{BLUE}" stroke-width="2.5" stroke-dasharray="10 8" opacity="0"/>')
 world.append(ic("ha1", 490, 660, "HALF", "ADDER 1"))
@@ -202,10 +203,15 @@ fw = []
 for wid in ["FA", "FB", "FS1", "FCIN", "FS2", "FC2", "FC1", "FOR"]:
     fw.append(wire_svg(wid))
 world.insert(world.index(next(x for x in world if x.startswith('<rect id="mq"'))), '<g id="full">' + "".join(fw) + "</g>")
-world.append(netlabel("nlS1", 490, 440, "S", "1", "middle"))
-world.append(netlabel("nlC1", 436, 735, "C", "1", "end"))
-world.append(netlabel("nlC2", 776, 700, "C", "2", "start"))
+def badge(bid, x, y, color, base, subs):
+    return (f'<g id="{bid}" opacity="0"><circle cx="{x}" cy="{y}" r="18" fill="#12121C" stroke="{color}" stroke-width="3"/>'
+            f'<text class="fv" x="{x}" y="{y + 7}" text-anchor="middle" font-size="22" fill="#fff">{base}'
+            f'<tspan class="fm" font-size="13" dy="4">{subs}</tspan></text></g>')
 
+
+world.append(badge("bdS1", 450, 470, BLUE, "S", "1"))   # integrated terminal badges on the HA output pins
+world.append(badge("bdC1", 450, 570, RED, "C", "1"))
+world.append(badge("bdC2", 750, 570, RED, "C", "2"))
 world.append("</g>")  # /circ  (only the circuit dissolves at the loop point; the dot grid stays)
 
 # ---------------------------------------------------------------- dock tiles
@@ -245,33 +251,25 @@ CHECK = ('<svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="v
 BOLT = ('<svg class="bolt" width="22" height="30" viewBox="0 0 22 30" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" '
         f'fill="{BLUE}"/></svg>')
 
-ha_rows = ""
-for r, (a, b) in enumerate([(0, 0), (0, 1), (1, 0), (1, 1)]):
-    s, c = a ^ b, a & b
-    ha_rows += (f'<div class="tr" id="haR{r}"><i class="bg"></i>' + cell_html(a, "ci") + cell_html(b, "ci") + '<b class="ts"></b>'
-                + cell_html(s, "os") + cell_html(c, "oc") + "</div>")
-fa_groups = ""
-for g in range(2):
-    rows = ""
-    for r in range(4):
-        idx = g * 4 + r
-        a, b, ci = (idx >> 2) & 1, (idx >> 1) & 1, idx & 1
-        s, c = a ^ b ^ ci, (a & b) | ((a ^ b) & ci)
-        ck = CHECK if idx == 7 else ""
-        rows += (f'<div class="tr" id="faR{idx}"><i class="bg"></i>' + cell_html(a, "ci") + cell_html(b, "ci") + cell_html(ci, "ci")
-                 + '<b class="ts"></b>' + cell_html(s, "os") + cell_html(c, "oc") + ck + "</div>")
-    fa_groups += (f'<div class="grp fa" style="left:{24 + g * 384}px"><div class="th"><b class="c">{v("A")}</b><b class="c">{v("B")}</b>'
-                  f'<b class="c">{v("C")}<sub class="v">in</sub></b><b class="ts"></b><b class="c">{v("S")}</b>'
-                  f'<b class="c">{v("C")}<sub class="v">out</sub></b></div>{rows}</div>')
+WID = [110, 110, 130, 110, 150]
 
-table_html = (
-    f'<div id="ttHA" class="tt"><div class="grp ha"><div class="th"><b class="c">{v("A")}</b><b class="c">{v("B")}</b><b class="ts"></b>'
-    f'<b class="c">{v("S")}</b><b class="c">{v("C")}</b></div>{ha_rows}</div></div>'
-    f'<div id="ttFA" class="tt">{fa_groups}</div>'
-)
+
+def cell(txt, cls, w):
+    return f'<b class="c {cls}" style="flex-basis:{w}px">{txt}</b>'
+
+
+fa_rows = ""
+for idx in range(8):
+    a, b_, ci = (idx >> 2) & 1, (idx >> 1) & 1, idx & 1
+    s, c = a ^ b_ ^ ci, (a & b_) | ((a ^ b_) & ci)
+    fa_rows += (f'<div class="tr" id="faR{idx}"><i class="bg"></i>' + cell(a, "ci", WID[0]) + cell(b_, "ci", WID[1]) + cell(ci, "ci", WID[2])
+                + '<b class="ts"></b>' + cell(s, "os", WID[3]) + cell(c, "oc", WID[4]) + (CHECK if idx == 7 else "") + "</div>")
+hdr = ('<div class="th">' + cell(v("A"), "", WID[0]) + cell(v("B"), "", WID[1]) + cell(v("C") + '<sub class="v">in</sub>', "", WID[2])
+       + '<b class="ts"></b>' + cell(v("S"), "", WID[3]) + cell(v("C") + '<sub class="v">out</sub>', "", WID[4]) + "</div>")
+table_html = f'<div id="ttFA" class="tt"><div class="grp">{hdr}{fa_rows}</div></div>'
 
 banner_html = f"""
-<div class="pg" id="bn0"><span class="t">CAN WE ADD NUMBERS USING LIGHT?</span>{BOLT}</div>
+<div class="pg col" id="bn0"><span class="t t42">HOW COMPUTERS ACTUALLY</span><span class="l"><span class="t t42">ADD NUMBERS</span>{BOLT}</span></div>
 <div class="pg" id="bn1"><span class="t">HALF ADDER:</span><span class="q"></span><span class="m">{v("S")} = {v("A")} ⊕ {v("B")}</span><span class="q sep">|</span><span class="m">{v("C")}<sub class="v">out</sub> = {v("A")} ⋅ {v("B")}</span></div>
 <div class="pg" id="bn2"><span class="t">BINARY 1 + 1 = 10<sub>2</sub> (SUM = 0, CARRY = 1)</span>{CHECK}</div>
 <div class="pg col" id="bn3"><span class="t">BUT WHAT IF WE HAVE A CARRY FROM</span><span class="t">A PREVIOUS BIT ({v("C")}<sub class="v">in</sub>)?</span></div>

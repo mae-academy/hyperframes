@@ -1,6 +1,6 @@
 # MAE Academy — Logic Circuit Simulator (Half Adder → Full Adder)
 
-36.0 s · 1080×1920 · 60 fps · GSAP 3.12.5 · `window.__timelines["main"]` · MAE_STYLE_SPEC v1.0
+20.0 s · 1080×1920 · 60 fps · GSAP 3.12.5 · `window.__timelines["main"]` · MAE_STYLE_SPEC v1.0
 
 | File                                                     | Role                                                                                                            |
 | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |

@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Bakes assets/sfx.wav (36.0 s, mono, 44.1 kHz, 16-bit) from the CUES block in index.html.
+"""Bakes assets/sfx.wav (20.0 s, STEREO, 44.1 kHz, 16-bit) from the CUES block in index.html.
 
 Procedural only — pure sine/shaped-sine voices, no noise buffers, no samples, no external files.
 Voices mirror the live Web Audio engine inside index.html (SFX object):
 
-  hum    50 Hz sine, -24 dBFS, whole clip (50 Hz x 36 s = 1800 whole cycles -> loops click-free)
-  click  mouse down 1400 Hz transient, mouse up 1800 Hz transient 60 ms later
-  snap   crisp 2400 Hz wire-snap tick (+ 4800 Hz overtone)
-  thump  logic-relay: damped 80 Hz square-sine burst (tanh-shaped sine)
-  chime  pure sine pair 1318.5 / 1975.5 Hz, long decay (final-answer confirmation)
+  drone        permanent CMOS sub-bass: 50 Hz (gain 0.05 = -26 dBFS) + 100 Hz (0.03), whole 20.0 s
+               (whole cycles -> loops click-free); right channel phase-offset for a stereo field
+  click        mouse/toggle: down 1400 Hz transient, up 1800 Hz transient 60 ms later
+  snap         terminal wire snap: sharp 2200 Hz micro-click (+4400 Hz overtone)
+  thump        heavy relay strike: 85 Hz tanh-shaped sub + 1400 Hz transient
+  relay_thump  multi-tone relay: 85 Hz sub + 170 Hz body + 1400 Hz strike + contact bounce at +30 ms
+  chime        pure sine pair 1200 / 1800 Hz, long decay
 
 Usage:  python3 scripts/make_sfx.py [index.html] [assets/sfx.wav]
 """
@@ -20,7 +22,7 @@ import wave
 import numpy as np
 
 SR = 44100
-DUR = 36.0
+DUR = 20.0
 MASTER = 0.5
 
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -56,11 +58,17 @@ def layer(*sigs):
     return out
 
 
+def sub(f, pk, dec):
+    n = int((dec + 0.05) * SR)
+    return np.tanh(2.2 * np.sin(2 * np.pi * f * np.arange(n) / SR)) * env(n, pk, dec, 0.002)
+
+
 VOICES = {
     "click": lambda: [(0.0, tone(1400, 0.34, 0.03)), (0.06, tone(1800, 0.22, 0.026))],
-    "snap": lambda: [(0.0, layer(tone(2400, 0.42, 0.016), tone(4800, 0.12, 0.009)))],
-    "thump": lambda: [(0.0, np.tanh(2.2 * np.sin(2 * np.pi * 80 * np.arange(int(0.5 * SR)) / SR)) * env(int(0.5 * SR), 0.6, 0.45, 0.002))],
-    "chime": lambda: [(0.0, layer(tone(1318.5, 0.16, 0.9, 0.003), tone(1975.5, 0.1, 0.7, 0.003)))],
+    "snap": lambda: [(0.0, layer(tone(2200, 0.42, 0.016), tone(4400, 0.12, 0.009)))],
+    "thump": lambda: [(0.0, layer(sub(85, 0.6, 0.45), tone(1400, 0.25, 0.014)))],
+    "relay_thump": lambda: [(0.0, layer(sub(85, 0.5, 0.4), sub(170, 0.18, 0.2), tone(1400, 0.4, 0.014))), (0.03, tone(1400, 0.2, 0.01))],
+    "chime": lambda: [(0.0, layer(tone(1200, 0.16, 0.9, 0.003), tone(1800, 0.1, 0.7, 0.003)))],
 }
 
 n_total = int(DUR * SR)
@@ -72,14 +80,17 @@ for t0, kind in CUES:
         mix[i:j] += sig[: j - i]
 mix *= MASTER
 t = np.arange(n_total) / SR
-mix += 10 ** (-24 / 20) * np.sin(2 * np.pi * 50 * t)  # 50 Hz lab hum, -24 dB
+left = mix + 0.05 * np.sin(2 * np.pi * 50 * t) + 0.03 * np.sin(2 * np.pi * 100 * t)
+right = mix + 0.05 * np.sin(2 * np.pi * 50 * t + 0.35) + 0.03 * np.sin(2 * np.pi * 100 * t + 0.9)
+st = np.stack([left, right], axis=1)
 
-peak = float(np.max(np.abs(mix)))
+peak = float(np.max(np.abs(st)))
 assert peak < 0.98, peak
 dst.parent.mkdir(parents=True, exist_ok=True)
 with wave.open(str(dst), "wb") as w:
-    w.setnchannels(1)
+    w.setnchannels(2)
     w.setsampwidth(2)
     w.setframerate(SR)
-    w.writeframes((mix * 32767).astype("<i2").tobytes())
-print(f"{dst}  {len(CUES)} cues  peak {20 * np.log10(peak):.1f} dBFS  {n_total / SR:.1f} s")
+    w.writeframes((st * 32767).astype("<i2").tobytes())
+gaps = np.diff([0.0] + sorted(c[0] for c in CUES) + [DUR])
+print(f"{dst}  {len(CUES)} cues  peak {20 * np.log10(peak):.1f} dBFS  {n_total / SR:.1f} s  longest cue gap {gaps.max():.2f} s (drone fills it)")
