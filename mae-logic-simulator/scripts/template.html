@@ -44,7 +44,7 @@
       #urlbar { left: 260px; top: 214px; width: 560px; height: 44px; border-radius: 22px; background: #12121c; border: 1px solid rgba(255,255,255,.12); box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 400; font-size: 22px; line-height: 44px; color: rgba(255,255,255,.6); white-space: nowrap; }
 
       /* ---- Zone 2 : workspace ---- */
-      #plate { left: 90px; top: 330px; width: 900px; height: 750px; border-radius: 28px; background: var(--plate); border: 2px solid rgba(255,255,255,.08); z-index: -20; }
+      #plate { left: 90px; top: 330px; width: 900px; height: 750px; border-radius: 28px; background: var(--plate); border: 2px solid rgba(255,255,255,.08); z-index: -20;  box-shadow: inset 0 0 0 rgba(0,136,255,0); }
       #wm { left: 90px; top: 655px; width: 900px; height: 100px; text-align: center; font-size: 88px; line-height: 100px; color: #fff; opacity: .06; z-index: -10; white-space: nowrap; }
       #dock { left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
       .tile { position: absolute; width: 164px; height: 74px; border-radius: 16px; background: rgba(30,30,46,.6); border: 1.5px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 4px; padding-left: 6px; }
@@ -61,15 +61,19 @@
       .wire .b { stroke: var(--wire-off); }
       .wire .g { opacity: 1; }
       .wire .lg { stroke-width: 13; opacity: .3; }
-      .wire .p { stroke: #fff; stroke-width: 3.5; stroke-dasharray: .1 3; stroke-dashoffset: .1; opacity: 0; }
+      .wire .pg { stroke-width: 12; opacity: 0; }
+      .wire .p { stroke: #fff; stroke-width: 4; opacity: 0; }
+      .wire .f { stroke: #fff; stroke-width: 2.5; opacity: 0; }
       .sf { opacity: 0; }
 
       /* ---- Zone 3 : banner (y 1210-1370) ---- */
-      #banner { left: 180px; top: 1105px; width: 720px; height: 105px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.4); box-shadow: 0 0 26px rgba(255,0,68,0.12), inset 0 0 22px rgba(255,0,68,0.06); overflow: hidden; }
+      #banner { left: 180px; top: 1102px; width: 720px; height: 122px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.4); box-shadow: 0 0 26px rgba(255,0,68,0.12), inset 0 0 22px rgba(255,0,68,0.06); overflow: hidden; }
       .pg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; opacity: 0; padding: 0 16px; white-space: nowrap; }
       .pg.col { flex-direction: column; gap: 4px; }
       .pg .l { display: flex; align-items: center; }
       .pg .t { font-size: 28px; line-height: 36px; color: #fff; }
+      .pg.big .m { font-size: 56px; line-height: 58px; color: #fff; -webkit-text-stroke: 1.5px #0088ff; text-shadow: 0 0 18px rgba(0,136,255,.7); }
+      .pg.big .ck { width: 38px; height: 38px; flex: 0 0 38px; }
       .pg .t24 { font-size: 24px; line-height: 30px; }
       .pg .m { font-size: 30px; line-height: 36px; color: #fff; }
       .pg .q { display: inline-block; width: 16px; }
@@ -79,26 +83,36 @@
       .pg .ck { margin-left: 12px; flex: 0 0 26px; }
 
       /* ---- Zone 4 : truth-table card + CTA ---- */
-      #card { left: 150px; top: 1250px; width: 780px; height: 320px; border-radius: 28px; overflow: hidden;
+      #card { left: 150px; top: 1232px; width: 780px; height: 208px; border-radius: 26px; overflow: hidden;
         background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)), rgba(30,30,46,.5); border: 1px solid rgba(255,255,255,.1); }
       .tt { position: absolute; inset: 0; }
-      .grp { position: absolute; left: 73px; top: 6px; }
-      .grp.ha { left: 118px; }
+      .grp { position: absolute; top: 8px; }
+      .grp.ha { left: 158px; }
       .th, .tr { display: flex; align-items: center; height: 33px; position: relative; }
       .th { height: 36px; }
-      .ha .tr { height: 66px; }
-      .c { display: block; flex: 0 0 110px; text-align: center; font-size: 30px; line-height: 33px; color: var(--dim); position: relative; z-index: 1; font-weight: 700; }
-      .ha .c { line-height: 66px; }
+      .tr { opacity: .25; }
+      .ha .tr { height: 40px; }
+      .c { display: block; flex: 0 0 54px; text-align: center; font-size: 30px; line-height: 33px; color: var(--dim); position: relative; z-index: 1; font-weight: 700; }
+      .ha .c { line-height: 40px; }
       .th .c { color: #fff; line-height: 36px; }
       .th .v { font-size: 30px; }
-      .ts { display: block; flex: 0 0 24px; height: 24px; position: relative; z-index: 1; }
-      .ts::before { content: ""; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
-      .tr .bg { position: absolute; left: -8px; right: -8px; top: 1px; bottom: 1px; border-radius: 10px; background: rgba(0,136,255,.2); border: 2px solid rgba(0,136,255,.75); opacity: 0; box-shadow: 0 0 0 rgba(0,136,255,0); }
-      .tr .ck { position: absolute; right: -40px; top: 4px; opacity: 0; }
-      #cta { left: 130px; top: 1580px; width: 820px; height: 50px; border-radius: 20px; background: linear-gradient(rgba(0,136,255,.14), rgba(0,136,255,.14)), #0b0e19; border: 2px solid rgba(0,136,255,.5); box-shadow: 0 0 8px 0 rgba(0,136,255,.1); opacity: 0; }
-      #cta .ct { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; white-space: nowrap; }
-      #cta .c1 { font-size: 24px; line-height: 26px; color: var(--electric-blue); }
-      #cta .c2 { font-size: 18px; line-height: 20px; color: rgba(255,255,255,.85); letter-spacing: .06em; }
+      .ts { display: block; flex: 0 0 16px; height: 24px; position: relative; z-index: 1; }
+      .ha .ts { flex-basis: 24px; }
+      .ts::before { content: ""; position: absolute; left: calc(50% - 1px); top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
+      .tr .bg { position: absolute; left: -6px; right: -6px; top: 1px; bottom: 1px; border-radius: 10px; background: rgba(0,136,255,.2); border: 2px solid rgba(0,136,255,.75); opacity: 0; box-shadow: 0 0 0 rgba(0,136,255,0); }
+      .tr .ck { position: absolute; top: 5px; width: 22px; height: 22px; opacity: 0; z-index: 2; filter: drop-shadow(0 0 5px #0088ff); }
+      .fa .ck { right: 4px; }
+      .ha .ck { right: -34px; top: 9px; }
+
+      /* ---- gamified challenge card (y 1460-1640) ---- */
+      #cta { left: 150px; top: 1460px; width: 780px; height: 180px; border-radius: 26px; background: rgba(176,38,255,.08); border: 2px solid rgba(176,38,255,.5); opacity: 0; }
+      #ctaHead { position: absolute; left: 0; right: 0; top: 12px; height: 44px; display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 32px; line-height: 44px; color: var(--neon-purple); white-space: nowrap; }
+      #ctaBtn { position: absolute; left: 48px; top: 78px; width: 680px; height: 75px; border-radius: 22px; background: rgba(0,136,255,.18); border: 2px solid #0088ff; box-sizing: border-box; box-shadow: 0 0 10px rgba(0,136,255,.25); }
+      #ctaRing { position: absolute; inset: -2px; border-radius: 22px; border: 3px solid #0088ff; opacity: 0; }
+      #ctaBtn .b1 { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; white-space: nowrap; }
+      #ctaBtn .big { font-size: 38px; line-height: 40px; color: var(--electric-blue); text-shadow: 0 0 18px rgba(0,136,255,.8); }
+      #ctaBtn .sub { font-size: 24px; line-height: 26px; color: rgba(255,255,255,.7); }
+      #ctaB .big { color: #fff; }
 
       /* ---- cursor ---- */
       #ring { left: 0; top: 0; width: 0; height: 0; z-index: 59; }
@@ -108,7 +122,7 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="27" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="25" data-width="1080" data-height="1920">
       <div id="scene">
         <div id="bgGrid"></div>
         <div id="glowA"></div>
@@ -146,19 +160,24 @@
         <!-- Zone 4 -->
         <div id="card">@@TABLES@@</div>
         <div id="cta">
-          <div class="ct"><span class="c1">EXPERIMENT IN THE LIVE SIMULATOR <svg width="14" height="20" viewBox="0 0 22 30" style="vertical-align:-2px" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" fill="#0088FF"/></svg></span><span class="c2">LINK IN BIO &amp; FIRST COMMENT</span></div>
+          <div id="ctaHead"><svg width="34" height="30" viewBox="0 0 34 30" overflow="visible"><path d="M17 3 V27 M17 8 C10 3 3 7 6 13 C2 16 5 22 10 21 C11 26 16 26 17 22 M17 8 C24 3 31 7 28 13 C32 16 29 22 24 21 C23 26 18 26 17 22" fill="none" stroke="#B026FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>CAN YOU BUILD A 4-BIT ADDER?</span></div>
+          <div id="ctaBtn"><i id="ctaRing"></i>
+            <div class="b1" id="ctaA"><span class="big">LAUNCH FREE SIMULATOR <svg width="22" height="30" viewBox="0 0 22 30" style="vertical-align:-3px" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" fill="#0088FF"/></svg></span><span class="sub">LINK IN PINNED COMMENT &amp; BIO</span></div>
+            <div class="b1" id="ctaB" style="opacity:0"><span class="big">SIMULATOR READY <svg width="26" height="30" viewBox="0 0 26 30" style="vertical-align:-4px" overflow="visible"><path d="M13 1 C19 7 20 14 18 21 H8 C6 14 7 7 13 1 Z" fill="#fff" stroke="#0088FF" stroke-width="2"/><path d="M8 17 L3 24 L9 22 M18 17 L23 24 L17 22" fill="#0088FF"/><circle cx="13" cy="11" r="2.6" fill="#0088FF"/></svg></span><span class="sub">LINK IN PINNED COMMENT &amp; BIO</span></div>
+          </div>
         </div>
 
         <div id="ring"><i></i></div>
         <div id="cursor"><svg width="40" height="46" viewBox="0 0 40 46" overflow="visible"><g id="cArrow"><polygon points="0,0 0,30 7.5,23.5 13,36 19.5,33 14,21 23.5,21" fill="#ffffff" stroke="#0088ff" stroke-width="3" stroke-linejoin="round"/></g></svg></div>
       </div>
 
-      <audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="27" data-track-index="2" data-volume="1"></audio>
+      <audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="25" data-track-index="2" data-volume="1"></audio>
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
-      const WP = @@WP@@; // wire vertex lists (world coords), emitted by scripts/build_index.py
+      const WP = @@WP@@;
+      const WL = @@WL@@; // wire lengths in world units (for absolute-unit light packets) // wire vertex lists (world coords), emitted by scripts/build_index.py
 @@TIMELINE@@
     </script>
   </body>

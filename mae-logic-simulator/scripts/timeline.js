@@ -1,39 +1,37 @@
 /* =====================================================================================
-         MAE Academy — Logic Circuit Simulator · master timeline (27.0 s, 1080×1920)
+         MAE Academy — Digital Full Adder Simulator · master timeline (25.0 s, 1080×1920)
          Every visible value is a pure function of timeline time: no Date, no Math.random, no network.
          Geometry:  WORLD coords (SVG #world).  zoom 1 → page == world.  Zoom .82 about (560,760):
                     page = (560 + .82 (x-560), 760 + .82 (y-760)).
          Frame 0 is a LIVE half adder (A=B=1, C lit). The hook banner is removed (display:none) after
-         2.2 s and never returns; the end state simply holds the verified full adder + CTA.
+         it clears and never returns; the end state holds the verified full adder + challenge card.
          ===================================================================================== */
 
 // @CUES-BEGIN
 const CUES = [
   [0.0, "thump"],
   [0.05, "snap"],
-  [2.2, "click"],
-  [3.2, "snap"],
-  [4.2, "snap"],
+  [1.8, "click"],
+  [2.8, "snap"],
+  [3.6, "snap"],
+  [4.5, "click"],
   [5.2, "click"],
-  [6.0, "click"],
-  [7.0, "click"],
-  [8.2, "click"],
-  [9.5, "snap"],
-  [9.7, "relay_thump"],
-  [11.0, "click"],
-  [12.0, "thump"],
-  [13.5, "click"],
-  [14.5, "snap"],
-  [16.0, "click"],
-  [17.5, "click"],
-  [19.0, "snap"],
-  [20.0, "click"],
-  [20.8, "click"],
-  [21.6, "click"],
-  [22.6, "relay_thump"],
-  [22.8, "chime"],
-  [24.5, "snap"],
-  [25.8, "click"],
+  [6.2, "click"],
+  [7.2, "snap"],
+  [8.5, "thump"], // Modular packaging
+  [10.0, "click"],
+  [11.2, "snap"],
+  [12.8, "click"],
+  [14.0, "click"],
+  [15.5, "snap"],
+  [17.0, "click"], // Toggle A=1
+  [17.6, "click"], // Toggle B=1
+  [18.2, "click"], // Toggle Cin=1
+  [19.2, "relay_thump"], // Climax LED explosion
+  [19.4, "chime"],
+  [21.5, "click"], // Challenge card reveals
+  [23.2, "snap"], // Cursor clicks CTA button
+  [24.5, "click"], // Loop anchor
 ];
 // @CUES-END
 
@@ -86,14 +84,20 @@ const SFX = (() => {
       tone(c, out, t, 1400, 0.25, 0.014);
     },
     relay_thump(c, out, t) {
-      sub(c, out, t, 85, 0.5, 0.4);
-      sub(c, out, t, 170, 0.18, 0.2);
+      sub(c, out, t, 80, 0.55, 0.45);
+      sub(c, out, t, 160, 0.2, 0.2);
       tone(c, out, t, 1400, 0.4, 0.014);
       tone(c, out, t + 0.03, 1400, 0.2, 0.01);
+      sub(c, out, t + 0.09, 80, 0.4, 0.35);
+      tone(c, out, t + 0.09, 1400, 0.28, 0.012);
     },
     chime(c, out, t) {
-      tone(c, out, t, 1200, 0.16, 0.9, 0.003);
-      tone(c, out, t, 1800, 0.1, 0.7, 0.003);
+      [
+        [1200, 0.16, 0.9],
+        [1800, 0.1, 0.7],
+        [2400, 0.07, 0.6],
+        [3600, 0.04, 0.5],
+      ].forEach(([f, p, d]) => tone(c, out, t, f, p, d, 0.003));
     },
   };
   return {
@@ -147,6 +151,7 @@ gsap.set("#cursor", { x: 540, y: 745 });
 gsap.set("#ring", { x: 540, y: 745 });
 gsap.set("#bn0", { opacity: 1 });
 gsap.set("#ttFA", { opacity: 0 });
+gsap.set("#ctaBtn", { transformOrigin: "50% 50%" });
 
 /* ---------- t = 0 state: a live half adder, A = B = 1, AND/Carry high, Sum low ---------- */
 function liveState(set) {
@@ -168,7 +173,8 @@ function liveState(set) {
     set(`#${id} .d0`, { opacity: live ? 0 : 1 });
     set(`#${id} .d1`, { opacity: live ? 1 : 0 });
   });
-  set("#haR3 .bg", { opacity: live ? 1 : 0 });
+  set("#haR3", { opacity: live ? 1 : 0.25 });
+  set("#haR3 .bg, #haR3 .ck", { opacity: live ? 1 : 0 });
   set("#haR3 .ci, #haR3 .os", { color: live ? WHITE : DIM });
   set("#haR3 .oc", { color: live ? RED : DIM });
 }
@@ -256,7 +262,6 @@ function tilePick(k, t0, t1) {
     t1,
   );
 }
-// item follows the cursor (shared power2.out ease + duration); offsets in WORLD units
 function dragItem(id, t0, t1, a, b, finWorld, z, ghostScale = 0.5, appear = true) {
   const f = w2p(finWorld[0], finWorld[1], z);
   const oa = [(a[0] - f[0]) / z, (a[1] - f[1]) / z],
@@ -298,7 +303,10 @@ function fly(id, t0, t1, tile, itemWorld, z) {
   sfx(id, t1);
 }
 
-/* ---------- wires ---------- */
+/* ---------- LIVING WIRES ----------
+         • a luminous packet (white core + blue glow, stroke-dasharray "24 gap") races source → sink
+         • every energised wire keeps a marching spark layer (.f) running for as long as it is HIGH
+         • a gate that fires emits its own packet out of its output pin (the next lit() call) + a burst ring */
 const autoWire = (t0, t1, id) =>
   tl.fromTo(
     `#w_${id} .b, #w_${id} .g`,
@@ -312,6 +320,26 @@ const settleWires = (t, ids) =>
     { opacity: 0, duration: 0.25, ease: "power2.out" },
     t,
   );
+const FLOW = {}; // id -> time the wire became HIGH (flow layer start)
+function flow(id, t0, t1) {
+  if (t1 - t0 < 0.05) return;
+  tl.fromTo(
+    `#w_${id} .f`,
+    { strokeDashoffset: 0, opacity: 0.6 },
+    { strokeDashoffset: -(t1 - t0) * 150, duration: t1 - t0, ease: "none", immediateRender: false },
+    t0,
+  );
+  tl.set(`#w_${id} .f`, { opacity: 0 }, t1);
+}
+function pulse(id, t, d) {
+  tl.fromTo(
+    `#w_${id} .p, #w_${id} .pg`,
+    { strokeDashoffset: 24, opacity: 1 },
+    { strokeDashoffset: -WL[id], duration: d, ease: "none", immediateRender: false },
+    t,
+  );
+  tl.set(`#w_${id} .p, #w_${id} .pg`, { opacity: 0 }, t + d);
+}
 function lit(id, t, d) {
   tl.fromTo(
     `#w_${id} .l path`,
@@ -320,23 +348,20 @@ function lit(id, t, d) {
     t,
   );
   pulse(id, t, d);
+  FLOW[id] = t + d;
 }
-function pulse(id, t, d) {
-  tl.fromTo(
-    `#w_${id} .p`,
-    { strokeDashoffset: 0.1, opacity: 1 },
-    { strokeDashoffset: -1.1, duration: d, ease: "none", immediateRender: false },
-    t,
-  );
-  tl.set(`#w_${id} .p`, { opacity: 0 }, t + d);
-}
-const unlit = (id, t, d) =>
+function unlit(id, t, d) {
   tl.fromTo(
     `#w_${id} .l path`,
     { strokeDashoffset: 0 },
     { strokeDashoffset: -1, duration: d, ease: "none", immediateRender: false },
     t,
   );
+  if (FLOW[id] != null) {
+    flow(id, FLOW[id], t);
+    FLOW[id] = null;
+  }
+}
 
 /* ---------- logic parts ---------- */
 function flip(id, t, v) {
@@ -349,6 +374,10 @@ const partOn = (id, t, a = 1) =>
   tl.to(`#${id} .on`, { opacity: a, duration: 0.12, ease: "power2.out" }, t);
 const partOff = (id, t) =>
   tl.to(`#${id} .on`, { opacity: 0, duration: 0.18, ease: "power2.in" }, t);
+const fire = (id, t, a = 1) => {
+  partOn(id, t, a);
+  sfx(id, t);
+}; // gate fires: glow + burst ring
 function ledOn(id, t) {
   tl.to(`#${id} .on`, { opacity: 1, duration: 0.08, ease: "power2.out" }, t);
   tl.fromTo(
@@ -359,8 +388,31 @@ function ledOn(id, t) {
   );
 }
 const ledOff = (id, t) => tl.to(`#${id} .on`, { opacity: 0, duration: 0.18, ease: "power2.in" }, t);
+function explode(id, t) {
+  // LED EXPLOSION: elastic 1 → 1.4 → 1 + radial bloom
+  tl.to(`#${id} .on`, { opacity: 1, duration: 0.06 }, t);
+  tl.fromTo(
+    `#${id} .on`,
+    { scale: 1 },
+    { scale: 1.4, duration: 0.14, ease: "power3.out", immediateRender: false },
+    t,
+  );
+  tl.to(`#${id} .on`, { scale: 1, duration: 0.7, ease: "elastic.out(1, 0.35)" }, t + 0.14);
+  tl.fromTo(
+    `#${id} .bloom`,
+    { scale: 1, opacity: 0.6 },
+    { scale: 5.5, opacity: 0, duration: 0.8, ease: "power2.out", immediateRender: false },
+    t,
+  );
+  tl.fromTo(
+    `#${id} .ring`,
+    { scale: 1, opacity: 1 },
+    { scale: 3.4, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false },
+    t + 0.05,
+  );
+}
 
-/* ---------- Zone 3 banner / Zone 4 truth table ---------- */
+/* ---------- Zone 3 banner / Zone 4 reactive truth table ---------- */
 let bn = "bn0";
 function banner(t, id) {
   tl.to("#" + bn, { opacity: 0, y: -10, duration: 0.18, ease: "power2.in" }, t);
@@ -373,19 +425,35 @@ function banner(t, id) {
   bn = id;
 }
 function rowOn(id, t, s, c, outDelay = 0) {
-  tl.to(`#${id} .bg`, { opacity: 1, duration: 0.12, ease: "power2.out" }, t);
-  tl.to(`#${id} .ci`, { color: WHITE, duration: 0.12 }, t);
+  // rows rest at .25; the live row snaps to 1 with a blue glow border + ✓
+  tl.to(`#${id}`, { opacity: 1, duration: 0.1 }, t);
+  tl.fromTo(
+    `#${id}`,
+    { scaleX: 1.05 },
+    { scaleX: 1, duration: 0.25, ease: "back.out(3)", immediateRender: false },
+    t,
+  );
+  tl.to(
+    `#${id} .bg`,
+    { opacity: 1, boxShadow: "0 0 14px rgba(0,136,255,0.8)", duration: 0.12, ease: "power2.out" },
+    t,
+  );
+  tl.to(`#${id} .ck`, { opacity: 1, duration: 0.12 }, t);
+  tl.to(`#${id} .ci`, { color: WHITE, duration: 0.1 }, t);
   tl.to(`#${id} .os`, { color: s ? BLUE : WHITE, duration: 0.15 }, t + outDelay);
   tl.to(`#${id} .oc`, { color: c ? RED : WHITE, duration: 0.15 }, t + outDelay);
 }
 function rowOff(id, t) {
-  tl.to(`#${id} .bg`, { opacity: 0, duration: 0.15 }, t);
+  tl.to(`#${id}`, { opacity: 0.25, duration: 0.15 }, t);
+  tl.to(`#${id} .bg`, { opacity: 0, boxShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.15 }, t);
+  tl.to(`#${id} .ck`, { opacity: 0, duration: 0.1 }, t);
   tl.to(`#${id} .c`, { color: DIM, duration: 0.15 }, t);
 }
 
 /* =====================================================================================
-         ACT I (0 – 10.5)  LIVE HOOK → MEASURED REBUILD → 4-STATE HALF-ADDER TEST
+         ACT I (0 – 8.5)  LIVE HOOK → BUILD → 4-STATE HALF-ADDER TEST
          ===================================================================================== */
+["A1", "A2", "A3", "B1", "B2", "B3", "C0"].forEach((id) => flow(id, 0, 1.85)); // frame 0 is already alive
 tl.fromTo(
   "#ledC .ring",
   { scale: 1, opacity: 0.9 },
@@ -393,389 +461,414 @@ tl.fromTo(
   0.02,
 );
 sfx("gAnd", 0.05);
-hop(1.2, 110, 440, 0.55);
-down(1.75, false); // 2.2 box-select + delete
+hop(0.9, 110, 440, 0.45);
+down(1.35, false); // 1.8 box-select + delete
 tl.fromTo(
   "#mq0",
   { scaleX: 0, scaleY: 0, opacity: 1 },
   { scaleX: 1, scaleY: 1, duration: 0.4, ease: "power1.inOut", immediateRender: false },
-  1.8,
+  1.4,
 );
 tl.fromTo(
   "#cursor",
   { x: 110, y: 440 },
   { x: 900, y: 880, duration: 0.4, ease: "power1.inOut", immediateRender: false },
-  1.8,
+  1.4,
 );
 cx = 900;
 cy = 880;
-up(2.2);
-ring(2.2);
-tl.to("#circ", { opacity: 0, duration: 0.28, ease: "power2.in" }, 2.22);
-tl.to("#mq0", { opacity: 0, duration: 0.22 }, 2.22);
-banner(2.2, "bn1");
-tl.set("#bn0", { display: "none" }, 2.5); // hook banner can NEVER reappear
-const g1 = (sel, p) => tl.set(sel, p, 2.55);
+up(1.8);
+ring(1.8);
+tl.to("#circ", { opacity: 0, duration: 0.28, ease: "power2.in" }, 1.82);
+tl.to("#mq0", { opacity: 0, duration: 0.22 }, 1.82);
+banner(1.8, "bn1");
+tl.set("#bn0", { display: "none" }, 2.1); // hook banner can NEVER reappear
+const g1 = (sel, p) => tl.set(sel, p, 2.15);
 g1.live = false;
 liveState(g1);
-tl.set("#circ", { opacity: 1 }, 2.55);
-rowOff("haR3", 2.55);
+tl.set("#circ", { opacity: 1 }, 2.15);
 
-hop(2.25, TILE.xor[0], TILE.xor[1], 0.45);
-down(2.72, false);
-tilePick("xor", 2.72, 3.2);
-dragItem("gXor", 2.75, 3.2, TILE.xor, [540, 560], [540, 560], 1, 0.55);
-up(3.2);
-pop("gXor", 3.2, 1.08);
-sfx("gXor", 3.2); // 3.2 snap
-hop(3.25, TILE.and[0], TILE.and[1], 0.25);
-down(3.55, false);
-tilePick("and", 3.55, 4.2);
-dragItem("gAnd", 3.6, 4.2, TILE.and, [540, 760], [540, 760], 1, 0.55);
-up(4.2);
-pop("gAnd", 4.2, 1.08);
-sfx("gAnd", 4.2); // 4.2 snap
-hop(4.25, 280, 520, 0.6);
-tilePick("tog", 4.7, 5.2);
-tilePick("led", 4.8, 5.2);
-fly("tgA", 4.7, 5.2, TILE.tog, [220, 520], 1); // 5.2 inputs + probes land
-fly("tgB", 4.75, 5.2, TILE.tog, [220, 800], 1);
-fly("ledS", 4.8, 5.2, TILE.led, [840, 560], 1);
-fly("ledC", 4.85, 5.2, TILE.led, [840, 760], 1);
-click(5.2);
-// snap-to-grid wires route one net after another
-hop(5.28, 460, 660, 0.3);
-autoWire(5.3, 5.45, "A1");
-autoWire(5.42, 5.55, "A2");
-autoWire(5.42, 5.55, "A3");
+hop(1.85, TILE.xor[0], TILE.xor[1], 0.45);
+down(2.32, false);
+tilePick("xor", 2.32, 2.8);
+dragItem("gXor", 2.35, 2.8, TILE.xor, [540, 560], [540, 560], 1, 0.55);
+up(2.8);
+pop("gXor", 2.8, 1.08);
+sfx("gXor", 2.8); // 2.8 snap
+hop(2.85, TILE.and[0], TILE.and[1], 0.15);
+down(3.02, false);
+tilePick("and", 3.02, 3.6);
+dragItem("gAnd", 3.05, 3.6, TILE.and, [540, 760], [540, 760], 1, 0.55);
+up(3.6);
+pop("gAnd", 3.6, 1.08);
+sfx("gAnd", 3.6); // 3.6 snap
+hop(3.65, 280, 520, 0.7);
+tilePick("tog", 4.05, 4.5);
+tilePick("led", 4.15, 4.5);
+fly("tgA", 4.05, 4.5, TILE.tog, [220, 520], 1); // 4.5 inputs + probes land
+fly("tgB", 4.1, 4.5, TILE.tog, [220, 800], 1);
+fly("ledS", 4.15, 4.5, TILE.led, [840, 560], 1);
+fly("ledC", 4.2, 4.5, TILE.led, [840, 760], 1);
+click(4.5);
+// snap-to-grid wire routing
+hop(4.55, 460, 640, 0.3);
+autoWire(4.7, 4.95, "A1");
+autoWire(4.9, 5.15, "A2");
+autoWire(4.9, 5.15, "A3");
 tl.fromTo(
   "#j_A",
   { opacity: 0, scale: 0.2 },
   { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(3)", immediateRender: false },
-  5.42,
+  4.92,
 );
-autoWire(5.5, 5.62, "B1");
-autoWire(5.6, 5.72, "B2");
-autoWire(5.6, 5.74, "B3");
+click(5.2); // 5.2 net A routed
+hop(5.25, 460, 780, 0.2);
+autoWire(5.3, 5.55, "B1");
+autoWire(5.5, 5.75, "B2");
+autoWire(5.5, 5.8, "B3");
 tl.fromTo(
   "#j_B",
   { opacity: 0, scale: 0.2 },
   { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(3)", immediateRender: false },
-  5.58,
+  5.52,
 );
-autoWire(5.68, 5.82, "S0");
-autoWire(5.78, 5.92, "C0");
-hop(5.6, 700, 660, 0.3);
-settleWires(5.95, ["A1", "A2", "A3", "B1", "B2", "B3", "S0", "C0"]);
-click(6.0); // 6.0 all nets routed
+autoWire(5.7, 5.95, "S0");
+autoWire(5.85, 6.1, "C0");
+hop(5.6, 700, 660, 0.4);
+settleWires(6.12, ["A1", "A2", "A3", "B1", "B2", "B3", "S0", "C0"]);
+click(6.2); // 6.2 all nets routed
 [
-  ["A1", 6.05, 0.12],
-  ["B1", 6.05, 0.12],
-  ["A2", 6.17, 0.06],
-  ["A3", 6.17, 0.14],
-  ["B2", 6.17, 0.08],
-  ["B3", 6.17, 0.16],
-  ["S0", 6.3, 0.12],
-  ["C0", 6.3, 0.12],
+  ["A1", 6.25, 0.2],
+  ["B1", 6.25, 0.2],
+  ["A2", 6.4, 0.1],
+  ["A3", 6.4, 0.2],
+  ["B2", 6.4, 0.12],
+  ["B3", 6.4, 0.25],
+  ["S0", 6.5, 0.2],
+  ["C0", 6.5, 0.2],
 ].forEach(([id, t, d]) => pulse(id, t, d));
-rowOn("haR0", 6.5, 0, 0); // (0,0)
-hop(6.3, 220, 800, 0.6);
-// 7.0 (0,1)
-click(7.0);
-flip("tgB", 7.0, 1);
-rowOff("haR0", 7.0);
-rowOn("haR1", 7.02, 1, 0, 0.3);
-lit("B1", 7.02, 0.1);
-lit("B2", 7.12, 0.12);
-lit("B3", 7.12, 0.24);
-partOn("gXor", 7.36);
-lit("S0", 7.38, 0.22);
-ledOn("ledS", 7.62);
-// B back to 0, then 8.2 (1,0)
-down(7.9, false);
-flip("tgB", 7.9, 0);
-up(7.97);
-partOff("gXor", 7.9);
-unlit("B1", 7.9, 0.15);
-unlit("B2", 7.9, 0.15);
-unlit("B3", 7.9, 0.15);
-unlit("S0", 7.9, 0.15);
-ledOff("ledS", 8.0);
-rowOff("haR1", 7.9);
-rowOn("haR0", 7.92, 0, 0);
-hop(7.98, 220, 520, 0.2);
-click(8.2);
-flip("tgA", 8.2, 1);
-rowOff("haR0", 8.2);
-rowOn("haR2", 8.2, 1, 0, 0.3);
-lit("A1", 8.22, 0.12);
-lit("A2", 8.34, 0.06);
-lit("A3", 8.34, 0.16);
-partOn("gXor", 8.4);
-lit("S0", 8.42, 0.2);
-ledOn("ledS", 8.64);
-// 9.5 (1,1): the relay switches the carry at 9.7
-hop(8.3, 220, 800, 1.0);
-click(9.5);
-flip("tgB", 9.5, 1);
-rowOff("haR2", 9.5);
-rowOn("haR3", 9.5, 0, 1, 0.4);
-lit("B1", 9.52, 0.06);
-lit("B2", 9.58, 0.12);
-lit("B3", 9.58, 0.22);
-partOn("gAnd", 9.7);
-lit("C0", 9.72, 0.23);
-ledOn("ledC", 9.97);
-partOff("gXor", 9.8);
-unlit("S0", 9.8, 0.15);
-ledOff("ledS", 9.97);
-banner(10.0, "bn2");
+rowOn("haR0", 6.4, 0, 0); // (0,0)
+hop(6.3, 220, 800, 0.35);
+// (0,1)
+click(6.7);
+flip("tgB", 6.7, 1);
+rowOff("haR0", 6.7);
+rowOn("haR1", 6.72, 1, 0, 0.3);
+lit("B1", 6.72, 0.06);
+lit("B2", 6.78, 0.06);
+lit("B3", 6.78, 0.14);
+fire("gXor", 6.92);
+lit("S0", 6.94, 0.1);
+ledOn("ledS", 7.06);
+// B off, then (1,0)
+down(7.0, false);
+flip("tgB", 7.0, 0);
+up(7.07);
+partOff("gXor", 7.0);
+unlit("B1", 7.0, 0.15);
+unlit("B2", 7.0, 0.15);
+unlit("B3", 7.0, 0.15);
+unlit("S0", 7.0, 0.15);
+ledOff("ledS", 7.1);
+rowOff("haR1", 7.0);
+hop(7.08, 220, 520, 0.1);
+click(7.2);
+flip("tgA", 7.2, 1); // 7.2 snap
+rowOn("haR2", 7.2, 1, 0, 0.3);
+lit("A1", 7.22, 0.08);
+lit("A2", 7.3, 0.04);
+lit("A3", 7.3, 0.14);
+fire("gXor", 7.34);
+lit("S0", 7.36, 0.1);
+ledOn("ledS", 7.48);
+// (1,1): the relay switches the carry
+hop(7.3, 220, 800, 0.35);
+click(7.7);
+flip("tgB", 7.7, 1);
+rowOff("haR2", 7.7);
+rowOn("haR3", 7.72, 0, 1, 0.4);
+lit("B1", 7.72, 0.06);
+lit("B2", 7.78, 0.12);
+lit("B3", 7.78, 0.14);
+fire("gAnd", 7.9);
+lit("C0", 7.92, 0.18);
+ledOn("ledC", 8.1);
+partOff("gXor", 7.92);
+unlit("S0", 7.92, 0.1);
+ledOff("ledS", 8.02);
+banner(8.0, "bn2");
 
 /* =====================================================================================
-         ACT II (10.5 – 19.5)  CARRY-IN CHALLENGE → PACKAGE → FULL-ADDER HIERARCHY
+         ACT II (8.5 – 17.0)  PACKAGE → CARRY-IN → FULL-ADDER HIERARCHY
          ===================================================================================== */
-banner(10.5, "bn3");
-hop(9.7, 320, 470, 0.8);
-down(10.55, false);
+banner(8.4, "bn3");
+hop(7.85, 320, 470, 0.3);
+down(8.1, false);
 tl.fromTo(
   "#mq",
   { scaleX: 0, scaleY: 0, opacity: 1 },
-  { scaleX: 1, scaleY: 1, duration: 0.4, ease: "power1.inOut", immediateRender: false },
-  10.6,
+  { scaleX: 1, scaleY: 1, duration: 0.3, ease: "power1.inOut", immediateRender: false },
+  8.15,
 );
 tl.fromTo(
   "#cursor",
   { x: 320, y: 470 },
-  { x: 670, y: 850, duration: 0.4, ease: "power1.inOut", immediateRender: false },
-  10.6,
+  { x: 670, y: 850, duration: 0.3, ease: "power1.inOut", immediateRender: false },
+  8.15,
 );
 cx = 670;
 cy = 850;
-up(11.0);
-ring(11.0); // 11.0 select
-tl.set("#mq2", { opacity: 1 }, 11.0);
-tl.set("#mq", { opacity: 0 }, 11.0);
-tl.to("#mq2", { scaleX: 0.514, scaleY: 0.526, duration: 0.6, ease: "power3.inOut" }, 11.0);
-tl.to("#mq2", { opacity: 0, duration: 0.2, ease: "power1.in" }, 11.65);
-tl.to("#world", { scale: Z, duration: 0.8, ease: "power2.inOut" }, 11.2); // smooth zoom-out to 0.82
-tl.to("#z100", { opacity: 0, duration: 0.15 }, 11.6);
-tl.to("#z75", { opacity: 1, duration: 0.15 }, 11.65);
+up(8.45);
+ring(8.45);
+tl.set("#mq2", { opacity: 1 }, 8.45);
+tl.set("#mq", { opacity: 0 }, 8.45);
+tl.to("#mq2", { scaleX: 0.514, scaleY: 0.526, duration: 0.5, ease: "power3.inOut" }, 8.45);
+tl.to("#mq2", { opacity: 0, duration: 0.2, ease: "power1.in" }, 8.8);
 tl.fromTo(
   "#half",
   { scale: 1, opacity: 1 },
-  { scale: 0.3, opacity: 0, duration: 0.5, ease: "power3.in", immediateRender: false },
-  11.5,
+  { scale: 0.3, opacity: 0, duration: 0.35, ease: "power3.in", immediateRender: false },
+  8.2,
 );
+tl.to("#world", { scale: Z, duration: 0.8, ease: "power2.inOut" }, 8.5); // smooth zoom-out to 0.82
+tl.to("#z100", { opacity: 0, duration: 0.15 }, 8.9);
+tl.to("#z75", { opacity: 1, duration: 0.15 }, 8.95);
 tl.fromTo(
   "#ha1",
   { scale: 0.5, opacity: 0 },
   { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.8)", immediateRender: false },
-  12.0,
+  8.5,
 );
-sfx("ha1", 12.0); // 12.0 collapse into [HALF ADDER 1]
-flip("tgA", 12.05, 0);
-flip("tgB", 12.05, 0);
-ledOff("ledC", 12.05);
-tl.to("#ha1", { x: -150, y: -140, duration: 0.6, ease: "power2.inOut" }, 12.0);
-tl.to("#tgA", { x: -120, y: -50, duration: 0.6, ease: "power2.inOut" }, 12.0);
-tl.to("#tgB", { x: -120, y: -230, duration: 0.6, ease: "power2.inOut" }, 12.0);
-tl.to("#ledS", { x: 180, y: -90, duration: 0.6, ease: "power2.inOut" }, 12.0);
-tl.to("#ledC", { x: 180, y: 80, duration: 0.6, ease: "power2.inOut" }, 12.0);
-tl.to("#ledC .lblI", { opacity: 0, duration: 0.15 }, 12.2);
-tl.to("#ledC .lblIII", { opacity: 1, duration: 0.2 }, 12.25);
+sfx("ha1", 8.5); // 8.5 thump: modular packaging
+flip("tgA", 8.55, 0);
+flip("tgB", 8.55, 0);
+ledOff("ledC", 8.55);
+tl.to("#ha1", { x: -150, y: -140, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#tgA", { x: -120, y: -50, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#tgB", { x: -120, y: -230, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#ledS", { x: 180, y: -90, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#ledC", { x: 180, y: 80, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#ledC .lblI", { opacity: 0, duration: 0.15 }, 8.7);
+tl.to("#ledC .lblIII", { opacity: 1, duration: 0.2 }, 8.75);
 // truth-table card morphs: 4-row half-adder table → full 8-row table (adds the C_in column)
-rowOff("haR3", 12.05);
-tl.to("#ttHA", { opacity: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 12.15);
+rowOff("haR3", 8.6);
+tl.to("#ttHA", { opacity: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 9.0);
 tl.fromTo(
   "#ttFA",
   { opacity: 0, scale: 1.03 },
   { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false },
-  12.4,
+  9.3,
 );
-rowOn("faR0", 13.0, 0, 0);
+rowOn("faR0", 9.9, 0, 0);
 const HA1P = w2p(340, 520),
   HA2P = w2p(640, 520),
   ORP = w2p(880, 840);
-hop(11.1, HA1P[0], HA1P[1], 1.7);
-down(13.0, false);
-partOn("ha1", 12.95, 0.55);
-tl.set("#ha2", { x: -300, y: 0 }, 12.9);
-tl.fromTo("#ha2", { opacity: 0 }, { opacity: 0.7, duration: 0.15, immediateRender: false }, 13.0);
-dragItem("ha2", 13.05, 13.5, HA1P, HA2P, [640, 520], Z, 1, false); // 13.5 HA 2 drops
-up(13.5);
-ring(13.5);
-fade("#ha2", 13.5, 1, 0.1);
-pop("ha2", 13.5, 1.07);
-sfx("ha2", 13.5);
-partOff("ha1", 13.55);
-hop(13.55, TILE.or[0], TILE.or[1], 0.35);
-down(13.92, false);
-tilePick("or", 13.92, 14.5);
-dragItem("gOr", 13.95, 14.5, TILE.or, ORP, [880, 840], Z, 0.5); // 14.5 OR drops
-up(14.5);
-pop("gOr", 14.5, 1.08);
-sfx("gOr", 14.5);
+hop(8.6, HA1P[0], HA1P[1], 0.8);
+down(9.5, false);
+partOn("ha1", 9.45, 0.55);
+tl.set("#ha2", { x: -300, y: 0 }, 9.4);
+tl.fromTo("#ha2", { opacity: 0 }, { opacity: 0.7, duration: 0.15, immediateRender: false }, 9.5);
+dragItem("ha2", 9.55, 10.0, HA1P, HA2P, [640, 520], Z, 1, false); // 10.0 HA 2 drops
+up(10.0);
+ring(10.0);
+fade("#ha2", 10.0, 1, 0.1);
+pop("ha2", 10.0, 1.07);
+sfx("ha2", 10.0);
+partOff("ha1", 10.05);
+hop(10.05, TILE.or[0], TILE.or[1], 0.5);
+down(10.6, false);
+tilePick("or", 10.6, 11.2);
+dragItem("gOr", 10.65, 11.2, TILE.or, ORP, [880, 840], Z, 0.5); // 11.2 OR drops
+up(11.2);
+pop("gOr", 11.2, 1.08);
+sfx("gOr", 11.2);
 const PCin = w2p(100, 960);
-hop(14.55, PCin[0], PCin[1], 0.85);
-tilePick("tog", 15.55, 16.0);
-fly("tgC", 15.55, 16.0, TILE.tog, [100, 960], Z); // 16.0 C_in placed
-click(16.0);
-banner(16.0, "bn4");
+hop(11.25, PCin[0], PCin[1], 1.1);
+tilePick("tog", 12.3, 12.8);
+fly("tgC", 12.3, 12.8, TILE.tog, [100, 960], Z); // 12.8 C_in placed
+click(12.8);
+banner(12.8, "bn4");
 const PA = w2p(160, 470),
   PS1 = w2p(550, 470),
   POR2 = w2p(780, 860),
   PLS = w2p(1010, 470);
-hop(16.1, PA[0], PA[1], 0.3);
-autoWire(16.4, 16.7, "FA");
-autoWire(16.4, 16.7, "FB");
-hop(16.7, PS1[0], PS1[1], 0.25);
-autoWire(16.9, 17.2, "FS1");
-autoWire(17.0, 17.45, "FCIN");
-tl.to("#bdS1", { opacity: 1, duration: 0.15 }, 17.2);
-click(17.5);
-settleWires(17.5, ["FA", "FB", "FS1", "FCIN"]); // 17.5 S1 → HA2, C_in → HA2
-hop(17.6, POR2[0], POR2[1], 0.4);
-autoWire(17.9, 18.4, "FC1");
-autoWire(18.1, 18.5, "FC2");
-tl.to("#bdC1, #bdC2", { opacity: 1, duration: 0.15 }, 18.4);
-banner(18.3, "bn6"); // OR ≡ ADD logic bridge
-hop(18.5, PLS[0], PLS[1], 0.35);
-autoWire(18.45, 18.8, "FS2");
-autoWire(18.65, 19.0, "FOR");
-up(19.0);
-ring(19.0);
-settleWires(19.0, ["FC1", "FC2", "FS2", "FOR"]); // 19.0 outputs lock
-sfx("gOr", 19.0);
-sfx("ha2", 19.0);
+hop(12.9, PA[0], PA[1], 0.3);
+autoWire(13.0, 13.3, "FA");
+autoWire(13.0, 13.3, "FB");
+hop(13.3, PS1[0], PS1[1], 0.3);
+autoWire(13.4, 13.7, "FS1");
+autoWire(13.5, 14.0, "FCIN");
+tl.to("#bdS1", { opacity: 1, duration: 0.15 }, 13.7);
+click(14.0);
+settleWires(14.0, ["FA", "FB", "FS1", "FCIN"]); // 14.0 S1 → HA2, C_in → HA2
+hop(14.1, POR2[0], POR2[1], 0.4);
+autoWire(14.3, 14.85, "FC1");
+autoWire(14.5, 14.95, "FC2");
+tl.to("#bdC1, #bdC2", { opacity: 1, duration: 0.15 }, 14.85);
+banner(14.7, "bn6"); // OR ≡ ADD logic bridge
+hop(14.9, PLS[0], PLS[1], 0.4);
+autoWire(15.0, 15.35, "FS2");
+autoWire(15.1, 15.5, "FOR");
+up(15.5);
+ring(15.5);
+settleWires(15.5, ["FC1", "FC2", "FS2", "FOR"]); // 15.5 outputs lock
+sfx("gOr", 15.5);
+sfx("ha2", 15.5);
 
 /* =====================================================================================
-         ACT III (19.5 – 24.5)  1 + 1 + 1 = 3
+         ACT III (17 – 21.5)  1 + 1 + 1 = 3 — THE EUREKA CLIMAX
          ===================================================================================== */
 [
-  ["FA", 19.1, 0.1],
-  ["FB", 19.1, 0.1],
-  ["FCIN", 19.1, 0.35],
-  ["FS1", 19.2, 0.12],
-  ["FC1", 19.2, 0.4],
-  ["FC2", 19.3, 0.2],
-  ["FS2", 19.3, 0.2],
-  ["FOR", 19.45, 0.05],
+  ["FA", 15.7, 0.2],
+  ["FB", 15.7, 0.2],
+  ["FCIN", 15.7, 0.45],
+  ["FS1", 15.85, 0.2],
+  ["FC1", 15.85, 0.5],
+  ["FC2", 16.0, 0.3],
+  ["FS2", 16.0, 0.3],
+  ["FOR", 16.3, 0.1],
 ].forEach(([id, t, d]) => pulse(id, t, d));
 const PAt = w2p(100, 470),
   PBt = w2p(100, 570),
   PCt = w2p(100, 960);
-hop(19.3, PAt[0], PAt[1], 0.6);
-click(20.0);
-flip("tgA", 20.0, 1); // 20.0 A = 1
-rowOff("faR0", 20.0);
-rowOn("faR4", 20.02, 1, 0, 0.1);
-lit("FA", 20.02, 0.12);
-hop(20.1, PBt[0], PBt[1], 0.55);
-click(20.8);
-flip("tgB", 20.8, 1); // 20.8 B = 1
-rowOff("faR4", 20.8);
-rowOn("faR6", 20.82, 0, 1, 0.1);
-lit("FB", 20.82, 0.12);
-hop(20.9, PCt[0], PCt[1], 0.55);
-click(21.6);
-flip("tgC", 21.6, 1); // 21.6 C_in = 1
-rowOff("faR6", 21.6);
-rowOn("faR7", 21.62, 1, 1, 1.2);
-lit("FCIN", 21.62, 0.48);
-// 22.0–23.1 pulses ripple through both stages
-partOn("ha1", 22.0, 0.8);
-lit("FC1", 22.05, 0.5); // HA1: S1 = 0, C1 = 1
-partOn("gOr", 22.6);
-lit("FOR", 22.6, 0.08);
-ledOn("ledC", 22.7);
-sfx("gOr", 22.6); // 22.6 relay thump: C_out = 1 (red)
-partOn("ha2", 22.8, 0.8);
-lit("FS2", 22.8, 0.3);
-ledOn("ledS", 23.12);
-sfx("ha2", 22.8); // 22.8 chime: S = 1 (blue)
-banner(23.0, "bn5");
-const PLEDS = w2p(1020, 470);
-hop(21.8, PLEDS[0], PLEDS[1], 1.2);
-// 24.5 active row [1 1 1 | 1 1] pulses
+hop(16.2, PAt[0], PAt[1], 0.7);
+click(17.0);
+flip("tgA", 17.0, 1); // 17.0 A = 1
+rowOff("faR0", 17.0);
+rowOn("faR4", 17.02, 1, 0, 0.1);
+lit("FA", 17.02, 0.3);
+hop(17.1, PBt[0], PBt[1], 0.45);
+click(17.6);
+flip("tgB", 17.6, 1); // 17.6 B = 1
+rowOff("faR4", 17.6);
+rowOn("faR6", 17.62, 0, 1, 0.1);
+lit("FB", 17.62, 0.3);
+hop(17.7, PCt[0], PCt[1], 0.45);
+click(18.2);
+flip("tgC", 18.2, 1); // 18.2 C_in = 1
+rowOff("faR6", 18.2);
+rowOn("faR7", 18.22, 1, 1, 1.1);
+lit("FCIN", 18.22, 0.48);
+// converge: all three packets have arrived → HA1 fires, its carry packet streams toward the OR gate
+fire("ha1", 18.7, 0.8);
+lit("FC1", 18.72, 0.48); // HA1: S1 = 0, C1 = 1
+fire("gOr", 19.2);
+lit("FOR", 19.2, 0.1); // 19.2 relay thump: OR → C_out = 1
+explode("ledC", 19.3);
+fire("ha2", 19.4, 0.8);
+lit("FS2", 19.4, 0.25); // 19.4 chime: HA2 → S = 1
+explode("ledS", 19.65);
+tl.fromTo(
+  "#plate",
+  { boxShadow: "inset 0 0 0px rgba(0,136,255,0)" },
+  {
+    boxShadow: "inset 0 0 90px rgba(0,136,255,0.4)",
+    duration: 0.15,
+    yoyo: true,
+    repeat: 1,
+    ease: "power2.out",
+    immediateRender: false,
+  },
+  19.2,
+);
 tl.to(
   "#faR7 .bg",
-  { borderColor: "#0088FF", boxShadow: "0 0 18px rgba(0,136,255,0.85)", duration: 0.2 },
-  24.5,
+  { borderColor: "#0088FF", boxShadow: "0 0 22px rgba(0,136,255,1)", duration: 0.2 },
+  19.4,
 );
 tl.fromTo(
   "#faR7",
   { scaleY: 1 },
   {
-    scaleY: 1.1,
+    scaleY: 1.12,
     duration: 0.12,
     yoyo: true,
     repeat: 1,
     ease: "power2.out",
     immediateRender: false,
   },
-  24.5,
+  19.4,
 );
-tl.fromTo(
-  "#faR7 .ck",
-  { opacity: 0, scale: 0.3 },
-  { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)", immediateRender: false },
-  24.52,
-);
+banner(19.7, "bn5");
+hop(18.8, w2p(1020, 470)[0] - 60, w2p(1020, 470)[1] + 90, 1.2);
 
 /* =====================================================================================
-         ACT IV (24.5 – 27.0)  CTA — strictly inside y 1580–1630; final hold
+         ACT IV (21.5 – 25.0)  GAMIFIED CHALLENGE CARD — strictly inside y 1460–1640
          ===================================================================================== */
+click(21.5); // 21.5 card reveals
 tl.fromTo(
   "#cta",
-  { opacity: 0, y: 14 },
-  { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false },
-  24.8,
+  { opacity: 0, y: 24 },
+  { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false },
+  21.5,
 );
-hop(25.0, 820, 1605, 0.6);
-down(25.8);
-tl.to("#cta", { scale: 0.975, duration: 0.06, ease: "power2.out" }, 25.8);
-tl.to("#cta", { scale: 1, duration: 0.2, ease: "back.out(3)" }, 25.86);
-up(25.9);
-tl.to(
-  "#cta",
-  {
-    boxShadow: "0 0 30px 3px rgba(0,136,255,0.7)",
-    borderColor: "rgba(0,136,255,1)",
-    duration: 0.3,
-    ease: "sine.inOut",
-  },
-  25.8,
-);
-tl.to(
-  "#cta",
-  {
-    boxShadow: "0 0 8px 0px rgba(0,136,255,0.1)",
-    borderColor: "rgba(0,136,255,0.5)",
-    duration: 0.3,
-    ease: "sine.inOut",
-  },
-  26.1,
+[22.5, 22.9].forEach((t) =>
+  tl.fromTo(
+    "#ctaRing",
+    { scaleX: 1, scaleY: 1, opacity: 0.9 },
+    {
+      scaleX: 1.07,
+      scaleY: 1.45,
+      opacity: 0,
+      duration: 0.55,
+      ease: "power2.out",
+      immediateRender: false,
+    },
+    t,
+  ),
 );
 tl.to(
-  "#cta",
-  {
-    boxShadow: "0 0 30px 3px rgba(0,136,255,0.7)",
-    borderColor: "rgba(0,136,255,1)",
-    duration: 0.3,
-    ease: "sine.inOut",
-  },
-  26.4,
+  "#ctaBtn",
+  { boxShadow: "0 0 34px rgba(0,136,255,0.8)", duration: 0.25, ease: "sine.inOut" },
+  22.5,
 );
 tl.to(
-  "#cta",
-  {
-    boxShadow: "0 0 8px 0px rgba(0,136,255,0.1)",
-    borderColor: "rgba(0,136,255,0.5)",
-    duration: 0.25,
-    ease: "sine.inOut",
-  },
-  26.7,
+  "#ctaBtn",
+  { boxShadow: "0 0 10px rgba(0,136,255,0.25)", duration: 0.25, ease: "sine.inOut" },
+  22.8,
 );
+tl.to(
+  "#ctaBtn",
+  { boxShadow: "0 0 34px rgba(0,136,255,0.8)", duration: 0.25, ease: "sine.inOut" },
+  22.9,
+);
+tl.to(
+  "#ctaBtn",
+  { boxShadow: "0 0 10px rgba(0,136,255,0.25)", duration: 0.2, ease: "sine.inOut" },
+  23.15,
+);
+hop(21.9, 850, 1588, 1.1); // cursor glides onto the button
+down(23.2); // 23.2 heavy switch snap
+tl.to("#ctaBtn", { scale: 0.94, duration: 0.06, ease: "power2.out" }, 23.2);
+tl.to("#ctaBtn", { scale: 1, duration: 0.3, ease: "back.out(3)" }, 23.27);
+tl.to(
+  "#ctaBtn",
+  {
+    backgroundColor: "rgba(255,255,255,0.95)",
+    boxShadow: "0 0 50px rgba(255,255,255,0.9)",
+    duration: 0.05,
+  },
+  23.2,
+);
+tl.to(
+  "#ctaBtn",
+  {
+    backgroundColor: "rgba(0,136,255,0.32)",
+    boxShadow: "0 0 26px rgba(0,136,255,0.8)",
+    duration: 0.35,
+    ease: "power2.out",
+  },
+  23.27,
+);
+tl.to("#ctaA", { opacity: 0, duration: 0.08 }, 23.22);
+tl.to("#ctaB", { opacity: 1, duration: 0.15 }, 23.25);
+up(23.3);
+click(24.5); // 24.5 anchor
+
+// wires that are still HIGH keep their spark layer marching until the end
+Object.keys(FLOW).forEach((id) => {
+  if (FLOW[id] != null) flow(id, FLOW[id], 25);
+});
 
 // single source of truth for sound: CUES drive the live preview voices (the baked WAV uses the same list)
 CUES.forEach(([t, k]) =>
@@ -788,7 +881,7 @@ CUES.forEach(([t, k]) =>
   ),
 );
 
-tl.to({}, { duration: 0.01 }, 26.99); // anchor the end of the 27.0 s timeline
+tl.to({}, { duration: 0.01 }, 24.99); // anchor the end of the 25.0 s timeline
 window.__timelines["main"] = tl;
 window.__timeline = tl;
 tl.seek(0);

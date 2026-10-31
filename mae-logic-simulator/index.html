@@ -44,7 +44,7 @@
       #urlbar { left: 260px; top: 214px; width: 560px; height: 44px; border-radius: 22px; background: #12121c; border: 1px solid rgba(255,255,255,.12); box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 400; font-size: 22px; line-height: 44px; color: rgba(255,255,255,.6); white-space: nowrap; }
 
       /* ---- Zone 2 : workspace ---- */
-      #plate { left: 90px; top: 330px; width: 900px; height: 750px; border-radius: 28px; background: var(--plate); border: 2px solid rgba(255,255,255,.08); z-index: -20; }
+      #plate { left: 90px; top: 330px; width: 900px; height: 750px; border-radius: 28px; background: var(--plate); border: 2px solid rgba(255,255,255,.08); z-index: -20;  box-shadow: inset 0 0 0 rgba(0,136,255,0); }
       #wm { left: 90px; top: 655px; width: 900px; height: 100px; text-align: center; font-size: 88px; line-height: 100px; color: #fff; opacity: .06; z-index: -10; white-space: nowrap; }
       #dock { left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
       .tile { position: absolute; width: 164px; height: 74px; border-radius: 16px; background: rgba(30,30,46,.6); border: 1.5px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 4px; padding-left: 6px; }
@@ -61,15 +61,19 @@
       .wire .b { stroke: var(--wire-off); }
       .wire .g { opacity: 1; }
       .wire .lg { stroke-width: 13; opacity: .3; }
-      .wire .p { stroke: #fff; stroke-width: 3.5; stroke-dasharray: .1 3; stroke-dashoffset: .1; opacity: 0; }
+      .wire .pg { stroke-width: 12; opacity: 0; }
+      .wire .p { stroke: #fff; stroke-width: 4; opacity: 0; }
+      .wire .f { stroke: #fff; stroke-width: 2.5; opacity: 0; }
       .sf { opacity: 0; }
 
       /* ---- Zone 3 : banner (y 1210-1370) ---- */
-      #banner { left: 180px; top: 1105px; width: 720px; height: 105px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.4); box-shadow: 0 0 26px rgba(255,0,68,0.12), inset 0 0 22px rgba(255,0,68,0.06); overflow: hidden; }
+      #banner { left: 180px; top: 1102px; width: 720px; height: 122px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.4); box-shadow: 0 0 26px rgba(255,0,68,0.12), inset 0 0 22px rgba(255,0,68,0.06); overflow: hidden; }
       .pg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; opacity: 0; padding: 0 16px; white-space: nowrap; }
       .pg.col { flex-direction: column; gap: 4px; }
       .pg .l { display: flex; align-items: center; }
       .pg .t { font-size: 28px; line-height: 36px; color: #fff; }
+      .pg.big .m { font-size: 56px; line-height: 58px; color: #fff; -webkit-text-stroke: 1.5px #0088ff; text-shadow: 0 0 18px rgba(0,136,255,.7); }
+      .pg.big .ck { width: 38px; height: 38px; flex: 0 0 38px; }
       .pg .t24 { font-size: 24px; line-height: 30px; }
       .pg .m { font-size: 30px; line-height: 36px; color: #fff; }
       .pg .q { display: inline-block; width: 16px; }
@@ -79,26 +83,36 @@
       .pg .ck { margin-left: 12px; flex: 0 0 26px; }
 
       /* ---- Zone 4 : truth-table card + CTA ---- */
-      #card { left: 150px; top: 1250px; width: 780px; height: 320px; border-radius: 28px; overflow: hidden;
+      #card { left: 150px; top: 1232px; width: 780px; height: 208px; border-radius: 26px; overflow: hidden;
         background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)), rgba(30,30,46,.5); border: 1px solid rgba(255,255,255,.1); }
       .tt { position: absolute; inset: 0; }
-      .grp { position: absolute; left: 73px; top: 6px; }
-      .grp.ha { left: 118px; }
+      .grp { position: absolute; top: 8px; }
+      .grp.ha { left: 158px; }
       .th, .tr { display: flex; align-items: center; height: 33px; position: relative; }
       .th { height: 36px; }
-      .ha .tr { height: 66px; }
-      .c { display: block; flex: 0 0 110px; text-align: center; font-size: 30px; line-height: 33px; color: var(--dim); position: relative; z-index: 1; font-weight: 700; }
-      .ha .c { line-height: 66px; }
+      .tr { opacity: .25; }
+      .ha .tr { height: 40px; }
+      .c { display: block; flex: 0 0 54px; text-align: center; font-size: 30px; line-height: 33px; color: var(--dim); position: relative; z-index: 1; font-weight: 700; }
+      .ha .c { line-height: 40px; }
       .th .c { color: #fff; line-height: 36px; }
       .th .v { font-size: 30px; }
-      .ts { display: block; flex: 0 0 24px; height: 24px; position: relative; z-index: 1; }
-      .ts::before { content: ""; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
-      .tr .bg { position: absolute; left: -8px; right: -8px; top: 1px; bottom: 1px; border-radius: 10px; background: rgba(0,136,255,.2); border: 2px solid rgba(0,136,255,.75); opacity: 0; box-shadow: 0 0 0 rgba(0,136,255,0); }
-      .tr .ck { position: absolute; right: -40px; top: 4px; opacity: 0; }
-      #cta { left: 130px; top: 1580px; width: 820px; height: 50px; border-radius: 20px; background: linear-gradient(rgba(0,136,255,.14), rgba(0,136,255,.14)), #0b0e19; border: 2px solid rgba(0,136,255,.5); box-shadow: 0 0 8px 0 rgba(0,136,255,.1); opacity: 0; }
-      #cta .ct { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; white-space: nowrap; }
-      #cta .c1 { font-size: 24px; line-height: 26px; color: var(--electric-blue); }
-      #cta .c2 { font-size: 18px; line-height: 20px; color: rgba(255,255,255,.85); letter-spacing: .06em; }
+      .ts { display: block; flex: 0 0 16px; height: 24px; position: relative; z-index: 1; }
+      .ha .ts { flex-basis: 24px; }
+      .ts::before { content: ""; position: absolute; left: calc(50% - 1px); top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
+      .tr .bg { position: absolute; left: -6px; right: -6px; top: 1px; bottom: 1px; border-radius: 10px; background: rgba(0,136,255,.2); border: 2px solid rgba(0,136,255,.75); opacity: 0; box-shadow: 0 0 0 rgba(0,136,255,0); }
+      .tr .ck { position: absolute; top: 5px; width: 22px; height: 22px; opacity: 0; z-index: 2; filter: drop-shadow(0 0 5px #0088ff); }
+      .fa .ck { right: 4px; }
+      .ha .ck { right: -34px; top: 9px; }
+
+      /* ---- gamified challenge card (y 1460-1640) ---- */
+      #cta { left: 150px; top: 1460px; width: 780px; height: 180px; border-radius: 26px; background: rgba(176,38,255,.08); border: 2px solid rgba(176,38,255,.5); opacity: 0; }
+      #ctaHead { position: absolute; left: 0; right: 0; top: 12px; height: 44px; display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 32px; line-height: 44px; color: var(--neon-purple); white-space: nowrap; }
+      #ctaBtn { position: absolute; left: 48px; top: 78px; width: 680px; height: 75px; border-radius: 22px; background: rgba(0,136,255,.18); border: 2px solid #0088ff; box-sizing: border-box; box-shadow: 0 0 10px rgba(0,136,255,.25); }
+      #ctaRing { position: absolute; inset: -2px; border-radius: 22px; border: 3px solid #0088ff; opacity: 0; }
+      #ctaBtn .b1 { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; white-space: nowrap; }
+      #ctaBtn .big { font-size: 38px; line-height: 40px; color: var(--electric-blue); text-shadow: 0 0 18px rgba(0,136,255,.8); }
+      #ctaBtn .sub { font-size: 24px; line-height: 26px; color: rgba(255,255,255,.7); }
+      #ctaB .big { color: #fff; }
 
       /* ---- cursor ---- */
       #ring { left: 0; top: 0; width: 0; height: 0; z-index: 59; }
@@ -108,7 +122,7 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="27" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="25" data-width="1080" data-height="1920">
       <div id="scene">
         <div id="bgGrid"></div>
         <div id="glowA"></div>
@@ -137,13 +151,13 @@
           <g clip-path="url(#plateClip)" data-layout-allow-overflow><g id="worldFade"><g id="world">
 <rect x="-400" y="-300" width="2000" height="2200" fill="url(#dots)"/>
 <g id="circ">
-<g id="half"><g id="w_A1" class="wire"><path class="b" d="M280 520 H400 V540" pathLength="1"/><path class="g" d="M280 520 H400 V540" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M280 520 H400 V540" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M280 520 H400 V540" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M280 520 H400 V540" pathLength="1"/></g><g id="w_A2" class="wire"><path class="b" d="M400 540 H460" pathLength="1"/><path class="g" d="M400 540 H460" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M400 540 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M400 540 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M400 540 H460" pathLength="1"/></g><g id="w_A3" class="wire"><path class="b" d="M400 540 V740 H460" pathLength="1"/><path class="g" d="M400 540 V740 H460" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M400 540 V740 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M400 540 V740 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M400 540 V740 H460" pathLength="1"/></g><g id="w_B1" class="wire"><path class="b" d="M280 800 H340 V780" pathLength="1"/><path class="g" d="M280 800 H340 V780" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M280 800 H340 V780" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M280 800 H340 V780" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M280 800 H340 V780" pathLength="1"/></g><g id="w_B2" class="wire"><path class="b" d="M340 780 H460" pathLength="1"/><path class="g" d="M340 780 H460" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M340 780 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M340 780 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M340 780 H460" pathLength="1"/></g><g id="w_B3" class="wire"><path class="b" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1"/><path class="g" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1"/></g><g id="w_S0" class="wire"><path class="b" d="M620 560 H810" pathLength="1"/><path class="g" d="M620 560 H810" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M620 560 H810" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M620 560 H810" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M620 560 H810" pathLength="1"/></g><g id="w_C0" class="wire"><path class="b" d="M620 760 H810" pathLength="1"/><path class="g" d="M620 760 H810" pathLength="1" style="stroke:#FF0044"/><g class="l"><path class="lg" d="M620 760 H810" pathLength="1" style="stroke:#FF0044"/><path class="lc" d="M620 760 H810" pathLength="1" style="stroke:#FF0044"/></g><path class="p" d="M620 760 H810" pathLength="1"/></g><circle id="j_A" cx="400" cy="540" r="7" fill="#fff" opacity="0"/><circle id="j_B" cx="340" cy="780" r="7" fill="#fff" opacity="0"/><g transform="translate(540 560)"><rect id="sf_gXor" class="sf" x="-95.0" y="-50.0" width="190" height="100" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="gXor" class="mv" opacity="0"><path d="M -80 -20 H -38 M -80 20 H -38 M 50 0 H 80" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/><path class="body" d="M -42 -40 H -20 C 20 -40 45 -20 50 0 C 45 20 20 40 -20 40 H -42 C -22 20 -22 -20 -42 -40 Z" fill="rgba(176,38,255,.14)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/><path d="M -50 -40 C -30 -20 -30 20 -50 40" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/><g class="on" opacity="0" filter="url(#glowM)"><path d="M -42 -40 H -20 C 20 -40 45 -20 50 0 C 45 20 20 40 -20 40 H -42 C -22 20 -22 -20 -42 -40 Z" fill="rgba(176,38,255,.55)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/><path d="M -50 -40 C -30 -20 -30 20 -50 40" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/></g><text class="fm" x="2" y="7.9" text-anchor="middle" font-size="22" fill="#fff">XOR</text><circle cx="-80" cy="-20" r="5" fill="#fff"/><circle cx="-80" cy="20" r="5" fill="#fff"/><circle cx="80" cy="0" r="5" fill="#fff"/></g></g><g transform="translate(540 760)"><rect id="sf_gAnd" class="sf" x="-95.0" y="-50.0" width="190" height="100" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="gAnd" class="mv" opacity="0"><path d="M -80 -20 H -50 M -80 20 H -50 M 50 0 H 80" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/><path class="body" d="M -50 -40 H 10 A 40 40 0 0 1 10 40 H -50 Z" fill="rgba(176,38,255,.14)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/><g class="on" opacity="0" filter="url(#glowM)"><path d="M -50 -40 H 10 A 40 40 0 0 1 10 40 H -50 Z" fill="rgba(176,38,255,.55)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/></g><text class="fm" x="-8" y="7.9" text-anchor="middle" font-size="22" fill="#fff">AND</text><circle cx="-80" cy="-20" r="5" fill="#fff"/><circle cx="-80" cy="20" r="5" fill="#fff"/><circle cx="80" cy="0" r="5" fill="#fff"/></g></g></g>
+<g id="half"><g id="w_A1" class="wire"><path class="b" d="M280 520 H400 V540" pathLength="1"/><path class="g" d="M280 520 H400 V540" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M280 520 H400 V540" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M280 520 H400 V540" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M280 520 H400 V540" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M280 520 H400 V540" style="stroke:#0088FF;stroke-dasharray:24 200;stroke-dashoffset:24"/><path class="p" d="M280 520 H400 V540" style="stroke-dasharray:24 200;stroke-dashoffset:24"/></g><g id="w_A2" class="wire"><path class="b" d="M400 540 H460" pathLength="1"/><path class="g" d="M400 540 H460" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M400 540 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M400 540 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M400 540 H460" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M400 540 H460" style="stroke:#0088FF;stroke-dasharray:24 120;stroke-dashoffset:24"/><path class="p" d="M400 540 H460" style="stroke-dasharray:24 120;stroke-dashoffset:24"/></g><g id="w_A3" class="wire"><path class="b" d="M400 540 V740 H460" pathLength="1"/><path class="g" d="M400 540 V740 H460" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M400 540 V740 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M400 540 V740 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M400 540 V740 H460" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M400 540 V740 H460" style="stroke:#0088FF;stroke-dasharray:24 320;stroke-dashoffset:24"/><path class="p" d="M400 540 V740 H460" style="stroke-dasharray:24 320;stroke-dashoffset:24"/></g><g id="w_B1" class="wire"><path class="b" d="M280 800 H340 V780" pathLength="1"/><path class="g" d="M280 800 H340 V780" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M280 800 H340 V780" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M280 800 H340 V780" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M280 800 H340 V780" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M280 800 H340 V780" style="stroke:#0088FF;stroke-dasharray:24 140;stroke-dashoffset:24"/><path class="p" d="M280 800 H340 V780" style="stroke-dasharray:24 140;stroke-dashoffset:24"/></g><g id="w_B2" class="wire"><path class="b" d="M340 780 H460" pathLength="1"/><path class="g" d="M340 780 H460" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M340 780 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M340 780 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M340 780 H460" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M340 780 H460" style="stroke:#0088FF;stroke-dasharray:24 180;stroke-dashoffset:24"/><path class="p" d="M340 780 H460" style="stroke-dasharray:24 180;stroke-dashoffset:24"/></g><g id="w_B3" class="wire"><path class="b" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1"/><path class="g" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" style="stroke:#0088FF;stroke-dasharray:24 380;stroke-dashoffset:24"/><path class="p" d="M340 780 V580 H388 A12 12 0 0 1 412 580 H460" style="stroke-dasharray:24 380;stroke-dashoffset:24"/></g><g id="w_S0" class="wire"><path class="b" d="M620 560 H810" pathLength="1"/><path class="g" d="M620 560 H810" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M620 560 H810" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M620 560 H810" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M620 560 H810" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M620 560 H810" style="stroke:#0088FF;stroke-dasharray:24 250;stroke-dashoffset:24"/><path class="p" d="M620 560 H810" style="stroke-dasharray:24 250;stroke-dashoffset:24"/></g><g id="w_C0" class="wire"><path class="b" d="M620 760 H810" pathLength="1"/><path class="g" d="M620 760 H810" pathLength="1" style="stroke:#FF0044"/><g class="l"><path class="lg" d="M620 760 H810" pathLength="1" style="stroke:#FF0044"/><path class="lc" d="M620 760 H810" pathLength="1" style="stroke:#FF0044"/></g><path class="f" d="M620 760 H810" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M620 760 H810" style="stroke:#FF0044;stroke-dasharray:24 250;stroke-dashoffset:24"/><path class="p" d="M620 760 H810" style="stroke-dasharray:24 250;stroke-dashoffset:24"/></g><circle id="j_A" cx="400" cy="540" r="7" fill="#fff" opacity="0"/><circle id="j_B" cx="340" cy="780" r="7" fill="#fff" opacity="0"/><g transform="translate(540 560)"><rect id="sf_gXor" class="sf" x="-95.0" y="-50.0" width="190" height="100" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="gXor" class="mv" opacity="0"><path d="M -80 -20 H -38 M -80 20 H -38 M 50 0 H 80" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/><path class="body" d="M -42 -40 H -20 C 20 -40 45 -20 50 0 C 45 20 20 40 -20 40 H -42 C -22 20 -22 -20 -42 -40 Z" fill="rgba(176,38,255,.14)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/><path d="M -50 -40 C -30 -20 -30 20 -50 40" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/><g class="on" opacity="0" filter="url(#glowM)"><path d="M -42 -40 H -20 C 20 -40 45 -20 50 0 C 45 20 20 40 -20 40 H -42 C -22 20 -22 -20 -42 -40 Z" fill="rgba(176,38,255,.55)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/><path d="M -50 -40 C -30 -20 -30 20 -50 40" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/></g><text class="fm" x="2" y="7.9" text-anchor="middle" font-size="22" fill="#fff">XOR</text><circle cx="-80" cy="-20" r="5" fill="#fff"/><circle cx="-80" cy="20" r="5" fill="#fff"/><circle cx="80" cy="0" r="5" fill="#fff"/></g></g><g transform="translate(540 760)"><rect id="sf_gAnd" class="sf" x="-95.0" y="-50.0" width="190" height="100" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="gAnd" class="mv" opacity="0"><path d="M -80 -20 H -50 M -80 20 H -50 M 50 0 H 80" fill="none" stroke="#B026FF" stroke-width="4" stroke-linecap="round"/><path class="body" d="M -50 -40 H 10 A 40 40 0 0 1 10 40 H -50 Z" fill="rgba(176,38,255,.14)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/><g class="on" opacity="0" filter="url(#glowM)"><path d="M -50 -40 H 10 A 40 40 0 0 1 10 40 H -50 Z" fill="rgba(176,38,255,.55)" stroke="#B026FF" stroke-width="4" stroke-linejoin="round"/></g><text class="fm" x="-8" y="7.9" text-anchor="middle" font-size="22" fill="#fff">AND</text><circle cx="-80" cy="-20" r="5" fill="#fff"/><circle cx="-80" cy="20" r="5" fill="#fff"/><circle cx="80" cy="0" r="5" fill="#fff"/></g></g></g>
 <g transform="translate(220 520)"><rect id="sf_tgA" class="sf" x="-70.0" y="-40.0" width="140" height="80" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="tgA" class="mv" opacity="0"><g class="lab"><text class="fv" x="-82" y="14" text-anchor="middle" font-size="44" fill="#fff">A</text></g><path class="stubOff" d="M 42 0 H 60" stroke="#2A2A3C" stroke-width="5" fill="none"/><path class="stubOn" d="M 42 0 H 60" stroke="#0088FF" stroke-width="5" fill="none" opacity="0"/><rect x="-42" y="-22" width="84" height="44" rx="22" fill="#161624" stroke="#2A2A3C" stroke-width="3"/><rect class="trkOn" x="-42" y="-22" width="84" height="44" rx="22" fill="#0088FF" fill-opacity=".22" stroke="#0088FF" stroke-width="3" opacity="0" filter="url(#glowS)"/><g class="kn"><circle cx="-20" cy="0" r="17" fill="#232336" stroke="#6C6C88" stroke-width="2"/><circle class="knOn" cx="-20" cy="0" r="17" fill="#0088FF" opacity="0"/><text class="fm d0" x="-20" y="8" text-anchor="middle" font-size="22" fill="#8A8AA8">0</text><text class="fm d1" x="-20" y="8" text-anchor="middle" font-size="22" fill="#fff" opacity="0">1</text></g><circle cx="60" cy="0" r="5" fill="#fff"/></g></g>
 <g transform="translate(220 800)"><rect id="sf_tgB" class="sf" x="-70.0" y="-40.0" width="140" height="80" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="tgB" class="mv" opacity="0"><g class="lab"><text class="fv" x="-82" y="14" text-anchor="middle" font-size="44" fill="#fff">B</text></g><path class="stubOff" d="M 42 0 H 60" stroke="#2A2A3C" stroke-width="5" fill="none"/><path class="stubOn" d="M 42 0 H 60" stroke="#0088FF" stroke-width="5" fill="none" opacity="0"/><rect x="-42" y="-22" width="84" height="44" rx="22" fill="#161624" stroke="#2A2A3C" stroke-width="3"/><rect class="trkOn" x="-42" y="-22" width="84" height="44" rx="22" fill="#0088FF" fill-opacity=".22" stroke="#0088FF" stroke-width="3" opacity="0" filter="url(#glowS)"/><g class="kn"><circle cx="-20" cy="0" r="17" fill="#232336" stroke="#6C6C88" stroke-width="2"/><circle class="knOn" cx="-20" cy="0" r="17" fill="#0088FF" opacity="0"/><text class="fm d0" x="-20" y="8" text-anchor="middle" font-size="22" fill="#8A8AA8">0</text><text class="fm d1" x="-20" y="8" text-anchor="middle" font-size="22" fill="#fff" opacity="0">1</text></g><circle cx="60" cy="0" r="5" fill="#fff"/></g></g>
-<g transform="translate(840 560)"><rect id="sf_ledS" class="sf" x="-65.0" y="-65.0" width="130" height="130" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="ledS" class="mv" opacity="0"><circle class="ring" r="30" fill="none" stroke="#0088FF" stroke-width="4" opacity="0"/><circle r="30" fill="#14141F" stroke="#2A2A3C" stroke-width="4"/><g class="on" opacity="0" filter="url(#glowM)"><circle r="30" fill="#0088FF" fill-opacity=".38" stroke="#0088FF" stroke-width="4"/><circle r="13" fill="#fff"/></g><circle cx="-30" cy="0" r="5" fill="#fff"/><text class="fv" x="0" y="-46" text-anchor="middle" font-size="44" fill="#fff">S</text><text class="fm" x="0" y="72" text-anchor="middle" font-size="26" fill="#fff">SUM</text></g></g>
-<g transform="translate(840 760)"><rect id="sf_ledC" class="sf" x="-65.0" y="-65.0" width="130" height="130" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="ledC" class="mv" opacity="0"><circle class="ring" r="30" fill="none" stroke="#FF0044" stroke-width="4" opacity="0"/><circle r="30" fill="#14141F" stroke="#2A2A3C" stroke-width="4"/><g class="on" opacity="0" filter="url(#glowM)"><circle r="30" fill="#FF0044" fill-opacity=".38" stroke="#FF0044" stroke-width="4"/><circle r="13" fill="#fff"/></g><circle cx="-30" cy="0" r="5" fill="#fff"/><g class="lblI"><text class="fv" x="0" y="-46" text-anchor="middle" font-size="44" fill="#fff">C</text></g><g class="lblIII" opacity="0"><text class="fv" x="0" y="-46" text-anchor="middle" font-size="44" fill="#fff">C<tspan class="fv" font-size="26" dy="9">out</tspan></text></g><text class="fm" x="0" y="72" text-anchor="middle" font-size="26" fill="#fff">CARRY</text></g></g>
+<g transform="translate(840 560)"><rect id="sf_ledS" class="sf" x="-65.0" y="-65.0" width="130" height="130" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="ledS" class="mv" opacity="0"><circle class="bloom" r="30" fill="#0088FF" opacity="0"/><circle class="ring" r="30" fill="none" stroke="#0088FF" stroke-width="4" opacity="0"/><circle r="30" fill="#14141F" stroke="#2A2A3C" stroke-width="4"/><g class="on" opacity="0" filter="url(#glowM)"><circle r="30" fill="#0088FF" fill-opacity=".38" stroke="#0088FF" stroke-width="4"/><circle r="13" fill="#fff"/></g><circle cx="-30" cy="0" r="5" fill="#fff"/><text class="fv" x="0" y="-46" text-anchor="middle" font-size="44" fill="#fff">S</text><text class="fm" x="0" y="72" text-anchor="middle" font-size="26" fill="#fff">SUM</text></g></g>
+<g transform="translate(840 760)"><rect id="sf_ledC" class="sf" x="-65.0" y="-65.0" width="130" height="130" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="ledC" class="mv" opacity="0"><circle class="bloom" r="30" fill="#FF0044" opacity="0"/><circle class="ring" r="30" fill="none" stroke="#FF0044" stroke-width="4" opacity="0"/><circle r="30" fill="#14141F" stroke="#2A2A3C" stroke-width="4"/><g class="on" opacity="0" filter="url(#glowM)"><circle r="30" fill="#FF0044" fill-opacity=".38" stroke="#FF0044" stroke-width="4"/><circle r="13" fill="#fff"/></g><circle cx="-30" cy="0" r="5" fill="#fff"/><g class="lblI"><text class="fv" x="0" y="-46" text-anchor="middle" font-size="44" fill="#fff">C</text></g><g class="lblIII" opacity="0"><text class="fv" x="0" y="-46" text-anchor="middle" font-size="44" fill="#fff">C<tspan class="fv" font-size="26" dy="9">out</tspan></text></g><text class="fm" x="0" y="72" text-anchor="middle" font-size="26" fill="#fff">CARRY</text></g></g>
 <rect id="mq0" x="110" y="440" width="790" height="440" rx="10" fill="rgba(0,136,255,.10)" stroke="#0088FF" stroke-width="2.5" stroke-dasharray="10 8" opacity="0"/>
-<g id="full"><g id="w_FA" class="wire"><path class="b" d="M160 470 H250" pathLength="1"/><path class="g" d="M160 470 H250" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M160 470 H250" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M160 470 H250" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M160 470 H250" pathLength="1"/></g><g id="w_FB" class="wire"><path class="b" d="M160 570 H250" pathLength="1"/><path class="g" d="M160 570 H250" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M160 570 H250" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M160 570 H250" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M160 570 H250" pathLength="1"/></g><g id="w_FS1" class="wire"><path class="b" d="M430 470 H550" pathLength="1"/><path class="g" d="M430 470 H550" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M430 470 H550" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M430 470 H550" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M430 470 H550" pathLength="1"/></g><g id="w_FCIN" class="wire"><path class="b" d="M160 960 H490 V570 H550" pathLength="1"/><path class="g" d="M160 960 H490 V570 H550" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M160 960 H490 V570 H550" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M160 960 H490 V570 H550" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M160 960 H490 V570 H550" pathLength="1"/></g><g id="w_FS2" class="wire"><path class="b" d="M730 470 H990" pathLength="1"/><path class="g" d="M730 470 H990" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M730 470 H990" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M730 470 H990" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M730 470 H990" pathLength="1"/></g><g id="w_FC2" class="wire"><path class="b" d="M730 570 H760 V820 H780" pathLength="1"/><path class="g" d="M730 570 H760 V820 H780" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M730 570 H760 V820 H780" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M730 570 H760 V820 H780" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M730 570 H760 V820 H780" pathLength="1"/></g><g id="w_FC1" class="wire"><path class="b" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1"/><path class="g" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1" style="stroke:#0088FF"/></g><path class="p" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1"/></g><g id="w_FOR" class="wire"><path class="b" d="M980 840 H990" pathLength="1"/><path class="g" d="M980 840 H990" pathLength="1" style="stroke:#FF0044"/><g class="l"><path class="lg" d="M980 840 H990" pathLength="1" style="stroke:#FF0044"/><path class="lc" d="M980 840 H990" pathLength="1" style="stroke:#FF0044"/></g><path class="p" d="M980 840 H990" pathLength="1"/></g></g>
+<g id="full"><g id="w_FA" class="wire"><path class="b" d="M160 470 H250" pathLength="1"/><path class="g" d="M160 470 H250" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M160 470 H250" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M160 470 H250" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M160 470 H250" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M160 470 H250" style="stroke:#0088FF;stroke-dasharray:24 150;stroke-dashoffset:24"/><path class="p" d="M160 470 H250" style="stroke-dasharray:24 150;stroke-dashoffset:24"/></g><g id="w_FB" class="wire"><path class="b" d="M160 570 H250" pathLength="1"/><path class="g" d="M160 570 H250" pathLength="1" style="stroke:#B026FF"/><g class="l"><path class="lg" d="M160 570 H250" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M160 570 H250" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M160 570 H250" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M160 570 H250" style="stroke:#0088FF;stroke-dasharray:24 150;stroke-dashoffset:24"/><path class="p" d="M160 570 H250" style="stroke-dasharray:24 150;stroke-dashoffset:24"/></g><g id="w_FS1" class="wire"><path class="b" d="M430 470 H550" pathLength="1"/><path class="g" d="M430 470 H550" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M430 470 H550" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M430 470 H550" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M430 470 H550" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M430 470 H550" style="stroke:#0088FF;stroke-dasharray:24 180;stroke-dashoffset:24"/><path class="p" d="M430 470 H550" style="stroke-dasharray:24 180;stroke-dashoffset:24"/></g><g id="w_FCIN" class="wire"><path class="b" d="M160 960 H490 V570 H550" pathLength="1"/><path class="g" d="M160 960 H490 V570 H550" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M160 960 H490 V570 H550" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M160 960 H490 V570 H550" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M160 960 H490 V570 H550" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M160 960 H490 V570 H550" style="stroke:#0088FF;stroke-dasharray:24 840;stroke-dashoffset:24"/><path class="p" d="M160 960 H490 V570 H550" style="stroke-dasharray:24 840;stroke-dashoffset:24"/></g><g id="w_FS2" class="wire"><path class="b" d="M730 470 H990" pathLength="1"/><path class="g" d="M730 470 H990" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M730 470 H990" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M730 470 H990" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M730 470 H990" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M730 470 H990" style="stroke:#0088FF;stroke-dasharray:24 320;stroke-dashoffset:24"/><path class="p" d="M730 470 H990" style="stroke-dasharray:24 320;stroke-dashoffset:24"/></g><g id="w_FC2" class="wire"><path class="b" d="M730 570 H760 V820 H780" pathLength="1"/><path class="g" d="M730 570 H760 V820 H780" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M730 570 H760 V820 H780" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M730 570 H760 V820 H780" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M730 570 H760 V820 H780" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M730 570 H760 V820 H780" style="stroke:#0088FF;stroke-dasharray:24 360;stroke-dashoffset:24"/><path class="p" d="M730 570 H760 V820 H780" style="stroke-dasharray:24 360;stroke-dashoffset:24"/></g><g id="w_FC1" class="wire"><path class="b" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1"/><path class="g" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1" style="stroke:#0088FF"/><g class="l"><path class="lg" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1" style="stroke:#0088FF"/><path class="lc" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" pathLength="1" style="stroke:#0088FF"/></g><path class="f" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" style="stroke:#0088FF;stroke-dasharray:24 700;stroke-dashoffset:24"/><path class="p" d="M430 570 H450 V860 H478 A12 12 0 0 1 502 860 H780" style="stroke-dasharray:24 700;stroke-dashoffset:24"/></g><g id="w_FOR" class="wire"><path class="b" d="M980 840 H990" pathLength="1"/><path class="g" d="M980 840 H990" pathLength="1" style="stroke:#FF0044"/><g class="l"><path class="lg" d="M980 840 H990" pathLength="1" style="stroke:#FF0044"/><path class="lc" d="M980 840 H990" pathLength="1" style="stroke:#FF0044"/></g><path class="f" d="M980 840 H990" style="stroke-dasharray:6 34;stroke-dashoffset:0"/><path class="pg" d="M980 840 H990" style="stroke:#FF0044;stroke-dasharray:24 70;stroke-dashoffset:24"/><path class="p" d="M980 840 H990" style="stroke-dasharray:24 70;stroke-dashoffset:24"/></g></g>
 <rect id="mq" x="320" y="470" width="350" height="380" rx="10" fill="rgba(0,136,255,.10)" stroke="#0088FF" stroke-width="2.5" stroke-dasharray="10 8" opacity="0"/>
 <rect id="mq2" x="320" y="470" width="350" height="380" rx="10" fill="rgba(0,136,255,.10)" stroke="#0088FF" stroke-width="2.5" stroke-dasharray="10 8" opacity="0"/>
 <g transform="translate(490 660)"><rect id="sf_ha1" class="sf" x="-110.0" y="-120.0" width="220" height="240" rx="16" fill="none" stroke="#0088FF" stroke-width="3"/><g id="ha1" class="mv" opacity="0"><rect class="body" x="-90" y="-100" width="180" height="200" rx="22" fill="#17172B" stroke="#B026FF" stroke-width="4"/><rect x="-90" y="-100" width="180" height="200" rx="22" fill="rgba(176,38,255,.14)"/><rect class="on" x="-90" y="-100" width="180" height="200" rx="22" fill="rgba(176,38,255,.5)" stroke="#B026FF" stroke-width="4" opacity="0" filter="url(#glowM)"/><text class="fm" x="0" y="-4" text-anchor="middle" font-size="30" fill="#fff">HALF</text><text class="fm" x="0" y="34" text-anchor="middle" font-size="30" fill="#fff">ADDER 1</text><text class="fv" x="-76" y="-40" font-size="28" fill="#fff">A</text><text class="fv" x="-76" y="60" font-size="28" fill="#fff">B</text><text class="fv" x="76" y="-40" font-size="28" fill="#fff" text-anchor="end">S</text><text class="fv" x="76" y="60" font-size="28" fill="#fff" text-anchor="end">C</text><circle cx="-90" cy="-50" r="5" fill="#fff"/><circle cx="-90" cy="50" r="5" fill="#fff"/><circle cx="90" cy="-50" r="5" fill="#fff"/><circle cx="90" cy="50" r="5" fill="#fff"/></g></g>
@@ -166,422 +180,917 @@
 <div class="pg col" id="bn3"><span class="t">HOW TO ADD A PREVIOUS</span><span class="t">CARRY (<span class="v">C</span><sub class="v">in</sub>)?</span></div>
 <div class="pg col" id="bn4"><span class="l"><span class="t">FULL ADDER:</span><span class="q"></span><span class="m"><span class="v">S</span> = <span class="v">A</span> ⊕ <span class="v">B</span> ⊕ <span class="v">C</span><sub class="v">in</sub></span></span><span class="l"><span class="m"><span class="v">C</span><sub class="v">out</sub> = (<span class="v">A</span> ⋅ <span class="v">B</span>) + (<span class="v">S</span><sub>1</sub> ⋅ <span class="v">C</span><sub class="v">in</sub>)</span></span></div>
 <div class="pg col" id="bn6"><span class="l"><span class="m"><span class="v">C</span><sub class="v">out</sub> = <span class="v">C</span><sub>1</sub> + <span class="v">C</span><sub>2</sub></span></span><span class="l"><span class="t t24">(<span class="v">C</span><sub>1</sub> ⋅ <span class="v">C</span><sub>2</sub> = 0 ⟹ OR is equivalent to ADD)</span></span></div>
-<div class="pg" id="bn5"><span class="m">1 + 1 + 1 = 3<sub>10</sub> = 11<sub>2</sub></span><span class="q"></span><span class="m">(<span class="v">S</span> = 1,</span><span class="m"><span class="v">C</span><sub class="v">out</sub> = 1)</span><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="pg col big" id="bn5"><span class="l"><span class="m">1 + 1 + 1 = 3<sub>10</sub> = 11<sub>2</sub></span></span><span class="l"><span class="m">(<span class="v">S</span> = 1, <span class="v">C</span><sub class="v">out</sub> = 1)</span><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
 </div>
 
         <!-- Zone 4 -->
-        <div id="card"><div id="ttHA" class="tt"><div class="grp ha"><div class="th"><b class="c " style="flex-basis:130px"><span class="v">A</span></b><b class="c " style="flex-basis:130px"><span class="v">B</span></b><b class="ts"></b><b class="c " style="flex-basis:130px"><span class="v">S</span></b><b class="c " style="flex-basis:130px"><span class="v">C</span></b></div><div class="tr" id="haR0"><i class="bg"></i><b class="c ci" style="flex-basis:130px">0</b><b class="c ci" style="flex-basis:130px">0</b><b class="ts"></b><b class="c os" style="flex-basis:130px">0</b><b class="c oc" style="flex-basis:130px">0</b></div><div class="tr" id="haR1"><i class="bg"></i><b class="c ci" style="flex-basis:130px">0</b><b class="c ci" style="flex-basis:130px">1</b><b class="ts"></b><b class="c os" style="flex-basis:130px">1</b><b class="c oc" style="flex-basis:130px">0</b></div><div class="tr" id="haR2"><i class="bg"></i><b class="c ci" style="flex-basis:130px">1</b><b class="c ci" style="flex-basis:130px">0</b><b class="ts"></b><b class="c os" style="flex-basis:130px">1</b><b class="c oc" style="flex-basis:130px">0</b></div><div class="tr" id="haR3"><i class="bg"></i><b class="c ci" style="flex-basis:130px">1</b><b class="c ci" style="flex-basis:130px">1</b><b class="ts"></b><b class="c os" style="flex-basis:130px">0</b><b class="c oc" style="flex-basis:130px">1</b></div></div></div><div id="ttFA" class="tt"><div class="grp"><div class="th"><b class="c " style="flex-basis:110px"><span class="v">A</span></b><b class="c " style="flex-basis:110px"><span class="v">B</span></b><b class="c " style="flex-basis:130px"><span class="v">C</span><sub class="v">in</sub></b><b class="ts"></b><b class="c " style="flex-basis:110px"><span class="v">S</span></b><b class="c " style="flex-basis:150px"><span class="v">C</span><sub class="v">out</sub></b></div><div class="tr" id="faR0"><i class="bg"></i><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:130px">0</b><b class="ts"></b><b class="c os" style="flex-basis:110px">0</b><b class="c oc" style="flex-basis:150px">0</b></div><div class="tr" id="faR1"><i class="bg"></i><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:130px">1</b><b class="ts"></b><b class="c os" style="flex-basis:110px">1</b><b class="c oc" style="flex-basis:150px">0</b></div><div class="tr" id="faR2"><i class="bg"></i><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:130px">0</b><b class="ts"></b><b class="c os" style="flex-basis:110px">1</b><b class="c oc" style="flex-basis:150px">0</b></div><div class="tr" id="faR3"><i class="bg"></i><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:130px">1</b><b class="ts"></b><b class="c os" style="flex-basis:110px">0</b><b class="c oc" style="flex-basis:150px">1</b></div><div class="tr" id="faR4"><i class="bg"></i><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:130px">0</b><b class="ts"></b><b class="c os" style="flex-basis:110px">1</b><b class="c oc" style="flex-basis:150px">0</b></div><div class="tr" id="faR5"><i class="bg"></i><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:130px">1</b><b class="ts"></b><b class="c os" style="flex-basis:110px">0</b><b class="c oc" style="flex-basis:150px">1</b></div><div class="tr" id="faR6"><i class="bg"></i><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:130px">0</b><b class="ts"></b><b class="c os" style="flex-basis:110px">0</b><b class="c oc" style="flex-basis:150px">1</b></div><div class="tr" id="faR7"><i class="bg"></i><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:130px">1</b><b class="ts"></b><b class="c os" style="flex-basis:110px">1</b><b class="c oc" style="flex-basis:150px">1</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div></div>
+        <div id="card"><div id="ttHA" class="tt"><div class="grp ha"><div class="th"><b class="c " style="flex-basis:110px"><span class="v">A</span></b><b class="c " style="flex-basis:110px"><span class="v">B</span></b><b class="ts"></b><b class="c " style="flex-basis:110px"><span class="v">S</span></b><b class="c " style="flex-basis:110px"><span class="v">C</span></b></div><div class="tr" id="haR0"><i class="bg"></i><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:110px">0</b><b class="ts"></b><b class="c os" style="flex-basis:110px">0</b><b class="c oc" style="flex-basis:110px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="haR1"><i class="bg"></i><b class="c ci" style="flex-basis:110px">0</b><b class="c ci" style="flex-basis:110px">1</b><b class="ts"></b><b class="c os" style="flex-basis:110px">1</b><b class="c oc" style="flex-basis:110px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="haR2"><i class="bg"></i><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:110px">0</b><b class="ts"></b><b class="c os" style="flex-basis:110px">1</b><b class="c oc" style="flex-basis:110px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="haR3"><i class="bg"></i><b class="c ci" style="flex-basis:110px">1</b><b class="c ci" style="flex-basis:110px">1</b><b class="ts"></b><b class="c os" style="flex-basis:110px">0</b><b class="c oc" style="flex-basis:110px">1</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div><div id="ttFA" class="tt"><div class="grp fa" style="left:34px"><div class="th"><b class="c " style="flex-basis:54px"><span class="v">A</span></b><b class="c " style="flex-basis:54px"><span class="v">B</span></b><b class="c " style="flex-basis:66px"><span class="v">C</span><sub class="v">in</sub></b><b class="ts"></b><b class="c " style="flex-basis:54px"><span class="v">S</span></b><b class="c " style="flex-basis:100px"><span class="v">C</span><sub class="v">out</sub></b></div><div class="tr" id="faR0"><i class="bg"></i><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:66px">0</b><b class="ts"></b><b class="c os" style="flex-basis:54px">0</b><b class="c oc" style="flex-basis:100px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="faR1"><i class="bg"></i><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:66px">1</b><b class="ts"></b><b class="c os" style="flex-basis:54px">1</b><b class="c oc" style="flex-basis:100px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="faR2"><i class="bg"></i><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:66px">0</b><b class="ts"></b><b class="c os" style="flex-basis:54px">1</b><b class="c oc" style="flex-basis:100px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="faR3"><i class="bg"></i><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:66px">1</b><b class="ts"></b><b class="c os" style="flex-basis:54px">0</b><b class="c oc" style="flex-basis:100px">1</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="grp fa" style="left:402px"><div class="th"><b class="c " style="flex-basis:54px"><span class="v">A</span></b><b class="c " style="flex-basis:54px"><span class="v">B</span></b><b class="c " style="flex-basis:66px"><span class="v">C</span><sub class="v">in</sub></b><b class="ts"></b><b class="c " style="flex-basis:54px"><span class="v">S</span></b><b class="c " style="flex-basis:100px"><span class="v">C</span><sub class="v">out</sub></b></div><div class="tr" id="faR4"><i class="bg"></i><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:66px">0</b><b class="ts"></b><b class="c os" style="flex-basis:54px">1</b><b class="c oc" style="flex-basis:100px">0</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="faR5"><i class="bg"></i><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:54px">0</b><b class="c ci" style="flex-basis:66px">1</b><b class="ts"></b><b class="c os" style="flex-basis:54px">0</b><b class="c oc" style="flex-basis:100px">1</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="faR6"><i class="bg"></i><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:66px">0</b><b class="ts"></b><b class="c os" style="flex-basis:54px">0</b><b class="c oc" style="flex-basis:100px">1</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tr" id="faR7"><i class="bg"></i><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:54px">1</b><b class="c ci" style="flex-basis:66px">1</b><b class="ts"></b><b class="c os" style="flex-basis:54px">1</b><b class="c oc" style="flex-basis:100px">1</b><svg class="ck" width="26" height="26" viewBox="0 0 26 26" overflow="visible"><polyline points="4,14 10,20 22,6" fill="none" stroke="#0088FF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div></div>
         <div id="cta">
-          <div class="ct"><span class="c1">EXPERIMENT IN THE LIVE SIMULATOR <svg width="14" height="20" viewBox="0 0 22 30" style="vertical-align:-2px" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" fill="#0088FF"/></svg></span><span class="c2">LINK IN BIO &amp; FIRST COMMENT</span></div>
+          <div id="ctaHead"><svg width="34" height="30" viewBox="0 0 34 30" overflow="visible"><path d="M17 3 V27 M17 8 C10 3 3 7 6 13 C2 16 5 22 10 21 C11 26 16 26 17 22 M17 8 C24 3 31 7 28 13 C32 16 29 22 24 21 C23 26 18 26 17 22" fill="none" stroke="#B026FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>CAN YOU BUILD A 4-BIT ADDER?</span></div>
+          <div id="ctaBtn"><i id="ctaRing"></i>
+            <div class="b1" id="ctaA"><span class="big">LAUNCH FREE SIMULATOR <svg width="22" height="30" viewBox="0 0 22 30" style="vertical-align:-3px" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" fill="#0088FF"/></svg></span><span class="sub">LINK IN PINNED COMMENT &amp; BIO</span></div>
+            <div class="b1" id="ctaB" style="opacity:0"><span class="big">SIMULATOR READY <svg width="26" height="30" viewBox="0 0 26 30" style="vertical-align:-4px" overflow="visible"><path d="M13 1 C19 7 20 14 18 21 H8 C6 14 7 7 13 1 Z" fill="#fff" stroke="#0088FF" stroke-width="2"/><path d="M8 17 L3 24 L9 22 M18 17 L23 24 L17 22" fill="#0088FF"/><circle cx="13" cy="11" r="2.6" fill="#0088FF"/></svg></span><span class="sub">LINK IN PINNED COMMENT &amp; BIO</span></div>
+          </div>
         </div>
 
         <div id="ring"><i></i></div>
         <div id="cursor"><svg width="40" height="46" viewBox="0 0 40 46" overflow="visible"><g id="cArrow"><polygon points="0,0 0,30 7.5,23.5 13,36 19.5,33 14,21 23.5,21" fill="#ffffff" stroke="#0088ff" stroke-width="3" stroke-linejoin="round"/></g></svg></div>
       </div>
 
-      <audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="27" data-track-index="2" data-volume="1"></audio>
+      <audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="25" data-track-index="2" data-volume="1"></audio>
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
-      const WP = {"A1": [[280, 520], [400, 520], [400, 540]], "A2": [[400, 540], [460, 540]], "A3": [[400, 540], [400, 740], [460, 740]], "B1": [[280, 800], [340, 800], [340, 780]], "B2": [[340, 780], [460, 780]], "B3": [[340, 780], [340, 580], [460, 580]], "S0": [[620, 560], [810, 560]], "C0": [[620, 760], [810, 760]], "FA": [[160, 470], [250, 470]], "FB": [[160, 570], [250, 570]], "FS1": [[430, 470], [550, 470]], "FCIN": [[160, 960], [490, 960], [490, 570], [550, 570]], "FS2": [[730, 470], [990, 470]], "FC2": [[730, 570], [760, 570], [760, 820], [780, 820]], "FC1": [[430, 570], [450, 570], [450, 860], [780, 860]], "FOR": [[980, 840], [990, 840]]}; // wire vertex lists (world coords), emitted by scripts/build_index.py
-      /* =====================================================================================
-         MAE Academy — Logic Circuit Simulator · master timeline (27.0 s, 1080×1920)
+      const WP = {"A1": [[280, 520], [400, 520], [400, 540]], "A2": [[400, 540], [460, 540]], "A3": [[400, 540], [400, 740], [460, 740]], "B1": [[280, 800], [340, 800], [340, 780]], "B2": [[340, 780], [460, 780]], "B3": [[340, 780], [340, 580], [460, 580]], "S0": [[620, 560], [810, 560]], "C0": [[620, 760], [810, 760]], "FA": [[160, 470], [250, 470]], "FB": [[160, 570], [250, 570]], "FS1": [[430, 470], [550, 470]], "FCIN": [[160, 960], [490, 960], [490, 570], [550, 570]], "FS2": [[730, 470], [990, 470]], "FC2": [[730, 570], [760, 570], [760, 820], [780, 820]], "FC1": [[430, 570], [450, 570], [450, 860], [780, 860]], "FOR": [[980, 840], [990, 840]]};
+      const WL = {"A1": 140, "A2": 60, "A3": 260, "B1": 80, "B2": 120, "B3": 320, "S0": 190, "C0": 190, "FA": 90, "FB": 90, "FS1": 120, "FCIN": 780, "FS2": 260, "FC2": 300, "FC1": 640, "FOR": 10}; // wire lengths in world units (for absolute-unit light packets) // wire vertex lists (world coords), emitted by scripts/build_index.py
+/* =====================================================================================
+         MAE Academy — Digital Full Adder Simulator · master timeline (25.0 s, 1080×1920)
          Every visible value is a pure function of timeline time: no Date, no Math.random, no network.
          Geometry:  WORLD coords (SVG #world).  zoom 1 → page == world.  Zoom .82 about (560,760):
                     page = (560 + .82 (x-560), 760 + .82 (y-760)).
          Frame 0 is a LIVE half adder (A=B=1, C lit). The hook banner is removed (display:none) after
-         2.2 s and never returns; the end state simply holds the verified full adder + CTA.
+         it clears and never returns; the end state holds the verified full adder + challenge card.
          ===================================================================================== */
 
-      // @CUES-BEGIN
-      const CUES = [
-        [0.0, "thump"],
-        [0.05, "snap"],
-        [2.2, "click"],
-        [3.2, "snap"],
-        [4.2, "snap"],
-        [5.2, "click"],
-        [6.0, "click"],
-        [7.0, "click"],
-        [8.2, "click"],
-        [9.5, "snap"],
-        [9.7, "relay_thump"],
-        [11.0, "click"],
-        [12.0, "thump"],
-        [13.5, "click"],
-        [14.5, "snap"],
-        [16.0, "click"],
-        [17.5, "click"],
-        [19.0, "snap"],
-        [20.0, "click"],
-        [20.8, "click"],
-        [21.6, "click"],
-        [22.6, "relay_thump"],
-        [22.8, "chime"],
-        [24.5, "snap"],
-        [25.8, "click"]
-      ];
-      // @CUES-END
+// @CUES-BEGIN
+const CUES = [
+  [0.0, "thump"],
+  [0.05, "snap"],
+  [1.8, "click"],
+  [2.8, "snap"],
+  [3.6, "snap"],
+  [4.5, "click"],
+  [5.2, "click"],
+  [6.2, "click"],
+  [7.2, "snap"],
+  [8.5, "thump"], // Modular packaging
+  [10.0, "click"],
+  [11.2, "snap"],
+  [12.8, "click"],
+  [14.0, "click"],
+  [15.5, "snap"],
+  [17.0, "click"], // Toggle A=1
+  [17.6, "click"], // Toggle B=1
+  [18.2, "click"], // Toggle Cin=1
+  [19.2, "relay_thump"], // Climax LED explosion
+  [19.4, "chime"],
+  [21.5, "click"], // Challenge card reveals
+  [23.2, "snap"], // Cursor clicks CTA button
+  [24.5, "click"], // Loop anchor
+];
+// @CUES-END
 
-      /* ---------- procedural Web Audio (live preview). scripts/make_sfx.py mirrors these voices with numpy ---------- */
-      const SFX = (() => {
-        let ctx, master;
-        const env = (g, t, pk, dec, att = 0.001) => {
-          g.gain.setValueAtTime(0.0001, t);
-          g.gain.linearRampToValueAtTime(pk, t + att);
-          g.gain.exponentialRampToValueAtTime(0.0001, t + att + dec);
-        };
-        const tone = (c, out, t, f, pk, dec, att) => {
-          const o = c.createOscillator(), g = c.createGain();
-          o.type = "sine"; o.frequency.value = f; o.connect(g); g.connect(out);
-          env(g, t, pk, dec, att); o.start(t); o.stop(t + dec + 0.05);
-        };
-        const sub = (c, out, t, f, pk, dec) => {
-          const o = c.createOscillator(), s = c.createWaveShaper(), g = c.createGain(), k = new Float32Array(512);
-          for (let i = 0; i < 512; i++) k[i] = Math.tanh(2.2 * ((i / 255.5) - 1));
-          s.curve = k; o.type = "sine"; o.frequency.value = f; o.connect(s); s.connect(g); g.connect(out);
-          env(g, t, pk, dec, 0.002); o.start(t); o.stop(t + dec + 0.05);
-        };
-        const V = {
-          click(c, out, t) { tone(c, out, t, 1400, 0.34, 0.03); tone(c, out, t + 0.06, 1800, 0.22, 0.026); },
-          snap(c, out, t) { tone(c, out, t, 2200, 0.42, 0.016); tone(c, out, t, 4400, 0.12, 0.009); },
-          thump(c, out, t) { sub(c, out, t, 85, 0.6, 0.45); tone(c, out, t, 1400, 0.25, 0.014); },
-          relay_thump(c, out, t) { sub(c, out, t, 85, 0.5, 0.4); sub(c, out, t, 170, 0.18, 0.2); tone(c, out, t, 1400, 0.4, 0.014); tone(c, out, t + 0.03, 1400, 0.2, 0.01); },
-          chime(c, out, t) { tone(c, out, t, 1200, 0.16, 0.9, 0.003); tone(c, out, t, 1800, 0.1, 0.7, 0.003); },
-        };
-        return {
-          live: false,
-          arm() {
-            ctx = new AudioContext(); master = ctx.createGain(); master.gain.value = 0.5; master.connect(ctx.destination);
-            [[50, 0.0631], [100, 0.02]].forEach(([f, a]) => { const h = ctx.createOscillator(), hg = ctx.createGain(); h.frequency.value = f; hg.gain.value = a; h.connect(hg); hg.connect(ctx.destination); h.start(); });
-            this.live = true;
-          },
-          play(k) { if (ctx && V[k]) V[k](ctx, master, ctx.currentTime + 0.005); },
-        };
-      })();
-      window.addEventListener("pointerdown", () => SFX.arm(), { once: true });
+/* ---------- procedural Web Audio (live preview). scripts/make_sfx.py mirrors these voices with numpy ---------- */
+const SFX = (() => {
+  let ctx, master;
+  const env = (g, t, pk, dec, att = 0.001) => {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(pk, t + att);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + att + dec);
+  };
+  const tone = (c, out, t, f, pk, dec, att) => {
+    const o = c.createOscillator(),
+      g = c.createGain();
+    o.type = "sine";
+    o.frequency.value = f;
+    o.connect(g);
+    g.connect(out);
+    env(g, t, pk, dec, att);
+    o.start(t);
+    o.stop(t + dec + 0.05);
+  };
+  const sub = (c, out, t, f, pk, dec) => {
+    const o = c.createOscillator(),
+      s = c.createWaveShaper(),
+      g = c.createGain(),
+      k = new Float32Array(512);
+    for (let i = 0; i < 512; i++) k[i] = Math.tanh(2.2 * (i / 255.5 - 1));
+    s.curve = k;
+    o.type = "sine";
+    o.frequency.value = f;
+    o.connect(s);
+    s.connect(g);
+    g.connect(out);
+    env(g, t, pk, dec, 0.002);
+    o.start(t);
+    o.stop(t + dec + 0.05);
+  };
+  const V = {
+    click(c, out, t) {
+      tone(c, out, t, 1400, 0.34, 0.03);
+      tone(c, out, t + 0.06, 1800, 0.22, 0.026);
+    },
+    snap(c, out, t) {
+      tone(c, out, t, 2200, 0.42, 0.016);
+      tone(c, out, t, 4400, 0.12, 0.009);
+    },
+    thump(c, out, t) {
+      sub(c, out, t, 85, 0.6, 0.45);
+      tone(c, out, t, 1400, 0.25, 0.014);
+    },
+    relay_thump(c, out, t) {
+      sub(c, out, t, 80, 0.55, 0.45);
+      sub(c, out, t, 160, 0.2, 0.2);
+      tone(c, out, t, 1400, 0.4, 0.014);
+      tone(c, out, t + 0.03, 1400, 0.2, 0.01);
+      sub(c, out, t + 0.09, 80, 0.4, 0.35);
+      tone(c, out, t + 0.09, 1400, 0.28, 0.012);
+    },
+    chime(c, out, t) {
+      [
+        [1200, 0.16, 0.9],
+        [1800, 0.1, 0.7],
+        [2400, 0.07, 0.6],
+        [3600, 0.04, 0.5],
+      ].forEach(([f, p, d]) => tone(c, out, t, f, p, d, 0.003));
+    },
+  };
+  return {
+    live: false,
+    arm() {
+      ctx = new AudioContext();
+      master = ctx.createGain();
+      master.gain.value = 0.5;
+      master.connect(ctx.destination);
+      [
+        [50, 0.0631],
+        [100, 0.02],
+      ].forEach(([f, a]) => {
+        const h = ctx.createOscillator(),
+          hg = ctx.createGain();
+        h.frequency.value = f;
+        hg.gain.value = a;
+        h.connect(hg);
+        hg.connect(ctx.destination);
+        h.start();
+      });
+      this.live = true;
+    },
+    play(k) {
+      if (ctx && V[k]) V[k](ctx, master, ctx.currentTime + 0.005);
+    },
+  };
+})();
+window.addEventListener("pointerdown", () => SFX.arm(), { once: true });
 
-      /* ---------- geometry helpers ---------- */
-      const Z = 0.82, ZO = [560, 760];
-      const w2p = (x, y, z = Z) => [ZO[0] + z * (x - ZO[0]), ZO[1] + z * (y - ZO[1])];
-      const p2w = (x, y, z = Z) => [ZO[0] + (x - ZO[0]) / z, ZO[1] + (y - ZO[1]) / z];
-      const BLUE = "#0088FF", RED = "#FF0044", DIM = "#8A8AA8", WHITE = "#FFFFFF";
+/* ---------- geometry helpers ---------- */
+const Z = 0.82,
+  ZO = [560, 760];
+const w2p = (x, y, z = Z) => [ZO[0] + z * (x - ZO[0]), ZO[1] + z * (y - ZO[1])];
+const p2w = (x, y, z = Z) => [ZO[0] + (x - ZO[0]) / z, ZO[1] + (y - ZO[1]) / z];
+const BLUE = "#0088FF",
+  RED = "#FF0044",
+  DIM = "#8A8AA8",
+  WHITE = "#FFFFFF";
 
-      const tl = gsap.timeline({ paused: true });
+const tl = gsap.timeline({ paused: true });
 
-      gsap.set(".mv", { transformOrigin: "0px 0px" });
-      gsap.set("#world", { svgOrigin: "560 760" });
-      gsap.set("#half", { svgOrigin: "490 660" });
-      gsap.set("#mq0", { svgOrigin: "110 440" });
-      gsap.set("#mq", { svgOrigin: "320 470" });
-      gsap.set("#mq2", { svgOrigin: "495 660" });
-      gsap.set("#cArrow", { svgOrigin: "0 0" });
-      gsap.set("#cursor", { x: 540, y: 745 });
-      gsap.set("#ring", { x: 540, y: 745 });
-      gsap.set("#bn0", { opacity: 1 });
-      gsap.set("#ttFA", { opacity: 0 });
+gsap.set(".mv", { transformOrigin: "0px 0px" });
+gsap.set("#world", { svgOrigin: "560 760" });
+gsap.set("#half", { svgOrigin: "490 660" });
+gsap.set("#mq0", { svgOrigin: "110 440" });
+gsap.set("#mq", { svgOrigin: "320 470" });
+gsap.set("#mq2", { svgOrigin: "495 660" });
+gsap.set("#cArrow", { svgOrigin: "0 0" });
+gsap.set("#cursor", { x: 540, y: 745 });
+gsap.set("#ring", { x: 540, y: 745 });
+gsap.set("#bn0", { opacity: 1 });
+gsap.set("#ttFA", { opacity: 0 });
+gsap.set("#ctaBtn", { transformOrigin: "50% 50%" });
 
-      /* ---------- t = 0 state: a live half adder, A = B = 1, AND/Carry high, Sum low ---------- */
-      function liveState(set) {
-        const live = set.live;
-        set("#gXor, #gAnd, #tgA, #tgB, #ledS, #ledC", { opacity: live ? 1 : 0 });
-        set("#half .wire .b", { strokeDashoffset: live ? 0 : 1 });
-        set("#half .wire .g, #half .wire .l path", { strokeDashoffset: 1 });
-        if (live) set("#w_A1 .l path, #w_A2 .l path, #w_A3 .l path, #w_B1 .l path, #w_B2 .l path, #w_B3 .l path, #w_C0 .l path", { strokeDashoffset: 0 });
-        set("#j_A, #j_B", { opacity: live ? 1 : 0 });
-        set("#gXor .on, #ledS .on", { opacity: 0 });
-        set("#gAnd .on, #ledC .on", { opacity: live ? 1 : 0 });
-        ["tgA", "tgB"].forEach((id) => {
-          set(`#${id} .kn`, { x: live ? 40 : 0 });
-          set(`#${id} .knOn, #${id} .trkOn, #${id} .stubOn`, { opacity: live ? 1 : 0 });
-          set(`#${id} .d0`, { opacity: live ? 0 : 1 });
-          set(`#${id} .d1`, { opacity: live ? 1 : 0 });
-        });
-        set("#haR3 .bg", { opacity: live ? 1 : 0 });
-        set("#haR3 .ci, #haR3 .os", { color: live ? WHITE : DIM });
-        set("#haR3 .oc", { color: live ? RED : DIM });
-      }
-      const g0 = (sel, p) => gsap.set(sel, p); g0.live = true;
-      liveState(g0);
+/* ---------- t = 0 state: a live half adder, A = B = 1, AND/Carry high, Sum low ---------- */
+function liveState(set) {
+  const live = set.live;
+  set("#gXor, #gAnd, #tgA, #tgB, #ledS, #ledC", { opacity: live ? 1 : 0 });
+  set("#half .wire .b", { strokeDashoffset: live ? 0 : 1 });
+  set("#half .wire .g, #half .wire .l path", { strokeDashoffset: 1 });
+  if (live)
+    set(
+      "#w_A1 .l path, #w_A2 .l path, #w_A3 .l path, #w_B1 .l path, #w_B2 .l path, #w_B3 .l path, #w_C0 .l path",
+      { strokeDashoffset: 0 },
+    );
+  set("#j_A, #j_B", { opacity: live ? 1 : 0 });
+  set("#gXor .on, #ledS .on", { opacity: 0 });
+  set("#gAnd .on, #ledC .on", { opacity: live ? 1 : 0 });
+  ["tgA", "tgB"].forEach((id) => {
+    set(`#${id} .kn`, { x: live ? 40 : 0 });
+    set(`#${id} .knOn, #${id} .trkOn, #${id} .stubOn`, { opacity: live ? 1 : 0 });
+    set(`#${id} .d0`, { opacity: live ? 0 : 1 });
+    set(`#${id} .d1`, { opacity: live ? 1 : 0 });
+  });
+  set("#haR3", { opacity: live ? 1 : 0.25 });
+  set("#haR3 .bg, #haR3 .ck", { opacity: live ? 1 : 0 });
+  set("#haR3 .ci, #haR3 .os", { color: live ? WHITE : DIM });
+  set("#haR3 .oc", { color: live ? RED : DIM });
+}
+const g0 = (sel, p) => gsap.set(sel, p);
+g0.live = true;
+liveState(g0);
 
-      /* ---------- cursor ---------- */
-      let cx = 540, cy = 745;
-      function mv(t, x, y, d, over = true) {
-        const dx = x - cx, dy = y - cy, dist = Math.hypot(dx, dy) || 1;
-        const o = over ? Math.min(9, dist * 0.035) : 0;
-        tl.fromTo("#cursor", { x: cx, y: cy }, { x: x + (dx / dist) * o, y: y + (dy / dist) * o, duration: d, ease: "power3.out", immediateRender: false }, t);
-        if (o > 0.5) tl.fromTo("#cursor", { x: x + (dx / dist) * o, y: y + (dy / dist) * o }, { x, y, duration: 0.1, ease: "power2.inOut", immediateRender: false }, t + d);
-        cx = x; cy = y;
-      }
-      const hop = (t, x, y, d) => mv(t, x, y, d, false);
-      function ring(t) {
-        tl.set("#ring", { x: cx, y: cy }, t);
-        tl.fromTo("#ring i", { scale: 0.3, opacity: 0.95 }, { scale: 1.5, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, t);
-      }
-      function down(t, withRing = true) {
-        tl.to("#cArrow", { scale: 0.85, duration: 0.06, ease: "power2.out" }, t);
-        if (withRing) ring(t);
-      }
-      const up = (t) => tl.to("#cArrow", { scale: 1, duration: 0.15, ease: "back.out(3)" }, t);
-      const click = (t) => { down(t); up(t + 0.07); };
+/* ---------- cursor ---------- */
+let cx = 540,
+  cy = 745;
+function mv(t, x, y, d, over = true) {
+  const dx = x - cx,
+    dy = y - cy,
+    dist = Math.hypot(dx, dy) || 1;
+  const o = over ? Math.min(9, dist * 0.035) : 0;
+  tl.fromTo(
+    "#cursor",
+    { x: cx, y: cy },
+    {
+      x: x + (dx / dist) * o,
+      y: y + (dy / dist) * o,
+      duration: d,
+      ease: "power3.out",
+      immediateRender: false,
+    },
+    t,
+  );
+  if (o > 0.5)
+    tl.fromTo(
+      "#cursor",
+      { x: x + (dx / dist) * o, y: y + (dy / dist) * o },
+      { x, y, duration: 0.1, ease: "power2.inOut", immediateRender: false },
+      t + d,
+    );
+  cx = x;
+  cy = y;
+}
+const hop = (t, x, y, d) => mv(t, x, y, d, false);
+function ring(t) {
+  tl.set("#ring", { x: cx, y: cy }, t);
+  tl.fromTo(
+    "#ring i",
+    { scale: 0.3, opacity: 0.95 },
+    { scale: 1.5, opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false },
+    t,
+  );
+}
+function down(t, withRing = true) {
+  tl.to("#cArrow", { scale: 0.85, duration: 0.06, ease: "power2.out" }, t);
+  if (withRing) ring(t);
+}
+const up = (t) => tl.to("#cArrow", { scale: 1, duration: 0.15, ease: "back.out(3)" }, t);
+const click = (t) => {
+  down(t);
+  up(t + 0.07);
+};
 
-      /* ---------- generic helpers ---------- */
-      const sfx = (id, t) => tl.fromTo("#sf_" + id, { scale: 0.85, opacity: 0.95 }, { scale: 1.35, opacity: 0, duration: 0.35, ease: "power2.out", immediateRender: false }, t);
-      const pop = (id, t, s = 1.1) => tl.fromTo("#" + id, { scale: s }, { scale: 1, duration: 0.25, ease: "back.out(2.2)", immediateRender: false }, t);
-      const fade = (sel, t, to, d = 0.2) => tl.to(sel, { opacity: to, duration: d, ease: "power2.out" }, t);
-      const TILE = { tog: [188, 383], xor: [364, 383], and: [540, 383], or: [716, 383], led: [892, 383] };
-      function tilePick(k, t0, t1) {
-        tl.to("#tile_" + k, { borderColor: BLUE, backgroundColor: "rgba(0,136,255,0.18)", duration: 0.1 }, t0);
-        tl.to("#tile_" + k, { borderColor: "rgba(255,255,255,0.1)", backgroundColor: "rgba(30,30,46,0.6)", duration: 0.25 }, t1);
-      }
-      // item follows the cursor (shared power2.out ease + duration); offsets in WORLD units
-      function dragItem(id, t0, t1, a, b, finWorld, z, ghostScale = 0.5, appear = true) {
-        const f = w2p(finWorld[0], finWorld[1], z);
-        const oa = [(a[0] - f[0]) / z, (a[1] - f[1]) / z], ob = [(b[0] - f[0]) / z, (b[1] - f[1]) / z];
-        tl.fromTo("#cursor", { x: a[0], y: a[1] }, { x: b[0], y: b[1], duration: t1 - t0, ease: "power2.out", immediateRender: false }, t0);
-        tl.fromTo("#" + id, { x: oa[0], y: oa[1], scale: ghostScale }, { x: ob[0], y: ob[1], scale: 0.92, duration: t1 - t0, ease: "power2.out", immediateRender: false }, t0);
-        if (appear) tl.fromTo("#" + id, { opacity: 0 }, { opacity: 1, duration: 0.08, immediateRender: false }, t0);
-        cx = b[0]; cy = b[1];
-      }
-      function fly(id, t0, t1, tile, itemWorld, z) {
-        const w = p2w(tile[0], tile[1], z);
-        tl.fromTo("#" + id, { x: w[0] - itemWorld[0], y: w[1] - itemWorld[1], scale: 0.4 }, { x: 0, y: 0, scale: 1, duration: t1 - t0, ease: "power2.out", immediateRender: false }, t0);
-        tl.fromTo("#" + id, { opacity: 0 }, { opacity: 1, duration: 0.08, immediateRender: false }, t0);
-        pop(id, t1, 1.07); sfx(id, t1);
-      }
+/* ---------- generic helpers ---------- */
+const sfx = (id, t) =>
+  tl.fromTo(
+    "#sf_" + id,
+    { scale: 0.85, opacity: 0.95 },
+    { scale: 1.35, opacity: 0, duration: 0.35, ease: "power2.out", immediateRender: false },
+    t,
+  );
+const pop = (id, t, s = 1.1) =>
+  tl.fromTo(
+    "#" + id,
+    { scale: s },
+    { scale: 1, duration: 0.25, ease: "back.out(2.2)", immediateRender: false },
+    t,
+  );
+const fade = (sel, t, to, d = 0.2) =>
+  tl.to(sel, { opacity: to, duration: d, ease: "power2.out" }, t);
+const TILE = { tog: [188, 383], xor: [364, 383], and: [540, 383], or: [716, 383], led: [892, 383] };
+function tilePick(k, t0, t1) {
+  tl.to(
+    "#tile_" + k,
+    { borderColor: BLUE, backgroundColor: "rgba(0,136,255,0.18)", duration: 0.1 },
+    t0,
+  );
+  tl.to(
+    "#tile_" + k,
+    { borderColor: "rgba(255,255,255,0.1)", backgroundColor: "rgba(30,30,46,0.6)", duration: 0.25 },
+    t1,
+  );
+}
+function dragItem(id, t0, t1, a, b, finWorld, z, ghostScale = 0.5, appear = true) {
+  const f = w2p(finWorld[0], finWorld[1], z);
+  const oa = [(a[0] - f[0]) / z, (a[1] - f[1]) / z],
+    ob = [(b[0] - f[0]) / z, (b[1] - f[1]) / z];
+  tl.fromTo(
+    "#cursor",
+    { x: a[0], y: a[1] },
+    { x: b[0], y: b[1], duration: t1 - t0, ease: "power2.out", immediateRender: false },
+    t0,
+  );
+  tl.fromTo(
+    "#" + id,
+    { x: oa[0], y: oa[1], scale: ghostScale },
+    {
+      x: ob[0],
+      y: ob[1],
+      scale: 0.92,
+      duration: t1 - t0,
+      ease: "power2.out",
+      immediateRender: false,
+    },
+    t0,
+  );
+  if (appear)
+    tl.fromTo("#" + id, { opacity: 0 }, { opacity: 1, duration: 0.08, immediateRender: false }, t0);
+  cx = b[0];
+  cy = b[1];
+}
+function fly(id, t0, t1, tile, itemWorld, z) {
+  const w = p2w(tile[0], tile[1], z);
+  tl.fromTo(
+    "#" + id,
+    { x: w[0] - itemWorld[0], y: w[1] - itemWorld[1], scale: 0.4 },
+    { x: 0, y: 0, scale: 1, duration: t1 - t0, ease: "power2.out", immediateRender: false },
+    t0,
+  );
+  tl.fromTo("#" + id, { opacity: 0 }, { opacity: 1, duration: 0.08, immediateRender: false }, t0);
+  pop(id, t1, 1.07);
+  sfx(id, t1);
+}
 
-      /* ---------- wires ---------- */
-      const autoWire = (t0, t1, id) =>
-        tl.fromTo(`#w_${id} .b, #w_${id} .g`, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: t1 - t0, ease: "power2.out", immediateRender: false }, t0);
-      const settleWires = (t, ids) => tl.to(ids.map((i) => `#w_${i} .g`).join(","), { opacity: 0, duration: 0.25, ease: "power2.out" }, t);
-      function lit(id, t, d) {
-        tl.fromTo(`#w_${id} .l path`, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: "none", immediateRender: false }, t);
-        pulse(id, t, d);
-      }
-      function pulse(id, t, d) {
-        tl.fromTo(`#w_${id} .p`, { strokeDashoffset: 0.1, opacity: 1 }, { strokeDashoffset: -1.1, duration: d, ease: "none", immediateRender: false }, t);
-        tl.set(`#w_${id} .p`, { opacity: 0 }, t + d);
-      }
-      const unlit = (id, t, d) =>
-        tl.fromTo(`#w_${id} .l path`, { strokeDashoffset: 0 }, { strokeDashoffset: -1, duration: d, ease: "none", immediateRender: false }, t);
+/* ---------- LIVING WIRES ----------
+         • a luminous packet (white core + blue glow, stroke-dasharray "24 gap") races source → sink
+         • every energised wire keeps a marching spark layer (.f) running for as long as it is HIGH
+         • a gate that fires emits its own packet out of its output pin (the next lit() call) + a burst ring */
+const autoWire = (t0, t1, id) =>
+  tl.fromTo(
+    `#w_${id} .b, #w_${id} .g`,
+    { strokeDashoffset: 1 },
+    { strokeDashoffset: 0, duration: t1 - t0, ease: "power2.out", immediateRender: false },
+    t0,
+  );
+const settleWires = (t, ids) =>
+  tl.to(
+    ids.map((i) => `#w_${i} .g`).join(","),
+    { opacity: 0, duration: 0.25, ease: "power2.out" },
+    t,
+  );
+const FLOW = {}; // id -> time the wire became HIGH (flow layer start)
+function flow(id, t0, t1) {
+  if (t1 - t0 < 0.05) return;
+  tl.fromTo(
+    `#w_${id} .f`,
+    { strokeDashoffset: 0, opacity: 0.6 },
+    { strokeDashoffset: -(t1 - t0) * 150, duration: t1 - t0, ease: "none", immediateRender: false },
+    t0,
+  );
+  tl.set(`#w_${id} .f`, { opacity: 0 }, t1);
+}
+function pulse(id, t, d) {
+  tl.fromTo(
+    `#w_${id} .p, #w_${id} .pg`,
+    { strokeDashoffset: 24, opacity: 1 },
+    { strokeDashoffset: -WL[id], duration: d, ease: "none", immediateRender: false },
+    t,
+  );
+  tl.set(`#w_${id} .p, #w_${id} .pg`, { opacity: 0 }, t + d);
+}
+function lit(id, t, d) {
+  tl.fromTo(
+    `#w_${id} .l path`,
+    { strokeDashoffset: 1 },
+    { strokeDashoffset: 0, duration: d, ease: "none", immediateRender: false },
+    t,
+  );
+  pulse(id, t, d);
+  FLOW[id] = t + d;
+}
+function unlit(id, t, d) {
+  tl.fromTo(
+    `#w_${id} .l path`,
+    { strokeDashoffset: 0 },
+    { strokeDashoffset: -1, duration: d, ease: "none", immediateRender: false },
+    t,
+  );
+  if (FLOW[id] != null) {
+    flow(id, FLOW[id], t);
+    FLOW[id] = null;
+  }
+}
 
-      /* ---------- logic parts ---------- */
-      function flip(id, t, v) {
-        tl.to(`#${id} .kn`, { x: v ? 40 : 0, duration: 0.12, ease: "power2.out" }, t);
-        tl.to(`#${id} .knOn, #${id} .trkOn, #${id} .stubOn`, { opacity: v, duration: 0.1 }, t);
-        tl.to(`#${id} .d0`, { opacity: 1 - v, duration: 0.06 }, t);
-        tl.to(`#${id} .d1`, { opacity: v, duration: 0.06 }, t);
-      }
-      const partOn = (id, t, a = 1) => tl.to(`#${id} .on`, { opacity: a, duration: 0.12, ease: "power2.out" }, t);
-      const partOff = (id, t) => tl.to(`#${id} .on`, { opacity: 0, duration: 0.18, ease: "power2.in" }, t);
-      function ledOn(id, t) {
-        tl.to(`#${id} .on`, { opacity: 1, duration: 0.08, ease: "power2.out" }, t);
-        tl.fromTo(`#${id} .ring`, { scale: 1, opacity: 0.9 }, { scale: 2.2, opacity: 0, duration: 0.5, ease: "power2.out", immediateRender: false }, t);
-      }
-      const ledOff = (id, t) => tl.to(`#${id} .on`, { opacity: 0, duration: 0.18, ease: "power2.in" }, t);
+/* ---------- logic parts ---------- */
+function flip(id, t, v) {
+  tl.to(`#${id} .kn`, { x: v ? 40 : 0, duration: 0.12, ease: "power2.out" }, t);
+  tl.to(`#${id} .knOn, #${id} .trkOn, #${id} .stubOn`, { opacity: v, duration: 0.1 }, t);
+  tl.to(`#${id} .d0`, { opacity: 1 - v, duration: 0.06 }, t);
+  tl.to(`#${id} .d1`, { opacity: v, duration: 0.06 }, t);
+}
+const partOn = (id, t, a = 1) =>
+  tl.to(`#${id} .on`, { opacity: a, duration: 0.12, ease: "power2.out" }, t);
+const partOff = (id, t) =>
+  tl.to(`#${id} .on`, { opacity: 0, duration: 0.18, ease: "power2.in" }, t);
+const fire = (id, t, a = 1) => {
+  partOn(id, t, a);
+  sfx(id, t);
+}; // gate fires: glow + burst ring
+function ledOn(id, t) {
+  tl.to(`#${id} .on`, { opacity: 1, duration: 0.08, ease: "power2.out" }, t);
+  tl.fromTo(
+    `#${id} .ring`,
+    { scale: 1, opacity: 0.9 },
+    { scale: 2.2, opacity: 0, duration: 0.5, ease: "power2.out", immediateRender: false },
+    t,
+  );
+}
+const ledOff = (id, t) => tl.to(`#${id} .on`, { opacity: 0, duration: 0.18, ease: "power2.in" }, t);
+function explode(id, t) {
+  // LED EXPLOSION: elastic 1 → 1.4 → 1 + radial bloom
+  tl.to(`#${id} .on`, { opacity: 1, duration: 0.06 }, t);
+  tl.fromTo(
+    `#${id} .on`,
+    { scale: 1 },
+    { scale: 1.4, duration: 0.14, ease: "power3.out", immediateRender: false },
+    t,
+  );
+  tl.to(`#${id} .on`, { scale: 1, duration: 0.7, ease: "elastic.out(1, 0.35)" }, t + 0.14);
+  tl.fromTo(
+    `#${id} .bloom`,
+    { scale: 1, opacity: 0.6 },
+    { scale: 5.5, opacity: 0, duration: 0.8, ease: "power2.out", immediateRender: false },
+    t,
+  );
+  tl.fromTo(
+    `#${id} .ring`,
+    { scale: 1, opacity: 1 },
+    { scale: 3.4, opacity: 0, duration: 0.7, ease: "power2.out", immediateRender: false },
+    t + 0.05,
+  );
+}
 
-      /* ---------- Zone 3 banner / Zone 4 truth table ---------- */
-      let bn = "bn0";
-      function banner(t, id) {
-        tl.to("#" + bn, { opacity: 0, y: -10, duration: 0.18, ease: "power2.in" }, t);
-        tl.fromTo("#" + id, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: false }, t + 0.08);
-        bn = id;
-      }
-      function rowOn(id, t, s, c, outDelay = 0) {
-        tl.to(`#${id} .bg`, { opacity: 1, duration: 0.12, ease: "power2.out" }, t);
-        tl.to(`#${id} .ci`, { color: WHITE, duration: 0.12 }, t);
-        tl.to(`#${id} .os`, { color: s ? BLUE : WHITE, duration: 0.15 }, t + outDelay);
-        tl.to(`#${id} .oc`, { color: c ? RED : WHITE, duration: 0.15 }, t + outDelay);
-      }
-      function rowOff(id, t) {
-        tl.to(`#${id} .bg`, { opacity: 0, duration: 0.15 }, t);
-        tl.to(`#${id} .c`, { color: DIM, duration: 0.15 }, t);
-      }
+/* ---------- Zone 3 banner / Zone 4 reactive truth table ---------- */
+let bn = "bn0";
+function banner(t, id) {
+  tl.to("#" + bn, { opacity: 0, y: -10, duration: 0.18, ease: "power2.in" }, t);
+  tl.fromTo(
+    "#" + id,
+    { opacity: 0, y: 14 },
+    { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", immediateRender: false },
+    t + 0.08,
+  );
+  bn = id;
+}
+function rowOn(id, t, s, c, outDelay = 0) {
+  // rows rest at .25; the live row snaps to 1 with a blue glow border + ✓
+  tl.to(`#${id}`, { opacity: 1, duration: 0.1 }, t);
+  tl.fromTo(
+    `#${id}`,
+    { scaleX: 1.05 },
+    { scaleX: 1, duration: 0.25, ease: "back.out(3)", immediateRender: false },
+    t,
+  );
+  tl.to(
+    `#${id} .bg`,
+    { opacity: 1, boxShadow: "0 0 14px rgba(0,136,255,0.8)", duration: 0.12, ease: "power2.out" },
+    t,
+  );
+  tl.to(`#${id} .ck`, { opacity: 1, duration: 0.12 }, t);
+  tl.to(`#${id} .ci`, { color: WHITE, duration: 0.1 }, t);
+  tl.to(`#${id} .os`, { color: s ? BLUE : WHITE, duration: 0.15 }, t + outDelay);
+  tl.to(`#${id} .oc`, { color: c ? RED : WHITE, duration: 0.15 }, t + outDelay);
+}
+function rowOff(id, t) {
+  tl.to(`#${id}`, { opacity: 0.25, duration: 0.15 }, t);
+  tl.to(`#${id} .bg`, { opacity: 0, boxShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.15 }, t);
+  tl.to(`#${id} .ck`, { opacity: 0, duration: 0.1 }, t);
+  tl.to(`#${id} .c`, { color: DIM, duration: 0.15 }, t);
+}
 
-      /* =====================================================================================
-         ACT I (0 – 10.5)  LIVE HOOK → MEASURED REBUILD → 4-STATE HALF-ADDER TEST
+/* =====================================================================================
+         ACT I (0 – 8.5)  LIVE HOOK → BUILD → 4-STATE HALF-ADDER TEST
          ===================================================================================== */
-      tl.fromTo("#ledC .ring", { scale: 1, opacity: 0.9 }, { scale: 2.2, opacity: 0, duration: 0.55, ease: "power2.out", immediateRender: false }, 0.02);
-      sfx("gAnd", 0.05);
-      hop(1.2, 110, 440, 0.55);
-      down(1.75, false);                                                               // 2.2 box-select + delete
-      tl.fromTo("#mq0", { scaleX: 0, scaleY: 0, opacity: 1 }, { scaleX: 1, scaleY: 1, duration: 0.4, ease: "power1.inOut", immediateRender: false }, 1.8);
-      tl.fromTo("#cursor", { x: 110, y: 440 }, { x: 900, y: 880, duration: 0.4, ease: "power1.inOut", immediateRender: false }, 1.8);
-      cx = 900; cy = 880;
-      up(2.2); ring(2.2);
-      tl.to("#circ", { opacity: 0, duration: 0.28, ease: "power2.in" }, 2.22);
-      tl.to("#mq0", { opacity: 0, duration: 0.22 }, 2.22);
-      banner(2.2, "bn1");
-      tl.set("#bn0", { display: "none" }, 2.5);                                         // hook banner can NEVER reappear
-      const g1 = (sel, p) => tl.set(sel, p, 2.55); g1.live = false;
-      liveState(g1);
-      tl.set("#circ", { opacity: 1 }, 2.55);
-      rowOff("haR3", 2.55);
+["A1", "A2", "A3", "B1", "B2", "B3", "C0"].forEach((id) => flow(id, 0, 1.85)); // frame 0 is already alive
+tl.fromTo(
+  "#ledC .ring",
+  { scale: 1, opacity: 0.9 },
+  { scale: 2.2, opacity: 0, duration: 0.55, ease: "power2.out", immediateRender: false },
+  0.02,
+);
+sfx("gAnd", 0.05);
+hop(0.9, 110, 440, 0.45);
+down(1.35, false); // 1.8 box-select + delete
+tl.fromTo(
+  "#mq0",
+  { scaleX: 0, scaleY: 0, opacity: 1 },
+  { scaleX: 1, scaleY: 1, duration: 0.4, ease: "power1.inOut", immediateRender: false },
+  1.4,
+);
+tl.fromTo(
+  "#cursor",
+  { x: 110, y: 440 },
+  { x: 900, y: 880, duration: 0.4, ease: "power1.inOut", immediateRender: false },
+  1.4,
+);
+cx = 900;
+cy = 880;
+up(1.8);
+ring(1.8);
+tl.to("#circ", { opacity: 0, duration: 0.28, ease: "power2.in" }, 1.82);
+tl.to("#mq0", { opacity: 0, duration: 0.22 }, 1.82);
+banner(1.8, "bn1");
+tl.set("#bn0", { display: "none" }, 2.1); // hook banner can NEVER reappear
+const g1 = (sel, p) => tl.set(sel, p, 2.15);
+g1.live = false;
+liveState(g1);
+tl.set("#circ", { opacity: 1 }, 2.15);
 
-      hop(2.25, TILE.xor[0], TILE.xor[1], 0.45);
-      down(2.72, false); tilePick("xor", 2.72, 3.2);
-      dragItem("gXor", 2.75, 3.2, TILE.xor, [540, 560], [540, 560], 1, 0.55);
-      up(3.2); pop("gXor", 3.2, 1.08); sfx("gXor", 3.2);                               // 3.2 snap
-      hop(3.25, TILE.and[0], TILE.and[1], 0.25);
-      down(3.55, false); tilePick("and", 3.55, 4.2);
-      dragItem("gAnd", 3.6, 4.2, TILE.and, [540, 760], [540, 760], 1, 0.55);
-      up(4.2); pop("gAnd", 4.2, 1.08); sfx("gAnd", 4.2);                               // 4.2 snap
-      hop(4.25, 280, 520, 0.6);
-      tilePick("tog", 4.7, 5.2); tilePick("led", 4.8, 5.2);
-      fly("tgA", 4.7, 5.2, TILE.tog, [220, 520], 1);                                   // 5.2 inputs + probes land
-      fly("tgB", 4.75, 5.2, TILE.tog, [220, 800], 1);
-      fly("ledS", 4.8, 5.2, TILE.led, [840, 560], 1);
-      fly("ledC", 4.85, 5.2, TILE.led, [840, 760], 1);
-      click(5.2);
-      // snap-to-grid wires route one net after another
-      hop(5.28, 460, 660, 0.3);
-      autoWire(5.3, 5.45, "A1"); autoWire(5.42, 5.55, "A2"); autoWire(5.42, 5.55, "A3");
-      tl.fromTo("#j_A", { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(3)", immediateRender: false }, 5.42);
-      autoWire(5.5, 5.62, "B1"); autoWire(5.6, 5.72, "B2"); autoWire(5.6, 5.74, "B3");
-      tl.fromTo("#j_B", { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(3)", immediateRender: false }, 5.58);
-      autoWire(5.68, 5.82, "S0"); autoWire(5.78, 5.92, "C0");
-      hop(5.6, 700, 660, 0.3);
-      settleWires(5.95, ["A1", "A2", "A3", "B1", "B2", "B3", "S0", "C0"]);
-      click(6.0);                                                                      // 6.0 all nets routed
-      [["A1", 6.05, 0.12], ["B1", 6.05, 0.12], ["A2", 6.17, 0.06], ["A3", 6.17, 0.14], ["B2", 6.17, 0.08], ["B3", 6.17, 0.16], ["S0", 6.3, 0.12], ["C0", 6.3, 0.12]].forEach(([id, t, d]) => pulse(id, t, d));
-      rowOn("haR0", 6.5, 0, 0);                                                        // (0,0)
-      hop(6.3, 220, 800, 0.6);
-      // 7.0 (0,1)
-      click(7.0); flip("tgB", 7.0, 1);
-      rowOff("haR0", 7.0); rowOn("haR1", 7.02, 1, 0, 0.3);
-      lit("B1", 7.02, 0.1); lit("B2", 7.12, 0.12); lit("B3", 7.12, 0.24);
-      partOn("gXor", 7.36); lit("S0", 7.38, 0.22); ledOn("ledS", 7.62);
-      // B back to 0, then 8.2 (1,0)
-      down(7.9, false); flip("tgB", 7.9, 0); up(7.97);
-      partOff("gXor", 7.9); unlit("B1", 7.9, 0.15); unlit("B2", 7.9, 0.15); unlit("B3", 7.9, 0.15); unlit("S0", 7.9, 0.15); ledOff("ledS", 8.0);
-      rowOff("haR1", 7.9); rowOn("haR0", 7.92, 0, 0);
-      hop(7.98, 220, 520, 0.2);
-      click(8.2); flip("tgA", 8.2, 1);
-      rowOff("haR0", 8.2); rowOn("haR2", 8.2, 1, 0, 0.3);
-      lit("A1", 8.22, 0.12); lit("A2", 8.34, 0.06); lit("A3", 8.34, 0.16);
-      partOn("gXor", 8.4); lit("S0", 8.42, 0.2); ledOn("ledS", 8.64);
-      // 9.5 (1,1): the relay switches the carry at 9.7
-      hop(8.3, 220, 800, 1.0);
-      click(9.5); flip("tgB", 9.5, 1);
-      rowOff("haR2", 9.5); rowOn("haR3", 9.5, 0, 1, 0.4);
-      lit("B1", 9.52, 0.06); lit("B2", 9.58, 0.12); lit("B3", 9.58, 0.22);
-      partOn("gAnd", 9.7); lit("C0", 9.72, 0.23); ledOn("ledC", 9.97);
-      partOff("gXor", 9.8); unlit("S0", 9.8, 0.15); ledOff("ledS", 9.97);
-      banner(10.0, "bn2");
+hop(1.85, TILE.xor[0], TILE.xor[1], 0.45);
+down(2.32, false);
+tilePick("xor", 2.32, 2.8);
+dragItem("gXor", 2.35, 2.8, TILE.xor, [540, 560], [540, 560], 1, 0.55);
+up(2.8);
+pop("gXor", 2.8, 1.08);
+sfx("gXor", 2.8); // 2.8 snap
+hop(2.85, TILE.and[0], TILE.and[1], 0.15);
+down(3.02, false);
+tilePick("and", 3.02, 3.6);
+dragItem("gAnd", 3.05, 3.6, TILE.and, [540, 760], [540, 760], 1, 0.55);
+up(3.6);
+pop("gAnd", 3.6, 1.08);
+sfx("gAnd", 3.6); // 3.6 snap
+hop(3.65, 280, 520, 0.7);
+tilePick("tog", 4.05, 4.5);
+tilePick("led", 4.15, 4.5);
+fly("tgA", 4.05, 4.5, TILE.tog, [220, 520], 1); // 4.5 inputs + probes land
+fly("tgB", 4.1, 4.5, TILE.tog, [220, 800], 1);
+fly("ledS", 4.15, 4.5, TILE.led, [840, 560], 1);
+fly("ledC", 4.2, 4.5, TILE.led, [840, 760], 1);
+click(4.5);
+// snap-to-grid wire routing
+hop(4.55, 460, 640, 0.3);
+autoWire(4.7, 4.95, "A1");
+autoWire(4.9, 5.15, "A2");
+autoWire(4.9, 5.15, "A3");
+tl.fromTo(
+  "#j_A",
+  { opacity: 0, scale: 0.2 },
+  { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(3)", immediateRender: false },
+  4.92,
+);
+click(5.2); // 5.2 net A routed
+hop(5.25, 460, 780, 0.2);
+autoWire(5.3, 5.55, "B1");
+autoWire(5.5, 5.75, "B2");
+autoWire(5.5, 5.8, "B3");
+tl.fromTo(
+  "#j_B",
+  { opacity: 0, scale: 0.2 },
+  { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(3)", immediateRender: false },
+  5.52,
+);
+autoWire(5.7, 5.95, "S0");
+autoWire(5.85, 6.1, "C0");
+hop(5.6, 700, 660, 0.4);
+settleWires(6.12, ["A1", "A2", "A3", "B1", "B2", "B3", "S0", "C0"]);
+click(6.2); // 6.2 all nets routed
+[
+  ["A1", 6.25, 0.2],
+  ["B1", 6.25, 0.2],
+  ["A2", 6.4, 0.1],
+  ["A3", 6.4, 0.2],
+  ["B2", 6.4, 0.12],
+  ["B3", 6.4, 0.25],
+  ["S0", 6.5, 0.2],
+  ["C0", 6.5, 0.2],
+].forEach(([id, t, d]) => pulse(id, t, d));
+rowOn("haR0", 6.4, 0, 0); // (0,0)
+hop(6.3, 220, 800, 0.35);
+// (0,1)
+click(6.7);
+flip("tgB", 6.7, 1);
+rowOff("haR0", 6.7);
+rowOn("haR1", 6.72, 1, 0, 0.3);
+lit("B1", 6.72, 0.06);
+lit("B2", 6.78, 0.06);
+lit("B3", 6.78, 0.14);
+fire("gXor", 6.92);
+lit("S0", 6.94, 0.1);
+ledOn("ledS", 7.06);
+// B off, then (1,0)
+down(7.0, false);
+flip("tgB", 7.0, 0);
+up(7.07);
+partOff("gXor", 7.0);
+unlit("B1", 7.0, 0.15);
+unlit("B2", 7.0, 0.15);
+unlit("B3", 7.0, 0.15);
+unlit("S0", 7.0, 0.15);
+ledOff("ledS", 7.1);
+rowOff("haR1", 7.0);
+hop(7.08, 220, 520, 0.1);
+click(7.2);
+flip("tgA", 7.2, 1); // 7.2 snap
+rowOn("haR2", 7.2, 1, 0, 0.3);
+lit("A1", 7.22, 0.08);
+lit("A2", 7.3, 0.04);
+lit("A3", 7.3, 0.14);
+fire("gXor", 7.34);
+lit("S0", 7.36, 0.1);
+ledOn("ledS", 7.48);
+// (1,1): the relay switches the carry
+hop(7.3, 220, 800, 0.35);
+click(7.7);
+flip("tgB", 7.7, 1);
+rowOff("haR2", 7.7);
+rowOn("haR3", 7.72, 0, 1, 0.4);
+lit("B1", 7.72, 0.06);
+lit("B2", 7.78, 0.12);
+lit("B3", 7.78, 0.14);
+fire("gAnd", 7.9);
+lit("C0", 7.92, 0.18);
+ledOn("ledC", 8.1);
+partOff("gXor", 7.92);
+unlit("S0", 7.92, 0.1);
+ledOff("ledS", 8.02);
+banner(8.0, "bn2");
 
-      /* =====================================================================================
-         ACT II (10.5 – 19.5)  CARRY-IN CHALLENGE → PACKAGE → FULL-ADDER HIERARCHY
+/* =====================================================================================
+         ACT II (8.5 – 17.0)  PACKAGE → CARRY-IN → FULL-ADDER HIERARCHY
          ===================================================================================== */
-      banner(10.5, "bn3");
-      hop(9.7, 320, 470, 0.8);
-      down(10.55, false);
-      tl.fromTo("#mq", { scaleX: 0, scaleY: 0, opacity: 1 }, { scaleX: 1, scaleY: 1, duration: 0.4, ease: "power1.inOut", immediateRender: false }, 10.6);
-      tl.fromTo("#cursor", { x: 320, y: 470 }, { x: 670, y: 850, duration: 0.4, ease: "power1.inOut", immediateRender: false }, 10.6);
-      cx = 670; cy = 850;
-      up(11.0); ring(11.0);                                                            // 11.0 select
-      tl.set("#mq2", { opacity: 1 }, 11.0); tl.set("#mq", { opacity: 0 }, 11.0);
-      tl.to("#mq2", { scaleX: 0.514, scaleY: 0.526, duration: 0.6, ease: "power3.inOut" }, 11.0);
-      tl.to("#mq2", { opacity: 0, duration: 0.2, ease: "power1.in" }, 11.65);
-      tl.to("#world", { scale: Z, duration: 0.8, ease: "power2.inOut" }, 11.2);         // smooth zoom-out to 0.82
-      tl.to("#z100", { opacity: 0, duration: 0.15 }, 11.6); tl.to("#z75", { opacity: 1, duration: 0.15 }, 11.65);
-      tl.fromTo("#half", { scale: 1, opacity: 1 }, { scale: 0.3, opacity: 0, duration: 0.5, ease: "power3.in", immediateRender: false }, 11.5);
-      tl.fromTo("#ha1", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.8)", immediateRender: false }, 12.0);
-      sfx("ha1", 12.0);                                                                // 12.0 collapse into [HALF ADDER 1]
-      flip("tgA", 12.05, 0); flip("tgB", 12.05, 0); ledOff("ledC", 12.05);
-      tl.to("#ha1", { x: -150, y: -140, duration: 0.6, ease: "power2.inOut" }, 12.0);
-      tl.to("#tgA", { x: -120, y: -50, duration: 0.6, ease: "power2.inOut" }, 12.0);
-      tl.to("#tgB", { x: -120, y: -230, duration: 0.6, ease: "power2.inOut" }, 12.0);
-      tl.to("#ledS", { x: 180, y: -90, duration: 0.6, ease: "power2.inOut" }, 12.0);
-      tl.to("#ledC", { x: 180, y: 80, duration: 0.6, ease: "power2.inOut" }, 12.0);
-      tl.to("#ledC .lblI", { opacity: 0, duration: 0.15 }, 12.2); tl.to("#ledC .lblIII", { opacity: 1, duration: 0.2 }, 12.25);
-      // truth-table card morphs: 4-row half-adder table → full 8-row table (adds the C_in column)
-      rowOff("haR3", 12.05);
-      tl.to("#ttHA", { opacity: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 12.15);
-      tl.fromTo("#ttFA", { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false }, 12.4);
-      rowOn("faR0", 13.0, 0, 0);
-      const HA1P = w2p(340, 520), HA2P = w2p(640, 520), ORP = w2p(880, 840);
-      hop(11.1, HA1P[0], HA1P[1], 1.7);
-      down(13.0, false); partOn("ha1", 12.95, 0.55);
-      tl.set("#ha2", { x: -300, y: 0 }, 12.9);
-      tl.fromTo("#ha2", { opacity: 0 }, { opacity: 0.7, duration: 0.15, immediateRender: false }, 13.0);
-      dragItem("ha2", 13.05, 13.5, HA1P, HA2P, [640, 520], Z, 1, false);               // 13.5 HA 2 drops
-      up(13.5); ring(13.5); fade("#ha2", 13.5, 1, 0.1); pop("ha2", 13.5, 1.07); sfx("ha2", 13.5); partOff("ha1", 13.55);
-      hop(13.55, TILE.or[0], TILE.or[1], 0.35);
-      down(13.92, false); tilePick("or", 13.92, 14.5);
-      dragItem("gOr", 13.95, 14.5, TILE.or, ORP, [880, 840], Z, 0.5);                  // 14.5 OR drops
-      up(14.5); pop("gOr", 14.5, 1.08); sfx("gOr", 14.5);
-      const PCin = w2p(100, 960);
-      hop(14.55, PCin[0], PCin[1], 0.85);
-      tilePick("tog", 15.55, 16.0);
-      fly("tgC", 15.55, 16.0, TILE.tog, [100, 960], Z);                                // 16.0 C_in placed
-      click(16.0); banner(16.0, "bn4");
-      const PA = w2p(160, 470), PS1 = w2p(550, 470), POR2 = w2p(780, 860), PLS = w2p(1010, 470);
-      hop(16.1, PA[0], PA[1], 0.3);
-      autoWire(16.4, 16.7, "FA"); autoWire(16.4, 16.7, "FB");
-      hop(16.7, PS1[0], PS1[1], 0.25);
-      autoWire(16.9, 17.2, "FS1"); autoWire(17.0, 17.45, "FCIN");
-      tl.to("#bdS1", { opacity: 1, duration: 0.15 }, 17.2);
-      click(17.5); settleWires(17.5, ["FA", "FB", "FS1", "FCIN"]);                      // 17.5 S1 → HA2, C_in → HA2
-      hop(17.6, POR2[0], POR2[1], 0.4);
-      autoWire(17.9, 18.4, "FC1"); autoWire(18.1, 18.5, "FC2");
-      tl.to("#bdC1, #bdC2", { opacity: 1, duration: 0.15 }, 18.4);
-      banner(18.3, "bn6");                                                             // OR ≡ ADD logic bridge
-      hop(18.5, PLS[0], PLS[1], 0.35);
-      autoWire(18.45, 18.8, "FS2"); autoWire(18.65, 19.0, "FOR");
-      up(19.0); ring(19.0); settleWires(19.0, ["FC1", "FC2", "FS2", "FOR"]);            // 19.0 outputs lock
-      sfx("gOr", 19.0); sfx("ha2", 19.0);
+banner(8.4, "bn3");
+hop(7.85, 320, 470, 0.3);
+down(8.1, false);
+tl.fromTo(
+  "#mq",
+  { scaleX: 0, scaleY: 0, opacity: 1 },
+  { scaleX: 1, scaleY: 1, duration: 0.3, ease: "power1.inOut", immediateRender: false },
+  8.15,
+);
+tl.fromTo(
+  "#cursor",
+  { x: 320, y: 470 },
+  { x: 670, y: 850, duration: 0.3, ease: "power1.inOut", immediateRender: false },
+  8.15,
+);
+cx = 670;
+cy = 850;
+up(8.45);
+ring(8.45);
+tl.set("#mq2", { opacity: 1 }, 8.45);
+tl.set("#mq", { opacity: 0 }, 8.45);
+tl.to("#mq2", { scaleX: 0.514, scaleY: 0.526, duration: 0.5, ease: "power3.inOut" }, 8.45);
+tl.to("#mq2", { opacity: 0, duration: 0.2, ease: "power1.in" }, 8.8);
+tl.fromTo(
+  "#half",
+  { scale: 1, opacity: 1 },
+  { scale: 0.3, opacity: 0, duration: 0.35, ease: "power3.in", immediateRender: false },
+  8.2,
+);
+tl.to("#world", { scale: Z, duration: 0.8, ease: "power2.inOut" }, 8.5); // smooth zoom-out to 0.82
+tl.to("#z100", { opacity: 0, duration: 0.15 }, 8.9);
+tl.to("#z75", { opacity: 1, duration: 0.15 }, 8.95);
+tl.fromTo(
+  "#ha1",
+  { scale: 0.5, opacity: 0 },
+  { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.8)", immediateRender: false },
+  8.5,
+);
+sfx("ha1", 8.5); // 8.5 thump: modular packaging
+flip("tgA", 8.55, 0);
+flip("tgB", 8.55, 0);
+ledOff("ledC", 8.55);
+tl.to("#ha1", { x: -150, y: -140, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#tgA", { x: -120, y: -50, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#tgB", { x: -120, y: -230, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#ledS", { x: 180, y: -90, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#ledC", { x: 180, y: 80, duration: 0.6, ease: "power2.inOut" }, 8.5);
+tl.to("#ledC .lblI", { opacity: 0, duration: 0.15 }, 8.7);
+tl.to("#ledC .lblIII", { opacity: 1, duration: 0.2 }, 8.75);
+// truth-table card morphs: 4-row half-adder table → full 8-row table (adds the C_in column)
+rowOff("haR3", 8.6);
+tl.to("#ttHA", { opacity: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 9.0);
+tl.fromTo(
+  "#ttFA",
+  { opacity: 0, scale: 1.03 },
+  { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false },
+  9.3,
+);
+rowOn("faR0", 9.9, 0, 0);
+const HA1P = w2p(340, 520),
+  HA2P = w2p(640, 520),
+  ORP = w2p(880, 840);
+hop(8.6, HA1P[0], HA1P[1], 0.8);
+down(9.5, false);
+partOn("ha1", 9.45, 0.55);
+tl.set("#ha2", { x: -300, y: 0 }, 9.4);
+tl.fromTo("#ha2", { opacity: 0 }, { opacity: 0.7, duration: 0.15, immediateRender: false }, 9.5);
+dragItem("ha2", 9.55, 10.0, HA1P, HA2P, [640, 520], Z, 1, false); // 10.0 HA 2 drops
+up(10.0);
+ring(10.0);
+fade("#ha2", 10.0, 1, 0.1);
+pop("ha2", 10.0, 1.07);
+sfx("ha2", 10.0);
+partOff("ha1", 10.05);
+hop(10.05, TILE.or[0], TILE.or[1], 0.5);
+down(10.6, false);
+tilePick("or", 10.6, 11.2);
+dragItem("gOr", 10.65, 11.2, TILE.or, ORP, [880, 840], Z, 0.5); // 11.2 OR drops
+up(11.2);
+pop("gOr", 11.2, 1.08);
+sfx("gOr", 11.2);
+const PCin = w2p(100, 960);
+hop(11.25, PCin[0], PCin[1], 1.1);
+tilePick("tog", 12.3, 12.8);
+fly("tgC", 12.3, 12.8, TILE.tog, [100, 960], Z); // 12.8 C_in placed
+click(12.8);
+banner(12.8, "bn4");
+const PA = w2p(160, 470),
+  PS1 = w2p(550, 470),
+  POR2 = w2p(780, 860),
+  PLS = w2p(1010, 470);
+hop(12.9, PA[0], PA[1], 0.3);
+autoWire(13.0, 13.3, "FA");
+autoWire(13.0, 13.3, "FB");
+hop(13.3, PS1[0], PS1[1], 0.3);
+autoWire(13.4, 13.7, "FS1");
+autoWire(13.5, 14.0, "FCIN");
+tl.to("#bdS1", { opacity: 1, duration: 0.15 }, 13.7);
+click(14.0);
+settleWires(14.0, ["FA", "FB", "FS1", "FCIN"]); // 14.0 S1 → HA2, C_in → HA2
+hop(14.1, POR2[0], POR2[1], 0.4);
+autoWire(14.3, 14.85, "FC1");
+autoWire(14.5, 14.95, "FC2");
+tl.to("#bdC1, #bdC2", { opacity: 1, duration: 0.15 }, 14.85);
+banner(14.7, "bn6"); // OR ≡ ADD logic bridge
+hop(14.9, PLS[0], PLS[1], 0.4);
+autoWire(15.0, 15.35, "FS2");
+autoWire(15.1, 15.5, "FOR");
+up(15.5);
+ring(15.5);
+settleWires(15.5, ["FC1", "FC2", "FS2", "FOR"]); // 15.5 outputs lock
+sfx("gOr", 15.5);
+sfx("ha2", 15.5);
 
-      /* =====================================================================================
-         ACT III (19.5 – 24.5)  1 + 1 + 1 = 3
+/* =====================================================================================
+         ACT III (17 – 21.5)  1 + 1 + 1 = 3 — THE EUREKA CLIMAX
          ===================================================================================== */
-      [["FA", 19.1, 0.1], ["FB", 19.1, 0.1], ["FCIN", 19.1, 0.35], ["FS1", 19.2, 0.12], ["FC1", 19.2, 0.4], ["FC2", 19.3, 0.2], ["FS2", 19.3, 0.2], ["FOR", 19.45, 0.05]].forEach(([id, t, d]) => pulse(id, t, d));
-      const PAt = w2p(100, 470), PBt = w2p(100, 570), PCt = w2p(100, 960);
-      hop(19.3, PAt[0], PAt[1], 0.6);
-      click(20.0); flip("tgA", 20.0, 1);                                               // 20.0 A = 1
-      rowOff("faR0", 20.0); rowOn("faR4", 20.02, 1, 0, 0.1);
-      lit("FA", 20.02, 0.12);
-      hop(20.1, PBt[0], PBt[1], 0.55);
-      click(20.8); flip("tgB", 20.8, 1);                                               // 20.8 B = 1
-      rowOff("faR4", 20.8); rowOn("faR6", 20.82, 0, 1, 0.1);
-      lit("FB", 20.82, 0.12);
-      hop(20.9, PCt[0], PCt[1], 0.55);
-      click(21.6); flip("tgC", 21.6, 1);                                               // 21.6 C_in = 1
-      rowOff("faR6", 21.6); rowOn("faR7", 21.62, 1, 1, 1.2);
-      lit("FCIN", 21.62, 0.48);
-      // 22.0–23.1 pulses ripple through both stages
-      partOn("ha1", 22.0, 0.8); lit("FC1", 22.05, 0.5);                                // HA1: S1 = 0, C1 = 1
-      partOn("gOr", 22.6); lit("FOR", 22.6, 0.08); ledOn("ledC", 22.7); sfx("gOr", 22.6); // 22.6 relay thump: C_out = 1 (red)
-      partOn("ha2", 22.8, 0.8); lit("FS2", 22.8, 0.3); ledOn("ledS", 23.12); sfx("ha2", 22.8); // 22.8 chime: S = 1 (blue)
-      banner(23.0, "bn5");
-      const PLEDS = w2p(1020, 470);
-      hop(21.8, PLEDS[0], PLEDS[1], 1.2);
-      // 24.5 active row [1 1 1 | 1 1] pulses
-      tl.to("#faR7 .bg", { borderColor: "#0088FF", boxShadow: "0 0 18px rgba(0,136,255,0.85)", duration: 0.2 }, 24.5);
-      tl.fromTo("#faR7", { scaleY: 1 }, { scaleY: 1.1, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false }, 24.5);
-      tl.fromTo("#faR7 .ck", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)", immediateRender: false }, 24.52);
+[
+  ["FA", 15.7, 0.2],
+  ["FB", 15.7, 0.2],
+  ["FCIN", 15.7, 0.45],
+  ["FS1", 15.85, 0.2],
+  ["FC1", 15.85, 0.5],
+  ["FC2", 16.0, 0.3],
+  ["FS2", 16.0, 0.3],
+  ["FOR", 16.3, 0.1],
+].forEach(([id, t, d]) => pulse(id, t, d));
+const PAt = w2p(100, 470),
+  PBt = w2p(100, 570),
+  PCt = w2p(100, 960);
+hop(16.2, PAt[0], PAt[1], 0.7);
+click(17.0);
+flip("tgA", 17.0, 1); // 17.0 A = 1
+rowOff("faR0", 17.0);
+rowOn("faR4", 17.02, 1, 0, 0.1);
+lit("FA", 17.02, 0.3);
+hop(17.1, PBt[0], PBt[1], 0.45);
+click(17.6);
+flip("tgB", 17.6, 1); // 17.6 B = 1
+rowOff("faR4", 17.6);
+rowOn("faR6", 17.62, 0, 1, 0.1);
+lit("FB", 17.62, 0.3);
+hop(17.7, PCt[0], PCt[1], 0.45);
+click(18.2);
+flip("tgC", 18.2, 1); // 18.2 C_in = 1
+rowOff("faR6", 18.2);
+rowOn("faR7", 18.22, 1, 1, 1.1);
+lit("FCIN", 18.22, 0.48);
+// converge: all three packets have arrived → HA1 fires, its carry packet streams toward the OR gate
+fire("ha1", 18.7, 0.8);
+lit("FC1", 18.72, 0.48); // HA1: S1 = 0, C1 = 1
+fire("gOr", 19.2);
+lit("FOR", 19.2, 0.1); // 19.2 relay thump: OR → C_out = 1
+explode("ledC", 19.3);
+fire("ha2", 19.4, 0.8);
+lit("FS2", 19.4, 0.25); // 19.4 chime: HA2 → S = 1
+explode("ledS", 19.65);
+tl.fromTo(
+  "#plate",
+  { boxShadow: "inset 0 0 0px rgba(0,136,255,0)" },
+  {
+    boxShadow: "inset 0 0 90px rgba(0,136,255,0.4)",
+    duration: 0.15,
+    yoyo: true,
+    repeat: 1,
+    ease: "power2.out",
+    immediateRender: false,
+  },
+  19.2,
+);
+tl.to(
+  "#faR7 .bg",
+  { borderColor: "#0088FF", boxShadow: "0 0 22px rgba(0,136,255,1)", duration: 0.2 },
+  19.4,
+);
+tl.fromTo(
+  "#faR7",
+  { scaleY: 1 },
+  {
+    scaleY: 1.12,
+    duration: 0.12,
+    yoyo: true,
+    repeat: 1,
+    ease: "power2.out",
+    immediateRender: false,
+  },
+  19.4,
+);
+banner(19.7, "bn5");
+hop(18.8, w2p(1020, 470)[0] - 60, w2p(1020, 470)[1] + 90, 1.2);
 
-      /* =====================================================================================
-         ACT IV (24.5 – 27.0)  CTA — strictly inside y 1580–1630; final hold
+/* =====================================================================================
+         ACT IV (21.5 – 25.0)  GAMIFIED CHALLENGE CARD — strictly inside y 1460–1640
          ===================================================================================== */
-      tl.fromTo("#cta", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, 24.8);
-      hop(25.0, 820, 1605, 0.6);
-      down(25.8);
-      tl.to("#cta", { scale: 0.975, duration: 0.06, ease: "power2.out" }, 25.8);
-      tl.to("#cta", { scale: 1, duration: 0.2, ease: "back.out(3)" }, 25.86);
-      up(25.9);
-      tl.to("#cta", { boxShadow: "0 0 30px 3px rgba(0,136,255,0.7)", borderColor: "rgba(0,136,255,1)", duration: 0.3, ease: "sine.inOut" }, 25.8);
-      tl.to("#cta", { boxShadow: "0 0 8px 0px rgba(0,136,255,0.1)", borderColor: "rgba(0,136,255,0.5)", duration: 0.3, ease: "sine.inOut" }, 26.1);
-      tl.to("#cta", { boxShadow: "0 0 30px 3px rgba(0,136,255,0.7)", borderColor: "rgba(0,136,255,1)", duration: 0.3, ease: "sine.inOut" }, 26.4);
-      tl.to("#cta", { boxShadow: "0 0 8px 0px rgba(0,136,255,0.1)", borderColor: "rgba(0,136,255,0.5)", duration: 0.25, ease: "sine.inOut" }, 26.7);
+click(21.5); // 21.5 card reveals
+tl.fromTo(
+  "#cta",
+  { opacity: 0, y: 24 },
+  { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false },
+  21.5,
+);
+[22.5, 22.9].forEach((t) =>
+  tl.fromTo(
+    "#ctaRing",
+    { scaleX: 1, scaleY: 1, opacity: 0.9 },
+    {
+      scaleX: 1.07,
+      scaleY: 1.45,
+      opacity: 0,
+      duration: 0.55,
+      ease: "power2.out",
+      immediateRender: false,
+    },
+    t,
+  ),
+);
+tl.to(
+  "#ctaBtn",
+  { boxShadow: "0 0 34px rgba(0,136,255,0.8)", duration: 0.25, ease: "sine.inOut" },
+  22.5,
+);
+tl.to(
+  "#ctaBtn",
+  { boxShadow: "0 0 10px rgba(0,136,255,0.25)", duration: 0.25, ease: "sine.inOut" },
+  22.8,
+);
+tl.to(
+  "#ctaBtn",
+  { boxShadow: "0 0 34px rgba(0,136,255,0.8)", duration: 0.25, ease: "sine.inOut" },
+  22.9,
+);
+tl.to(
+  "#ctaBtn",
+  { boxShadow: "0 0 10px rgba(0,136,255,0.25)", duration: 0.2, ease: "sine.inOut" },
+  23.15,
+);
+hop(21.9, 850, 1588, 1.1); // cursor glides onto the button
+down(23.2); // 23.2 heavy switch snap
+tl.to("#ctaBtn", { scale: 0.94, duration: 0.06, ease: "power2.out" }, 23.2);
+tl.to("#ctaBtn", { scale: 1, duration: 0.3, ease: "back.out(3)" }, 23.27);
+tl.to(
+  "#ctaBtn",
+  {
+    backgroundColor: "rgba(255,255,255,0.95)",
+    boxShadow: "0 0 50px rgba(255,255,255,0.9)",
+    duration: 0.05,
+  },
+  23.2,
+);
+tl.to(
+  "#ctaBtn",
+  {
+    backgroundColor: "rgba(0,136,255,0.32)",
+    boxShadow: "0 0 26px rgba(0,136,255,0.8)",
+    duration: 0.35,
+    ease: "power2.out",
+  },
+  23.27,
+);
+tl.to("#ctaA", { opacity: 0, duration: 0.08 }, 23.22);
+tl.to("#ctaB", { opacity: 1, duration: 0.15 }, 23.25);
+up(23.3);
+click(24.5); // 24.5 anchor
 
-      // single source of truth for sound: CUES drive the live preview voices (the baked WAV uses the same list)
-      CUES.forEach(([t, k]) => tl.call(() => { if (SFX.live) SFX.play(k); }, null, t));
+// wires that are still HIGH keep their spark layer marching until the end
+Object.keys(FLOW).forEach((id) => {
+  if (FLOW[id] != null) flow(id, FLOW[id], 25);
+});
 
-      tl.to({}, { duration: 0.01 }, 26.99); // anchor the end of the 27.0 s timeline
-      window.__timelines["main"] = tl;
-      window.__timeline = tl;
-      tl.seek(0);
+// single source of truth for sound: CUES drive the live preview voices (the baked WAV uses the same list)
+CUES.forEach(([t, k]) =>
+  tl.call(
+    () => {
+      if (SFX.live) SFX.play(k);
+    },
+    null,
+    t,
+  ),
+);
+
+tl.to({}, { duration: 0.01 }, 24.99); // anchor the end of the 25.0 s timeline
+window.__timelines["main"] = tl;
+window.__timeline = tl;
+tl.seek(0);
 
     </script>
   </body>

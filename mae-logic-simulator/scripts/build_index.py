@@ -56,16 +56,25 @@ wire("FC1", [(430, 570), (450, 570), (450, 860), (780, 860)], BLUE, BLUE, hop={2
 wire("FOR", [(980, 840), (990, 840)], RED, RED)
 
 
+def wire_len(w):
+    p = w["pts"]
+    return sum(abs(p[i][0] - p[i - 1][0]) + abs(p[i][1] - p[i - 1][1]) for i in range(1, len(p)))
+
+
 def wire_svg(wid):
     w = WIRES[wid]
     d = wire_d(w)
+    gap = int(wire_len(w)) + 60
+    pk = f"stroke-dasharray:24 {gap};stroke-dashoffset:24"
     return (
         f'<g id="w_{wid}" class="wire">'
         f'<path class="b" d="{d}" pathLength="1"/>'
         f'<path class="g" d="{d}" pathLength="1" style="stroke:{w["draw"]}"/>'
         f'<g class="l"><path class="lg" d="{d}" pathLength="1" style="stroke:{w["lit"]}"/>'
         f'<path class="lc" d="{d}" pathLength="1" style="stroke:{w["lit"]}"/></g>'
-        f'<path class="p" d="{d}" pathLength="1"/></g>'
+        f'<path class="f" d="{d}" style="stroke-dasharray:6 34;stroke-dashoffset:0"/>'
+        f'<path class="pg" d="{d}" style="stroke:{w["lit"]};{pk}"/>'
+        f'<path class="p" d="{d}" style="{pk}"/></g>'
     )
 
 
@@ -132,6 +141,7 @@ def toggle(tid, cx, cy, label_svg, on_color):
 
 def led(lid, cx, cy, color, top_svg, bot_svg):
     inner = (
+        f'<circle class="bloom" r="30" fill="{color}" opacity="0"/>'
         f'<circle class="ring" r="30" fill="none" stroke="{color}" stroke-width="4" opacity="0"/>'
         f'<circle r="30" fill="#14141F" stroke="{OFF}" stroke-width="4"/>'
         f'<g class="on" opacity="0" filter="url(#glowM)"><circle r="30" fill="{color}" fill-opacity=".38" stroke="{color}" stroke-width="4"/>'
@@ -255,24 +265,28 @@ def cell(txt, cls, w):
     return f'<b class="c {cls}" style="flex-basis:{w}px">{txt}</b>'
 
 
-WID = [110, 110, 130, 110, 150]
-fa_rows = ""
-for idx in range(8):
-    a, b_, ci = (idx >> 2) & 1, (idx >> 1) & 1, idx & 1
-    s, c = a ^ b_ ^ ci, (a & b_) | ((a ^ b_) & ci)
-    fa_rows += (f'<div class="tr" id="faR{idx}"><i class="bg"></i>' + cell(a, "ci", WID[0]) + cell(b_, "ci", WID[1]) + cell(ci, "ci", WID[2])
-                + '<b class="ts"></b>' + cell(s, "os", WID[3]) + cell(c, "oc", WID[4]) + (CHECK if idx == 7 else "") + "</div>")
-fa_hdr = ('<div class="th">' + cell(v("A"), "", WID[0]) + cell(v("B"), "", WID[1]) + cell(v("C") + '<sub class="v">in</sub>', "", WID[2])
-          + '<b class="ts"></b>' + cell(v("S"), "", WID[3]) + cell(v("C") + '<sub class="v">out</sub>', "", WID[4]) + "</div>")
-HW = 130  # half-adder table: A B | S C only (no C_in column while the half adder is tested)
+FW = [54, 54, 66, 54, 100]  # full-adder group columns (A B Cin | S Cout), two groups side by side
+fa_groups = ""
+for g in range(2):
+    rows = ""
+    for r in range(4):
+        idx = g * 4 + r
+        a, b_, ci = (idx >> 2) & 1, (idx >> 1) & 1, idx & 1
+        s, c = a ^ b_ ^ ci, (a & b_) | ((a ^ b_) & ci)
+        rows += (f'<div class="tr" id="faR{idx}"><i class="bg"></i>' + cell(a, "ci", FW[0]) + cell(b_, "ci", FW[1]) + cell(ci, "ci", FW[2])
+                 + '<b class="ts"></b>' + cell(s, "os", FW[3]) + cell(c, "oc", FW[4]) + CHECK + "</div>")
+    hdr = ('<div class="th">' + cell(v("A"), "", FW[0]) + cell(v("B"), "", FW[1]) + cell(v("C") + '<sub class="v">in</sub>', "", FW[2])
+           + '<b class="ts"></b>' + cell(v("S"), "", FW[3]) + cell(v("C") + '<sub class="v">out</sub>', "", FW[4]) + "</div>")
+    fa_groups += f'<div class="grp fa" style="left:{34 + g * 368}px">{hdr}{rows}</div>'
+HW = 110  # half-adder table: A B | S C only
 ha_rows = ""
 for idx in range(4):
     a, b_ = idx >> 1, idx & 1
     ha_rows += (f'<div class="tr" id="haR{idx}"><i class="bg"></i>' + cell(a, "ci", HW) + cell(b_, "ci", HW) + '<b class="ts"></b>'
-                + cell(a ^ b_, "os", HW) + cell(a & b_, "oc", HW) + "</div>")
+                + cell(a ^ b_, "os", HW) + cell(a & b_, "oc", HW) + CHECK + "</div>")
 ha_hdr = ('<div class="th">' + cell(v("A"), "", HW) + cell(v("B"), "", HW) + '<b class="ts"></b>' + cell(v("S"), "", HW) + cell(v("C"), "", HW) + "</div>")
 table_html = (f'<div id="ttHA" class="tt"><div class="grp ha">{ha_hdr}{ha_rows}</div></div>'
-              f'<div id="ttFA" class="tt"><div class="grp">{fa_hdr}{fa_rows}</div></div>')
+              f'<div id="ttFA" class="tt">{fa_groups}</div>')
 
 banner_html = f"""
 <div class="pg" id="bn0"><span class="t">CAN WE ADD NUMBERS USING LIGHT?</span>{BOLT}</div>
@@ -281,7 +295,7 @@ banner_html = f"""
 <div class="pg col" id="bn3"><span class="t">HOW TO ADD A PREVIOUS</span><span class="t">CARRY ({v("C")}<sub class="v">in</sub>)?</span></div>
 <div class="pg col" id="bn4"><span class="l"><span class="t">FULL ADDER:</span><span class="q"></span><span class="m">{v("S")} = {v("A")} ⊕ {v("B")} ⊕ {v("C")}<sub class="v">in</sub></span></span><span class="l"><span class="m">{v("C")}<sub class="v">out</sub> = ({v("A")} ⋅ {v("B")}) + ({v("S")}<sub>1</sub> ⋅ {v("C")}<sub class="v">in</sub>)</span></span></div>
 <div class="pg col" id="bn6"><span class="l"><span class="m">{v("C")}<sub class="v">out</sub> = {v("C")}<sub>1</sub> + {v("C")}<sub>2</sub></span></span><span class="l"><span class="t t24">({v("C")}<sub>1</sub> ⋅ {v("C")}<sub>2</sub> = 0 ⟹ OR is equivalent to ADD)</span></span></div>
-<div class="pg" id="bn5"><span class="m">1 + 1 + 1 = 3<sub>10</sub> = 11<sub>2</sub></span><span class="q"></span><span class="m">({v("S")} = 1,</span><span class="m">{v("C")}<sub class="v">out</sub> = 1)</span>{CHECK}</div>
+<div class="pg col big" id="bn5"><span class="l"><span class="m">1 + 1 + 1 = 3<sub>10</sub> = 11<sub>2</sub></span></span><span class="l"><span class="m">({v("S")} = 1, {v("C")}<sub class="v">out</sub> = 1)</span>{CHECK}</span></div>
 """
 
 PIN_ICON = (f'<svg width="30" height="38" viewBox="0 0 30 38" overflow="visible"><path d="M15 36 V22 M6 22 H24 L21 8 H9 Z" fill="none" '
@@ -297,6 +311,7 @@ for key, val in {
     "@@BANNER@@": banner_html,
     "@@WP@@": json.dumps({k: w["pts"] for k, w in WIRES.items()}),
     "@@TIMELINE@@": timeline_js,
+    "@@WL@@": json.dumps({k: wire_len(w) for k, w in WIRES.items()}),
 }.items():
     assert key in html, key
     html = html.replace(key, val)

@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Bakes assets/sfx.wav (27.0 s, STEREO, 44.1 kHz, 16-bit) from the CUES block in index.html.
+"""Bakes assets/sfx.wav (25.0 s, STEREO, 44.1 kHz, 16-bit) from the CUES block in index.html.
 
 Procedural only — pure sine/shaped-sine voices, no noise buffers, no samples, no external files.
 Voices mirror the live Web Audio engine inside index.html (SFX object):
 
-  drone        permanent lab drone: 50 Hz at -24 dBFS (0.0631) + 100 Hz (0.02), whole 27.0 s
+  drone        permanent lab drone: 50 Hz at -24 dBFS (0.0631) + 100 Hz (0.02), whole 25.0 s
                (whole cycles -> loops click-free); right channel phase-offset for a stereo field
   click        mouse/toggle: down 1400 Hz transient, up 1800 Hz transient 60 ms later
   snap         terminal wire snap: sharp 2200 Hz micro-click (+4400 Hz overtone)
   thump        heavy relay strike: 85 Hz tanh-shaped sub + 1400 Hz transient
-  relay_thump  multi-tone relay: 85 Hz sub + 170 Hz body + 1400 Hz strike + contact bounce at +30 ms
-  chime        pure sine pair 1200 / 1800 Hz, long decay
+  relay_thump  climax: DOUBLE relay — 80 Hz sub twice (+90 ms) + 160 Hz body + 1400 Hz strike + contact bounce
+  chime        crystalline: pure sines 1200 / 1800 / 2400 / 3600 Hz, long decay
 
 Usage:  python3 scripts/make_sfx.py [index.html] [assets/sfx.wav]
 """
@@ -22,7 +22,7 @@ import wave
 import numpy as np
 
 SR = 44100
-DUR = 27.0
+DUR = 25.0
 MASTER = 0.5
 
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -67,8 +67,8 @@ VOICES = {
     "click": lambda: [(0.0, tone(1400, 0.34, 0.03)), (0.06, tone(1800, 0.22, 0.026))],
     "snap": lambda: [(0.0, layer(tone(2200, 0.42, 0.016), tone(4400, 0.12, 0.009)))],
     "thump": lambda: [(0.0, layer(sub(85, 0.6, 0.45), tone(1400, 0.25, 0.014)))],
-    "relay_thump": lambda: [(0.0, layer(sub(85, 0.5, 0.4), sub(170, 0.18, 0.2), tone(1400, 0.4, 0.014))), (0.03, tone(1400, 0.2, 0.01))],
-    "chime": lambda: [(0.0, layer(tone(1200, 0.16, 0.9, 0.003), tone(1800, 0.1, 0.7, 0.003)))],
+    "relay_thump": lambda: [(0.0, layer(sub(80, 0.55, 0.45), sub(160, 0.2, 0.2), tone(1400, 0.4, 0.014))), (0.03, tone(1400, 0.2, 0.01)), (0.09, layer(sub(80, 0.4, 0.35), tone(1400, 0.28, 0.012)))],
+    "chime": lambda: [(0.0, layer(tone(1200, 0.16, 0.9, 0.003), tone(1800, 0.1, 0.7, 0.003), tone(2400, 0.07, 0.6, 0.003), tone(3600, 0.04, 0.5, 0.003)))],
 }
 
 n_total = int(DUR * SR)
