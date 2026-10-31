@@ -1,0 +1,10 @@
+{
+  "name": "mae-logic-simulator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "python3 scripts/build_index.py && python3 scripts/make_sfx.py",
+    "check": "python3 scripts/make_sfx.py && npx --yes hyperframes@0.8.223 check",
+    "render": "python3 scripts/make_sfx.py && npx --yes hyperframes@0.8.223 render --fps 60"
+  }
+}

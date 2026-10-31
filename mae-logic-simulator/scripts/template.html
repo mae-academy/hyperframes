@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>MAE Academy — Logic Circuit Simulator: Half Adder → Full Adder</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+      /* KaTeX 0.16.8 faces, shipped locally (MAE_STYLE_SPEC §3). KaTeX_Math-Italic.woff2 already IS the italic. */
+      @font-face { font-family: "KaTeX_Main"; src: url("assets/fonts/KaTeX_Main-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+      @font-face { font-family: "KaTeX_Main"; src: url("assets/fonts/KaTeX_Main-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+      @font-face { font-family: "KaTeX_Math"; src: url("assets/fonts/KaTeX_Math-Italic.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+
+      :root {
+        --flame-red: #ff0044; --electric-blue: #0088ff; --neon-purple: #b026ff; --pure-white: #ffffff;
+        --dark-bg: #0a0a10; --plate: #12121c; --grid-line: #161622; --wire-off: #2a2a3c; --dim: #8a8aa8;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--dark-bg); }
+      body { font-family: "KaTeX_Main", serif; font-weight: 700; color: #fff; }
+      #root { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--dark-bg); }
+      #scene { position: absolute; inset: 0; isolation: isolate; }
+      #scene > * { position: absolute; }
+
+      /* ---- atmosphere ---- */
+      #bgGrid { inset: 0; z-index: -30; opacity: .9;
+        background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 60px 60px;
+        -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 45%, transparent 100%);
+        mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 45%, transparent 100%); }
+      #glowA { inset: 0; z-index: -29; background: radial-gradient(900px 620px at 50% 34%, rgba(0,136,255,.08), transparent 70%); }
+      #glowB { inset: 0; z-index: -28; background: radial-gradient(800px 520px at 50% 80%, rgba(176,38,255,.07), transparent 70%); }
+
+      .v { font-family: "KaTeX_Math"; font-weight: 400; font-style: normal; }
+      sub { font-family: "KaTeX_Main"; font-weight: 700; font-size: .62em; vertical-align: -.24em; line-height: 0; }
+      sub.v { font-family: "KaTeX_Math"; font-weight: 400; }
+      .fm { font-family: "KaTeX_Main"; font-weight: 700; }
+      .fv { font-family: "KaTeX_Math"; font-weight: 400; }
+
+      /* ---- Zone 1 : header & app bar (y 110-290) ---- */
+      #chrome { left: 90px; top: 110px; width: 900px; height: 58px; border-radius: 20px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.08); }
+      #chrome .dot { position: absolute; top: 21px; width: 16px; height: 16px; border-radius: 50%; opacity: .5; }
+      #chrome .url { position: absolute; left: 50%; top: 11px; width: 380px; height: 34px; margin-left: -190px; border-radius: 17px; background: rgba(10,10,16,.7); border: 1px solid rgba(255,255,255,.08); color: var(--dim); font-size: 21px; line-height: 32px; text-align: center; letter-spacing: .02em; }
+      #title { left: 90px; top: 182px; width: 900px; height: 48px; font-size: 36px; line-height: 48px; text-align: center; color: var(--electric-blue); white-space: nowrap; }
+      #badgeWrap { left: 90px; top: 242px; width: 900px; height: 42px; display: flex; justify-content: center; }
+      #badge { height: 42px; padding: 0 22px; border-radius: 21px; border: 2px solid var(--neon-purple); background: rgba(176,38,255,.08); color: var(--neon-purple); font-size: 24px; line-height: 38px; white-space: nowrap; display: flex; align-items: center; gap: 12px; }
+      #badge i { width: 12px; height: 12px; border-radius: 50%; background: var(--electric-blue); box-shadow: 0 0 10px var(--electric-blue); }
+
+      /* ---- Zone 2 : workspace ---- */
+      #plate { left: 90px; top: 310px; width: 900px; height: 870px; border-radius: 32px; background: var(--plate); border: 2px solid rgba(255,255,255,.08); z-index: -20; }
+      #wm { left: 90px; top: 690px; width: 900px; height: 100px; text-align: center; font-size: 88px; line-height: 100px; color: #fff; opacity: .06; z-index: -10; white-space: nowrap; }
+      #dock { left: 0; top: 0; width: 1080px; height: 1920px; pointer-events: none; }
+      .tile { position: absolute; width: 164px; height: 74px; border-radius: 16px; background: rgba(30,30,46,.6); border: 1.5px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 4px; padding-left: 6px; }
+      .tile span { font-size: 18px; line-height: 20px; color: #fff; }
+      .tile svg { flex: 0 0 52px; }
+      #stage { left: 0; top: 0; width: 1080px; height: 1920px; }
+      #status { left: 114px; top: 1144px; height: 26px; font-size: 20px; line-height: 26px; color: var(--dim); white-space: nowrap; }
+      #status .z { position: relative; display: inline-block; width: 58px; height: 26px; vertical-align: top; }
+      #status .z b { position: absolute; left: 0; top: 0; }
+
+      /* ---- SVG circuit primitives ---- */
+      #stage text { font-weight: 700; }
+      .wire path { fill: none; stroke-linejoin: round; stroke-linecap: butt; stroke-dasharray: 1; stroke-dashoffset: 1; stroke-width: 5; }
+      .wire .b { stroke: var(--wire-off); }
+      .wire .g { opacity: 1; }
+      .wire .lg { stroke-width: 13; opacity: .3; }
+      .wire .p { stroke: #fff; stroke-width: 3.5; stroke-dasharray: .1 3; stroke-dashoffset: .1; opacity: 0; }
+      .sf { opacity: 0; }
+
+      /* ---- Zone 3 : banner (y 1210-1370) ---- */
+      #banner { left: 180px; top: 1230px; width: 720px; height: 110px; border-radius: 26px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.4); box-shadow: 0 0 26px rgba(255,0,68,.12), inset 0 0 22px rgba(255,0,68,.06); overflow: hidden; }
+      .pg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; opacity: 0; padding: 0 16px; white-space: nowrap; }
+      .pg.col { flex-direction: column; gap: 4px; }
+      .pg .l { display: flex; align-items: center; }
+      .pg .t { font-size: 28px; line-height: 36px; color: #fff; }
+      .pg .m { font-size: 30px; line-height: 36px; color: #fff; }
+      .pg .q { display: inline-block; width: 16px; }
+      .pg .sep { color: var(--flame-red); margin: 0 6px; }
+      #bn1 .t, #bn4 .t { color: var(--neon-purple); }
+      .pg .bolt { margin-left: 12px; }
+      .pg .ck { margin-left: 12px; flex: 0 0 26px; }
+
+      /* ---- Zone 4 : truth-table card + CTA ---- */
+      #card { left: 150px; top: 1390px; width: 780px; height: 240px; border-radius: 32px; overflow: hidden;
+        background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)), rgba(30,30,46,.5); border: 1px solid rgba(255,255,255,.1); }
+      .tt { position: absolute; inset: 0; }
+      .grp { position: absolute; top: 8px; }
+      .grp.ha { left: 249px; }
+      .th, .tr { display: flex; align-items: center; height: 30px; position: relative; }
+      .th { height: 38px; }
+      .c { display: block; flex: 0 0 66px; text-align: center; font-size: 24px; line-height: 30px; color: var(--dim); position: relative; z-index: 1; font-weight: 700; }
+      .th .c { color: #fff; font-size: 26px; line-height: 38px; }
+      .th .v { font-size: 26px; }
+      .ts { display: block; flex: 0 0 18px; height: 22px; position: relative; z-index: 1; }
+      .ts::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
+      .tr .bg { position: absolute; left: -6px; right: -6px; top: 0; bottom: 0; border-radius: 9px; background: rgba(0,136,255,.2); border: 2px solid rgba(0,136,255,.75); opacity: 0; box-shadow: 0 0 0 rgba(0,136,255,0); }
+      .tr .ck { position: absolute; right: -24px; top: 2px; opacity: 0; }
+      #cta { left: 130px; top: 1572px; width: 820px; height: 76px; border-radius: 28px; background: linear-gradient(rgba(0,136,255,.14), rgba(0,136,255,.14)), #0b0e19; border: 2px solid rgba(0,136,255,.5); box-shadow: 0 0 8px 0 rgba(0,136,255,.1); }
+      #cta .pinI { position: absolute; left: 26px; top: 19px; }
+      #cta .ct { position: absolute; left: 70px; right: 24px; top: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 28px; line-height: 32px; color: var(--electric-blue); text-align: center; white-space: nowrap; }
+
+      /* ---- cursor ---- */
+      #ring { left: 0; top: 0; width: 0; height: 0; z-index: 59; }
+      #ring i { position: absolute; left: -34px; top: -34px; width: 68px; height: 68px; border-radius: 50%; border: 3px solid var(--electric-blue); box-shadow: 0 0 18px rgba(0,136,255,.8); opacity: 0; }
+      #cursor { left: 0; top: 0; width: 0; height: 0; z-index: 60; }
+      #cursor svg { position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 7px rgba(0,136,255,.95)); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="36" data-width="1080" data-height="1920">
+      <div id="scene">
+        <div id="bgGrid"></div>
+        <div id="glowA"></div>
+        <div id="glowB"></div>
+
+        <!-- Zone 1 -->
+        <div id="chrome" data-layout-ignore>
+          <i class="dot" style="left:24px;background:#ff5f56"></i>
+          <i class="dot" style="left:54px;background:#b026ff"></i>
+          <i class="dot" style="left:84px;background:#27c93f"></i>
+          <div class="url">maeacademy.org</div>
+        </div>
+        <div id="title">MAE ACADEMY // LOGIC SIMULATOR v2.4</div>
+        <div id="badgeWrap"><div id="badge"><i id="liveDot"></i>ACTIVE ENGINE: 5V CMOS REALTIME LOGIC</div></div>
+
+        <!-- Zone 2 -->
+        <div id="plate"></div>
+        <div id="wm" data-layout-ignore>@MAE.Academy</div>
+        <div id="dock" data-layout-ignore>@@DOCK@@</div>
+        <svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glowS" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="glowM" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <pattern id="dots" x="-10" y="-10" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.6" fill="rgba(255,255,255,0.14)"/></pattern>
+            <clipPath id="plateClip"><rect x="92" y="312" width="896" height="866" rx="30"/></clipPath>
+          </defs>
+          <g clip-path="url(#plateClip)" data-layout-allow-overflow><g id="worldFade"><g id="world">
+@@WORLD@@
+          </g></g></g>
+        </svg>
+        <div id="status" data-layout-ignore><span class="fm">SNAP ON &nbsp;|&nbsp; GRID 20 PX &nbsp;|&nbsp; ZOOM</span> <span class="z"><b id="z100" class="fm">100%</b><b id="z75" class="fm" style="opacity:0">75%</b></span></div>
+
+        <!-- Zone 3 -->
+        <div id="banner">@@BANNER@@</div>
+
+        <!-- Zone 4 -->
+        <div id="card">@@TABLES@@</div>
+        <div id="cta">
+          <div class="pinI">@@PIN@@</div>
+          <div class="ct" id="cta0"><span>TRY THIS SIMULATOR YOURSELF —</span><span>LINK IN PINNED COMMENT &amp; BIO <svg width="18" height="26" viewBox="0 0 22 30" style="vertical-align:-3px;margin-left:4px" overflow="visible"><polygon points="13,0 0,17 9,17 7,30 22,11 12,11" fill="#0088FF"/></svg></span></div>
+          <div class="ct" id="cta1" style="opacity:0"><span>BUILD &amp; SIMULATE CIRCUITS YOURSELF //</span><span>LINK IN PINNED COMMENT</span></div>
+        </div>
+
+        <div id="ring"><i></i></div>
+        <div id="cursor"><svg width="40" height="46" viewBox="0 0 40 46" overflow="visible"><g id="cArrow"><polygon points="0,0 0,30 7.5,23.5 13,36 19.5,33 14,21 23.5,21" fill="#ffffff" stroke="#0088ff" stroke-width="3" stroke-linejoin="round"/></g></svg></div>
+      </div>
+
+      <audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="36" data-track-index="2" data-volume="1"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const WP = @@WP@@; // wire vertex lists (world coords), emitted by scripts/build_index.py
+@@TIMELINE@@
+    </script>
+  </body>
+</html>
