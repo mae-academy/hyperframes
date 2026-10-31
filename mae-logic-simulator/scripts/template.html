@@ -19,17 +19,17 @@
       html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--dark-bg); }
       body { font-family: "KaTeX_Main", serif; font-weight: 700; color: #fff; }
       #root { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--dark-bg); }
-      #scene { position: absolute; inset: 0; isolation: isolate; }
+      #scene { position: absolute; left: 0; right: 0; top: 30px; bottom: -30px; isolation: isolate; } /* whole UI sits 30 px lower (platform top safe zone) */
       #scene > * { position: absolute; }
 
       /* ---- atmosphere ---- */
-      #bgGrid { inset: 0; z-index: -30; opacity: .9;
+      #bgGrid { top: -30px; bottom: 30px; left: 0; right: 0; z-index: -30; opacity: .9;
         background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
         background-size: 60px 60px;
         -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 45%, transparent 100%);
         mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 45%, transparent 100%); }
-      #glowA { inset: 0; z-index: -29; background: radial-gradient(900px 620px at 50% 34%, rgba(0,136,255,.08), transparent 70%); }
-      #glowB { inset: 0; z-index: -28; background: radial-gradient(800px 520px at 50% 80%, rgba(176,38,255,.07), transparent 70%); }
+      #glowA { top: -30px; bottom: 30px; left: 0; right: 0; z-index: -29; background: radial-gradient(900px 620px at 50% 34%, rgba(0,136,255,.08), transparent 70%); }
+      #glowB { top: -30px; bottom: 30px; left: 0; right: 0; z-index: -28; background: radial-gradient(800px 520px at 50% 80%, rgba(176,38,255,.07), transparent 70%); }
 
       .v { font-family: "KaTeX_Math"; font-weight: 400; font-style: normal; }
       sub { font-family: "KaTeX_Main"; font-weight: 700; font-size: .62em; vertical-align: -.24em; line-height: 0; }
@@ -135,7 +135,7 @@
           <i class="dot" style="left:68px;background:#27c93f;border:1px solid rgba(26,171,41,0.9)"></i>
         </div>
         <div id="title">DIGITAL FULL ADDER</div>
-        <div id="urlbar"><svg width="16" height="20" viewBox="0 0 16 20"><rect x="2" y="9" width="12" height="9" rx="2" fill="rgba(255,255,255,.6)"/><path d="M4.5 9 V6 a3.5 3.5 0 0 1 7 0 V9" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2"/></svg><span>maeacademy.org/sim/logic-adder</span></div>
+        <div id="urlbar"><svg width="16" height="20" viewBox="0 0 16 20"><rect x="2" y="9" width="12" height="9" rx="2" fill="rgba(255,255,255,.6)"/><path d="M4.5 9 V6 a3.5 3.5 0 0 1 7 0 V9" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2"/></svg><span>maeacademy.org/simulations/digital-logic-design</span></div>
 
         <!-- Zone 2 -->
         <div id="plate"></div>
