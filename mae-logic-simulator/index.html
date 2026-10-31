@@ -230,11 +230,11 @@ const CUES = [
   [12.8, "click"],
   [14.0, "click"],
   [15.5, "snap"],
-  [17.0, "click"], // Toggle A=1
-  [17.6, "click"], // Toggle B=1
-  [18.2, "click"], // Toggle Cin=1
-  [19.2, "relay_thump"], // Climax LED explosion
-  [19.4, "chime"],
+  [16.8, "click"], // Toggle A=1
+  [17.4, "click"], // Toggle B=1
+  [18.0, "click"], // Toggle Cin=1
+  [18.8, "relay_thump"], // Climax LED explosion
+  [19.0, "chime"],
   [21.5, "click"], // Challenge card reveals
   [23.2, "snap"], // Cursor clicks CTA button
   [24.5, "click"], // Loop anchor
@@ -937,66 +937,48 @@ sfx("ha2", 15.5);
 const PAt = w2p(100, 470),
   PBt = w2p(100, 570),
   PCt = w2p(100, 960);
-hop(16.2, PAt[0], PAt[1], 0.7);
-click(17.0);
-flip("tgA", 17.0, 1); // 17.0 A = 1
-rowOff("faR0", 17.0);
-rowOn("faR4", 17.02, 1, 0, 0.1);
-lit("FA", 17.02, 0.3);
-hop(17.1, PBt[0], PBt[1], 0.45);
-click(17.6);
-flip("tgB", 17.6, 1); // 17.6 B = 1
-rowOff("faR4", 17.6);
-rowOn("faR6", 17.62, 0, 1, 0.1);
-lit("FB", 17.62, 0.3);
-hop(17.7, PCt[0], PCt[1], 0.45);
-click(18.2);
-flip("tgC", 18.2, 1); // 18.2 C_in = 1
-rowOff("faR6", 18.2);
-rowOn("faR7", 18.22, 1, 1, 1.1);
-lit("FCIN", 18.22, 0.48);
-// converge: all three packets have arrived → HA1 fires, its carry packet streams toward the OR gate
-fire("ha1", 18.7, 0.8);
-lit("FC1", 18.72, 0.48); // HA1: S1 = 0, C1 = 1
-fire("gOr", 19.2);
-lit("FOR", 19.2, 0.1); // 19.2 relay thump: OR → C_out = 1
-explode("ledC", 19.3);
-fire("ha2", 19.4, 0.8);
-lit("FS2", 19.4, 0.25); // 19.4 chime: HA2 → S = 1
-explode("ledS", 19.65);
+hop(16.0, PAt[0], PAt[1], 0.6); // cursor parks on Switch A well before the click
+click(16.8);
+flip("tgA", 16.8, 1); // 16.8 A = 1 (Electric Blue)
+rowOff("faR0", 16.8);
+rowOn("faR4", 16.82, 1, 0, 0.1);
+lit("FA", 16.82, 0.3);
+hop(16.95, PBt[0], PBt[1], 0.35); // moves DIRECTLY to Switch B and stops on it
+click(17.4);
+flip("tgB", 17.4, 1); // 17.4 B = 1 (Electric Blue)
+rowOff("faR4", 17.4);
+rowOn("faR6", 17.42, 0, 1, 0.1);
+lit("FB", 17.42, 0.3);
+hop(17.5, PCt[0], PCt[1], 0.4); // then to Switch C_in
+click(18.0);
+flip("tgC", 18.0, 1); // 18.0 C_in = 1 (Electric Blue)
+rowOff("faR6", 18.0);
+rowOn("faR7", 18.02, 1, 1, 0.7);
+lit("FCIN", 18.02, 0.48);
+// converge: A, B and C_in are all visibly HIGH → HA1 fires, its carry packet streams toward the OR gate
+fire("ha1", 18.5, 0.8);
+lit("FC1", 18.52, 0.28); // HA1: S1 = 0, C1 = 1
+fire("gOr", 18.8);
+lit("FOR", 18.8, 0.1); // 18.8 relay thump: OR → C_out = 1
+explode("ledC", 18.9);
+fire("ha2", 19.0, 0.8);
+lit("FS2", 19.0, 0.25); // 19.0 chime: HA2 → S = 1
+explode("ledS", 19.25);
 tl.fromTo(
   "#plate",
   { boxShadow: "inset 0 0 0px rgba(0,136,255,0)" },
-  {
-    boxShadow: "inset 0 0 90px rgba(0,136,255,0.4)",
-    duration: 0.15,
-    yoyo: true,
-    repeat: 1,
-    ease: "power2.out",
-    immediateRender: false,
-  },
-  19.2,
+  { boxShadow: "inset 0 0 90px rgba(0,136,255,0.4)", duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false },
+  18.8,
 );
-tl.to(
-  "#faR7 .bg",
-  { borderColor: "#0088FF", boxShadow: "0 0 22px rgba(0,136,255,1)", duration: 0.2 },
-  19.4,
-);
+tl.to("#faR7 .bg", { borderColor: "#0088FF", boxShadow: "0 0 22px rgba(0,136,255,1)", duration: 0.2 }, 19.0);
 tl.fromTo(
   "#faR7",
   { scaleY: 1 },
-  {
-    scaleY: 1.12,
-    duration: 0.12,
-    yoyo: true,
-    repeat: 1,
-    ease: "power2.out",
-    immediateRender: false,
-  },
-  19.4,
+  { scaleY: 1.12, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out", immediateRender: false },
+  19.0,
 );
-banner(19.7, "bn5");
-hop(18.8, w2p(1020, 470)[0] - 60, w2p(1020, 470)[1] + 90, 1.2);
+banner(19.3, "bn5");
+hop(18.2, w2p(1020, 470)[0] - 60, w2p(1020, 470)[1] + 90, 1.2);
 
 /* =====================================================================================
          ACT IV (21.5 – 25.0)  GAMIFIED CHALLENGE CARD — strictly inside y 1460–1640
