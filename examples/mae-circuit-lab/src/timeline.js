@@ -1,71 +1,56 @@
-/* MAE Academy · Circuit Lab · mesh-analysis film. GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
-   DATA (END, steps, I) is injected by build_index.py from scripts/solve.py. Whole file, rewritten as a unit. */
+/* MAE Academy · "Where does the R matrix come from?" GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
+   DATA (beats, fly offsets) is injected by build_index.py. Whole file, rewritten as a unit. */
 
 // @CUES-BEGIN
 const CUES = [
-  { id: "hk_drop", t: 1.4, v: "click", g: 0.55 },
-  { id: "hk_toast", t: 1.52, v: "chime", g: 0.3 },
-  { id: "cut", t: 3.0, v: "thump", g: 0.7 },
-  { id: "w0", t: 3.1, v: "click", g: 0.3 },
-  { id: "w1", t: 3.3, v: "click", g: 0.3 },
-  { id: "w2", t: 3.5, v: "click", g: 0.3 },
-  { id: "w3", t: 3.7, v: "click", g: 0.3 },
-  { id: "w4", t: 3.9, v: "click", g: 0.3 },
-  { id: "w5", t: 4.1, v: "click", g: 0.3 },
-  { id: "w6", t: 4.3, v: "click", g: 0.3 },
-  { id: "w7", t: 4.5, v: "click", g: 0.3 },
-  { id: "w8", t: 4.7, v: "click", g: 0.3 },
-  { id: "e0", t: 5.0, v: "thump", g: 0.45 },
-  { id: "e1", t: 5.2, v: "click", g: 0.5 },
-  { id: "e2", t: 5.4, v: "click", g: 0.5 },
-  { id: "e3", t: 5.6, v: "thump", g: 0.45 },
-  { id: "e4", t: 5.8, v: "click", g: 0.5 },
-  { id: "e5", t: 6.0, v: "click", g: 0.5 },
-  { id: "e6", t: 6.2, v: "click", g: 0.5 },
-  { id: "e7", t: 6.4, v: "thump", g: 0.45 },
-  { id: "drawn", t: 6.8, v: "chime", g: 0.45 },
-  { id: "m1", t: 7.1, v: "snap", g: 0.45 },
-  { id: "k1", t: 7.7, v: "click", g: 0.4 },
-  { id: "m2", t: 8.0, v: "snap", g: 0.45 },
-  { id: "k2", t: 8.6, v: "click", g: 0.4 },
-  { id: "m3", t: 8.9, v: "snap", g: 0.45 },
-  { id: "k3", t: 9.5, v: "click", g: 0.4 },
-  { id: "br_R", t: 11.0, v: "thump", g: 0.55 },
-  { id: "r0", t: 12.0, v: "click", g: 0.28 },
-  { id: "r1", t: 12.15, v: "click", g: 0.28 },
-  { id: "r2", t: 12.3, v: "click", g: 0.28 },
-  { id: "r3", t: 12.45, v: "click", g: 0.28 },
-  { id: "r4", t: 12.6, v: "click", g: 0.28 },
-  { id: "r5", t: 12.75, v: "click", g: 0.28 },
-  { id: "r6", t: 12.9, v: "click", g: 0.28 },
-  { id: "r7", t: 13.05, v: "click", g: 0.28 },
-  { id: "r8", t: 13.2, v: "click", g: 0.28 },
-  { id: "eqs", t: 13.6, v: "snap", g: 0.4 },
-  { id: "br_V", t: 13.7, v: "thump", g: 0.45 },
-  { id: "v0", t: 14.2, v: "click", g: 0.3 },
-  { id: "v1", t: 14.35, v: "click", g: 0.3 },
-  { id: "v2", t: 14.5, v: "click", g: 0.3 },
-  { id: "glow", t: 15.3, v: "chime", g: 0.45 },
-  { id: "s1", t: 16.0, v: "snap", g: 0.7 },
-  { id: "s2", t: 17.6, v: "snap", g: 0.7 },
-  { id: "s3", t: 19.0, v: "snap", g: 0.7 },
-  { id: "s4", t: 20.1, v: "snap", g: 0.7 },
-  { id: "s5", t: 21.2, v: "snap", g: 0.7 },
-  { id: "vals", t: 22.0, v: "chime", g: 0.35 },
-  { id: "c1", t: 22.3, v: "click", g: 0.65 },
-  { id: "c2", t: 23.1, v: "click", g: 0.65 },
-  { id: "c3", t: 23.9, v: "click", g: 0.65 },
-  { id: "t1", t: 22.6, v: "click", g: 0.3 },
-  { id: "t2", t: 23.4, v: "click", g: 0.3 },
-  { id: "t3", t: 24.2, v: "click", g: 0.3 },
-  { id: "box", t: 25.0, v: "chime", g: 0.6 },
-  { id: "pw1", t: 25.3, v: "snap", g: 0.5 },
-  { id: "pw2", t: 25.8, v: "click", g: 0.4 },
-  { id: "cta", t: 26.3, v: "thump", g: 0.55 },
-  { id: "rip1", t: 27.0, v: "click", g: 0.35 },
-  { id: "rip2", t: 27.35, v: "click", g: 0.35 },
-  { id: "press", t: 28.5, v: "relay_thump", g: 1.0 },
-  { id: "open", t: 28.62, v: "chime", g: 0.5 },
+  { id: "w0", t: 0.25, v: "click", g: 0.3 },
+  { id: "w1", t: 0.4, v: "click", g: 0.3 },
+  { id: "w2", t: 0.55, v: "click", g: 0.3 },
+  { id: "w3", t: 0.7, v: "click", g: 0.3 },
+  { id: "w4", t: 0.85, v: "click", g: 0.3 },
+  { id: "w5", t: 1.0, v: "click", g: 0.3 },
+  { id: "w6", t: 1.15, v: "click", g: 0.3 },
+  { id: "w7", t: 1.3, v: "click", g: 0.3 },
+  { id: "w8", t: 1.45, v: "click", g: 0.3 },
+  { id: "e0", t: 1.6, v: "thump", g: 0.45 },
+  { id: "e1", t: 1.75, v: "click", g: 0.5 },
+  { id: "e2", t: 1.9, v: "click", g: 0.5 },
+  { id: "e3", t: 2.05, v: "thump", g: 0.45 },
+  { id: "e4", t: 2.2, v: "click", g: 0.5 },
+  { id: "e5", t: 2.35, v: "click", g: 0.5 },
+  { id: "e6", t: 2.5, v: "click", g: 0.5 },
+  { id: "e7", t: 2.65, v: "thump", g: 0.45 },
+  { id: "drawn", t: 3.0, v: "chime", g: 0.45 },
+  { id: "m1", t: 3.5, v: "snap", g: 0.45 },
+  { id: "m2", t: 4.1, v: "snap", g: 0.45 },
+  { id: "m3", t: 4.7, v: "snap", g: 0.45 },
+  { id: "br_R", t: 6.0, v: "thump", g: 0.55 },
+  { id: "br_V", t: 6.6, v: "thump", g: 0.45 },
+  { id: "eqs", t: 6.9, v: "snap", g: 0.4 },
+  { id: "b_d1", t: 7.2, v: "snap", g: 0.6 },
+  { id: "l_d1", t: 8.25, v: "click", g: 0.65 },
+  { id: "b_d2", t: 9.2, v: "snap", g: 0.6 },
+  { id: "l_d2", t: 10.25, v: "click", g: 0.65 },
+  { id: "b_d3", t: 11.2, v: "snap", g: 0.6 },
+  { id: "l_d3", t: 12.25, v: "click", g: 0.65 },
+  { id: "b_o12", t: 13.2, v: "snap", g: 0.6 },
+  { id: "l_o12", t: 14.25, v: "click", g: 0.65 },
+  { id: "b_o23", t: 15.2, v: "snap", g: 0.6 },
+  { id: "l_o23", t: 16.25, v: "click", g: 0.65 },
+  { id: "b_o13", t: 17.2, v: "snap", g: 0.6 },
+  { id: "l_o13", t: 18.25, v: "click", g: 0.65 },
+  { id: "b_v1", t: 19.2, v: "snap", g: 0.6 },
+  { id: "l_v1", t: 20.25, v: "click", g: 0.65 },
+  { id: "b_v2", t: 21.2, v: "snap", g: 0.6 },
+  { id: "l_v2", t: 22.25, v: "click", g: 0.65 },
+  { id: "b_v3", t: 23.2, v: "snap", g: 0.6 },
+  { id: "l_v3", t: 24.25, v: "click", g: 0.65 },
+  { id: "final", t: 25.2, v: "chime", g: 0.55 },
+  { id: "cta", t: 25.9, v: "thump", g: 0.55 },
+  { id: "rip1", t: 26.6, v: "click", g: 0.35 },
+  { id: "rip2", t: 26.95, v: "click", g: 0.35 },
+  { id: "press", t: 28.0, v: "relay_thump", g: 1.0 },
+  { id: "open", t: 28.12, v: "chime", g: 0.5 },
 ];
 // @CUES-END
 
@@ -75,11 +60,13 @@ const T = (id) => {
   return c.t;
 };
 
-const BRK = ["V1", "R1", "R3", "V2", "R2", "R4", "R5", "V3"]; // branch draw order
+const BRK = ["V1", "R1", "R3", "V2", "R2", "R4", "R5", "V3"]; // draw order
 const NODES = ["TL", "N1", "TR", "N3", "N2"];
+const BLUE = "#0088FF";
+const RGB = { "#0088FF": "0,136,255", "#B026FF": "176,38,255", "#FF0044": "255,0,68" };
 const tl = gsap.timeline({ paused: true });
 
-// ---- helpers (opacity / transform only: never letter-spacing or font-size) ----
+// helpers: opacity / transform only (never letter-spacing or font-size)
 const fadeIn = (sel, t, d = 0.3, y = 8) =>
   tl.fromTo(
     sel,
@@ -100,21 +87,9 @@ const swap = (from, to, t) => {
   fadeOut(from, t, 0.2);
   fadeIn(to, t + 0.12, 0.3);
 };
+const shadow = (rgb, a, px) => `drop-shadow(0px 0px ${px}px rgba(${rgb},${a}))`;
 
-// ================= 0.0 - 3.0  HOOK (video clip is timed by its own data-start/data-duration) =================
-// the banner (#sb-hook), subtitle #sub-0 and the stage caption are on screen at frame 0
-tl.fromTo(
-  "#cutflash",
-  { opacity: 0.55 },
-  { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false },
-  DATA.T_HOOK,
-);
-fadeOut("#hookcap", DATA.T_HOOK, 0.12, 0);
-fadeOut("#sub-0", DATA.T_HOOK, 0.2, -6);
-fadeIn("#sub-1", DATA.T_HOOK + 0.1, 0.3, 6);
-swap("#sb-hook", "#sb-redraw", DATA.T_HOOK);
-
-// ================= 3.0 - 7.0  REDRAW =================
+// ================= 0.0 - 3.5  REDRAW (light packets, then the parts drop in) =================
 const wires = BRK.concat(["GND"]);
 const ENDS = {};
 wires.forEach((k) => {
@@ -127,7 +102,7 @@ wires.forEach((k) => {
 });
 wires.forEach((k, i) => {
   const t = T("w" + i),
-    d = 0.55,
+    d = 0.5,
     e = ENDS[k];
   tl.fromTo(
     "#w-" + k,
@@ -181,9 +156,9 @@ BRK.forEach((k, i) => {
 });
 NODES.concat(["GND"]).forEach((n, i) => fadeIn("#nt-" + n, T("drawn") - 0.1 + i * 0.05, 0.3, 6));
 
-// ================= 7.0 - 11.0  MESH CURRENTS (clockwise) + KVL =================
-swap("#sub-1", "#sub-2", 7.0);
-swap("#sb-redraw", "#sb-kvl", T("m1"));
+// ================= 3.4 - 6.0  CLOCKWISE MESH CURRENTS =================
+swap("#sub-0", "#sub-1", 3.35);
+swap("#sb-hook", "#sb-mesh", 3.35);
 [1, 2, 3].forEach((n) => {
   const t = T("m" + n);
   tl.fromTo(
@@ -199,34 +174,25 @@ swap("#sb-redraw", "#sb-kvl", T("m1"));
     t + 0.55,
   );
   fadeIn("#ml-" + n, t + 0.25, 0.3, 0);
-  fadeIn("#kvl-" + n, T("k" + n), 0.35, 10);
 });
 
-// ================= 11.0 - 16.0  MATRIX =================
-swap("#sub-2", "#sub-3", 10.95);
-swap("#sb-kvl", "#sb-mx", 10.95);
-tl.fromTo(
-  "#card",
-  { opacity: 0.55 },
-  { opacity: 1, duration: 0.3, immediateRender: false },
-  T("br_R") - 0.2,
-);
+// ================= 6.0 - 7.2  SET UP  R . I = V =================
+swap("#sub-1", "#sub-5", 5.95);
+swap("#sb-mesh", "#sb-form", 5.95);
+fadeIn("#rules", 6.1, 0.4, 0);
 ["brl-R", "brr-R"].forEach((id) => {
   const L = +document.getElementById(id).getAttribute("stroke-dasharray");
   tl.fromTo(
     "#" + id,
     { strokeDashoffset: L },
-    { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut", immediateRender: false },
+    { strokeDashoffset: 0, duration: 0.55, ease: "power2.inOut", immediateRender: false },
     T("br_R"),
   );
 });
 [1, 2, 3].forEach((c, i) => {
-  fadeIn("#col-" + c, T("br_R") + 0.7 + i * 0.1, 0.3, 6);
-  fadeIn("#rl-" + c, T("br_R") + 0.7 + i * 0.1, 0.3, 0);
+  fadeIn("#col-" + c, T("br_R") + 0.45 + i * 0.08, 0.3, 6);
+  fadeIn("#rl-" + c, T("br_R") + 0.45 + i * 0.08, 0.3, 0);
 });
-for (let r = 0; r < 3; r++)
-  for (let c = 0; c < 3; c++) pop(`#e-${r}-${c}`, T("r" + (r * 3 + c)), 0.25);
-fadeIn("#eqsign", T("eqs"), 0.25, 0);
 ["brl-V", "brr-V"].forEach((id) => {
   const L = +document.getElementById(id).getAttribute("stroke-dasharray");
   tl.fromTo(
@@ -236,13 +202,123 @@ fadeIn("#eqsign", T("eqs"), 0.25, 0);
     T("br_V"),
   );
 });
-fadeIn("#col-V", T("br_V") + 0.4, 0.3, 6);
-for (let r = 0; r < 3; r++) pop(`#v-${r}`, T("v" + r), 0.25);
-// glow pulse on every entry (colour-matched), once the matrix is complete
+fadeIn("#col-V", T("br_V") + 0.35, 0.3, 6);
+fadeIn("#eqsign", T("eqs"), 0.25, 0);
+
+// ================= 7.2 - 25.2  ONE BEAT PER GROUP OF ENTRIES =================
+const state = {}; // last drawn style of each part, so every fromTo starts exactly where the previous one ended
+BRK.forEach((k) => {
+  state[k] = {
+    op: 1,
+    stroke: k[0] === "R" ? BLUE : "#FF0044",
+    sh: shadow(k[0] === "R" ? RGB[BLUE] : RGB["#FF0044"], 0, 0),
+  };
+});
+const meshOp = { 1: 1, 2: 1, 3: 1 };
+
+function light(t, b) {
+  // b = null -> restore everything
+  BRK.forEach((k) => {
+    const isR = k[0] === "R",
+      base = isR ? BLUE : "#FF0044";
+    const on = !b || b.res.includes(k) || b.src.includes(k);
+    const hot = !!b && on;
+    const to = {
+      op: on ? 1 : 0.28,
+      stroke: hot && isR ? b.color : base,
+      sh: hot ? shadow(RGB[hot && isR ? b.color : base], 0.95, 9) : shadow(RGB[base], 0, 0),
+    };
+    const from = state[k];
+    tl.fromTo(
+      [`#el-${k}`, `#lb-${k}`, `#w-${k}`],
+      { opacity: from.op },
+      { opacity: to.op, duration: 0.3, immediateRender: false },
+      t,
+    );
+    const part = isR ? `#el-${k} .res` : `#el-${k} .src`;
+    tl.fromTo(
+      part,
+      { stroke: from.stroke, filter: from.sh },
+      { stroke: to.stroke, filter: to.sh, duration: 0.3, immediateRender: false },
+      t,
+    );
+    state[k] = to;
+  });
+  [1, 2, 3].forEach((m) => {
+    const to = !b || b.meshes.includes(m) ? 1 : 0.25;
+    tl.fromTo(
+      [`#mesh-${m}`, `#mhead-${m}`, `#ml-${m}`],
+      { opacity: meshOp[m] },
+      { opacity: to, duration: 0.3, immediateRender: false },
+      t,
+    );
+    meshOp[m] = to;
+  });
+}
+
+const SUBS = { 2: "d1", 3: "o12", 4: "v1" }; // subtitle changes at the first beat of each group
+let curSub = "#sub-5",
+  curBt = "#sb-form";
+DATA.beats.forEach((b) => {
+  const t0 = T("b_" + b.id),
+    tl_ = T("l_" + b.id);
+  const sub = Object.keys(SUBS).find((k) => SUBS[k] === b.id);
+  if (sub) {
+    swap(curSub, "#sub-" + sub, t0 - 0.05);
+    curSub = "#sub-" + sub;
+  }
+  swap(curBt, "#bt-" + b.id, t0 - 0.05);
+  curBt = "#bt-" + b.id;
+  light(t0, b);
+  tl.to("#rule-" + b.rule, { opacity: 1, duration: 0.25 }, t0);
+  tl.to("#rule-" + b.rule, { opacity: 0.4, duration: 0.25 }, t0 + 1.75);
+  b.cells.forEach((cid) => {
+    const f = DATA.fly[cid],
+      rgb = RGB[b.color];
+    tl.fromTo(
+      "#fly-" + cid,
+      { x: f.dx, y: f.dy, scale: 1.5, opacity: 0 },
+      {
+        x: 0,
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        duration: tl_ - t0 - 0.5,
+        ease: "power2.inOut",
+        immediateRender: false,
+      },
+      t0 + 0.5,
+    );
+    tl.set("#fly-" + cid, { opacity: 0 }, tl_);
+    pop("#" + cid, tl_, 0.3);
+    tl.fromTo(
+      `#${cid} b`,
+      { textShadow: `0 0 0px rgba(${rgb},0)` },
+      {
+        textShadow: `0 0 22px rgba(${rgb},0.95)`,
+        duration: 0.3,
+        ease: "power2.out",
+        immediateRender: false,
+      },
+      tl_,
+    );
+    tl.to(
+      `#${cid} b`,
+      { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
+      tl_ + 0.5,
+    );
+  });
+});
+
+// ================= 25.2 - 25.9  WHOLE MATRIX =================
+swap("#sub-4", "#sub-6", T("final") - 0.05);
+swap(curBt, "#sb-final", T("final") - 0.05);
+light(T("final"), null);
+fadeIn("#cardnote", T("final") + 0.1, 0.4, 0);
 [
-  ["#card .cell.d .o", "0,136,255"],
-  ["#card .cell.p .o", "176,38,255"],
-  ["#card .cell.s .o", "255,0,68"],
+  ["#card .cell.d b", "0,136,255"],
+  ["#card .cell.p b", "176,38,255"],
+  ["#card .cell.s b", "255,0,68"],
 ].forEach(([sel, rgb]) => {
   tl.fromTo(
     sel,
@@ -253,116 +329,17 @@ for (let r = 0; r < 3; r++) pop(`#v-${r}`, T("v" + r), 0.25);
       ease: "power2.out",
       immediateRender: false,
     },
-    T("glow"),
+    T("final"),
   );
   tl.to(
     sel,
     { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.45, ease: "power2.in" },
-    T("glow") + 0.4,
+    T("final") + 0.45,
   );
 });
 
-// ================= 16.0 - 22.0  ELIMINATION (pivot glow + arrow + snap) =================
-swap("#sub-3", "#sub-4", 15.95);
-swap("#sb-mx", "#es-1", T("s1") - 0.05);
-const SNAP = ["s1", "s2", "s3", "s4", "s5"];
-DATA.steps.forEach((st, i) => {
-  const t = T(SNAP[i]),
-    n = i + 1;
-  if (i > 0) swap("#es-" + i, "#es-" + n, t - 0.05);
-  tl.set("#pivot", { y: st.pivot * 44 }, t);
-  tl.to("#pivot", { opacity: 1, duration: 0.2, ease: "power2.out" }, t);
-  const L = +document.getElementById("arr-" + n).getAttribute("stroke-dasharray");
-  tl.set("#arr-" + n, { opacity: 1 }, t + 0.2);
-  tl.fromTo(
-    "#arr-" + n,
-    { strokeDashoffset: L },
-    { strokeDashoffset: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
-    t + 0.2,
-  );
-  tl.fromTo(
-    "#arrh-" + n,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.1, immediateRender: false },
-    t + 0.45,
-  );
-  if (st.kind === "fwd") {
-    st.cells.forEach((cid, j) => {
-      const ts = t + 0.7 + j * 0.06;
-      tl.to(`#${cid} .o`, { opacity: 0, scale: 0.5, duration: 0.2, ease: "power2.in" }, ts);
-      tl.fromTo(
-        `#${cid} .n2`,
-        { opacity: 0, scale: 1.7 },
-        { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false },
-        ts + 0.1,
-      );
-    });
-    // result-row colour change is carried by the .n2 class: eliminated zeros stay purple, b-entries become white
-    tl.to(`#pivot`, { opacity: 0, duration: 0.25 }, t + 1.25);
-    tl.to(["#arr-" + n, "#arrh-" + n], { opacity: 0, duration: 0.25 }, t + 1.25);
-  } else {
-    const slot = "#slot-" + (st.pivot + 1);
-    fadeIn(slot, t + 0.5, 0.3, 0);
-    tl.to("#pivot", { opacity: 0, duration: 0.2 }, t + 0.72);
-    tl.to(["#arr-" + n, "#arrh-" + n], { opacity: 0, duration: 0.2 }, t + 0.82);
-  }
-});
-
-// ================= 22.0 - 25.0  SOLVED CURRENTS, KCL, VALUES ON THE CIRCUIT =================
-swap("#sub-4", "#sub-5", 21.95);
-swap("#es-5", "#sb-kcl", 22.15);
-BRK.forEach((k, i) => pop("#bc-" + k, T("vals") + i * 0.06, 0.3));
-NODES.concat(["GND"]).forEach((n, i) => pop("#nv-" + n, T("vals") + 0.1 + i * 0.06, 0.3));
-[1, 2, 3].forEach((n, i) => {
-  const t = T("c" + n),
-    d = DATA.I[i];
-  tl.to(`#q-${n}`, { opacity: 0, duration: 0.12 }, t);
-  tl.fromTo(`#val-${n}`, { opacity: 0 }, { opacity: 1, duration: 0.12, immediateRender: false }, t);
-  tl.fromTo(
-    `#cnt-${n}`,
-    { textContent: 0 },
-    {
-      textContent: d.abs,
-      duration: 0.7,
-      ease: "power2.out",
-      snap: { textContent: d.dec ? 0.001 : 1 },
-      immediateRender: false,
-    },
-    t,
-  );
-  fadeIn("#kcl-N" + n, T("t" + n) - 0.2, 0.3, 8);
-  tl.fromTo(
-    "#tk-N" + n,
-    { strokeDashoffset: 32 },
-    { strokeDashoffset: 0, duration: 0.25, ease: "power2.out", immediateRender: false },
-    T("t" + n) + 0.15,
-  );
-});
-
-// ================= 25.0 - 29.0  FINAL: BOX, POWER CHECK, CTA =================
-swap("#sub-5", "#sub-6", T("box") - 0.05);
-tl.fromTo(
-  "#ibox",
-  { opacity: 0, scale: 0.94 },
-  { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)", immediateRender: false },
-  T("box"),
-);
-tl.fromTo(
-  "#card .sl-val",
-  { textShadow: "0 0 0px rgba(0,136,255,0)" },
-  { textShadow: "0 0 18px rgba(0,136,255,0.95)", duration: 0.4, immediateRender: false },
-  T("box"),
-);
-swap("#sb-kcl", "#sb-pw", T("pw1") - 0.1);
-fadeIn("#pw-1", T("pw1"), 0.3, 8);
-fadeIn("#pw-2", T("pw2") - 0.25, 0.3, 8);
-tl.fromTo(
-  "#tk-P",
-  { strokeDashoffset: 32 },
-  { strokeDashoffset: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
-  T("pw2") + 0.2,
-);
-
+// ================= 25.9 - 28.8  CTA =================
+fadeOut("#rules", T("cta") - 0.3, 0.3, 0);
 tl.fromTo(
   "#cta",
   { opacity: 0, y: -22 },
@@ -380,16 +357,15 @@ tl.fromTo(
     T(c),
   ),
 );
-// cursor: tip offset inside the 60px svg is (6,4); glide from lower right to the button centre
+// cursor tip is at (6,4) inside its 60px svg: glide from the lower right to the right end of the button
 tl.set("#cursor", { x: 874, y: 1596 }, 0);
-tl.fromTo("#cursor", { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, 27.55);
+tl.fromTo("#cursor", { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, 27.0);
 tl.fromTo(
   "#cursor",
   { x: 874, y: 1596 },
-  { x: 774, y: 1558, duration: 0.85, ease: "power2.inOut", immediateRender: false },
-  27.55,
+  { x: 774, y: 1558, duration: 0.9, ease: "power2.inOut", immediateRender: false },
+  27.0,
 );
-// click: scale 0.94, white flash, label swap
 tl.fromTo(
   "#cta-btn",
   { scale: 1 },
