@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>MAE Academy · Circuit Lab · Mesh Analysis</title>
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  @font-face { font-family: "KaTeX_Math"; font-style: italic; font-weight: 400; src: url("assets/fonts/KaTeX_Math-Italic.woff2") format("woff2"); }
+  @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 700; src: url("assets/fonts/KaTeX_Main-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 400; src: url("assets/fonts/KaTeX_Main-Regular.woff2") format("woff2"); }
+
+  :root { --bg:#0A0A10; --grid:#161622; --panel:#12121C; --edge:#25253A; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; --teal:#00D4B4; --ok:#00E0A0; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body { width: 1080px; height: 1920px; overflow: hidden; }
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "Inter", sans-serif;
+    background-color: var(--bg);
+    background-image: linear-gradient(var(--grid) 2px, transparent 2px), linear-gradient(90deg, var(--grid) 2px, transparent 2px);
+    background-size: 60px 60px; }
+  #root div, #root svg, #root video { box-sizing: border-box; }
+  .abs { position: absolute; }
+
+  /* ---------- math typography ---------- */
+  .mi { font-family: "KaTeX_Math", serif; font-style: italic; font-weight: 400; }
+  .ms { font-family: "KaTeX_Main", serif; font-weight: 400; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
+  .n  { font-family: "KaTeX_Main", serif; font-weight: 700; }
+  .eq { font-family: "KaTeX_Main", serif; font-weight: 400; }
+  .u  { font-family: "Inter", sans-serif; font-weight: 700; font-size: .84em; opacity: .85; }
+  .fr { display: inline-block; vertical-align: middle; text-align: center; font-family: "KaTeX_Main", serif; font-weight: 700; font-size: .72em; line-height: 1.05; margin: 0 2px; }
+  .fr i { display: block; font-style: normal; padding: 0 2px; }
+  .fr i:first-child { border-bottom: 2px solid #fff; }
+  sub { font-family: "KaTeX_Main", serif; font-size: .7em; vertical-align: -.25em; }
+
+  /* ---------- window bar ---------- */
+  #bar { left: 90px; top: 140px; width: 900px; height: 48px; border-radius: 14px; background: var(--panel); border: 2px solid var(--edge); }
+  .dot { position: absolute; top: 15px; width: 14px; height: 14px; border-radius: 7px; }
+  #dot-r { left: 20px; background: #FF5F57; } #dot-y { left: 44px; background: #FFBD2E; } #dot-g { left: 68px; background: #28C840; }
+  #url { position: absolute; left: 130px; top: 7px; width: 640px; height: 30px; border-radius: 15px; background: var(--bg); border: 1.5px solid var(--edge);
+    font-size: 21px; line-height: 27px; text-align: center; color: #fff; opacity: .92; letter-spacing: .2px; white-space: nowrap; }
+  #title { left: 90px; top: 204px; width: 900px; height: 62px; text-align: center; font-weight: 700; font-size: 50px; line-height: 62px; color: var(--blue); white-space: nowrap; text-shadow: 0 0 26px rgba(0,136,255,.45); }
+  #subs { left: 90px; top: 276px; width: 900px; height: 40px; }
+  .sub { position: absolute; inset: 0; text-align: center; font-size: 26px; line-height: 40px; font-weight: 700; color: #fff; opacity: 0; white-space: nowrap; }
+  #sub-0 { opacity: .75; }
+  .sub .u2 { opacity: .6; font-weight: 400; }
+
+  /* ---------- stage ---------- */
+  #stage { left: 90px; top: 360px; width: 900px; height: 750px; border-radius: 26px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
+  #hook { position: absolute; left: 0; top: 0; width: 900px; height: 660px; border-radius: 24px 24px 0 0; object-fit: fill; background: #000; z-index: 4; }
+  #hookcap { position: absolute; left: 0; top: 660px; width: 900px; height: 90px; text-align: center; line-height: 86px; font-size: 24px; font-weight: 700; color: #fff; opacity: .8; letter-spacing: 1.5px; z-index: 3; }
+  #cutflash { position: absolute; inset: 0; background: var(--blue); opacity: 0; z-index: 6; }
+  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 1; }
+  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 2; }
+  .wire { stroke: #CFE6FF; stroke-width: 4; fill: none; stroke-linecap: round; }
+  .packet { fill: #fff; opacity: 0; }
+  .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+  .mask { fill: var(--panel); }
+  .src { fill: var(--panel); stroke: var(--red); stroke-width: 5; }
+  .pm { stroke: var(--red); stroke-width: 4; fill: none; stroke-linecap: round; }
+  .gl { stroke: #CFE6FF; stroke-width: 4; stroke-linecap: round; }
+  .node { fill: #fff; stroke: var(--panel); stroke-width: 3; } .gnode { fill: #CFE6FF; }
+  .el { opacity: 0; }
+  .marc { fill: none; stroke-width: 5; stroke-linecap: round; } .mhead { opacity: 0; }
+  .lb { position: absolute; color: #fff; opacity: 0; white-space: nowrap; }
+  .elabel { font-size: 27px; } .ntag { font-size: 20px; font-weight: 700; opacity: 0; letter-spacing: 1px; }
+  .mlabel { font-size: 32px; font-weight: 400; }
+  .elabel .n { font-size: 1em; }
+  .chip { position: absolute; height: 30px; padding: 0 9px; border-radius: 9px; background: rgba(0,224,160,.12); border: 1.5px solid rgba(0,224,160,.7); color: #fff; font-size: 22px; line-height: 27px; white-space: nowrap; opacity: 0; }
+  .nvchip { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.55); }
+  .bcchip { width: 106px; text-align: center; padding: 0; }
+  .bcchip .dir { font-family: "Inter", sans-serif; font-weight: 700; margin-right: 4px; color: #fff; }
+
+  /* ---------- strip ---------- */
+  #strip { left: 90px; top: 1132px; width: 900px; height: 118px; border-radius: 20px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
+  .sb { position: absolute; inset: 0; opacity: 0; }
+  #sb-hook { opacity: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #quote { font-size: 46px; font-weight: 700; line-height: 60px; color: #fff; }
+  #quote i { color: var(--blue); font-style: normal; }
+  #qsrc { font-size: 22px; line-height: 28px; color: #fff; opacity: .7; }
+  #sb-redraw { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #sb-redraw .big { font-size: 40px; font-weight: 700; line-height: 54px; }
+  #sb-redraw .small { font-size: 23px; line-height: 30px; opacity: .72; }
+  #sb-kvl { padding: 0 20px; }
+  .kvl { position: absolute; left: 20px; right: 16px; height: 36px; line-height: 36px; font-size: 24px; white-space: nowrap; opacity: 0; }
+  #kvl-1 { top: 6px; } #kvl-2 { top: 42px; } #kvl-3 { top: 78px; }
+  .kvl .mdot { display: inline-block; width: 12px; height: 12px; border-radius: 6px; margin-right: 12px; vertical-align: middle; }
+  .kvl .arrow { display: inline-block; margin: 0 14px; font-family: "Inter", sans-serif; opacity: .7; }
+  .kvl .sym { display: inline-block; }
+  #sb-mx { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #sb-mx .big { font-size: 38px; line-height: 50px; font-weight: 700; }
+  #sb-mx .leg { font-size: 22px; line-height: 32px; opacity: .85; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -1px; margin: 0 6px 0 14px; }
+  .estep { position: absolute; inset: 0; opacity: 0; padding: 12px 22px; text-align: center; }
+  .eop { font-size: 34px; line-height: 50px; white-space: nowrap; }
+  .ecalc { font-size: 22px; line-height: 34px; opacity: .78; white-space: nowrap; }
+  #sb-kcl { display: flex; gap: 14px; padding: 12px 16px; }
+  .kcl { position: relative; flex: 1; height: 90px; border-radius: 14px; background: rgba(0,224,160,.08); border: 1.5px solid rgba(0,224,160,.45); opacity: 0; text-align: center; }
+  .kh { font-size: 20px; font-weight: 700; line-height: 30px; margin-top: 8px; opacity: .8; letter-spacing: 1px; }
+  .kb { font-size: 26px; line-height: 36px; white-space: nowrap; padding-right: 22px; }
+  .tick { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; }
+  .tick path { fill: none; stroke: var(--ok); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  #sb-pw { padding: 14px 22px; }
+  .pw { position: relative; font-size: 31px; line-height: 44px; white-space: nowrap; opacity: 0; }
+  .pw .pl { display: inline-block; width: 150px; font-family: "Inter"; font-weight: 700; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; opacity: .7; }
+  #pw-2 .tick { right: 4px; bottom: 6px; }
+
+  /* ---------- matrix card ---------- */
+  #card { left: 90px; top: 1262px; width: 900px; height: 188px; border-radius: 22px; background: var(--panel); border: 2px solid var(--edge); }
+  #cardin { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  #brk { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .cell { position: absolute; width: 96px; height: 44px; text-align: center; opacity: 0; }
+  .cell b { position: absolute; left: 0; top: 0; width: 96px; height: 44px; line-height: 44px; font-family: "KaTeX_Main", serif; font-weight: 700; font-size: 38px; }
+  .cell .n2 { opacity: 0; color: #fff; }
+  .cell.d b.o, .cell.d b.n2 { color: var(--blue); } .cell.p b.o, .cell.p b.n2 { color: var(--purple); } .cell.s b.o { color: var(--red); }
+  .cell.d b.n2 { color: var(--blue); } .cell.p b.n2 { color: var(--purple); } .cell.s b.n2 { color: #fff; }
+  .clab { position: absolute; width: 80px; text-align: center; font-size: 28px; line-height: 34px; opacity: 0; }
+  .rlab { position: absolute; left: 12px; width: 48px; text-align: center; font-size: 19px; line-height: 28px; font-weight: 700; opacity: 0; color: #fff; }
+  .eqsign { position: absolute; width: 40px; text-align: center; font-size: 44px; line-height: 48px; font-family: "KaTeX_Main", serif; opacity: 0; }
+  #pivot { position: absolute; left: 52px; top: 42px; width: 520px; height: 44px; border-radius: 10px; border: 2px solid var(--blue); background: rgba(0,136,255,.16); box-shadow: 0 0 26px rgba(0,136,255,.85), inset 0 0 18px rgba(0,136,255,.35); opacity: 0; }
+  #arrows { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  .arr { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .arrh { fill: #fff; }
+  .slot { position: absolute; left: 650px; width: 236px; height: 44px; line-height: 44px; font-size: 34px; opacity: 0; }
+  .slot .sl-name { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  .slot .sl-q { position: absolute; left: 92px; top: 0; font-family: "KaTeX_Main", serif; font-weight: 700; opacity: .5; }
+  .slot .sl-val { position: absolute; left: 92px; top: 0; white-space: nowrap; opacity: 0; font-family: "KaTeX_Main", serif; font-weight: 700; }
+  .slot .cnt { font-weight: 700; }
+  #ibox { position: absolute; left: 640px; top: 36px; width: 236px; height: 146px; border-radius: 14px; border: 3px solid var(--blue); box-shadow: 0 0 12px rgba(0,136,255,.9), inset 0 0 20px rgba(0,136,255,.35); opacity: 0; }
+
+  /* ---------- CTA ---------- */
+  #cta { left: 150px; top: 1460px; width: 780px; height: 210px; border-radius: 26px; background: var(--panel); border: 2px solid rgba(176,38,255,.6); opacity: .0; }
+  #cta-h { position: absolute; left: 0; top: 14px; width: 776px; height: 40px; text-align: center; font-size: 32px; line-height: 40px; font-weight: 700; color: var(--purple); letter-spacing: 1px; text-shadow: 0 0 18px rgba(176,38,255,.5); }
+  .btnbox { position: absolute; left: 48px; top: 60px; width: 680px; height: 75px; border-radius: 22px; }
+  #rip-1, #rip-2 { border: 2px solid var(--blue); opacity: 0; }
+  #cta-btn { background: rgba(0,136,255,.18); border: 2px solid var(--blue); overflow: hidden; box-shadow: 0 0 22px rgba(0,136,255,.35); }
+  .btxt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 700; color: var(--blue); text-shadow: 0 0 20px rgba(0,136,255,.85); white-space: nowrap; }
+  #btn-b { opacity: 0; }
+  .btxt svg { width: 38px; height: 38px; flex: none; }
+  #btn-flash { position: absolute; inset: 0; background: #fff; opacity: 0; border-radius: 20px; }
+  #cta-sub { position: absolute; left: 0; top: 148px; width: 776px; height: 36px; text-align: center; font-size: 24px; line-height: 36px; font-weight: 700; color: #fff; opacity: .7; letter-spacing: 2px; }
+  #cursor { position: absolute; left: 0; top: 0; width: 60px; height: 60px; z-index: 20; opacity: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920" data-fps="60">
+
+  <!-- window chrome -->
+  <div id="bar" class="abs">
+    <div id="dot-r" class="dot"></div><div id="dot-y" class="dot"></div><div id="dot-g" class="dot"></div>
+    <div id="url">maeacademy.org/simulations/circuit-lab</div>
+  </div>
+  <div id="title" class="abs">MESH ANALYSIS</div>
+  <div id="subs" class="abs">
+    <div id="sub-0" class="sub">SCREEN RECORDING <span class="u2">·</span> LIVE PAGE</div>
+    <div id="sub-1" class="sub">REDRAW <span class="u2">·</span> 6 NODES <span class="u2">·</span> 8 BRANCHES <span class="u2">·</span> 3 MESHES</div>
+    <div id="sub-2" class="sub">CLOCKWISE MESH CURRENTS <span class="u2">·</span> KVL</div>
+    <div id="sub-3" class="sub">MATRIX FORM <span class="u2">·</span> R·I = V</div>
+    <div id="sub-4" class="sub">GAUSSIAN ELIMINATION</div>
+    <div id="sub-5" class="sub">SOLVE <span class="u2">·</span> KCL CHECK</div>
+    <div id="sub-6" class="sub">POWER BALANCE</div>
+  </div>
+
+  <!-- stage: recording, then the redrawn circuit -->
+  <div id="stage" class="abs">
+    <video id="hook" class="clip" data-start="0" data-duration="3" data-track-index="1" src="assets/circuit-lab-hook.mp4" muted playsinline></video>
+    <div id="hookcap">SOURCE · SCREEN RECORDING OF THE LIVE LAB</div>
+    <svg id="circuit" viewBox="0 0 900 750" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<line id="w-V1" x1="150" y1="130" x2="150" y2="640" class="wire" stroke-dasharray="510.0" stroke-dashoffset="510.0"/>
+<line id="w-R1" x1="150" y1="130" x2="410" y2="130" class="wire" stroke-dasharray="260.0" stroke-dashoffset="260.0"/>
+<line id="w-R3" x1="410" y1="130" x2="720" y2="130" class="wire" stroke-dasharray="310.0" stroke-dashoffset="310.0"/>
+<line id="w-V2" x1="720" y1="130" x2="720" y2="400" class="wire" stroke-dasharray="270.0" stroke-dashoffset="270.0"/>
+<line id="w-R2" x1="410" y1="130" x2="410" y2="400" class="wire" stroke-dasharray="270.0" stroke-dashoffset="270.0"/>
+<line id="w-R4" x1="410" y1="400" x2="720" y2="400" class="wire" stroke-dasharray="310.0" stroke-dashoffset="310.0"/>
+<line id="w-R5" x1="720" y1="400" x2="720" y2="640" class="wire" stroke-dasharray="240.0" stroke-dashoffset="240.0"/>
+<line id="w-V3" x1="410" y1="400" x2="410" y2="640" class="wire" stroke-dasharray="240.0" stroke-dashoffset="240.0"/>
+<line id="w-GND" x1="150" y1="640" x2="720" y2="640" class="wire" stroke-dasharray="570.0" stroke-dashoffset="570.0"/>
+<circle id="pk-V1" cx="150" cy="130" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-R1" cx="150" cy="130" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-R3" cx="410" cy="130" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-V2" cx="720" cy="130" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-R2" cx="410" cy="130" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-R4" cx="410" cy="400" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-R5" cx="720" cy="400" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-V3" cx="410" cy="400" r="7" class="packet" filter="url(#glow)"/>
+<circle id="pk-GND" cx="150" cy="640" r="7" class="packet" filter="url(#glow)"/>
+<g id="gnd" class="el"><line x1="565" y1="640" x2="565" y2="666" class="gl"/><line x1="535" y1="666" x2="595" y2="666" class="gl"/><line x1="546" y1="678" x2="584" y2="678" class="gl"/><line x1="557" y1="690" x2="573" y2="690" class="gl"/></g>
+<g id="el-V1" class="el"><circle cx="150" cy="385" r="34" class="src"/><path d="M142 371 H158 M150 363 V379" class="pm"/><path d="M142 399 H158" class="pm"/></g>
+<g id="el-R1" class="el"><rect x="228" y="113" width="124" height="34" class="mask"/><polyline points="230,130 242,130 250,116 266,144 282,116 298,144 314,116 330,144 338,130 350,130" class="res"/></g>
+<g id="el-R3" class="el"><rect x="503" y="113" width="124" height="34" class="mask"/><polyline points="505,130 517,130 525,116 541,144 557,116 573,144 589,116 605,144 613,130 625,130" class="res"/></g>
+<g id="el-V2" class="el"><circle cx="720" cy="265" r="34" class="src"/><path d="M712 251 H728 M720 243 V259" class="pm"/><path d="M712 279 H728" class="pm"/></g>
+<g id="el-R2" class="el"><rect x="393" y="203" width="34" height="124" class="mask"/><polyline points="410,205 410,217 396,225 424,241 396,257 424,273 396,289 424,305 410,313 410,325" class="res"/></g>
+<g id="el-R4" class="el"><rect x="503" y="383" width="124" height="34" class="mask"/><polyline points="505,400 517,400 525,386 541,414 557,386 573,414 589,386 605,414 613,400 625,400" class="res"/></g>
+<g id="el-R5" class="el"><rect x="703" y="458" width="34" height="124" class="mask"/><polyline points="720,460 720,472 706,480 734,496 706,512 734,528 706,544 734,560 720,568 720,580" class="res"/></g>
+<g id="el-V3" class="el"><circle cx="410" cy="520" r="34" class="src"/><path d="M402 506 H418 M410 498 V514" class="pm"/><path d="M402 534 H418" class="pm"/></g>
+<circle id="nd-TL" cx="150" cy="130" r="9" class="node el"/>
+<circle id="nd-N1" cx="410" cy="130" r="9" class="node el"/>
+<circle id="nd-TR" cx="720" cy="130" r="9" class="node el"/>
+<circle id="nd-N3" cx="410" cy="400" r="9" class="node el"/>
+<circle id="nd-N2" cx="720" cy="400" r="9" class="node el"/>
+<circle cx="150" cy="640" r="7" class="node gnode el"/>
+<circle cx="410" cy="640" r="7" class="node gnode el"/>
+<circle cx="720" cy="640" r="7" class="node gnode el"/>
+<path id="mesh-1" d="M299.0 352.1 A38 38 0 1 1 258.2 353.9" class="marc" stroke="#0088FF" stroke-dasharray="195.65" stroke-dashoffset="195.65"/><polygon id="mhead-1" points="268.9,346.4 262.8,360.4 253.6,347.3" fill="#0088FF" class="mhead"/>
+<path id="mesh-2" d="M609.0 229.1 A38 38 0 1 1 568.2 230.9" class="marc" stroke="#B026FF" stroke-dasharray="195.65" stroke-dashoffset="195.65"/><polygon id="mhead-2" points="578.9,223.4 572.8,237.4 563.6,224.3" fill="#B026FF" class="mhead"/>
+<path id="mesh-3" d="M609.0 487.1 A38 38 0 1 1 568.2 488.9" class="marc" stroke="#00D4B4" stroke-dasharray="195.65" stroke-dashoffset="195.65"/><polygon id="mhead-3" points="578.9,481.4 572.8,495.4 563.6,482.3" fill="#00D4B4" class="mhead"/>
+    </svg>
+    <div id="labels">
+<div id="lb-R1" class="lb elabel" style="left:195px;top:77px;width:190px;height:34px;line-height:34px;text-align:center"><span class="mi">R</span><span class="ms">1</span> <span class="eq">=</span> <b class="n">2</b> <span class="u">kΩ</span></div>
+<div id="lb-R3" class="lb elabel" style="left:470px;top:77px;width:190px;height:34px;line-height:34px;text-align:center"><span class="mi">R</span><span class="ms">3</span> <span class="eq">=</span> <b class="n">3</b> <span class="u">kΩ</span></div>
+<div id="lb-R2" class="lb elabel" style="left:202px;top:253px;width:190px;height:34px;line-height:34px;text-align:right"><span class="mi">R</span><span class="ms">2</span> <span class="eq">=</span> <b class="n">2</b> <span class="u">kΩ</span></div>
+<div id="lb-R4" class="lb elabel" style="left:470px;top:349px;width:190px;height:34px;line-height:34px;text-align:center"><span class="mi">R</span><span class="ms">4</span> <span class="eq">=</span> <b class="n">4</b> <span class="u">kΩ</span></div>
+<div id="lb-R5" class="lb elabel" style="left:762px;top:503px;width:190px;height:34px;line-height:34px;text-align:left"><span class="mi">R</span><span class="ms">5</span> <span class="eq">=</span> <b class="n">1</b> <span class="u">kΩ</span></div>
+<div id="lb-V1" class="lb elabel" style="left:-82px;top:368px;width:190px;height:34px;line-height:34px;text-align:right"><span class="mi">V</span><span class="ms">1</span> <span class="eq">=</span> <b class="n">5</b> <span class="u">V</span></div>
+<div id="lb-V2" class="lb elabel" style="left:762px;top:248px;width:190px;height:34px;line-height:34px;text-align:left"><span class="mi">V</span><span class="ms">2</span> <span class="eq">=</span> <b class="n">16</b> <span class="u">V</span></div>
+<div id="lb-V3" class="lb elabel" style="left:178px;top:503px;width:190px;height:34px;line-height:34px;text-align:right"><span class="mi">V</span><span class="ms">3</span> <span class="eq">=</span> <b class="n">13</b> <span class="u">V</span></div>
+<div id="nt-TL" class="lb ntag" style="left:120px;top:87px;width:60px;height:26px;line-height:26px;text-align:center">TL</div>
+<div id="nt-N1" class="lb ntag" style="left:380px;top:87px;width:60px;height:26px;line-height:26px;text-align:center">N1</div>
+<div id="nt-TR" class="lb ntag" style="left:690px;top:87px;width:60px;height:26px;line-height:26px;text-align:center">TR</div>
+<div id="nt-N3" class="lb ntag" style="left:332px;top:365px;width:60px;height:26px;line-height:26px;text-align:right">N3</div>
+<div id="nt-N2" class="lb ntag" style="left:734px;top:363px;width:60px;height:26px;line-height:26px;text-align:left">N2</div>
+<div id="nt-GND" class="lb ntag" style="left:600px;top:679px;width:70px;height:26px;line-height:26px;text-align:left">GND</div>
+<div id="nv-TL" class="chip nvchip" style="left:168px;top:146px"><b class="n">5</b> <span class="u">V</span></div>
+<div id="nv-N1" class="chip nvchip" style="left:426px;top:146px"><b class="n">11</b> <span class="u">V</span></div>
+<div id="nv-TR" class="chip nvchip" style="left:736px;top:146px"><b class="n">17</b> <span class="u">V</span></div>
+<div id="nv-N3" class="chip nvchip" style="left:426px;top:414px"><b class="n">13</b> <span class="u">V</span></div>
+<div id="nv-N2" class="chip nvchip" style="left:736px;top:414px"><b class="n">1</b> <span class="u">V</span></div>
+<div id="nv-GND" class="chip nvchip" style="left:166px;top:652px"><b class="n">0</b> <span class="u">V</span></div>
+<div id="bc-R1" class="chip bcchip" style="left:237px;top:163px"><span class="dir">→</span><b class="n">−3</b> <span class="u">mA</span></div>
+<div id="bc-R3" class="chip bcchip" style="left:512px;top:163px"><span class="dir">→</span><b class="n">−2</b> <span class="u">mA</span></div>
+<div id="bc-R2" class="chip bcchip" style="left:439px;top:251px"><span class="dir">↓</span><b class="n">−1</b> <span class="u">mA</span></div>
+<div id="bc-R4" class="chip bcchip" style="left:537px;top:419px"><span class="dir">→</span><b class="n">3</b> <span class="u">mA</span></div>
+<div id="bc-R5" class="chip bcchip" style="left:753px;top:547px"><span class="dir">↓</span><b class="n">1</b> <span class="u">mA</span></div>
+<div id="bc-V1" class="chip bcchip" style="left:13px;top:415px"><span class="dir">↑</span><b class="n">−3</b> <span class="u">mA</span></div>
+<div id="bc-V2" class="chip bcchip" style="left:753px;top:287px"><span class="dir">↓</span><b class="n">−2</b> <span class="u">mA</span></div>
+<div id="bc-V3" class="chip bcchip" style="left:273px;top:543px"><span class="dir">↑</span><b class="n">4</b> <span class="u">mA</span></div>
+<div id="ml-1" class="lb mlabel" style="left:250px;top:365px;width:60px;height:40px;line-height:40px;text-align:center"><span class="mi">I</span><span class="ms">1</span></div>
+<div id="ml-2" class="lb mlabel" style="left:560px;top:242px;width:60px;height:40px;line-height:40px;text-align:center"><span class="mi">I</span><span class="ms">2</span></div>
+<div id="ml-3" class="lb mlabel" style="left:560px;top:500px;width:60px;height:40px;line-height:40px;text-align:center"><span class="mi">I</span><span class="ms">3</span></div>
+    </div>
+    <div id="cutflash"></div>
+  </div>
+
+  <!-- equation / banner strip -->
+  <div id="strip" class="abs">
+    <div id="sb-hook" class="sb">
+      <div id="quote"><i>“</i>Canvas Ready<i>”</i></div>
+      <div id="qsrc">quoted verbatim from the live page</div>
+    </div>
+    <div id="sb-redraw" class="sb">
+      <div class="big">REDRAWN WITH NEW VALUES</div>
+      <div class="small">6 nodes · 8 branches · 3 independent meshes · R in kΩ · V in volts · I in mA</div>
+    </div>
+    <div id="sb-kvl" class="sb">
+<div id="kvl-1" class="kvl"><i class="mdot" style="background:#0088FF"></i><span class="sym">(<span class="mi">R</span><span class="ms">1</span>+<span class="mi">R</span><span class="ms">2</span>)<span class="mi">I</span><span class="ms">1</span> − <span class="mi">R</span><span class="ms">2</span><span class="mi">I</span><span class="ms">2</span> = <span class="mi">V</span><span class="ms">1</span> − <span class="mi">V</span><span class="ms">3</span></span><span class="arrow">⇒</span><span class="numr"><span class="n">4</span><span class="mi">I</span><span class="ms">1</span> − <span class="n">2</span><span class="mi">I</span><span class="ms">2</span> = <span class="n">−8</span></span></div>
+<div id="kvl-2" class="kvl"><i class="mdot" style="background:#B026FF"></i><span class="sym">−<span class="mi">R</span><span class="ms">2</span><span class="mi">I</span><span class="ms">1</span> + (<span class="mi">R</span><span class="ms">2</span>+<span class="mi">R</span><span class="ms">3</span>+<span class="mi">R</span><span class="ms">4</span>)<span class="mi">I</span><span class="ms">2</span> − <span class="mi">R</span><span class="ms">4</span><span class="mi">I</span><span class="ms">3</span> = −<span class="mi">V</span><span class="ms">2</span></span><span class="arrow">⇒</span><span class="numr">−<span class="n">2</span><span class="mi">I</span><span class="ms">1</span> + <span class="n">9</span><span class="mi">I</span><span class="ms">2</span> − <span class="n">4</span><span class="mi">I</span><span class="ms">3</span> = <span class="n">−16</span></span></div>
+<div id="kvl-3" class="kvl"><i class="mdot" style="background:#00D4B4"></i><span class="sym">−<span class="mi">R</span><span class="ms">4</span><span class="mi">I</span><span class="ms">2</span> + (<span class="mi">R</span><span class="ms">4</span>+<span class="mi">R</span><span class="ms">5</span>)<span class="mi">I</span><span class="ms">3</span> = <span class="mi">V</span><span class="ms">3</span></span><span class="arrow">⇒</span><span class="numr">−<span class="n">4</span><span class="mi">I</span><span class="ms">2</span> + <span class="n">5</span><span class="mi">I</span><span class="ms">3</span> = <span class="n">13</span></span></div>
+    </div>
+    <div id="sb-mx" class="sb">
+      <div class="big"><span class="mi">R</span> · <span class="mi">I</span> = <span class="mi">V</span></div>
+      <div class="leg"><i class="sw" style="background:#0088FF"></i>loop resistance <i class="sw" style="background:#B026FF"></i>shared resistance <i class="sw" style="background:#FF0044"></i>source terms</div>
+    </div>
+<div id="es-1" class="estep"><div class="eop">R<sub>2</sub> ← R<sub>2</sub> + <span class="fr"><i>1</i><i>2</i></span>·R<sub>1</sub></div><div class="ecalc">[<span class="n">−2</span>, <span class="n">9</span>, <span class="n">−4</span> | <span class="n">−16</span>] → [<span class="n">0</span>, <span class="n">8</span>, <span class="n">−4</span> | <span class="n">−20</span>]</div></div>
+<div id="es-2" class="estep"><div class="eop">R<sub>3</sub> ← R<sub>3</sub> + <span class="fr"><i>1</i><i>2</i></span>·R<sub>2</sub></div><div class="ecalc">[<span class="n">0</span>, <span class="n">−4</span>, <span class="n">5</span> | <span class="n">13</span>] → [<span class="n">0</span>, <span class="n">0</span>, <span class="n">3</span> | <span class="n">3</span>]</div></div>
+<div id="es-3" class="estep"><div class="eop"><span class="mi">I</span><span class="ms">3</span> = (3) ÷ 3 = <span class="n">1</span></div><div class="ecalc">row 3 of the triangular system → solved from the bottom up</div></div>
+<div id="es-4" class="estep"><div class="eop"><span class="mi">I</span><span class="ms">2</span> = (−20 + 4·<span class="mi">I</span><span class="ms">3</span>) ÷ 8 = <span class="n">−2</span></div><div class="ecalc">row 2 of the triangular system → solved from the bottom up</div></div>
+<div id="es-5" class="estep"><div class="eop"><span class="mi">I</span><span class="ms">1</span> = (−8 + 2·<span class="mi">I</span><span class="ms">2</span>) ÷ 4 = <span class="n">−3</span></div><div class="ecalc">row 1 of the triangular system → solved from the bottom up</div></div>
+    <div id="sb-kcl" class="sb">
+<div id="kcl-N1" class="kcl"><div class="kh">KCL @ N1</div><div class="kb"><span class="n">−3</span> = <span class="n">−2 + −1</span></div><svg class="tick" viewBox="0 0 30 30"><path id="tk-N1" d="M5 16 L12 23 L26 7" stroke-dasharray="32" stroke-dashoffset="32"/></svg></div>
+<div id="kcl-N2" class="kcl"><div class="kh">KCL @ N2</div><div class="kb"><span class="n">−2 + 3</span> = <span class="n">1</span></div><svg class="tick" viewBox="0 0 30 30"><path id="tk-N2" d="M5 16 L12 23 L26 7" stroke-dasharray="32" stroke-dashoffset="32"/></svg></div>
+<div id="kcl-N3" class="kcl"><div class="kh">KCL @ N3</div><div class="kb"><span class="n">−1 + 4</span> = <span class="n">3</span></div><svg class="tick" viewBox="0 0 30 30"><path id="tk-N3" d="M5 16 L12 23 L26 7" stroke-dasharray="32" stroke-dashoffset="32"/></svg></div>
+    </div>
+    <div id="sb-pw" class="sb">
+<div id="pw-1" class="pw"><span class="pl">delivered</span> −15 + 32 + 52 = <span class="n">69</span> <span class="u">mW</span></div><div id="pw-2" class="pw"><span class="pl">dissipated</span> 18 + 2 + 12 + 36 + 1 = <span class="n">69</span> <span class="u">mW</span><svg class="tick" viewBox="0 0 30 30"><path id="tk-P" d="M5 16 L12 23 L26 7" stroke-dasharray="32" stroke-dashoffset="32"/></svg></div>
+    </div>
+  </div>
+
+  <!-- matrix card -->
+  <div id="card" class="abs">
+    <div id="cardin">
+      <div id="pivot"></div>
+      <svg id="brk" viewBox="0 0 896 184" xmlns="http://www.w3.org/2000/svg"><path id="brl-R" d="M77 40 H66 V176 H77" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/><path id="brr-R" d="M387 40 H398 V176 H387" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/><path id="brl-V" d="M463 40 H452 V176 H463" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/><path id="brr-V" d="M549 40 H560 V176 H549" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/></svg>
+<div id="e-0-0" class="cell d" style="left:82px;top:42px"><b class="o">4</b></div>
+<div id="e-0-1" class="cell p" style="left:187px;top:42px"><b class="o">−2</b></div>
+<div id="e-0-2" class="cell p" style="left:292px;top:42px"><b class="o">0</b></div>
+<div id="v-0" class="cell s" style="left:458px;top:42px"><b class="o">−8</b></div>
+<div id="e-1-0" class="cell p" style="left:82px;top:86px"><b class="o">−2</b><b class="n2">0</b></div>
+<div id="e-1-1" class="cell d" style="left:187px;top:86px"><b class="o">9</b><b class="n2">8</b></div>
+<div id="e-1-2" class="cell p" style="left:292px;top:86px"><b class="o">−4</b></div>
+<div id="v-1" class="cell s" style="left:458px;top:86px"><b class="o">−16</b><b class="n2">−20</b></div>
+<div id="e-2-0" class="cell p" style="left:82px;top:130px"><b class="o">0</b></div>
+<div id="e-2-1" class="cell p" style="left:187px;top:130px"><b class="o">−4</b><b class="n2">0</b></div>
+<div id="e-2-2" class="cell d" style="left:292px;top:130px"><b class="o">5</b><b class="n2">3</b></div>
+<div id="v-2" class="cell s" style="left:458px;top:130px"><b class="o">13</b><b class="n2">3</b></div>
+<div id="col-1" class="clab" style="left:90px;top:2px"><span class="mi">I</span><span class="ms">1</span></div>
+<div id="col-2" class="clab" style="left:195px;top:2px"><span class="mi">I</span><span class="ms">2</span></div>
+<div id="col-3" class="clab" style="left:300px;top:2px"><span class="mi">I</span><span class="ms">3</span></div>
+<div id="col-V" class="clab" style="left:466px;top:2px"><span class="mi">V</span></div>
+<div id="rl-1" class="rlab" style="top:50px">M1</div>
+<div id="rl-2" class="rlab" style="top:94px">M2</div>
+<div id="rl-3" class="rlab" style="top:138px">M3</div>
+<div id="eqsign" class="eqsign" style="left:410px;top:84px">=</div>
+      <svg id="arrows" viewBox="0 0 896 184" xmlns="http://www.w3.org/2000/svg">
+        <path id="arr-1" class="arr" d="M582 64 C626 64 626 108 590 108" stroke-dasharray="90" stroke-dashoffset="90" opacity="0"/>
+        <polygon id="arrh-1" class="arrh" points="580,108 592,101 592,115" opacity="0"/>
+        <path id="arr-2" class="arr" d="M582 108 C626 108 626 152 590 152" stroke-dasharray="90" stroke-dashoffset="90" opacity="0"/>
+        <polygon id="arrh-2" class="arrh" points="580,152 592,145 592,159" opacity="0"/>
+        <path id="arr-3" class="arr" d="M582 152 H632" stroke-dasharray="50" stroke-dashoffset="50" opacity="0"/>
+        <polygon id="arrh-3" class="arrh" points="644,152 632,145 632,159" opacity="0"/>
+        <path id="arr-4" class="arr" d="M582 108 H632" stroke-dasharray="50" stroke-dashoffset="50" opacity="0"/>
+        <polygon id="arrh-4" class="arrh" points="644,108 632,101 632,115" opacity="0"/>
+        <path id="arr-5" class="arr" d="M582 64 H632" stroke-dasharray="50" stroke-dashoffset="50" opacity="0"/>
+        <polygon id="arrh-5" class="arrh" points="644,64 632,57 632,71" opacity="0"/>
+      </svg>
+<div id="slot-1" class="slot" style="top:42px"><span class="sl-name"><span class="mi">I</span><span class="ms">1</span> <span class="eq">=</span></span><span id="q-1" class="sl-q">?</span><span id="val-1" class="sl-val"><span class="sg">−</span><b id="cnt-1" class="cnt">0</b> <span class="u">mA</span></span></div>
+<div id="slot-2" class="slot" style="top:86px"><span class="sl-name"><span class="mi">I</span><span class="ms">2</span> <span class="eq">=</span></span><span id="q-2" class="sl-q">?</span><span id="val-2" class="sl-val"><span class="sg">−</span><b id="cnt-2" class="cnt">0</b> <span class="u">mA</span></span></div>
+<div id="slot-3" class="slot" style="top:130px"><span class="sl-name"><span class="mi">I</span><span class="ms">3</span> <span class="eq">=</span></span><span id="q-3" class="sl-q">?</span><span id="val-3" class="sl-val"><span class="sg"></span><b id="cnt-3" class="cnt">0</b> <span class="u">mA</span></span></div>
+      <div id="ibox"></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div id="cta" class="abs">
+    <div id="cta-h">CAN YOU SOLVE THIS CIRCUIT?</div>
+    <div id="rip-1" class="btnbox"></div>
+    <div id="rip-2" class="btnbox"></div>
+    <div id="cta-btn" class="btnbox">
+      <div id="btn-a" class="btxt">TRY THE CIRCUIT LAB
+        <svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#0088FF"/></svg></div>
+      <div id="btn-b" class="btxt">OPEN THE LAB
+        <svg viewBox="0 0 24 24"><path d="M12 1.5c3.4 2.3 5 6 4.6 10.2l-1.2 1.4H8.6l-1.2-1.4C7 7.5 8.6 3.8 12 1.5z" fill="#0088FF"/><circle cx="12" cy="8.6" r="1.8" fill="#0A0A10"/><path d="M8.2 13.4 5 16.6l1 3.4 2.6-2.3zM15.8 13.4 19 16.6l-1 3.4-2.6-2.3z" fill="#B026FF"/><path d="M10 15.2h4l-2 6.3z" fill="#fff"/></svg></div>
+      <div id="btn-flash"></div>
+    </div>
+    <div id="cta-sub">LINK IN THE FIRST COMMENT</div>
+  </div>
+
+  <svg id="cursor" viewBox="0 0 60 60"><path d="M6 4 L6 44 L16 35 L23 52 L31 48.5 L24 32 L37 32 Z" fill="#fff" stroke="#0A0A10" stroke-width="3" stroke-linejoin="round"/></svg>
+
+  <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="30" data-track-index="2" data-volume="1"></audio>
+</div>
+
+<script>const DATA = {"END": 30.0, "T_HOOK": 3.0, "steps": [{"kind": "fwd", "pivot": 0, "target": 1, "cells": ["e-1-0", "e-1-1", "v-1"], "newcls": {"e-1-0": "p", "e-1-1": "d", "e-1-2": "p"}}, {"kind": "fwd", "pivot": 1, "target": 2, "cells": ["e-2-1", "e-2-2", "v-2"], "newcls": {"e-2-0": "p", "e-2-1": "p", "e-2-2": "d"}}, {"kind": "back", "pivot": 2}, {"kind": "back", "pivot": 1}, {"kind": "back", "pivot": 0}], "I": [{"abs": 3.0, "dec": 0, "neg": true}, {"abs": 2.0, "dec": 0, "neg": true}, {"abs": 1.0, "dec": 0, "neg": false}]};</script>
+<script>
+/* MAE Academy · Circuit Lab · mesh-analysis film. GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
+   DATA (END, steps, I) is injected by build_index.py from scripts/solve.py. Whole file, rewritten as a unit. */
+
+// @CUES-BEGIN
+const CUES = [
+  { id: "hk_drop", t: 1.4, v: "click", g: 0.55 },
+  { id: "hk_toast", t: 1.52, v: "chime", g: 0.3 },
+  { id: "cut", t: 3.0, v: "thump", g: 0.7 },
+  { id: "w0", t: 3.1, v: "click", g: 0.3 },
+  { id: "w1", t: 3.3, v: "click", g: 0.3 },
+  { id: "w2", t: 3.5, v: "click", g: 0.3 },
+  { id: "w3", t: 3.7, v: "click", g: 0.3 },
+  { id: "w4", t: 3.9, v: "click", g: 0.3 },
+  { id: "w5", t: 4.1, v: "click", g: 0.3 },
+  { id: "w6", t: 4.3, v: "click", g: 0.3 },
+  { id: "w7", t: 4.5, v: "click", g: 0.3 },
+  { id: "w8", t: 4.7, v: "click", g: 0.3 },
+  { id: "e0", t: 5.0, v: "thump", g: 0.45 },
+  { id: "e1", t: 5.2, v: "click", g: 0.5 },
+  { id: "e2", t: 5.4, v: "click", g: 0.5 },
+  { id: "e3", t: 5.6, v: "thump", g: 0.45 },
+  { id: "e4", t: 5.8, v: "click", g: 0.5 },
+  { id: "e5", t: 6.0, v: "click", g: 0.5 },
+  { id: "e6", t: 6.2, v: "click", g: 0.5 },
+  { id: "e7", t: 6.4, v: "thump", g: 0.45 },
+  { id: "drawn", t: 6.8, v: "chime", g: 0.45 },
+  { id: "m1", t: 7.1, v: "snap", g: 0.45 },
+  { id: "k1", t: 7.7, v: "click", g: 0.4 },
+  { id: "m2", t: 8.0, v: "snap", g: 0.45 },
+  { id: "k2", t: 8.6, v: "click", g: 0.4 },
+  { id: "m3", t: 8.9, v: "snap", g: 0.45 },
+  { id: "k3", t: 9.5, v: "click", g: 0.4 },
+  { id: "br_R", t: 11.0, v: "thump", g: 0.55 },
+  { id: "r0", t: 12.0, v: "click", g: 0.28 },
+  { id: "r1", t: 12.15, v: "click", g: 0.28 },
+  { id: "r2", t: 12.3, v: "click", g: 0.28 },
+  { id: "r3", t: 12.45, v: "click", g: 0.28 },
+  { id: "r4", t: 12.6, v: "click", g: 0.28 },
+  { id: "r5", t: 12.75, v: "click", g: 0.28 },
+  { id: "r6", t: 12.9, v: "click", g: 0.28 },
+  { id: "r7", t: 13.05, v: "click", g: 0.28 },
+  { id: "r8", t: 13.2, v: "click", g: 0.28 },
+  { id: "eqs", t: 13.6, v: "snap", g: 0.4 },
+  { id: "br_V", t: 13.7, v: "thump", g: 0.45 },
+  { id: "v0", t: 14.2, v: "click", g: 0.3 },
+  { id: "v1", t: 14.35, v: "click", g: 0.3 },
+  { id: "v2", t: 14.5, v: "click", g: 0.3 },
+  { id: "glow", t: 15.3, v: "chime", g: 0.45 },
+  { id: "s1", t: 16.0, v: "snap", g: 0.7 },
+  { id: "s2", t: 17.6, v: "snap", g: 0.7 },
+  { id: "s3", t: 19.0, v: "snap", g: 0.7 },
+  { id: "s4", t: 20.1, v: "snap", g: 0.7 },
+  { id: "s5", t: 21.2, v: "snap", g: 0.7 },
+  { id: "vals", t: 22.0, v: "chime", g: 0.35 },
+  { id: "c1", t: 22.3, v: "click", g: 0.65 },
+  { id: "c2", t: 23.1, v: "click", g: 0.65 },
+  { id: "c3", t: 23.9, v: "click", g: 0.65 },
+  { id: "t1", t: 22.6, v: "click", g: 0.3 },
+  { id: "t2", t: 23.4, v: "click", g: 0.3 },
+  { id: "t3", t: 24.2, v: "click", g: 0.3 },
+  { id: "box", t: 25.0, v: "chime", g: 0.6 },
+  { id: "pw1", t: 25.3, v: "snap", g: 0.5 },
+  { id: "pw2", t: 25.8, v: "click", g: 0.4 },
+  { id: "cta", t: 26.3, v: "thump", g: 0.55 },
+  { id: "rip1", t: 27.0, v: "click", g: 0.35 },
+  { id: "rip2", t: 27.35, v: "click", g: 0.35 },
+  { id: "press", t: 28.5, v: "relay_thump", g: 1.0 },
+  { id: "open", t: 28.62, v: "chime", g: 0.5 },
+];
+// @CUES-END
+
+const T = (id) => {
+  const c = CUES.find((x) => x.id === id);
+  if (!c) throw new Error("missing cue " + id);
+  return c.t;
+};
+
+const BRK = ["V1", "R1", "R3", "V2", "R2", "R4", "R5", "V3"]; // branch draw order
+const NODES = ["TL", "N1", "TR", "N3", "N2"];
+const tl = gsap.timeline({ paused: true });
+
+// ---- helpers (opacity / transform only: never letter-spacing or font-size) ----
+const fadeIn = (sel, t, d = 0.3, y = 8) =>
+  tl.fromTo(
+    sel,
+    { opacity: 0, y },
+    { opacity: 1, y: 0, duration: d, ease: "power2.out", immediateRender: false },
+    t,
+  );
+const fadeOut = (sel, t, d = 0.25, y = -8) =>
+  tl.to(sel, { opacity: 0, y, duration: d, ease: "power2.in" }, t);
+const pop = (sel, t, d = 0.25) =>
+  tl.fromTo(
+    sel,
+    { opacity: 0, scale: 0.35 },
+    { opacity: 1, scale: 1, duration: d, ease: "back.out(2.2)", immediateRender: false },
+    t,
+  );
+const swap = (from, to, t) => {
+  fadeOut(from, t, 0.2);
+  fadeIn(to, t + 0.12, 0.3);
+};
+
+// ================= 0.0 - 3.0  HOOK (video clip is timed by its own data-start/data-duration) =================
+// the banner (#sb-hook), subtitle #sub-0 and the stage caption are on screen at frame 0
+tl.fromTo(
+  "#cutflash",
+  { opacity: 0.55 },
+  { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false },
+  DATA.T_HOOK,
+);
+fadeOut("#hookcap", DATA.T_HOOK, 0.12, 0);
+fadeOut("#sub-0", DATA.T_HOOK, 0.2, -6);
+fadeIn("#sub-1", DATA.T_HOOK + 0.1, 0.3, 6);
+swap("#sb-hook", "#sb-redraw", DATA.T_HOOK);
+
+// ================= 3.0 - 7.0  REDRAW =================
+const wires = BRK.concat(["GND"]);
+const ENDS = {};
+wires.forEach((k) => {
+  const w = document.getElementById("w-" + k);
+  ENDS[k] = {
+    x: +w.getAttribute("x2") - +w.getAttribute("x1"),
+    y: +w.getAttribute("y2") - +w.getAttribute("y1"),
+    L: w.getTotalLength(),
+  };
+});
+wires.forEach((k, i) => {
+  const t = T("w" + i),
+    d = 0.55,
+    e = ENDS[k];
+  tl.fromTo(
+    "#w-" + k,
+    { strokeDashoffset: e.L },
+    { strokeDashoffset: 0, duration: d, ease: "none", immediateRender: false },
+    t,
+  );
+  tl.fromTo(
+    "#pk-" + k,
+    { x: 0, y: 0, opacity: 1 },
+    { x: e.x, y: e.y, duration: d, ease: "none", immediateRender: false },
+    t,
+  );
+  tl.to("#pk-" + k, { opacity: 0, duration: 0.15 }, t + d);
+  tl.fromTo(
+    "#w-" + k,
+    { stroke: "#CFE6FF" },
+    { stroke: "#3E5C94", duration: 0.5, ease: "power1.out", immediateRender: false },
+    t + d,
+  );
+});
+tl.fromTo(
+  "#gnd",
+  { opacity: 0, y: -10 },
+  { opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
+  T("w8") + 0.45,
+);
+tl.fromTo(
+  ".gnode",
+  { opacity: 0 },
+  { opacity: 1, duration: 0.3, immediateRender: false },
+  T("w8") + 0.45,
+);
+NODES.forEach((n, i) =>
+  tl.fromTo(
+    "#nd-" + n,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.25, immediateRender: false },
+    T("w" + (i + 1)) + 0.4,
+  ),
+);
+BRK.forEach((k, i) => {
+  const t = T("e" + i);
+  tl.fromTo(
+    "#el-" + k,
+    { opacity: 0, y: -40 },
+    { opacity: 1, y: 0, duration: 0.42, ease: "back.out(1.8)", immediateRender: false },
+    t,
+  );
+  fadeIn("#lb-" + k, t + 0.14, 0.3, 10);
+});
+NODES.concat(["GND"]).forEach((n, i) => fadeIn("#nt-" + n, T("drawn") - 0.1 + i * 0.05, 0.3, 6));
+
+// ================= 7.0 - 11.0  MESH CURRENTS (clockwise) + KVL =================
+swap("#sub-1", "#sub-2", 7.0);
+swap("#sb-redraw", "#sb-kvl", T("m1"));
+[1, 2, 3].forEach((n) => {
+  const t = T("m" + n);
+  tl.fromTo(
+    "#mesh-" + n,
+    { strokeDashoffset: +document.getElementById("mesh-" + n).getAttribute("stroke-dasharray") },
+    { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false },
+    t,
+  );
+  tl.fromTo(
+    "#mhead-" + n,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.12, immediateRender: false },
+    t + 0.55,
+  );
+  fadeIn("#ml-" + n, t + 0.25, 0.3, 0);
+  fadeIn("#kvl-" + n, T("k" + n), 0.35, 10);
+});
+
+// ================= 11.0 - 16.0  MATRIX =================
+swap("#sub-2", "#sub-3", 10.95);
+swap("#sb-kvl", "#sb-mx", 10.95);
+tl.fromTo(
+  "#card",
+  { opacity: 0.55 },
+  { opacity: 1, duration: 0.3, immediateRender: false },
+  T("br_R") - 0.2,
+);
+["brl-R", "brr-R"].forEach((id) => {
+  const L = +document.getElementById(id).getAttribute("stroke-dasharray");
+  tl.fromTo(
+    "#" + id,
+    { strokeDashoffset: L },
+    { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut", immediateRender: false },
+    T("br_R"),
+  );
+});
+[1, 2, 3].forEach((c, i) => {
+  fadeIn("#col-" + c, T("br_R") + 0.7 + i * 0.1, 0.3, 6);
+  fadeIn("#rl-" + c, T("br_R") + 0.7 + i * 0.1, 0.3, 0);
+});
+for (let r = 0; r < 3; r++)
+  for (let c = 0; c < 3; c++) pop(`#e-${r}-${c}`, T("r" + (r * 3 + c)), 0.25);
+fadeIn("#eqsign", T("eqs"), 0.25, 0);
+["brl-V", "brr-V"].forEach((id) => {
+  const L = +document.getElementById(id).getAttribute("stroke-dasharray");
+  tl.fromTo(
+    "#" + id,
+    { strokeDashoffset: L },
+    { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut", immediateRender: false },
+    T("br_V"),
+  );
+});
+fadeIn("#col-V", T("br_V") + 0.4, 0.3, 6);
+for (let r = 0; r < 3; r++) pop(`#v-${r}`, T("v" + r), 0.25);
+// glow pulse on every entry (colour-matched), once the matrix is complete
+[
+  ["#card .cell.d .o", "0,136,255"],
+  ["#card .cell.p .o", "176,38,255"],
+  ["#card .cell.s .o", "255,0,68"],
+].forEach(([sel, rgb]) => {
+  tl.fromTo(
+    sel,
+    { textShadow: `0 0 0px rgba(${rgb},0)` },
+    {
+      textShadow: `0 0 20px rgba(${rgb},0.95)`,
+      duration: 0.35,
+      ease: "power2.out",
+      immediateRender: false,
+    },
+    T("glow"),
+  );
+  tl.to(
+    sel,
+    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.45, ease: "power2.in" },
+    T("glow") + 0.4,
+  );
+});
+
+// ================= 16.0 - 22.0  ELIMINATION (pivot glow + arrow + snap) =================
+swap("#sub-3", "#sub-4", 15.95);
+swap("#sb-mx", "#es-1", T("s1") - 0.05);
+const SNAP = ["s1", "s2", "s3", "s4", "s5"];
+DATA.steps.forEach((st, i) => {
+  const t = T(SNAP[i]),
+    n = i + 1;
+  if (i > 0) swap("#es-" + i, "#es-" + n, t - 0.05);
+  tl.set("#pivot", { y: st.pivot * 44 }, t);
+  tl.to("#pivot", { opacity: 1, duration: 0.2, ease: "power2.out" }, t);
+  const L = +document.getElementById("arr-" + n).getAttribute("stroke-dasharray");
+  tl.set("#arr-" + n, { opacity: 1 }, t + 0.2);
+  tl.fromTo(
+    "#arr-" + n,
+    { strokeDashoffset: L },
+    { strokeDashoffset: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
+    t + 0.2,
+  );
+  tl.fromTo(
+    "#arrh-" + n,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.1, immediateRender: false },
+    t + 0.45,
+  );
+  if (st.kind === "fwd") {
+    st.cells.forEach((cid, j) => {
+      const ts = t + 0.7 + j * 0.06;
+      tl.to(`#${cid} .o`, { opacity: 0, scale: 0.5, duration: 0.2, ease: "power2.in" }, ts);
+      tl.fromTo(
+        `#${cid} .n2`,
+        { opacity: 0, scale: 1.7 },
+        { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false },
+        ts + 0.1,
+      );
+    });
+    // result-row colour change is carried by the .n2 class: eliminated zeros stay purple, b-entries become white
+    tl.to(`#pivot`, { opacity: 0, duration: 0.25 }, t + 1.25);
+    tl.to(["#arr-" + n, "#arrh-" + n], { opacity: 0, duration: 0.25 }, t + 1.25);
+  } else {
+    const slot = "#slot-" + (st.pivot + 1);
+    fadeIn(slot, t + 0.5, 0.3, 0);
+    tl.to("#pivot", { opacity: 0, duration: 0.2 }, t + 0.72);
+    tl.to(["#arr-" + n, "#arrh-" + n], { opacity: 0, duration: 0.2 }, t + 0.82);
+  }
+});
+
+// ================= 22.0 - 25.0  SOLVED CURRENTS, KCL, VALUES ON THE CIRCUIT =================
+swap("#sub-4", "#sub-5", 21.95);
+swap("#es-5", "#sb-kcl", 22.15);
+BRK.forEach((k, i) => pop("#bc-" + k, T("vals") + i * 0.06, 0.3));
+NODES.concat(["GND"]).forEach((n, i) => pop("#nv-" + n, T("vals") + 0.1 + i * 0.06, 0.3));
+[1, 2, 3].forEach((n, i) => {
+  const t = T("c" + n),
+    d = DATA.I[i];
+  tl.to(`#q-${n}`, { opacity: 0, duration: 0.12 }, t);
+  tl.fromTo(`#val-${n}`, { opacity: 0 }, { opacity: 1, duration: 0.12, immediateRender: false }, t);
+  tl.fromTo(
+    `#cnt-${n}`,
+    { textContent: 0 },
+    {
+      textContent: d.abs,
+      duration: 0.7,
+      ease: "power2.out",
+      snap: { textContent: d.dec ? 0.001 : 1 },
+      immediateRender: false,
+    },
+    t,
+  );
+  fadeIn("#kcl-N" + n, T("t" + n) - 0.2, 0.3, 8);
+  tl.fromTo(
+    "#tk-N" + n,
+    { strokeDashoffset: 32 },
+    { strokeDashoffset: 0, duration: 0.25, ease: "power2.out", immediateRender: false },
+    T("t" + n) + 0.15,
+  );
+});
+
+// ================= 25.0 - 29.0  FINAL: BOX, POWER CHECK, CTA =================
+swap("#sub-5", "#sub-6", T("box") - 0.05);
+tl.fromTo(
+  "#ibox",
+  { opacity: 0, scale: 0.94 },
+  { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)", immediateRender: false },
+  T("box"),
+);
+tl.fromTo(
+  "#card .sl-val",
+  { textShadow: "0 0 0px rgba(0,136,255,0)" },
+  { textShadow: "0 0 18px rgba(0,136,255,0.95)", duration: 0.4, immediateRender: false },
+  T("box"),
+);
+swap("#sb-kcl", "#sb-pw", T("pw1") - 0.1);
+fadeIn("#pw-1", T("pw1"), 0.3, 8);
+fadeIn("#pw-2", T("pw2") - 0.25, 0.3, 8);
+tl.fromTo(
+  "#tk-P",
+  { strokeDashoffset: 32 },
+  { strokeDashoffset: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
+  T("pw2") + 0.2,
+);
+
+tl.fromTo(
+  "#cta",
+  { opacity: 0, y: -22 },
+  { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false },
+  T("cta"),
+);
+[
+  ["#rip-1", "rip1"],
+  ["#rip-2", "rip2"],
+].forEach(([id, c]) =>
+  tl.fromTo(
+    id,
+    { scale: 1, opacity: 0.9 },
+    { scale: 1.12, opacity: 0, duration: 0.75, ease: "power2.out", immediateRender: false },
+    T(c),
+  ),
+);
+// cursor: tip offset inside the 60px svg is (6,4); glide from lower right to the button centre
+tl.set("#cursor", { x: 874, y: 1596 }, 0);
+tl.fromTo("#cursor", { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, 27.55);
+tl.fromTo(
+  "#cursor",
+  { x: 874, y: 1596 },
+  { x: 774, y: 1558, duration: 0.85, ease: "power2.inOut", immediateRender: false },
+  27.55,
+);
+// click: scale 0.94, white flash, label swap
+tl.fromTo(
+  "#cta-btn",
+  { scale: 1 },
+  { scale: 0.94, duration: 0.08, ease: "power2.out", immediateRender: false },
+  T("press"),
+);
+tl.to("#cta-btn", { scale: 1, duration: 0.25, ease: "back.out(2.5)" }, T("press") + 0.08);
+tl.fromTo(
+  "#btn-flash",
+  { opacity: 0 },
+  { opacity: 0.95, duration: 0.1, ease: "power1.out", immediateRender: false },
+  T("press") + 0.02,
+);
+tl.set("#btn-a", { opacity: 0 }, T("open"));
+tl.set("#btn-b", { opacity: 1 }, T("open"));
+tl.to("#btn-flash", { opacity: 0, duration: 0.3, ease: "power2.in" }, T("open"));
+
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+
+</script>
+</body>
+</html>

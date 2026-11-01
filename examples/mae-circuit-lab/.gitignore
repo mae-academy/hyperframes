@@ -1,0 +1,6 @@
+# generated / large media: never commit (pre-commit rejects files > 500 KB)
+assets/sfx.wav
+assets/*.mp4
+renders/
+.hyperframes/
+snapshots/at-*.png

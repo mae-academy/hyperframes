@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>MAE Academy · Circuit Lab · Mesh Analysis</title>
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="{{GSAP_SRC}}"></script>
+<style>
+  @font-face { font-family: "KaTeX_Math"; font-style: italic; font-weight: 400; src: url("assets/fonts/KaTeX_Math-Italic.woff2") format("woff2"); }
+  @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 700; src: url("assets/fonts/KaTeX_Main-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 400; src: url("assets/fonts/KaTeX_Main-Regular.woff2") format("woff2"); }
+
+  :root { --bg:#0A0A10; --grid:#161622; --panel:#12121C; --edge:#25253A; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; --teal:#00D4B4; --ok:#00E0A0; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body { width: 1080px; height: 1920px; overflow: hidden; }
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "Inter", sans-serif;
+    background-color: var(--bg);
+    background-image: linear-gradient(var(--grid) 2px, transparent 2px), linear-gradient(90deg, var(--grid) 2px, transparent 2px);
+    background-size: 60px 60px; }
+  #root div, #root svg, #root video { box-sizing: border-box; }
+  .abs { position: absolute; }
+
+  /* ---------- math typography ---------- */
+  .mi { font-family: "KaTeX_Math", serif; font-style: italic; font-weight: 400; }
+  .ms { font-family: "KaTeX_Main", serif; font-weight: 400; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
+  .n  { font-family: "KaTeX_Main", serif; font-weight: 700; }
+  .eq { font-family: "KaTeX_Main", serif; font-weight: 400; }
+  .u  { font-family: "Inter", sans-serif; font-weight: 700; font-size: .84em; opacity: .85; }
+  .fr { display: inline-block; vertical-align: middle; text-align: center; font-family: "KaTeX_Main", serif; font-weight: 700; font-size: .72em; line-height: 1.05; margin: 0 2px; }
+  .fr i { display: block; font-style: normal; padding: 0 2px; }
+  .fr i:first-child { border-bottom: 2px solid #fff; }
+  sub { font-family: "KaTeX_Main", serif; font-size: .7em; vertical-align: -.25em; }
+
+  /* ---------- window bar ---------- */
+  #bar { left: 90px; top: 140px; width: 900px; height: 48px; border-radius: 14px; background: var(--panel); border: 2px solid var(--edge); }
+  .dot { position: absolute; top: 15px; width: 14px; height: 14px; border-radius: 7px; }
+  #dot-r { left: 20px; background: #FF5F57; } #dot-y { left: 44px; background: #FFBD2E; } #dot-g { left: 68px; background: #28C840; }
+  #url { position: absolute; left: 130px; top: 7px; width: 640px; height: 30px; border-radius: 15px; background: var(--bg); border: 1.5px solid var(--edge);
+    font-size: 21px; line-height: 27px; text-align: center; color: #fff; opacity: .92; letter-spacing: .2px; white-space: nowrap; }
+  #title { left: 90px; top: 204px; width: 900px; height: 62px; text-align: center; font-weight: 700; font-size: 50px; line-height: 62px; color: var(--blue); white-space: nowrap; text-shadow: 0 0 26px rgba(0,136,255,.45); }
+  #subs { left: 90px; top: 276px; width: 900px; height: 40px; }
+  .sub { position: absolute; inset: 0; text-align: center; font-size: 26px; line-height: 40px; font-weight: 700; color: #fff; opacity: 0; white-space: nowrap; }
+  #sub-0 { opacity: .75; }
+  .sub .u2 { opacity: .6; font-weight: 400; }
+
+  /* ---------- stage ---------- */
+  #stage { left: 90px; top: 360px; width: 900px; height: 750px; border-radius: 26px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
+  #hook { position: absolute; left: 0; top: 0; width: 900px; height: 660px; border-radius: 24px 24px 0 0; object-fit: fill; background: #000; z-index: 4; }
+  #hookcap { position: absolute; left: 0; top: 660px; width: 900px; height: 90px; text-align: center; line-height: 86px; font-size: 24px; font-weight: 700; color: #fff; opacity: .8; letter-spacing: 1.5px; z-index: 3; }
+  #cutflash { position: absolute; inset: 0; background: var(--blue); opacity: 0; z-index: 6; }
+  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 1; }
+  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 2; }
+  .wire { stroke: #CFE6FF; stroke-width: 4; fill: none; stroke-linecap: round; }
+  .packet { fill: #fff; opacity: 0; }
+  .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+  .mask { fill: var(--panel); }
+  .src { fill: var(--panel); stroke: var(--red); stroke-width: 5; }
+  .pm { stroke: var(--red); stroke-width: 4; fill: none; stroke-linecap: round; }
+  .gl { stroke: #CFE6FF; stroke-width: 4; stroke-linecap: round; }
+  .node { fill: #fff; stroke: var(--panel); stroke-width: 3; } .gnode { fill: #CFE6FF; }
+  .el { opacity: 0; }
+  .marc { fill: none; stroke-width: 5; stroke-linecap: round; } .mhead { opacity: 0; }
+  .lb { position: absolute; color: #fff; opacity: 0; white-space: nowrap; }
+  .elabel { font-size: 27px; } .ntag { font-size: 20px; font-weight: 700; opacity: 0; letter-spacing: 1px; }
+  .mlabel { font-size: 32px; font-weight: 400; }
+  .elabel .n { font-size: 1em; }
+  .chip { position: absolute; height: 30px; padding: 0 9px; border-radius: 9px; background: rgba(0,224,160,.12); border: 1.5px solid rgba(0,224,160,.7); color: #fff; font-size: 22px; line-height: 27px; white-space: nowrap; opacity: 0; }
+  .nvchip { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.55); }
+  .bcchip { width: 106px; text-align: center; padding: 0; }
+  .bcchip .dir { font-family: "Inter", sans-serif; font-weight: 700; margin-right: 4px; color: #fff; }
+
+  /* ---------- strip ---------- */
+  #strip { left: 90px; top: 1132px; width: 900px; height: 118px; border-radius: 20px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
+  .sb { position: absolute; inset: 0; opacity: 0; }
+  #sb-hook { opacity: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #quote { font-size: 46px; font-weight: 700; line-height: 60px; color: #fff; }
+  #quote i { color: var(--blue); font-style: normal; }
+  #qsrc { font-size: 22px; line-height: 28px; color: #fff; opacity: .7; }
+  #sb-redraw { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #sb-redraw .big { font-size: 40px; font-weight: 700; line-height: 54px; }
+  #sb-redraw .small { font-size: 23px; line-height: 30px; opacity: .72; }
+  #sb-kvl { padding: 0 20px; }
+  .kvl { position: absolute; left: 20px; right: 16px; height: 36px; line-height: 36px; font-size: 24px; white-space: nowrap; opacity: 0; }
+  #kvl-1 { top: 6px; } #kvl-2 { top: 42px; } #kvl-3 { top: 78px; }
+  .kvl .mdot { display: inline-block; width: 12px; height: 12px; border-radius: 6px; margin-right: 12px; vertical-align: middle; }
+  .kvl .arrow { display: inline-block; margin: 0 14px; font-family: "Inter", sans-serif; opacity: .7; }
+  .kvl .sym { display: inline-block; }
+  #sb-mx { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #sb-mx .big { font-size: 38px; line-height: 50px; font-weight: 700; }
+  #sb-mx .leg { font-size: 22px; line-height: 32px; opacity: .85; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -1px; margin: 0 6px 0 14px; }
+  .estep { position: absolute; inset: 0; opacity: 0; padding: 12px 22px; text-align: center; }
+  .eop { font-size: 34px; line-height: 50px; white-space: nowrap; }
+  .ecalc { font-size: 22px; line-height: 34px; opacity: .78; white-space: nowrap; }
+  #sb-kcl { display: flex; gap: 14px; padding: 12px 16px; }
+  .kcl { position: relative; flex: 1; height: 90px; border-radius: 14px; background: rgba(0,224,160,.08); border: 1.5px solid rgba(0,224,160,.45); opacity: 0; text-align: center; }
+  .kh { font-size: 20px; font-weight: 700; line-height: 30px; margin-top: 8px; opacity: .8; letter-spacing: 1px; }
+  .kb { font-size: 26px; line-height: 36px; white-space: nowrap; padding-right: 22px; }
+  .tick { position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; }
+  .tick path { fill: none; stroke: var(--ok); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  #sb-pw { padding: 14px 22px; }
+  .pw { position: relative; font-size: 31px; line-height: 44px; white-space: nowrap; opacity: 0; }
+  .pw .pl { display: inline-block; width: 150px; font-family: "Inter"; font-weight: 700; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; opacity: .7; }
+  #pw-2 .tick { right: 4px; bottom: 6px; }
+
+  /* ---------- matrix card ---------- */
+  #card { left: 90px; top: 1262px; width: 900px; height: 188px; border-radius: 22px; background: var(--panel); border: 2px solid var(--edge); }
+  #cardin { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  #brk { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .cell { position: absolute; width: 96px; height: 44px; text-align: center; opacity: 0; }
+  .cell b { position: absolute; left: 0; top: 0; width: 96px; height: 44px; line-height: 44px; font-family: "KaTeX_Main", serif; font-weight: 700; font-size: 38px; }
+  .cell .n2 { opacity: 0; color: #fff; }
+  .cell.d b.o, .cell.d b.n2 { color: var(--blue); } .cell.p b.o, .cell.p b.n2 { color: var(--purple); } .cell.s b.o { color: var(--red); }
+  .cell.d b.n2 { color: var(--blue); } .cell.p b.n2 { color: var(--purple); } .cell.s b.n2 { color: #fff; }
+  .clab { position: absolute; width: 80px; text-align: center; font-size: 28px; line-height: 34px; opacity: 0; }
+  .rlab { position: absolute; left: 12px; width: 48px; text-align: center; font-size: 19px; line-height: 28px; font-weight: 700; opacity: 0; color: #fff; }
+  .eqsign { position: absolute; width: 40px; text-align: center; font-size: 44px; line-height: 48px; font-family: "KaTeX_Main", serif; opacity: 0; }
+  #pivot { position: absolute; left: 52px; top: 42px; width: 520px; height: 44px; border-radius: 10px; border: 2px solid var(--blue); background: rgba(0,136,255,.16); box-shadow: 0 0 26px rgba(0,136,255,.85), inset 0 0 18px rgba(0,136,255,.35); opacity: 0; }
+  #arrows { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  .arr { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .arrh { fill: #fff; }
+  .slot { position: absolute; left: 650px; width: 236px; height: 44px; line-height: 44px; font-size: 34px; opacity: 0; }
+  .slot .sl-name { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  .slot .sl-q { position: absolute; left: 92px; top: 0; font-family: "KaTeX_Main", serif; font-weight: 700; opacity: .5; }
+  .slot .sl-val { position: absolute; left: 92px; top: 0; white-space: nowrap; opacity: 0; font-family: "KaTeX_Main", serif; font-weight: 700; }
+  .slot .cnt { font-weight: 700; }
+  #ibox { position: absolute; left: 640px; top: 36px; width: 236px; height: 146px; border-radius: 14px; border: 3px solid var(--blue); box-shadow: 0 0 12px rgba(0,136,255,.9), inset 0 0 20px rgba(0,136,255,.35); opacity: 0; }
+
+  /* ---------- CTA ---------- */
+  #cta { left: 150px; top: 1460px; width: 780px; height: 210px; border-radius: 26px; background: var(--panel); border: 2px solid rgba(176,38,255,.6); opacity: .0; }
+  #cta-h { position: absolute; left: 0; top: 14px; width: 776px; height: 40px; text-align: center; font-size: 32px; line-height: 40px; font-weight: 700; color: var(--purple); letter-spacing: 1px; text-shadow: 0 0 18px rgba(176,38,255,.5); }
+  .btnbox { position: absolute; left: 48px; top: 60px; width: 680px; height: 75px; border-radius: 22px; }
+  #rip-1, #rip-2 { border: 2px solid var(--blue); opacity: 0; }
+  #cta-btn { background: rgba(0,136,255,.18); border: 2px solid var(--blue); overflow: hidden; box-shadow: 0 0 22px rgba(0,136,255,.35); }
+  .btxt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 700; color: var(--blue); text-shadow: 0 0 20px rgba(0,136,255,.85); white-space: nowrap; }
+  #btn-b { opacity: 0; }
+  .btxt svg { width: 38px; height: 38px; flex: none; }
+  #btn-flash { position: absolute; inset: 0; background: #fff; opacity: 0; border-radius: 20px; }
+  #cta-sub { position: absolute; left: 0; top: 148px; width: 776px; height: 36px; text-align: center; font-size: 24px; line-height: 36px; font-weight: 700; color: #fff; opacity: .7; letter-spacing: 2px; }
+  #cursor { position: absolute; left: 0; top: 0; width: 60px; height: 60px; z-index: 20; opacity: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="{{DURATION}}" data-width="1080" data-height="1920" data-fps="60">
+
+  <!-- window chrome -->
+  <div id="bar" class="abs">
+    <div id="dot-r" class="dot"></div><div id="dot-y" class="dot"></div><div id="dot-g" class="dot"></div>
+    <div id="url">maeacademy.org/simulations/circuit-lab</div>
+  </div>
+  <div id="title" class="abs">MESH ANALYSIS</div>
+  <div id="subs" class="abs">
+    <div id="sub-0" class="sub">SCREEN RECORDING <span class="u2">·</span> LIVE PAGE</div>
+    <div id="sub-1" class="sub">REDRAW <span class="u2">·</span> 6 NODES <span class="u2">·</span> 8 BRANCHES <span class="u2">·</span> 3 MESHES</div>
+    <div id="sub-2" class="sub">CLOCKWISE MESH CURRENTS <span class="u2">·</span> KVL</div>
+    <div id="sub-3" class="sub">MATRIX FORM <span class="u2">·</span> R·I = V</div>
+    <div id="sub-4" class="sub">GAUSSIAN ELIMINATION</div>
+    <div id="sub-5" class="sub">SOLVE <span class="u2">·</span> KCL CHECK</div>
+    <div id="sub-6" class="sub">POWER BALANCE</div>
+  </div>
+
+  <!-- stage: recording, then the redrawn circuit -->
+  <div id="stage" class="abs">
+    <video id="hook" class="clip" data-start="0" data-duration="{{T_HOOK}}" data-track-index="1" src="assets/circuit-lab-hook.mp4" muted playsinline></video>
+    <div id="hookcap">SOURCE · SCREEN RECORDING OF THE LIVE LAB</div>
+    <svg id="circuit" viewBox="0 0 900 750" xmlns="http://www.w3.org/2000/svg">
+{{CIRCUIT_SVG}}
+    </svg>
+    <div id="labels">
+{{CIRCUIT_LABELS}}
+    </div>
+    <div id="cutflash"></div>
+  </div>
+
+  <!-- equation / banner strip -->
+  <div id="strip" class="abs">
+    <div id="sb-hook" class="sb">
+      <div id="quote"><i>“</i>{{HOOK_QUOTE}}<i>”</i></div>
+      <div id="qsrc">quoted verbatim from the live page</div>
+    </div>
+    <div id="sb-redraw" class="sb">
+      <div class="big">REDRAWN WITH NEW VALUES</div>
+      <div class="small">{{N_NODES}} nodes · {{N_BRANCHES}} branches · 3 independent meshes · {{VALUES_NOTE}}</div>
+    </div>
+    <div id="sb-kvl" class="sb">
+{{KVL}}
+    </div>
+    <div id="sb-mx" class="sb">
+      <div class="big"><span class="mi">R</span> · <span class="mi">I</span> = <span class="mi">V</span></div>
+      <div class="leg"><i class="sw" style="background:#0088FF"></i>loop resistance <i class="sw" style="background:#B026FF"></i>shared resistance <i class="sw" style="background:#FF0044"></i>source terms</div>
+    </div>
+{{ELIM}}
+    <div id="sb-kcl" class="sb">
+{{KCL}}
+    </div>
+    <div id="sb-pw" class="sb">
+{{POWER}}
+    </div>
+  </div>
+
+  <!-- matrix card -->
+  <div id="card" class="abs">
+    <div id="cardin">
+      <div id="pivot"></div>
+      <svg id="brk" viewBox="0 0 896 184" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
+{{MATRIX}}
+      <svg id="arrows" viewBox="0 0 896 184" xmlns="http://www.w3.org/2000/svg">
+        <path id="arr-1" class="arr" d="M582 64 C626 64 626 108 590 108" stroke-dasharray="90" stroke-dashoffset="90" opacity="0"/>
+        <polygon id="arrh-1" class="arrh" points="580,108 592,101 592,115" opacity="0"/>
+        <path id="arr-2" class="arr" d="M582 108 C626 108 626 152 590 152" stroke-dasharray="90" stroke-dashoffset="90" opacity="0"/>
+        <polygon id="arrh-2" class="arrh" points="580,152 592,145 592,159" opacity="0"/>
+        <path id="arr-3" class="arr" d="M582 152 H632" stroke-dasharray="50" stroke-dashoffset="50" opacity="0"/>
+        <polygon id="arrh-3" class="arrh" points="644,152 632,145 632,159" opacity="0"/>
+        <path id="arr-4" class="arr" d="M582 108 H632" stroke-dasharray="50" stroke-dashoffset="50" opacity="0"/>
+        <polygon id="arrh-4" class="arrh" points="644,108 632,101 632,115" opacity="0"/>
+        <path id="arr-5" class="arr" d="M582 64 H632" stroke-dasharray="50" stroke-dashoffset="50" opacity="0"/>
+        <polygon id="arrh-5" class="arrh" points="644,64 632,57 632,71" opacity="0"/>
+      </svg>
+{{SLOTS}}
+      <div id="ibox"></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div id="cta" class="abs">
+    <div id="cta-h">CAN YOU SOLVE THIS CIRCUIT?</div>
+    <div id="rip-1" class="btnbox"></div>
+    <div id="rip-2" class="btnbox"></div>
+    <div id="cta-btn" class="btnbox">
+      <div id="btn-a" class="btxt">TRY THE CIRCUIT LAB
+        <svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#0088FF"/></svg></div>
+      <div id="btn-b" class="btxt">OPEN THE LAB
+        <svg viewBox="0 0 24 24"><path d="M12 1.5c3.4 2.3 5 6 4.6 10.2l-1.2 1.4H8.6l-1.2-1.4C7 7.5 8.6 3.8 12 1.5z" fill="#0088FF"/><circle cx="12" cy="8.6" r="1.8" fill="#0A0A10"/><path d="M8.2 13.4 5 16.6l1 3.4 2.6-2.3zM15.8 13.4 19 16.6l-1 3.4-2.6-2.3z" fill="#B026FF"/><path d="M10 15.2h4l-2 6.3z" fill="#fff"/></svg></div>
+      <div id="btn-flash"></div>
+    </div>
+    <div id="cta-sub">LINK IN THE FIRST COMMENT</div>
+  </div>
+
+  <svg id="cursor" viewBox="0 0 60 60"><path d="M6 4 L6 44 L16 35 L23 52 L31 48.5 L24 32 L37 32 Z" fill="#fff" stroke="#0A0A10" stroke-width="3" stroke-linejoin="round"/></svg>
+
+  <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="{{DURATION}}" data-track-index="2" data-volume="1"></audio>
+</div>
+
+<script>const DATA = {{DATA_JSON}};</script>
+<script>
+{{TIMELINE_JS}}
+</script>
+</body>
+</html>
