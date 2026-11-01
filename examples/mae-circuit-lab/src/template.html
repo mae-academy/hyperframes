@@ -2,125 +2,97 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>MAE Academy · Where does the R matrix come from?</title>
+<title>The R-Matrix Trick</title>
 <meta name="viewport" content="width=1080, height=1920" />
 <script src="{{GSAP_SRC}}"></script>
 <style>
-  /* every glyph in the film is KaTeX: Main (regular/bold) for text and numbers, Math (italic) for variables */
+  /* every glyph is KaTeX: Main Bold/Regular for text + numbers, Math Italic for variables */
   @font-face { font-family: "KaTeX_Math"; font-style: italic; font-weight: 400; src: url("assets/fonts/KaTeX_Math-Italic.woff2") format("woff2"); }
   @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 700; src: url("assets/fonts/KaTeX_Main-Bold.woff2") format("woff2"); }
   @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 400; src: url("assets/fonts/KaTeX_Main-Regular.woff2") format("woff2"); }
 
-  :root { --bg:#0A0A10; --grid:#161622; --panel:#12121C; --edge:#25253A; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; }
+  :root { --bg:#0A0A10; --grid:#161622; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; }
   html, body { margin: 0; padding: 0; background: var(--bg); }
   body { width: 1080px; height: 1920px; overflow: hidden; }
-  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 400;
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 700;
     background-color: var(--bg);
     background-image: linear-gradient(var(--grid) 2px, transparent 2px), linear-gradient(90deg, var(--grid) 2px, transparent 2px);
     background-size: 60px 60px; }
   #root div, #root svg { box-sizing: border-box; }
   .abs { position: absolute; }
-
   .mi { font-family: "KaTeX_Math", serif; font-style: italic; font-weight: 400; }
-  .ms { font-family: "KaTeX_Main", serif; font-weight: 400; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
+  .ms { font-family: "KaTeX_Main", serif; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
   .n  { font-family: "KaTeX_Main", serif; font-weight: 700; }
-  .eq { font-family: "KaTeX_Main", serif; font-weight: 400; }
-  .u  { font-family: "KaTeX_Main", serif; font-weight: 400; font-size: .86em; opacity: .85; }
+  .eq { font-weight: 400; }
+  .u  { font-weight: 400; font-size: .86em; opacity: .85; }
 
-  /* window chrome */
-  #bar { left: 90px; top: 140px; width: 900px; height: 48px; border-radius: 14px; background: var(--panel); border: 2px solid var(--edge); }
-  .dot { position: absolute; top: 15px; width: 14px; height: 14px; border-radius: 7px; }
-  #dot-r { left: 20px; background: #FF5F57; } #dot-y { left: 44px; background: #FFBD2E; } #dot-g { left: 68px; background: #28C840; }
-  #url { position: absolute; left: 130px; top: 7px; width: 640px; height: 30px; border-radius: 15px; background: var(--bg); border: 1.5px solid var(--edge);
-    font-size: 22px; line-height: 27px; text-align: center; color: #fff; opacity: .92; white-space: nowrap; }
-  #title { left: 90px; top: 204px; width: 900px; height: 62px; text-align: center; font-weight: 700; font-size: 50px; line-height: 62px; color: var(--blue); white-space: nowrap; text-shadow: 0 0 26px rgba(0,136,255,.45); }
-  #subs { left: 90px; top: 276px; width: 900px; height: 40px; }
-  .sub { position: absolute; inset: 0; text-align: center; font-size: 28px; line-height: 40px; font-weight: 700; color: #fff; opacity: 0; white-space: nowrap; }
-  #sub-0 { opacity: .8; }
+  /* ---------- zone 1: header, centred on x = 540 ---------- */
+  #hdr { left: 0; top: 110px; width: 1080px; height: 200px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #title { margin-top: 35px; font-size: 58px; line-height: 70px; color: var(--red); white-space: nowrap; text-shadow: 0 0 28px rgba(255,0,68,.45); }
+  #subtitle { margin-top: 3px; font-size: 34px; line-height: 44px; color: var(--purple); white-space: nowrap; }
+  #rule { margin-top: 17px; width: 120px; height: 3px; background: linear-gradient(90deg, var(--red), var(--purple)); }
 
-  /* stage = the circuit */
-  #stage { left: 90px; top: 360px; width: 900px; height: 750px; border-radius: 26px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
-  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 1; }
-  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 2; }
-  .wire { stroke: #CFE6FF; stroke-width: 4; fill: none; stroke-linecap: round; }
-  .packet { fill: #fff; opacity: 0; }
-  .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
-  .mask { fill: var(--panel); }
-  .src { fill: var(--panel); stroke: var(--red); stroke-width: 5; }
+  /* ---------- zone 2: circuit plate ---------- */
+  #plate { left: 90px; top: 340px; width: 900px; height: 560px; border-radius: 32px; background: rgba(30,30,46,.52); border: 1px solid rgba(255,255,255,.08); overflow: hidden; }
+  #wm { position: absolute; left: 0; top: 238px; width: 900px; height: 84px; text-align: center; font-size: 84px; line-height: 84px; color: #fff; opacity: .08; z-index: 0; white-space: nowrap; }
+  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 560px; z-index: 1; }
+  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 560px; z-index: 2; }
+  .wire { stroke: #8DB8FF; stroke-width: 4; fill: none; stroke-linecap: round; filter: drop-shadow(0px 0px 5px rgba(0,136,255,.55)); }
+  .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0px 0px 6px rgba(0,136,255,.6)); }
+  .mask { fill: #1b1b2a; }
+  .src { fill: #1b1b2a; stroke: var(--red); stroke-width: 5; filter: drop-shadow(0px 0px 6px rgba(255,0,68,.6)); }
   .pm { stroke: var(--red); stroke-width: 4; fill: none; stroke-linecap: round; }
-  .gl { stroke: #CFE6FF; stroke-width: 4; stroke-linecap: round; }
-  .node { fill: #fff; stroke: var(--panel); stroke-width: 3; } .gnode { fill: #CFE6FF; }
-  .el { opacity: 0; }
-  .marc { fill: none; stroke: #EAF2FF; stroke-width: 5; stroke-linecap: round; } .mhead { opacity: 0; fill: #EAF2FF; }
-  .lb { position: absolute; color: #fff; opacity: 0; white-space: nowrap; }
-  .elabel { font-size: 29px; } .ntag { font-size: 24px; font-weight: 700; opacity: 0; }
-  .mlabel { font-size: 34px; }
+  .gl { stroke: #8DB8FF; stroke-width: 4; stroke-linecap: round; }
+  .node { fill: #fff; stroke: #1b1b2a; stroke-width: 3; filter: drop-shadow(0px 0px 5px rgba(255,255,255,.6)); }
+  .lb { position: absolute; color: #fff; white-space: nowrap; }
+  .elabel { font-size: 27px; } .mlabel { font-size: 36px; } .gtag { font-size: 22px; opacity: .8; }
+  .trail { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
+  .perim { fill: none; stroke: var(--blue); stroke-width: 4; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
+  .head, .spark { opacity: 0; }
 
-  /* strip */
-  #strip { left: 90px; top: 1132px; width: 900px; height: 118px; border-radius: 20px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
-  .sb { position: absolute; inset: 0; opacity: 0; text-align: center; padding-top: 12px; }
-  #sb-hook { opacity: 1; }
-  .bl1 { font-size: 42px; line-height: 54px; font-weight: 700; white-space: nowrap; }
-  .bl1 .mi { font-weight: 400; }
-  .bl2 { font-size: 26px; line-height: 36px; opacity: .78; white-space: nowrap; }
-  .hot-b { color: var(--blue); } .hot-p { color: var(--purple); } .hot-r { color: var(--red); }
+  /* ---------- zone 3: banner ---------- */
+  #banner { left: 180px; top: 948px; width: 720px; height: 95px; border-radius: 22px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
+  .bv { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 22px; font-size: 30px; line-height: 38px; opacity: 0; }
+  #bv-0 { opacity: 1; }
+  .bv svg { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
+  .hp { color: var(--purple); } .hb { color: var(--blue); } .hr { color: var(--red); }
 
-  /* card */
-  #card { left: 90px; top: 1262px; width: 900px; height: 188px; border-radius: 22px; background: var(--panel); border: 2px solid var(--edge); }
-  #cardin { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
-  #brk { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  /* ---------- zone 4: glass matrix card ---------- */
+  #card { left: 160px; top: 1100px; width: 760px; height: 500px; border-radius: 44px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); }
+  #cardin { position: absolute; left: -1px; top: -1px; width: 760px; height: 500px; }
+  #eqhead { position: absolute; left: 0; top: 18px; width: 760px; height: 70px; text-align: center; font-size: 52px; line-height: 70px; }
+  #brk { position: absolute; left: 0; top: 0; width: 760px; height: 500px; }
   .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-  .cell { position: absolute; width: 96px; height: 44px; text-align: center; opacity: 0; }
-  .cell b, .fly { font-family: "KaTeX_Main", serif; font-weight: 700; font-size: 40px; line-height: 44px; }
-  .cell b { position: absolute; left: 0; top: 0; width: 96px; height: 44px; }
+  .cell { position: absolute; width: 120px; height: 110px; text-align: center; }
+  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 110px; line-height: 110px; white-space: nowrap; }
+  .cell .ghost { font-size: 44px; opacity: .38; }
+  .cell .val { font-size: 58px; opacity: 0; }
+  .cell .sum { font-size: 34px; opacity: 0; display: none; }
+  .cell .ring { position: absolute; left: 15px; top: 10px; width: 90px; height: 90px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
-  .fly { position: absolute; width: 96px; height: 44px; text-align: center; opacity: 0; z-index: 12; }
-  .clab { position: absolute; width: 80px; text-align: center; font-size: 30px; line-height: 34px; opacity: 0; }
-  .rlab { position: absolute; left: 10px; width: 52px; text-align: center; font-size: 22px; line-height: 28px; font-weight: 700; opacity: 0; }
-  .eqsign { position: absolute; width: 40px; text-align: center; font-size: 46px; line-height: 48px; opacity: 0; }
-  #cardnote { position: absolute; left: 600px; top: 40px; width: 280px; height: 136px; opacity: 0; font-size: 26px; line-height: 34px; }
-  #cardnote .row { display: flex; align-items: center; gap: 10px; height: 44px; }
-  .sw { display: inline-block; width: 18px; height: 18px; border-radius: 5px; flex: none; }
+  .ivec { position: absolute; width: 80px; height: 110px; line-height: 110px; text-align: center; font-size: 50px; }
+  #eqsign { position: absolute; left: 540px; top: 230px; width: 50px; height: 110px; line-height: 110px; text-align: center; font-size: 54px; }
+  #legend { position: absolute; left: 0; top: 452px; width: 760px; height: 36px; display: flex; justify-content: center; gap: 34px; font-size: 25px; line-height: 36px; }
+  #legend .sw { display: inline-block; width: 16px; height: 16px; border-radius: 4px; margin-right: 9px; vertical-align: -1px; }
 
-  /* rule card + CTA share the same footprint */
-  .tile { left: 150px; top: 1460px; width: 780px; height: 210px; border-radius: 26px; background: var(--panel); }
-  #rules { border: 2px solid var(--edge); opacity: 0; }
-  .rule { position: absolute; left: 28px; width: 724px; height: 54px; line-height: 54px; font-size: 29px; white-space: nowrap; opacity: .4; }
-  .rule .sw { margin-right: 14px; vertical-align: -1px; }
-  #rule-1 { top: 18px; } #rule-2 { top: 78px; } #rule-3 { top: 138px; }
-  #cta { border: 2px solid rgba(176,38,255,.6); opacity: 0; }
-  #cta-h { position: absolute; left: 0; top: 14px; width: 776px; height: 40px; text-align: center; font-size: 32px; line-height: 40px; font-weight: 700; color: var(--purple); text-shadow: 0 0 18px rgba(176,38,255,.5); }
-  .btnbox { position: absolute; left: 48px; top: 60px; width: 680px; height: 75px; border-radius: 22px; }
-  #rip-1, #rip-2 { border: 2px solid var(--blue); opacity: 0; }
-  #cta-btn { background: rgba(0,136,255,.18); border: 2px solid var(--blue); overflow: hidden; box-shadow: 0 0 22px rgba(0,136,255,.35); }
-  .btxt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 700; color: var(--blue); text-shadow: 0 0 20px rgba(0,136,255,.85); white-space: nowrap; }
-  #btn-b { opacity: 0; }
-  .btxt svg { width: 38px; height: 38px; flex: none; }
-  #btn-flash { position: absolute; inset: 0; background: #fff; opacity: 0; border-radius: 20px; }
-  #cta-sub { position: absolute; left: 0; top: 148px; width: 776px; height: 36px; text-align: center; font-size: 24px; line-height: 36px; font-weight: 700; color: #fff; opacity: .7; }
-  #cursor { position: absolute; left: 0; top: 0; width: 60px; height: 60px; z-index: 20; opacity: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+  /* ---------- flying numerals + beams ---------- */
+  .fly { position: absolute; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 30; text-shadow: 0 0 16px currentColor; }
+  #fx { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 25; pointer-events: none; }
+  .beam { stroke-width: 5; stroke-linecap: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(176,38,255,.95)); }
 </style>
 </head>
 <body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="{{DURATION}}" data-width="1080" data-height="1920" data-fps="60">
 
-  <div id="bar" class="abs">
-    <div id="dot-r" class="dot"></div><div id="dot-y" class="dot"></div><div id="dot-g" class="dot"></div>
-    <div id="url">maeacademy.org/simulations/circuit-lab</div>
-  </div>
-  <div id="title" class="abs">BUILD THE R MATRIX</div>
-  <div id="subs" class="abs">
-    <div id="sub-0" class="sub">REDRAW THE CIRCUIT</div>
-    <div id="sub-1" class="sub">CLOCKWISE MESH CURRENTS</div>
-    <div id="sub-2" class="sub">DIAGONAL ENTRIES</div>
-    <div id="sub-3" class="sub">OFF-DIAGONAL ENTRIES</div>
-    <div id="sub-4" class="sub">THE SOURCE VECTOR</div>
-    <div id="sub-5" class="sub">SET UP THE MATRIX FORM</div>
-    <div id="sub-6" class="sub">EVERY ENTRY HAS A SOURCE</div>
+  <div id="hdr" class="abs">
+    <div id="title">THE R-MATRIX TRICK</div>
+    <div id="subtitle">SOLVE MESH CURRENTS BY INSPECTION</div>
+    <div id="rule"></div>
   </div>
 
-  <div id="stage" class="abs">
-    <svg id="circuit" viewBox="0 0 900 750" xmlns="http://www.w3.org/2000/svg">
+  <div id="plate" class="abs">
+    <div id="wm">@MAE.Academy</div>
+    <svg id="circuit" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
 {{CIRCUIT_SVG}}
     </svg>
     <div id="labels">
@@ -128,52 +100,27 @@
     </div>
   </div>
 
-  <div id="strip" class="abs">
-    <div id="sb-hook" class="sb"><div class="bl1">Where does every entry of <span class="mi">R</span> come from?</div>
-      <div class="bl2">8 branches ⋅ 6 nodes ⋅ 3 independent meshes</div></div>
-    <div id="sb-mesh" class="sb"><div class="bl1">Mesh currents <span class="mi">I</span><span class="ms">1</span> <span class="mi">I</span><span class="ms">2</span> <span class="mi">I</span><span class="ms">3</span></div>
-      <div class="bl2">all three flow clockwise</div></div>
-    <div id="sb-form" class="sb"><div class="bl1"><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span></div>
-      <div class="bl2">KVL around each mesh fills one row of <span class="mi">R</span> and <span class="mi">V</span></div></div>
-{{BEATS}}
-    <div id="sb-final" class="sb"><div class="bl1"><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span></div>
-      <div class="bl2">every entry traced back to the circuit</div></div>
+  <div id="banner" class="abs">
+    <div id="bv-0" class="bv"><span>STOP WRITING KVL EQUATIONS:<br>BUILD THE MATRIX BY SIGHT<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#fff"/></svg></span></div>
+    <div id="bv-1" class="bv"><span>DIAGONALS: SUM OF RESISTORS<br>AROUND EACH MESH</span></div>
+    <div id="bv-2" class="bv"><span>OFF-DIAGONALS: NEGATIVE OF<br>SHARED RESISTORS (<span class="hp">−</span><span class="mi hp">R</span><span class="ms hp">ij</span>)</span></div>
+    <div id="bv-3" class="bv"><span>SOURCES: VOLTAGE RISES (+)<br>MINUS DROPS (−)</span></div>
+    <div id="bv-4" class="bv"><span>MATRIX COMPLETE IN 5 SECONDS:<br><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span><svg viewBox="0 0 24 24" style="margin-left:14px"><path id="ck" d="M4 13 L10 19 L21 5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="30" stroke-dashoffset="30"/></svg></span></div>
   </div>
 
   <div id="card" class="abs">
     <div id="cardin">
-      <svg id="brk" viewBox="0 0 896 184" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
+      <div id="eqhead">R ⋅ I = V</div>
+      <svg id="brk" viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
 {{MATRIX}}
-      <div id="cardnote">
-        <div class="row"><i class="sw" style="background:#0088FF"></i><span>self resistance</span></div>
-        <div class="row"><i class="sw" style="background:#B026FF"></i><span>shared resistance</span></div>
-        <div class="row"><i class="sw" style="background:#FF0044"></i><span>source terms</span></div>
-      </div>
+      <div id="eqsign">=</div>
+      <div id="legend"><span><i class="sw" style="background:#0088FF"></i>self</span><span><i class="sw" style="background:#B026FF"></i>shared</span><span><i class="sw" style="background:#FF0044"></i>sources</span></div>
     </div>
   </div>
 {{FLY}}
-
-  <div id="rules" class="tile abs">
-    <div id="rule-1" class="rule"><i class="sw" style="background:#0088FF"></i><span class="mi">R</span><span class="ms">ii</span> = sum of all resistors around mesh <span class="mi">i</span></div>
-    <div id="rule-2" class="rule"><i class="sw" style="background:#B026FF"></i><span class="mi">R</span><span class="ms">ij</span> = − the resistors shared by meshes <span class="mi">i</span>, <span class="mi">j</span></div>
-    <div id="rule-3" class="rule"><i class="sw" style="background:#FF0044"></i><span class="mi">v</span><span class="ms">i</span> = source rises − drops along <span class="mi">I</span><span class="ms">i</span></div>
-  </div>
-
-  <div id="cta" class="tile abs">
-    <div id="cta-h">CAN YOU SOLVE THIS CIRCUIT?</div>
-    <div id="rip-1" class="btnbox"></div>
-    <div id="rip-2" class="btnbox"></div>
-    <div id="cta-btn" class="btnbox">
-      <div id="btn-a" class="btxt">TRY THE CIRCUIT LAB
-        <svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#0088FF"/></svg></div>
-      <div id="btn-b" class="btxt">OPEN THE LAB
-        <svg viewBox="0 0 24 24"><path d="M12 1.5c3.4 2.3 5 6 4.6 10.2l-1.2 1.4H8.6l-1.2-1.4C7 7.5 8.6 3.8 12 1.5z" fill="#0088FF"/><circle cx="12" cy="8.6" r="1.8" fill="#0A0A10"/><path d="M8.2 13.4 5 16.6l1 3.4 2.6-2.3zM15.8 13.4 19 16.6l-1 3.4-2.6-2.3z" fill="#B026FF"/><path d="M10 15.2h4l-2 6.3z" fill="#fff"/></svg></div>
-      <div id="btn-flash"></div>
-    </div>
-    <div id="cta-sub">LINK IN THE FIRST COMMENT</div>
-  </div>
-
-  <svg id="cursor" viewBox="0 0 60 60"><path d="M6 4 L6 44 L16 35 L23 52 L31 48.5 L24 32 L37 32 Z" fill="#fff" stroke="#0A0A10" stroke-width="3" stroke-linejoin="round"/></svg>
+  <svg id="fx" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+{{BEAMS}}
+  </svg>
 
   <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="{{DURATION}}" data-track-index="2" data-volume="1"></audio>
 </div>

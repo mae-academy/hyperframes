@@ -1,63 +1,53 @@
-# MAE Academy · Build the R matrix (1080×1920, 60 fps, 30 s)
+# THE R-MATRIX TRICK · build the mesh matrix by inspection (1080×1920, 60 fps, 13.0 s)
 
-Shows **where every entry of the mesh-analysis matrices comes from**: the circuit is redrawn, the three clockwise mesh
-currents are drawn, and then each entry of `R` and `v` is derived on screen. For every beat the circuit dims except the
-parts that produce the entry, the strip shows the derivation, the value flies into its cell, and a rule card
-highlights the rule that was used. Ends on a CTA card. No Gaussian elimination, no screen recording.
+The circuit is fully drawn and glowing at frame 0. An Electric Blue particle tracer laps the inner perimeter of each mesh
+(clockwise); every resistor it passes pulses and hurls its value into the matrix. Off-diagonal entries are shot from the
+shared resistor by two beams, source entries from the sources that rise (+) or drop (−) along the mesh.
+No URL bar, no cursor, no CTA, no screen recording, no Gaussian elimination.
 
-| Time (s)    | Beat                                                                                            |
-| ----------- | ----------------------------------------------------------------------------------------------- |
-| 0.0 - 3.5   | wires draw in as light packets, sources and resistors drop in with values                       |
-| 3.5 - 6.0   | clockwise mesh currents I1, I2, I3                                                              |
-| 6.0 - 7.2   | brackets, column labels, `R·I = V` set up                                                       |
-| 7.2 - 13.2  | diagonal entries: R11, R22, R33 = sum of every resistor around the mesh (blue)                  |
-| 13.2 - 19.2 | off-diagonal entries: R12=R21=-R2, R23=R32=-R4, R13=R31=0 = minus the shared resistors (purple) |
-| 19.2 - 25.2 | v1 = +V1 - V3, v2 = -V2, v3 = +V3 = source rises minus drops along the mesh current (red)       |
-| 25.2 - 25.9 | whole matrix glows, legend appears                                                              |
-| 25.9 - 30.0 | CTA: ripples, cursor glide, click, "OPEN THE LAB" (final hold from 29.0)                        |
+| Time (s)    | Beat                                                                                                    | Audio cue                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 0.0 - 2.0   | live hook, banner "STOP WRITING KVL EQUATIONS…"                                                         | thump 0.0, snap 0.04                        |
+| 2.0 - 5.5   | diagonals: tracer laps mesh 1 / 2 / 3, values combine (2+2, 2+3+4, 4+1) and lock R11, R22, R33          | click 2.0 / 3.2 / 4.4, snap 2.8 / 4.0 / 5.2 |
+| 5.5 - 9.0   | off-diagonals: R2 shared → R12 = R21 = −2; R4 shared → R23 = R32 = −4; meshes 1 and 3 share nothing → 0 | snap 5.8, 7.0, click 8.2                    |
+| 9.0 - 11.8  | sources: v1 = +5 − 13 = −8, v2 = −16, v3 = +13                                                          | snap 9.2, 10.2, thump 11.1                  |
+| 11.8 - 13.0 | whole equation pulses, check mark draws, static hold from 12.8                                          | snap 11.8, click 12.2                       |
 
-## Values
+R = [[4, −2, 0], [−2, 9, −4], [0, −4, 5]] kΩ, V = [−8, −16, 13]ᵀ V (asserted against `scripts/solve.py` while building).
+Mesh currents are clockwise. Colours: diagonal Electric Blue #0088FF, off-diagonal Neon Purple #B026FF, source terms Flame Red #FF0044;
+no green, no yellow anywhere. Every glyph is KaTeX (`KaTeX_Math` italic, `KaTeX_Main` regular/bold); the ⚡ and ✓ are SVG because KaTeX has no such glyphs.
 
-R1 = 2, R2 = 2, R3 = 3, R4 = 4, R5 = 1 kΩ; V1 = 5, V2 = 16, V3 = 13 V.
-R = [[4, -2, 0], [-2, 9, -4], [0, -4, 5]] kΩ, v = [-8, -16, 13] V. (Check solution, not shown in the film:
-I = [-3, -2, 1] mA, `reports/solution.json`.) Every derivation in the strip is asserted against the exact matrix from
-`scripts/solve.py` while building.
+## Layout (4 zones, centred on x = 540)
 
-## Style
+Zone 1 header y 110-310 · Zone 2 circuit plate x 90-990, y 340-900 · Zone 3 banner 720×95 at y ≈ 995 · Zone 4 glass card 760×500 at y 1100-1600 · y 1670-1920 empty.
+`MAE_STYLE_SPEC.md` is not in this repository; the numbers in the brief were used as the spec.
 
-Palette only: Electric Blue #0088FF (diagonal / resistors), Neon Purple #B026FF (off-diagonal), Flame Red #FF0044 (source terms),
-white; canvas #0A0A10, grid #161622, panels #12121C. No green, no yellow (except the window dot).
-All text is KaTeX: `KaTeX_Math` italic for variables, `KaTeX_Main` (bold for numbers) for everything else; no other font is loaded.
-
-## Layout
+## Files
 
 ```
-src/template.html   markup + CSS with {{slots}}        src/timeline.js   GSAP timeline + CUES (@CUES-BEGIN/@CUES-END)
-build_index.py      derives the beats from scripts/solve.py -> index.html
-scripts/solve.py    exact mesh solver (also used as the assertion source)
-scripts/make_sfx.py CUES -> assets/sfx.wav (stereo 48 kHz, same length as the video)
-scripts/verify_snapshots.py   snapshots every 0.6 s + pixel checks (x 90-990, y 140-1670, no yellow)
-scripts/export_web.sh         yuv420p, +faststart, even dimensions, tags stripped
-assets/fonts/       KaTeX fonts (MIT)       assets/gsap.min.js  local copy for offline verification only
-reports/            check-report.txt, solution.json, snapshot-verification.json
-snapshots/critical/ frames at 3, 7, 11, 16, 22, 25 s and the last frame
+src/template.html   markup + CSS          src/timeline.js   GSAP timeline + CUES (@CUES-BEGIN / @CUES-END)
+build_index.py      derives every entry, sum, sign and tracer timing -> index.html
+scripts/make_sfx.py CUES -> assets/sfx.wav (13.0 s stereo, 50 Hz hum at -22 dBFS, click / snap(+70 Hz sub) / thump)
+scripts/verify_snapshots.py   snapshots every 0.6 s + pixel checks (x 90-990, y 110-1670, no yellow)
+export_clean.sh     metadata/chapters stripped, 4 px crop + rescale, light noise, loudnorm, faststart yuv420p
+assets/fonts/ KaTeX fonts (MIT)   assets/gsap.min.js local copy, offline verification only
+reports/            check-report.txt, solution.json     snapshots/critical/  frames at 0, 2.8, 5.8, 9.2, 11.8, 12.95 s
 ```
 
 ## Rebuild
 
 ```bash
-python3 build_index.py            # ships the cdnjs GSAP tag (--local only for offline tests)
+python3 build_index.py            # ships the cdnjs GSAP tag; add --local to test offline
 python3 scripts/make_sfx.py
 npx hyperframes lint && npx hyperframes check
 python3 scripts/verify_snapshots.py
-npx hyperframes render --fps 60 -o renders/mae-circuit-lab-raw.mp4
-scripts/export_web.sh renders/mae-circuit-lab-raw.mp4 renders/mae-circuit-lab-web.mp4
+npx hyperframes render --fps 60 -o renders/raw_render.mp4
+cd renders && ../export_clean.sh raw_render.mp4 mesh_inspection_matrix_master.mp4
 ```
 
-New numbers: edit `CONFIG` in `build_index.py`. `assets/sfx.wav` and `renders/` are git-ignored.
+`assets/sfx.wav` and `renders/` are git-ignored.
 
 ## Check status
 
-`npx hyperframes check`: 0 errors. Warnings (see `reports/check-report.txt`): single-file length (the brief asks for one
-index.html); `line_unread` because 9 derivations in 18 s give each 2.0 s, below the tool's reading floor for long lines;
-small annotation text (subscripts, circuit labels). The one contrast note is the intentional white flash on the CTA button.
+`npx hyperframes check`: 0 errors. Warnings (`reports/check-report.txt`): `line_unread` (a lock lasts 0.15-0.3 s by design for pacing),
+small text below 28 px (subscripts, circuit labels, legend), and the 3.x s of the first banner on screen is 2.0 s.

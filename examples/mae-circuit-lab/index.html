@@ -2,660 +2,513 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>MAE Academy · Where does the R matrix come from?</title>
+<title>The R-Matrix Trick</title>
 <meta name="viewport" content="width=1080, height=1920" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  /* every glyph in the film is KaTeX: Main (regular/bold) for text and numbers, Math (italic) for variables */
+  /* every glyph is KaTeX: Main Bold/Regular for text + numbers, Math Italic for variables */
   @font-face { font-family: "KaTeX_Math"; font-style: italic; font-weight: 400; src: url("assets/fonts/KaTeX_Math-Italic.woff2") format("woff2"); }
   @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 700; src: url("assets/fonts/KaTeX_Main-Bold.woff2") format("woff2"); }
   @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 400; src: url("assets/fonts/KaTeX_Main-Regular.woff2") format("woff2"); }
 
-  :root { --bg:#0A0A10; --grid:#161622; --panel:#12121C; --edge:#25253A; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; }
+  :root { --bg:#0A0A10; --grid:#161622; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; }
   html, body { margin: 0; padding: 0; background: var(--bg); }
   body { width: 1080px; height: 1920px; overflow: hidden; }
-  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 400;
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 700;
     background-color: var(--bg);
     background-image: linear-gradient(var(--grid) 2px, transparent 2px), linear-gradient(90deg, var(--grid) 2px, transparent 2px);
     background-size: 60px 60px; }
   #root div, #root svg { box-sizing: border-box; }
   .abs { position: absolute; }
-
   .mi { font-family: "KaTeX_Math", serif; font-style: italic; font-weight: 400; }
-  .ms { font-family: "KaTeX_Main", serif; font-weight: 400; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
+  .ms { font-family: "KaTeX_Main", serif; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
   .n  { font-family: "KaTeX_Main", serif; font-weight: 700; }
-  .eq { font-family: "KaTeX_Main", serif; font-weight: 400; }
-  .u  { font-family: "KaTeX_Main", serif; font-weight: 400; font-size: .86em; opacity: .85; }
+  .eq { font-weight: 400; }
+  .u  { font-weight: 400; font-size: .86em; opacity: .85; }
 
-  /* window chrome */
-  #bar { left: 90px; top: 140px; width: 900px; height: 48px; border-radius: 14px; background: var(--panel); border: 2px solid var(--edge); }
-  .dot { position: absolute; top: 15px; width: 14px; height: 14px; border-radius: 7px; }
-  #dot-r { left: 20px; background: #FF5F57; } #dot-y { left: 44px; background: #FFBD2E; } #dot-g { left: 68px; background: #28C840; }
-  #url { position: absolute; left: 130px; top: 7px; width: 640px; height: 30px; border-radius: 15px; background: var(--bg); border: 1.5px solid var(--edge);
-    font-size: 22px; line-height: 27px; text-align: center; color: #fff; opacity: .92; white-space: nowrap; }
-  #title { left: 90px; top: 204px; width: 900px; height: 62px; text-align: center; font-weight: 700; font-size: 50px; line-height: 62px; color: var(--blue); white-space: nowrap; text-shadow: 0 0 26px rgba(0,136,255,.45); }
-  #subs { left: 90px; top: 276px; width: 900px; height: 40px; }
-  .sub { position: absolute; inset: 0; text-align: center; font-size: 28px; line-height: 40px; font-weight: 700; color: #fff; opacity: 0; white-space: nowrap; }
-  #sub-0 { opacity: .8; }
+  /* ---------- zone 1: header, centred on x = 540 ---------- */
+  #hdr { left: 0; top: 110px; width: 1080px; height: 200px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  #title { margin-top: 35px; font-size: 58px; line-height: 70px; color: var(--red); white-space: nowrap; text-shadow: 0 0 28px rgba(255,0,68,.45); }
+  #subtitle { margin-top: 3px; font-size: 34px; line-height: 44px; color: var(--purple); white-space: nowrap; }
+  #rule { margin-top: 17px; width: 120px; height: 3px; background: linear-gradient(90deg, var(--red), var(--purple)); }
 
-  /* stage = the circuit */
-  #stage { left: 90px; top: 360px; width: 900px; height: 750px; border-radius: 26px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
-  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 1; }
-  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 750px; z-index: 2; }
-  .wire { stroke: #CFE6FF; stroke-width: 4; fill: none; stroke-linecap: round; }
-  .packet { fill: #fff; opacity: 0; }
-  .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
-  .mask { fill: var(--panel); }
-  .src { fill: var(--panel); stroke: var(--red); stroke-width: 5; }
+  /* ---------- zone 2: circuit plate ---------- */
+  #plate { left: 90px; top: 340px; width: 900px; height: 560px; border-radius: 32px; background: rgba(30,30,46,.52); border: 1px solid rgba(255,255,255,.08); overflow: hidden; }
+  #wm { position: absolute; left: 0; top: 238px; width: 900px; height: 84px; text-align: center; font-size: 84px; line-height: 84px; color: #fff; opacity: .08; z-index: 0; white-space: nowrap; }
+  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 560px; z-index: 1; }
+  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 560px; z-index: 2; }
+  .wire { stroke: #8DB8FF; stroke-width: 4; fill: none; stroke-linecap: round; filter: drop-shadow(0px 0px 5px rgba(0,136,255,.55)); }
+  .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0px 0px 6px rgba(0,136,255,.6)); }
+  .mask { fill: #1b1b2a; }
+  .src { fill: #1b1b2a; stroke: var(--red); stroke-width: 5; filter: drop-shadow(0px 0px 6px rgba(255,0,68,.6)); }
   .pm { stroke: var(--red); stroke-width: 4; fill: none; stroke-linecap: round; }
-  .gl { stroke: #CFE6FF; stroke-width: 4; stroke-linecap: round; }
-  .node { fill: #fff; stroke: var(--panel); stroke-width: 3; } .gnode { fill: #CFE6FF; }
-  .el { opacity: 0; }
-  .marc { fill: none; stroke: #EAF2FF; stroke-width: 5; stroke-linecap: round; } .mhead { opacity: 0; fill: #EAF2FF; }
-  .lb { position: absolute; color: #fff; opacity: 0; white-space: nowrap; }
-  .elabel { font-size: 29px; } .ntag { font-size: 24px; font-weight: 700; opacity: 0; }
-  .mlabel { font-size: 34px; }
+  .gl { stroke: #8DB8FF; stroke-width: 4; stroke-linecap: round; }
+  .node { fill: #fff; stroke: #1b1b2a; stroke-width: 3; filter: drop-shadow(0px 0px 5px rgba(255,255,255,.6)); }
+  .lb { position: absolute; color: #fff; white-space: nowrap; }
+  .elabel { font-size: 27px; } .mlabel { font-size: 36px; } .gtag { font-size: 22px; opacity: .8; }
+  .trail { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
+  .perim { fill: none; stroke: var(--blue); stroke-width: 4; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
+  .head, .spark { opacity: 0; }
 
-  /* strip */
-  #strip { left: 90px; top: 1132px; width: 900px; height: 118px; border-radius: 20px; background: var(--panel); border: 2px solid var(--edge); overflow: hidden; }
-  .sb { position: absolute; inset: 0; opacity: 0; text-align: center; padding-top: 12px; }
-  #sb-hook { opacity: 1; }
-  .bl1 { font-size: 42px; line-height: 54px; font-weight: 700; white-space: nowrap; }
-  .bl1 .mi { font-weight: 400; }
-  .bl2 { font-size: 26px; line-height: 36px; opacity: .78; white-space: nowrap; }
-  .hot-b { color: var(--blue); } .hot-p { color: var(--purple); } .hot-r { color: var(--red); }
+  /* ---------- zone 3: banner ---------- */
+  #banner { left: 180px; top: 948px; width: 720px; height: 95px; border-radius: 22px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
+  .bv { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 22px; font-size: 30px; line-height: 38px; opacity: 0; }
+  #bv-0 { opacity: 1; }
+  .bv svg { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
+  .hp { color: var(--purple); } .hb { color: var(--blue); } .hr { color: var(--red); }
 
-  /* card */
-  #card { left: 90px; top: 1262px; width: 900px; height: 188px; border-radius: 22px; background: var(--panel); border: 2px solid var(--edge); }
-  #cardin { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
-  #brk { position: absolute; left: 0; top: 0; width: 896px; height: 184px; }
+  /* ---------- zone 4: glass matrix card ---------- */
+  #card { left: 160px; top: 1100px; width: 760px; height: 500px; border-radius: 44px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); }
+  #cardin { position: absolute; left: -1px; top: -1px; width: 760px; height: 500px; }
+  #eqhead { position: absolute; left: 0; top: 18px; width: 760px; height: 70px; text-align: center; font-size: 52px; line-height: 70px; }
+  #brk { position: absolute; left: 0; top: 0; width: 760px; height: 500px; }
   .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-  .cell { position: absolute; width: 96px; height: 44px; text-align: center; opacity: 0; }
-  .cell b, .fly { font-family: "KaTeX_Main", serif; font-weight: 700; font-size: 40px; line-height: 44px; }
-  .cell b { position: absolute; left: 0; top: 0; width: 96px; height: 44px; }
+  .cell { position: absolute; width: 120px; height: 110px; text-align: center; }
+  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 110px; line-height: 110px; white-space: nowrap; }
+  .cell .ghost { font-size: 44px; opacity: .38; }
+  .cell .val { font-size: 58px; opacity: 0; }
+  .cell .sum { font-size: 34px; opacity: 0; display: none; }
+  .cell .ring { position: absolute; left: 15px; top: 10px; width: 90px; height: 90px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
-  .fly { position: absolute; width: 96px; height: 44px; text-align: center; opacity: 0; z-index: 12; }
-  .clab { position: absolute; width: 80px; text-align: center; font-size: 30px; line-height: 34px; opacity: 0; }
-  .rlab { position: absolute; left: 10px; width: 52px; text-align: center; font-size: 22px; line-height: 28px; font-weight: 700; opacity: 0; }
-  .eqsign { position: absolute; width: 40px; text-align: center; font-size: 46px; line-height: 48px; opacity: 0; }
-  #cardnote { position: absolute; left: 600px; top: 40px; width: 280px; height: 136px; opacity: 0; font-size: 26px; line-height: 34px; }
-  #cardnote .row { display: flex; align-items: center; gap: 10px; height: 44px; }
-  .sw { display: inline-block; width: 18px; height: 18px; border-radius: 5px; flex: none; }
+  .ivec { position: absolute; width: 80px; height: 110px; line-height: 110px; text-align: center; font-size: 50px; }
+  #eqsign { position: absolute; left: 540px; top: 230px; width: 50px; height: 110px; line-height: 110px; text-align: center; font-size: 54px; }
+  #legend { position: absolute; left: 0; top: 452px; width: 760px; height: 36px; display: flex; justify-content: center; gap: 34px; font-size: 25px; line-height: 36px; }
+  #legend .sw { display: inline-block; width: 16px; height: 16px; border-radius: 4px; margin-right: 9px; vertical-align: -1px; }
 
-  /* rule card + CTA share the same footprint */
-  .tile { left: 150px; top: 1460px; width: 780px; height: 210px; border-radius: 26px; background: var(--panel); }
-  #rules { border: 2px solid var(--edge); opacity: 0; }
-  .rule { position: absolute; left: 28px; width: 724px; height: 54px; line-height: 54px; font-size: 29px; white-space: nowrap; opacity: .4; }
-  .rule .sw { margin-right: 14px; vertical-align: -1px; }
-  #rule-1 { top: 18px; } #rule-2 { top: 78px; } #rule-3 { top: 138px; }
-  #cta { border: 2px solid rgba(176,38,255,.6); opacity: 0; }
-  #cta-h { position: absolute; left: 0; top: 14px; width: 776px; height: 40px; text-align: center; font-size: 32px; line-height: 40px; font-weight: 700; color: var(--purple); text-shadow: 0 0 18px rgba(176,38,255,.5); }
-  .btnbox { position: absolute; left: 48px; top: 60px; width: 680px; height: 75px; border-radius: 22px; }
-  #rip-1, #rip-2 { border: 2px solid var(--blue); opacity: 0; }
-  #cta-btn { background: rgba(0,136,255,.18); border: 2px solid var(--blue); overflow: hidden; box-shadow: 0 0 22px rgba(0,136,255,.35); }
-  .btxt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 700; color: var(--blue); text-shadow: 0 0 20px rgba(0,136,255,.85); white-space: nowrap; }
-  #btn-b { opacity: 0; }
-  .btxt svg { width: 38px; height: 38px; flex: none; }
-  #btn-flash { position: absolute; inset: 0; background: #fff; opacity: 0; border-radius: 20px; }
-  #cta-sub { position: absolute; left: 0; top: 148px; width: 776px; height: 36px; text-align: center; font-size: 24px; line-height: 36px; font-weight: 700; color: #fff; opacity: .7; }
-  #cursor { position: absolute; left: 0; top: 0; width: 60px; height: 60px; z-index: 20; opacity: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,.6)); }
+  /* ---------- flying numerals + beams ---------- */
+  .fly { position: absolute; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 30; text-shadow: 0 0 16px currentColor; }
+  #fx { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 25; pointer-events: none; }
+  .beam { stroke-width: 5; stroke-linecap: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(176,38,255,.95)); }
 </style>
 </head>
 <body>
-<div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920" data-fps="60">
+<div id="root" data-composition-id="main" data-start="0" data-duration="13" data-width="1080" data-height="1920" data-fps="60">
 
-  <div id="bar" class="abs">
-    <div id="dot-r" class="dot"></div><div id="dot-y" class="dot"></div><div id="dot-g" class="dot"></div>
-    <div id="url">maeacademy.org/simulations/circuit-lab</div>
-  </div>
-  <div id="title" class="abs">BUILD THE R MATRIX</div>
-  <div id="subs" class="abs">
-    <div id="sub-0" class="sub">REDRAW THE CIRCUIT</div>
-    <div id="sub-1" class="sub">CLOCKWISE MESH CURRENTS</div>
-    <div id="sub-2" class="sub">DIAGONAL ENTRIES</div>
-    <div id="sub-3" class="sub">OFF-DIAGONAL ENTRIES</div>
-    <div id="sub-4" class="sub">THE SOURCE VECTOR</div>
-    <div id="sub-5" class="sub">SET UP THE MATRIX FORM</div>
-    <div id="sub-6" class="sub">EVERY ENTRY HAS A SOURCE</div>
+  <div id="hdr" class="abs">
+    <div id="title">THE R-MATRIX TRICK</div>
+    <div id="subtitle">SOLVE MESH CURRENTS BY INSPECTION</div>
+    <div id="rule"></div>
   </div>
 
-  <div id="stage" class="abs">
-    <svg id="circuit" viewBox="0 0 900 750" xmlns="http://www.w3.org/2000/svg">
-<defs><filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-<line id="w-V1" x1="150" y1="130" x2="150" y2="640" class="wire" stroke-dasharray="510.0" stroke-dashoffset="510.0"/>
-<line id="w-R1" x1="150" y1="130" x2="410" y2="130" class="wire" stroke-dasharray="260.0" stroke-dashoffset="260.0"/>
-<line id="w-R3" x1="410" y1="130" x2="720" y2="130" class="wire" stroke-dasharray="310.0" stroke-dashoffset="310.0"/>
-<line id="w-V2" x1="720" y1="130" x2="720" y2="400" class="wire" stroke-dasharray="270.0" stroke-dashoffset="270.0"/>
-<line id="w-R2" x1="410" y1="130" x2="410" y2="400" class="wire" stroke-dasharray="270.0" stroke-dashoffset="270.0"/>
-<line id="w-R4" x1="410" y1="400" x2="720" y2="400" class="wire" stroke-dasharray="310.0" stroke-dashoffset="310.0"/>
-<line id="w-R5" x1="720" y1="400" x2="720" y2="640" class="wire" stroke-dasharray="240.0" stroke-dashoffset="240.0"/>
-<line id="w-V3" x1="410" y1="400" x2="410" y2="640" class="wire" stroke-dasharray="240.0" stroke-dashoffset="240.0"/>
-<line id="w-GND" x1="150" y1="640" x2="720" y2="640" class="wire" stroke-dasharray="570.0" stroke-dashoffset="570.0"/>
-<circle id="pk-V1" cx="150" cy="130" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-R1" cx="150" cy="130" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-R3" cx="410" cy="130" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-V2" cx="720" cy="130" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-R2" cx="410" cy="130" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-R4" cx="410" cy="400" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-R5" cx="720" cy="400" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-V3" cx="410" cy="400" r="7" class="packet" filter="url(#glow)"/>
-<circle id="pk-GND" cx="150" cy="640" r="7" class="packet" filter="url(#glow)"/>
-<g id="gnd" class="el"><line x1="565" y1="640" x2="565" y2="666" class="gl"/><line x1="535" y1="666" x2="595" y2="666" class="gl"/><line x1="546" y1="678" x2="584" y2="678" class="gl"/><line x1="557" y1="690" x2="573" y2="690" class="gl"/></g>
-<g id="el-V1" class="el"><circle cx="150" cy="385" r="34" class="src"/><path d="M142 371 H158 M150 363 V379" class="pm"/><path d="M142 399 H158" class="pm"/></g>
-<g id="el-R1" class="el"><rect x="228" y="113" width="124" height="34" class="mask"/><polyline points="230,130 242,130 250,116 266,144 282,116 298,144 314,116 330,144 338,130 350,130" class="res"/></g>
-<g id="el-R3" class="el"><rect x="503" y="113" width="124" height="34" class="mask"/><polyline points="505,130 517,130 525,116 541,144 557,116 573,144 589,116 605,144 613,130 625,130" class="res"/></g>
-<g id="el-V2" class="el"><circle cx="720" cy="265" r="34" class="src"/><path d="M712 251 H728 M720 243 V259" class="pm"/><path d="M712 279 H728" class="pm"/></g>
-<g id="el-R2" class="el"><rect x="393" y="203" width="34" height="124" class="mask"/><polyline points="410,205 410,217 396,225 424,241 396,257 424,273 396,289 424,305 410,313 410,325" class="res"/></g>
-<g id="el-R4" class="el"><rect x="503" y="383" width="124" height="34" class="mask"/><polyline points="505,400 517,400 525,386 541,414 557,386 573,414 589,386 605,414 613,400 625,400" class="res"/></g>
-<g id="el-R5" class="el"><rect x="703" y="458" width="34" height="124" class="mask"/><polyline points="720,460 720,472 706,480 734,496 706,512 734,528 706,544 734,560 720,568 720,580" class="res"/></g>
-<g id="el-V3" class="el"><circle cx="410" cy="520" r="34" class="src"/><path d="M402 506 H418 M410 498 V514" class="pm"/><path d="M402 534 H418" class="pm"/></g>
-<circle id="nd-TL" cx="150" cy="130" r="9" class="node el"/>
-<circle id="nd-N1" cx="410" cy="130" r="9" class="node el"/>
-<circle id="nd-TR" cx="720" cy="130" r="9" class="node el"/>
-<circle id="nd-N3" cx="410" cy="400" r="9" class="node el"/>
-<circle id="nd-N2" cx="720" cy="400" r="9" class="node el"/>
-<circle cx="150" cy="640" r="7" class="node gnode el"/>
-<circle cx="410" cy="640" r="7" class="node gnode el"/>
-<circle cx="720" cy="640" r="7" class="node gnode el"/>
-<path id="mesh-1" d="M299.0 352.1 A38 38 0 1 1 258.2 353.9" class="marc" stroke-dasharray="195.65" stroke-dashoffset="195.65"/><polygon id="mhead-1" points="268.9,346.4 262.8,360.4 253.6,347.3" class="mhead"/>
-<path id="mesh-2" d="M609.0 229.1 A38 38 0 1 1 568.2 230.9" class="marc" stroke-dasharray="195.65" stroke-dashoffset="195.65"/><polygon id="mhead-2" points="578.9,223.4 572.8,237.4 563.6,224.3" class="mhead"/>
-<path id="mesh-3" d="M609.0 487.1 A38 38 0 1 1 568.2 488.9" class="marc" stroke-dasharray="195.65" stroke-dashoffset="195.65"/><polygon id="mhead-3" points="578.9,481.4 572.8,495.4 563.6,482.3" class="mhead"/>
+  <div id="plate" class="abs">
+    <div id="wm">@MAE.Academy</div>
+    <svg id="circuit" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="glow" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<line id="w-V1" x1="162" y1="90" x2="162" y2="470" class="wire"/>
+<line id="w-R1" x1="162" y1="90" x2="412" y2="90" class="wire"/>
+<line id="w-R3" x1="412" y1="90" x2="732" y2="90" class="wire"/>
+<line id="w-V2" x1="732" y1="90" x2="732" y2="300" class="wire"/>
+<line id="w-R2" x1="412" y1="90" x2="412" y2="300" class="wire"/>
+<line id="w-R4" x1="412" y1="300" x2="732" y2="300" class="wire"/>
+<line id="w-R5" x1="732" y1="300" x2="732" y2="470" class="wire"/>
+<line id="w-V3" x1="412" y1="300" x2="412" y2="470" class="wire"/>
+<line id="w-GND" x1="162" y1="470" x2="732" y2="470" class="wire"/>
+<g id="gnd"><line x1="572" y1="470" x2="572" y2="490" class="gl"/><line x1="542" y1="490" x2="602" y2="490" class="gl"/><line x1="553" y1="502" x2="591" y2="502" class="gl"/><line x1="564" y1="514" x2="580" y2="514" class="gl"/></g>
+<g id="el-V1"><circle cx="162" cy="280" r="34" class="src"/><path d="M154 266 H170 M162 258 V274" class="pm"/><path d="M154 294 H170" class="pm"/></g>
+<g id="el-R1"><rect x="225" y="73" width="124" height="34" class="mask"/><polyline points="227,90 239,90 247,76 263,104 279,76 295,104 311,76 327,104 335,90 347,90" class="res"/></g>
+<g id="el-R3"><rect x="510" y="73" width="124" height="34" class="mask"/><polyline points="512,90 524,90 532,76 548,104 564,76 580,104 596,76 612,104 620,90 632,90" class="res"/></g>
+<g id="el-V2"><circle cx="732" cy="195" r="34" class="src"/><path d="M724 181 H740 M732 173 V189" class="pm"/><path d="M724 209 H740" class="pm"/></g>
+<g id="el-R2"><rect x="395" y="133" width="34" height="124" class="mask"/><polyline points="412,135 412,147 398,155 426,171 398,187 426,203 398,219 426,235 412,243 412,255" class="res"/></g>
+<g id="el-R4"><rect x="510" y="283" width="124" height="34" class="mask"/><polyline points="512,300 524,300 532,286 548,314 564,286 580,314 596,286 612,314 620,300 632,300" class="res"/></g>
+<g id="el-R5"><rect x="715" y="323" width="34" height="124" class="mask"/><polyline points="732,325 732,337 718,345 746,361 718,377 746,393 718,409 746,425 732,433 732,445" class="res"/></g>
+<g id="el-V3"><circle cx="412" cy="385" r="34" class="src"/><path d="M404 371 H420 M412 363 V379" class="pm"/><path d="M404 399 H420" class="pm"/></g>
+<circle cx="162" cy="90" r="9" class="node"/>
+<circle cx="412" cy="90" r="9" class="node"/>
+<circle cx="732" cy="90" r="9" class="node"/>
+<circle cx="412" cy="300" r="9" class="node"/>
+<circle cx="732" cy="300" r="9" class="node"/>
+<circle cx="162" cy="470" r="7" class="node"/>
+<circle cx="412" cy="470" r="7" class="node"/>
+<circle cx="732" cy="470" r="7" class="node"/>
+<polygon id="perim-1" points="176,104 398,104 398,456 176,456" class="perim"/>
+<polyline id="trail-1" points="176,104 398,104 398,456 176,456 176,104" class="trail" stroke-dasharray="1148.0" stroke-dashoffset="1148.0"/>
+<polygon id="perim-2" points="426,104 718,104 718,286 426,286" class="perim"/>
+<polyline id="trail-2" points="426,104 718,104 718,286 426,286 426,104" class="trail" stroke-dasharray="948.0" stroke-dashoffset="948.0"/>
+<polygon id="perim-3" points="426,314 718,314 718,456 426,456" class="perim"/>
+<polyline id="trail-3" points="426,314 718,314 718,456 426,456 426,314" class="trail" stroke-dasharray="868.0" stroke-dashoffset="868.0"/>
+<g id="head-1" class="head"><circle cx="176" cy="104" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="176" cy="104" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="176" cy="104" r="3.8" fill="#fff"/></g>
+<g id="head-2" class="head"><circle cx="426" cy="104" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="426" cy="104" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="426" cy="104" r="3.8" fill="#fff"/></g>
+<g id="head-3" class="head"><circle cx="426" cy="314" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="426" cy="314" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="426" cy="314" r="3.8" fill="#fff"/></g>
+<circle id="sp-R2a" cx="398" cy="133" r="7" fill="#fff" class="spark" filter="url(#glow)"/>
+<circle id="sp-R2b" cx="426" cy="257" r="7" fill="#fff" class="spark" filter="url(#glow)"/>
+<circle id="sp-R4a" cx="698" cy="286" r="7" fill="#fff" class="spark" filter="url(#glow)"/>
+<circle id="sp-R4b" cx="446" cy="314" r="7" fill="#fff" class="spark" filter="url(#glow)"/>
     </svg>
     <div id="labels">
-<div id="lb-R1" class="lb elabel" style="left:190px;top:72px;width:200px;height:36px;line-height:36px;text-align:center"><span class="mi">R</span><span class="ms">1</span> <span class="eq">=</span> <b class="n">2</b> <span class="u">kΩ</span></div>
-<div id="lb-R3" class="lb elabel" style="left:465px;top:72px;width:200px;height:36px;line-height:36px;text-align:center"><span class="mi">R</span><span class="ms">3</span> <span class="eq">=</span> <b class="n">3</b> <span class="u">kΩ</span></div>
-<div id="lb-R2" class="lb elabel" style="left:192px;top:252px;width:200px;height:36px;line-height:36px;text-align:right"><span class="mi">R</span><span class="ms">2</span> <span class="eq">=</span> <b class="n">2</b> <span class="u">kΩ</span></div>
-<div id="lb-R4" class="lb elabel" style="left:465px;top:344px;width:200px;height:36px;line-height:36px;text-align:center"><span class="mi">R</span><span class="ms">4</span> <span class="eq">=</span> <b class="n">4</b> <span class="u">kΩ</span></div>
-<div id="lb-R5" class="lb elabel" style="left:762px;top:502px;width:200px;height:36px;line-height:36px;text-align:left"><span class="mi">R</span><span class="ms">5</span> <span class="eq">=</span> <b class="n">1</b> <span class="u">kΩ</span></div>
-<div id="lb-V1" class="lb elabel" style="left:-92px;top:367px;width:200px;height:36px;line-height:36px;text-align:right"><span class="mi">V</span><span class="ms">1</span> <span class="eq">=</span> <b class="n">5</b> <span class="u">V</span></div>
-<div id="lb-V2" class="lb elabel" style="left:762px;top:247px;width:200px;height:36px;line-height:36px;text-align:left"><span class="mi">V</span><span class="ms">2</span> <span class="eq">=</span> <b class="n">16</b> <span class="u">V</span></div>
-<div id="lb-V3" class="lb elabel" style="left:168px;top:502px;width:200px;height:36px;line-height:36px;text-align:right"><span class="mi">V</span><span class="ms">3</span> <span class="eq">=</span> <b class="n">13</b> <span class="u">V</span></div>
-<div id="nt-TL" class="lb ntag" style="left:120px;top:86px;width:60px;height:28px;line-height:28px;text-align:center">TL</div>
-<div id="nt-N1" class="lb ntag" style="left:380px;top:86px;width:60px;height:28px;line-height:28px;text-align:center">N1</div>
-<div id="nt-TR" class="lb ntag" style="left:690px;top:86px;width:60px;height:28px;line-height:28px;text-align:center">TR</div>
-<div id="nt-N3" class="lb ntag" style="left:332px;top:364px;width:60px;height:28px;line-height:28px;text-align:right">N3</div>
-<div id="nt-N2" class="lb ntag" style="left:734px;top:362px;width:60px;height:28px;line-height:28px;text-align:left">N2</div>
-<div id="nt-GND" class="lb ntag" style="left:600px;top:678px;width:80px;height:28px;line-height:28px;text-align:left">GND</div>
-<div id="ml-1" class="lb mlabel" style="left:250px;top:365px;width:60px;height:40px;line-height:40px;text-align:center"><span class="mi">I</span><span class="ms">1</span></div>
-<div id="ml-2" class="lb mlabel" style="left:560px;top:242px;width:60px;height:40px;line-height:40px;text-align:center"><span class="mi">I</span><span class="ms">2</span></div>
-<div id="ml-3" class="lb mlabel" style="left:560px;top:500px;width:60px;height:40px;line-height:40px;text-align:center"><span class="mi">I</span><span class="ms">3</span></div>
+<div id="lb-R1" class="lb elabel" style="left:192px;top:34px;width:190px;height:36px;line-height:36px;text-align:center"><span class="mi">R</span><span class="ms">1</span> <span class="eq">=</span> <b class="n">2</b> <span class="u">kΩ</span></div>
+<div id="lb-R3" class="lb elabel" style="left:477px;top:34px;width:190px;height:36px;line-height:36px;text-align:center"><span class="mi">R</span><span class="ms">3</span> <span class="eq">=</span> <b class="n">3</b> <span class="u">kΩ</span></div>
+<div id="lb-R2" class="lb elabel" style="left:192px;top:177px;width:190px;height:36px;line-height:36px;text-align:right"><span class="mi">R</span><span class="ms">2</span> <span class="eq">=</span> <b class="n">2</b> <span class="u">kΩ</span></div>
+<div id="lb-R4" class="lb elabel" style="left:477px;top:324px;width:190px;height:36px;line-height:36px;text-align:center"><span class="mi">R</span><span class="ms">4</span> <span class="eq">=</span> <b class="n">4</b> <span class="u">kΩ</span></div>
+<div id="lb-R5" class="lb elabel" style="left:774px;top:367px;width:190px;height:36px;line-height:36px;text-align:left"><span class="mi">R</span><span class="ms">5</span> <span class="eq">=</span> <b class="n">1</b> <span class="u">kΩ</span></div>
+<div id="lb-V1" class="lb elabel" style="left:-72px;top:262px;width:190px;height:36px;line-height:36px;text-align:right"><span class="mi">V</span><span class="ms">1</span> <span class="eq">=</span> <b class="n">5</b> <span class="u">V</span></div>
+<div id="lb-V2" class="lb elabel" style="left:774px;top:177px;width:190px;height:36px;line-height:36px;text-align:left"><span class="mi">V</span><span class="ms">2</span> <span class="eq">=</span> <b class="n">16</b> <span class="u">V</span></div>
+<div id="lb-V3" class="lb elabel" style="left:176px;top:367px;width:190px;height:36px;line-height:36px;text-align:right"><span class="mi">V</span><span class="ms">3</span> <span class="eq">=</span> <b class="n">13</b> <span class="u">V</span></div>
+<div id="ml-1" class="lb mlabel" style="left:257px;top:258px;width:60px;height:44px;line-height:44px;text-align:center"><span class="mi">I</span><span class="ms">1</span></div>
+<div id="ml-2" class="lb mlabel" style="left:542px;top:173px;width:60px;height:44px;line-height:44px;text-align:center"><span class="mi">I</span><span class="ms">2</span></div>
+<div id="ml-3" class="lb mlabel" style="left:542px;top:363px;width:60px;height:44px;line-height:44px;text-align:center"><span class="mi">I</span><span class="ms">3</span></div>
+<div id="gtag" class="lb gtag" style="left:612px;top:501px;width:80px;height:26px;line-height:26px;text-align:left">GND</div>
     </div>
   </div>
 
-  <div id="strip" class="abs">
-    <div id="sb-hook" class="sb"><div class="bl1">Where does every entry of <span class="mi">R</span> come from?</div>
-      <div class="bl2">8 branches ⋅ 6 nodes ⋅ 3 independent meshes</div></div>
-    <div id="sb-mesh" class="sb"><div class="bl1">Mesh currents <span class="mi">I</span><span class="ms">1</span> <span class="mi">I</span><span class="ms">2</span> <span class="mi">I</span><span class="ms">3</span></div>
-      <div class="bl2">all three flow clockwise</div></div>
-    <div id="sb-form" class="sb"><div class="bl1"><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span></div>
-      <div class="bl2">KVL around each mesh fills one row of <span class="mi">R</span> and <span class="mi">V</span></div></div>
-    <div id="bt-d1" class="sb"><div class="bl1"><span class="mi">R</span><span class="ms">11</span> = <span class="mi">R</span><span class="ms">1</span> + <span class="mi">R</span><span class="ms">2</span> = 2 + 2 = <span class="hot-b">4</span> <span class="u">kΩ</span></div><div class="bl2">self resistance: every resistor around mesh 1</div></div>
-    <div id="bt-d2" class="sb"><div class="bl1"><span class="mi">R</span><span class="ms">22</span> = <span class="mi">R</span><span class="ms">2</span> + <span class="mi">R</span><span class="ms">3</span> + <span class="mi">R</span><span class="ms">4</span> = 2 + 3 + 4 = <span class="hot-b">9</span> <span class="u">kΩ</span></div><div class="bl2">self resistance: every resistor around mesh 2</div></div>
-    <div id="bt-d3" class="sb"><div class="bl1"><span class="mi">R</span><span class="ms">33</span> = <span class="mi">R</span><span class="ms">4</span> + <span class="mi">R</span><span class="ms">5</span> = 4 + 1 = <span class="hot-b">5</span> <span class="u">kΩ</span></div><div class="bl2">self resistance: every resistor around mesh 3</div></div>
-    <div id="bt-o12" class="sb"><div class="bl1"><span class="mi">R</span><span class="ms">12</span> = <span class="mi">R</span><span class="ms">21</span> = −<span class="mi">R</span><span class="ms">2</span> = <span class="hot-p">−2</span> <span class="u">kΩ</span></div><div class="bl2"><span class="mi">R</span><span class="ms">2</span> is shared; <span class="mi">I</span><span class="ms">1</span> and <span class="mi">I</span><span class="ms">2</span> oppose in it, so the sign is −</div></div>
-    <div id="bt-o23" class="sb"><div class="bl1"><span class="mi">R</span><span class="ms">23</span> = <span class="mi">R</span><span class="ms">32</span> = −<span class="mi">R</span><span class="ms">4</span> = <span class="hot-p">−4</span> <span class="u">kΩ</span></div><div class="bl2"><span class="mi">R</span><span class="ms">4</span> is shared; <span class="mi">I</span><span class="ms">2</span> and <span class="mi">I</span><span class="ms">3</span> oppose in it, so the sign is −</div></div>
-    <div id="bt-o13" class="sb"><div class="bl1"><span class="mi">R</span><span class="ms">13</span> = <span class="mi">R</span><span class="ms">31</span> = <span class="hot-p">0</span> <span class="u">kΩ</span></div><div class="bl2">no resistor is shared by mesh 1 and mesh 3</div></div>
-    <div id="bt-v1" class="sb"><div class="bl1"><span class="mi">v</span><span class="ms">1</span> = +<span class="mi">V</span><span class="ms">1</span> − <span class="mi">V</span><span class="ms">3</span> = 5 − 13 = <span class="hot-r">−8</span> <span class="u">V</span></div><div class="bl2"><span class="mi">V</span><span class="ms">1</span> rises (− → +), <span class="mi">V</span><span class="ms">3</span> drops (+ → −) along <span class="mi">I</span><span class="ms">1</span></div></div>
-    <div id="bt-v2" class="sb"><div class="bl1"><span class="mi">v</span><span class="ms">2</span> = −<span class="mi">V</span><span class="ms">2</span> = <span class="hot-r">−16</span> <span class="u">V</span></div><div class="bl2"><span class="mi">V</span><span class="ms">2</span> drops (+ → −) along <span class="mi">I</span><span class="ms">2</span></div></div>
-    <div id="bt-v3" class="sb"><div class="bl1"><span class="mi">v</span><span class="ms">3</span> = +<span class="mi">V</span><span class="ms">3</span> = <span class="hot-r">13</span> <span class="u">V</span></div><div class="bl2"><span class="mi">V</span><span class="ms">3</span> rises (− → +) along <span class="mi">I</span><span class="ms">3</span></div></div>
-    <div id="sb-final" class="sb"><div class="bl1"><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span></div>
-      <div class="bl2">every entry traced back to the circuit</div></div>
+  <div id="banner" class="abs">
+    <div id="bv-0" class="bv"><span>STOP WRITING KVL EQUATIONS:<br>BUILD THE MATRIX BY SIGHT<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#fff"/></svg></span></div>
+    <div id="bv-1" class="bv"><span>DIAGONALS: SUM OF RESISTORS<br>AROUND EACH MESH</span></div>
+    <div id="bv-2" class="bv"><span>OFF-DIAGONALS: NEGATIVE OF<br>SHARED RESISTORS (<span class="hp">−</span><span class="mi hp">R</span><span class="ms hp">ij</span>)</span></div>
+    <div id="bv-3" class="bv"><span>SOURCES: VOLTAGE RISES (+)<br>MINUS DROPS (−)</span></div>
+    <div id="bv-4" class="bv"><span>MATRIX COMPLETE IN 5 SECONDS:<br><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span><svg viewBox="0 0 24 24" style="margin-left:14px"><path id="ck" d="M4 13 L10 19 L21 5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="30" stroke-dashoffset="30"/></svg></span></div>
   </div>
 
   <div id="card" class="abs">
     <div id="cardin">
-      <svg id="brk" viewBox="0 0 896 184" xmlns="http://www.w3.org/2000/svg"><path id="brl-R" d="M77 40 H66 V176 H77" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/><path id="brr-R" d="M387 40 H398 V176 H387" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/><path id="brl-V" d="M463 40 H452 V176 H463" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/><path id="brr-V" d="M549 40 H560 V176 H549" class="brk" stroke-dasharray="158" stroke-dashoffset="158"/></svg>
-<div id="e-0-0" class="cell d" style="left:82px;top:42px"><b>4</b></div>
-<div id="e-0-1" class="cell p" style="left:187px;top:42px"><b>−2</b></div>
-<div id="e-0-2" class="cell p" style="left:292px;top:42px"><b>0</b></div>
-<div id="v-0" class="cell s" style="left:458px;top:42px"><b>−8</b></div>
-<div id="e-1-0" class="cell p" style="left:82px;top:86px"><b>−2</b></div>
-<div id="e-1-1" class="cell d" style="left:187px;top:86px"><b>9</b></div>
-<div id="e-1-2" class="cell p" style="left:292px;top:86px"><b>−4</b></div>
-<div id="v-1" class="cell s" style="left:458px;top:86px"><b>−16</b></div>
-<div id="e-2-0" class="cell p" style="left:82px;top:130px"><b>0</b></div>
-<div id="e-2-1" class="cell p" style="left:187px;top:130px"><b>−4</b></div>
-<div id="e-2-2" class="cell d" style="left:292px;top:130px"><b>5</b></div>
-<div id="v-2" class="cell s" style="left:458px;top:130px"><b>13</b></div>
-<div id="col-1" class="clab" style="left:90px;top:2px"><span class="mi">I</span><span class="ms">1</span></div>
-<div id="col-2" class="clab" style="left:195px;top:2px"><span class="mi">I</span><span class="ms">2</span></div>
-<div id="col-3" class="clab" style="left:300px;top:2px"><span class="mi">I</span><span class="ms">3</span></div>
-<div id="col-V" class="clab" style="left:466px;top:2px"><span class="mi">V</span></div>
-<div id="rl-1" class="rlab" style="top:50px">M1</div>
-<div id="rl-2" class="rlab" style="top:94px">M2</div>
-<div id="rl-3" class="rlab" style="top:138px">M3</div>
-<div id="eqsign" class="eqsign" style="left:410px;top:84px">=</div>
-      <div id="cardnote">
-        <div class="row"><i class="sw" style="background:#0088FF"></i><span>self resistance</span></div>
-        <div class="row"><i class="sw" style="background:#B026FF"></i><span>shared resistance</span></div>
-        <div class="row"><i class="sw" style="background:#FF0044"></i><span>source terms</span></div>
-      </div>
+      <div id="eqhead">R ⋅ I = V</div>
+      <svg id="brk" viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg"><path d="M60 120 H44 V450 H60" class="brk"/><path d="M400 120 H416 V450 H400" class="brk"/><path d="M458 120 H446 V450 H458" class="brk"/><path d="M510 120 H522 V450 H510" class="brk"/><path d="M610 120 H594 V450 H610" class="brk"/><path d="M722 120 H738 V450 H722" class="brk"/></svg>
+<div id="e-0-0" class="cell d" style="left:50px;top:120px"><b class="ghost">R<span class="ms">11</span></b><b class="val">4</b><b class="sum">2+2</b><i class="ring"></i></div>
+<div id="e-0-1" class="cell p" style="left:170px;top:120px"><b class="ghost">R<span class="ms">12</span></b><b class="val">−2</b><b class="sum"></b><i class="ring"></i></div>
+<div id="e-0-2" class="cell p" style="left:290px;top:120px"><b class="ghost">R<span class="ms">13</span></b><b class="val">0</b><b class="sum"></b><i class="ring"></i></div>
+<div id="v-0" class="cell s" style="left:606px;top:120px"><b class="ghost">v<span class="ms">1</span></b><b class="val">−8</b><b class="sum">5−13</b><i class="ring"></i></div>
+<div class="ivec mi" style="left:444px;top:120px">I<span class="ms">1</span></div>
+<div id="e-1-0" class="cell p" style="left:50px;top:230px"><b class="ghost">R<span class="ms">21</span></b><b class="val">−2</b><b class="sum"></b><i class="ring"></i></div>
+<div id="e-1-1" class="cell d" style="left:170px;top:230px"><b class="ghost">R<span class="ms">22</span></b><b class="val">9</b><b class="sum">2+3+4</b><i class="ring"></i></div>
+<div id="e-1-2" class="cell p" style="left:290px;top:230px"><b class="ghost">R<span class="ms">23</span></b><b class="val">−4</b><b class="sum"></b><i class="ring"></i></div>
+<div id="v-1" class="cell s" style="left:606px;top:230px"><b class="ghost">v<span class="ms">2</span></b><b class="val">−16</b><b class="sum"></b><i class="ring"></i></div>
+<div class="ivec mi" style="left:444px;top:230px">I<span class="ms">2</span></div>
+<div id="e-2-0" class="cell p" style="left:50px;top:340px"><b class="ghost">R<span class="ms">31</span></b><b class="val">0</b><b class="sum"></b><i class="ring"></i></div>
+<div id="e-2-1" class="cell p" style="left:170px;top:340px"><b class="ghost">R<span class="ms">32</span></b><b class="val">−4</b><b class="sum"></b><i class="ring"></i></div>
+<div id="e-2-2" class="cell d" style="left:290px;top:340px"><b class="ghost">R<span class="ms">33</span></b><b class="val">5</b><b class="sum">4+1</b><i class="ring"></i></div>
+<div id="v-2" class="cell s" style="left:606px;top:340px"><b class="ghost">v<span class="ms">3</span></b><b class="val">13</b><b class="sum"></b><i class="ring"></i></div>
+<div class="ivec mi" style="left:444px;top:340px">I<span class="ms">3</span></div>
+      <div id="eqsign">=</div>
+      <div id="legend"><span><i class="sw" style="background:#0088FF"></i>self</span><span><i class="sw" style="background:#B026FF"></i>shared</span><span><i class="sw" style="background:#FF0044"></i>sources</span></div>
     </div>
   </div>
-<div id="fly-e-0-0" class="fly d" style="left:174px;top:1306px">4</div>
-<div id="fly-e-1-1" class="fly d" style="left:279px;top:1350px">9</div>
-<div id="fly-e-2-2" class="fly d" style="left:384px;top:1394px">5</div>
-<div id="fly-e-0-1" class="fly p" style="left:279px;top:1306px">−2</div>
-<div id="fly-e-1-0" class="fly p" style="left:174px;top:1350px">−2</div>
-<div id="fly-e-1-2" class="fly p" style="left:384px;top:1350px">−4</div>
-<div id="fly-e-2-1" class="fly p" style="left:279px;top:1394px">−4</div>
-<div id="fly-e-0-2" class="fly p" style="left:384px;top:1306px">0</div>
-<div id="fly-e-2-0" class="fly p" style="left:174px;top:1394px">0</div>
-<div id="fly-v-0" class="fly s" style="left:550px;top:1306px">−8</div>
-<div id="fly-v-1" class="fly s" style="left:550px;top:1350px">−16</div>
-<div id="fly-v-2" class="fly s" style="left:550px;top:1394px">13</div>
+<div id="fly-d1-0" class="fly d" style="left:205px;top:1247px">2</div>
+<div id="fly-d1-1" class="fly d" style="left:205px;top:1247px">2</div>
+<div id="fly-d2-0" class="fly d" style="left:325px;top:1357px">3</div>
+<div id="fly-d2-1" class="fly d" style="left:325px;top:1357px">4</div>
+<div id="fly-d2-2" class="fly d" style="left:325px;top:1357px">2</div>
+<div id="fly-d3-0" class="fly d" style="left:445px;top:1467px">4</div>
+<div id="fly-d3-1" class="fly d" style="left:445px;top:1467px">1</div>
+<div id="fly-o12-0" class="fly p" style="left:325px;top:1247px">−2</div>
+<div id="fly-o12-1" class="fly p" style="left:205px;top:1357px">−2</div>
+<div id="fly-o23-0" class="fly p" style="left:445px;top:1357px">−4</div>
+<div id="fly-o23-1" class="fly p" style="left:325px;top:1467px">−4</div>
+<div id="fly-v1-0" class="fly s" style="left:761px;top:1247px">+5</div>
+<div id="fly-v1-1" class="fly s" style="left:761px;top:1247px">−13</div>
+<div id="fly-v2-0" class="fly s" style="left:761px;top:1357px">−16</div>
+<div id="fly-v3-0" class="fly s" style="left:761px;top:1467px">+13</div>
+  <svg id="fx" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+<line id="bm-o12-0" x1="503" y1="536" x2="390" y2="1275" class="beam" stroke="#B026FF" stroke-dasharray="747.6" stroke-dashoffset="747.6"/>
+<line id="bm-o12-1" x1="503" y1="536" x2="270" y2="1385" class="beam" stroke="#B026FF" stroke-dasharray="880.4" stroke-dashoffset="880.4"/>
+<line id="bm-o23-0" x1="663" y1="641" x2="510" y2="1385" class="beam" stroke="#B026FF" stroke-dasharray="759.6" stroke-dashoffset="759.6"/>
+<line id="bm-o23-1" x1="663" y1="641" x2="390" y2="1495" class="beam" stroke="#B026FF" stroke-dasharray="896.6" stroke-dashoffset="896.6"/>
+  </svg>
 
-  <div id="rules" class="tile abs">
-    <div id="rule-1" class="rule"><i class="sw" style="background:#0088FF"></i><span class="mi">R</span><span class="ms">ii</span> = sum of all resistors around mesh <span class="mi">i</span></div>
-    <div id="rule-2" class="rule"><i class="sw" style="background:#B026FF"></i><span class="mi">R</span><span class="ms">ij</span> = − the resistors shared by meshes <span class="mi">i</span>, <span class="mi">j</span></div>
-    <div id="rule-3" class="rule"><i class="sw" style="background:#FF0044"></i><span class="mi">v</span><span class="ms">i</span> = source rises − drops along <span class="mi">I</span><span class="ms">i</span></div>
-  </div>
-
-  <div id="cta" class="tile abs">
-    <div id="cta-h">CAN YOU SOLVE THIS CIRCUIT?</div>
-    <div id="rip-1" class="btnbox"></div>
-    <div id="rip-2" class="btnbox"></div>
-    <div id="cta-btn" class="btnbox">
-      <div id="btn-a" class="btxt">TRY THE CIRCUIT LAB
-        <svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#0088FF"/></svg></div>
-      <div id="btn-b" class="btxt">OPEN THE LAB
-        <svg viewBox="0 0 24 24"><path d="M12 1.5c3.4 2.3 5 6 4.6 10.2l-1.2 1.4H8.6l-1.2-1.4C7 7.5 8.6 3.8 12 1.5z" fill="#0088FF"/><circle cx="12" cy="8.6" r="1.8" fill="#0A0A10"/><path d="M8.2 13.4 5 16.6l1 3.4 2.6-2.3zM15.8 13.4 19 16.6l-1 3.4-2.6-2.3z" fill="#B026FF"/><path d="M10 15.2h4l-2 6.3z" fill="#fff"/></svg></div>
-      <div id="btn-flash"></div>
-    </div>
-    <div id="cta-sub">LINK IN THE FIRST COMMENT</div>
-  </div>
-
-  <svg id="cursor" viewBox="0 0 60 60"><path d="M6 4 L6 44 L16 35 L23 52 L31 48.5 L24 32 L37 32 Z" fill="#fff" stroke="#0A0A10" stroke-width="3" stroke-linejoin="round"/></svg>
-
-  <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="30" data-track-index="2" data-volume="1"></audio>
+  <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="13" data-track-index="2" data-volume="1"></audio>
 </div>
 
-<script>const DATA = {"END": 30.0, "beats": [{"id": "d1", "kind": "diag", "cells": ["e-0-0"], "res": ["R1", "R2"], "src": [], "meshes": [1], "color": "#0088FF", "rule": 1}, {"id": "d2", "kind": "diag", "cells": ["e-1-1"], "res": ["R2", "R3", "R4"], "src": [], "meshes": [2], "color": "#0088FF", "rule": 1}, {"id": "d3", "kind": "diag", "cells": ["e-2-2"], "res": ["R4", "R5"], "src": [], "meshes": [3], "color": "#0088FF", "rule": 1}, {"id": "o12", "kind": "off", "cells": ["e-0-1", "e-1-0"], "res": ["R2"], "src": [], "meshes": [1, 2], "color": "#B026FF", "rule": 2}, {"id": "o23", "kind": "off", "cells": ["e-1-2", "e-2-1"], "res": ["R4"], "src": [], "meshes": [2, 3], "color": "#B026FF", "rule": 2}, {"id": "o13", "kind": "zero", "cells": ["e-0-2", "e-2-0"], "res": [], "src": [], "meshes": [1, 3], "color": "#B026FF", "rule": 2}, {"id": "v1", "kind": "src", "cells": ["v-0"], "res": [], "src": ["V1", "V3"], "meshes": [1], "color": "#FF0044", "rule": 3}, {"id": "v2", "kind": "src", "cells": ["v-1"], "res": [], "src": ["V2"], "meshes": [2], "color": "#FF0044", "rule": 3}, {"id": "v3", "kind": "src", "cells": ["v-2"], "res": [], "src": ["V3"], "meshes": [3], "color": "#FF0044", "rule": 3}], "fly": {"e-0-0": {"dx": 318, "dy": -137}, "e-1-1": {"dx": 213, "dy": -181}, "e-2-2": {"dx": 108, "dy": -225}, "e-0-1": {"dx": 213, "dy": -137}, "e-1-0": {"dx": 318, "dy": -181}, "e-1-2": {"dx": 108, "dy": -181}, "e-2-1": {"dx": 213, "dy": -225}, "e-0-2": {"dx": 108, "dy": -137}, "e-2-0": {"dx": 318, "dy": -225}, "v-0": {"dx": -58, "dy": -137}, "v-1": {"dx": -58, "dy": -181}, "v-2": {"dx": -58, "dy": -225}}};</script>
+<script>const DATA = {"END": 13.0, "SWEEP": 0.5, "groups": [{"id": "d1", "kind": "diag", "color": "#0088FF", "mesh": 1, "start": 2.0, "lock": 2.8, "cells": ["e-0-0"], "items": [{"src": "R1", "text": "2", "launch": 2.048, "arrive": 2.62, "pulse": 2.048, "id": "fly-d1-0", "dx": 108, "dy": -844}, {"src": "R2", "text": "2", "launch": 2.136, "arrive": 2.62, "pulse": 2.136, "id": "fly-d1-1", "dx": 233, "dy": -739}], "sum": "2+2", "focus": [2.0, 3.0], "active": ["R1", "R2", "V1", "V3"]}, {"id": "d2", "kind": "diag", "color": "#0088FF", "mesh": 2, "start": 3.2, "lock": 4.0, "cells": ["e-1-1"], "items": [{"src": "R3", "text": "3", "launch": 3.277, "arrive": 3.82, "pulse": 3.277, "id": "fly-d2-0", "dx": 273, "dy": -954}, {"src": "R4", "text": "4", "launch": 3.527, "arrive": 3.82, "pulse": 3.527, "id": "fly-d2-1", "dx": 273, "dy": -744}, {"src": "R2", "text": "2", "launch": 3.652, "arrive": 3.902, "pulse": 3.652, "id": "fly-d2-2", "dx": 113, "dy": -849}], "sum": "2+3+4", "focus": [3.2, 4.2], "active": ["R2", "R3", "R4", "V2"]}, {"id": "d3", "kind": "diag", "color": "#0088FF", "mesh": 3, "start": 4.4, "lock": 5.2, "cells": ["e-2-2"], "items": [{"src": "R4", "text": "4", "launch": 4.484, "arrive": 5.02, "pulse": 4.484, "id": "fly-d3-0", "dx": 153, "dy": -854}, {"src": "R5", "text": "1", "launch": 4.609, "arrive": 5.02, "pulse": 4.609, "id": "fly-d3-1", "dx": 313, "dy": -769}], "sum": "4+1", "focus": [4.4, 5.4], "active": ["R4", "R5", "V3"]}, {"id": "o12", "kind": "off", "color": "#B026FF", "start": 5.5, "lock": 5.8, "cells": ["e-0-1", "e-1-0"], "items": [{"src": "R2", "text": "\u22122", "launch": 5.55, "arrive": 5.77, "to": "e-0-1", "id": "fly-o12-0", "dx": 113, "dy": -739, "beam": "bm-o12-0"}, {"src": "R2", "text": "\u22122", "launch": 5.55, "arrive": 5.77, "to": "e-1-0", "id": "fly-o12-1", "dx": 233, "dy": -849, "beam": "bm-o12-1"}], "sum": "", "focus": [5.5, 6.7], "active": ["R2"], "shared": "R2", "meshes": [1, 2]}, {"id": "o23", "kind": "off", "color": "#B026FF", "start": 6.8, "lock": 7.0, "cells": ["e-1-2", "e-2-1"], "items": [{"src": "R4", "text": "\u22124", "launch": 6.85, "arrive": 6.97, "to": "e-1-2", "id": "fly-o23-0", "dx": 153, "dy": -744, "beam": "bm-o23-0"}, {"src": "R4", "text": "\u22124", "launch": 6.85, "arrive": 6.97, "to": "e-2-1", "id": "fly-o23-1", "dx": 273, "dy": -854, "beam": "bm-o23-1"}], "sum": "", "focus": [6.8, 7.9], "active": ["R4"], "shared": "R4", "meshes": [2, 3]}, {"id": "o13", "kind": "zero", "color": "#B026FF", "start": 8.0, "lock": 8.2, "cells": ["e-0-2", "e-2-0"], "items": [], "sum": "", "focus": [8.0, 8.85], "active": null, "shared": null, "meshes": [1, 3]}, {"id": "v1", "kind": "src", "color": "#FF0044", "mesh": 1, "start": 9.0, "lock": 9.2, "cells": ["v-0"], "items": [{"src": "V1", "text": "+5", "launch": 9.02, "arrive": 9.14, "id": "fly-v1-0", "dx": -573, "dy": -654}, {"src": "V3", "text": "\u221213", "launch": 9.02, "arrive": 9.14, "id": "fly-v1-1", "dx": -323, "dy": -549}], "sum": "5\u221213", "focus": [9.0, 9.85], "active": ["V1", "V3"]}, {"id": "v2", "kind": "src", "color": "#FF0044", "mesh": 2, "start": 10.0, "lock": 10.2, "cells": ["v-1"], "items": [{"src": "V2", "text": "\u221216", "launch": 10.02, "arrive": 10.14, "id": "fly-v2-0", "dx": -3, "dy": -849}], "sum": "", "focus": [10.0, 10.75], "active": ["V2"]}, {"id": "v3", "kind": "src", "color": "#FF0044", "mesh": 3, "start": 10.9, "lock": 11.1, "cells": ["v-2"], "items": [{"src": "V3", "text": "+13", "launch": 10.92, "arrive": 11.04, "id": "fly-v3-0", "dx": -323, "dy": -769}], "sum": "", "focus": [10.9, 11.65], "active": ["V3"]}], "tracers": {"1": {"pts": [[176, 104], [398, 104], [398, 456], [176, 456]], "seg": [222.0, 352.0, 222.0, 352.0]}, "2": {"pts": [[426, 104], [718, 104], [718, 286], [426, 286]], "seg": [292.0, 182.0, 292.0, 182.0]}, "3": {"pts": [[426, 314], [718, 314], [718, 456], [426, 456]], "seg": [292.0, 142.0, 292.0, 142.0]}}, "BRK": ["V1", "R1", "R3", "V2", "R2", "R4", "R5", "V3"], "sparks": {"R2": [["sp-R2a", [398, 133], [398, 257]], ["sp-R2b", [426, 257], [426, 133]]], "R4": [["sp-R4a", [698, 286], [446, 286]], ["sp-R4b", [446, 314], [698, 314]]]}};</script>
 <script>
-/* MAE Academy · "Where does the R matrix come from?" GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
-   DATA (beats, fly offsets) is injected by build_index.py. Whole file, rewritten as a unit. */
+/* THE R-MATRIX TRICK: 13.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
+   DATA (groups, tracer paths, flight offsets) is injected by build_index.py. Whole file, rewritten as a unit. */
 
 // @CUES-BEGIN
 const CUES = [
-  { id: "w0", t: 0.25, v: "click", g: 0.3 },
-  { id: "w1", t: 0.4, v: "click", g: 0.3 },
-  { id: "w2", t: 0.55, v: "click", g: 0.3 },
-  { id: "w3", t: 0.7, v: "click", g: 0.3 },
-  { id: "w4", t: 0.85, v: "click", g: 0.3 },
-  { id: "w5", t: 1.0, v: "click", g: 0.3 },
-  { id: "w6", t: 1.15, v: "click", g: 0.3 },
-  { id: "w7", t: 1.3, v: "click", g: 0.3 },
-  { id: "w8", t: 1.45, v: "click", g: 0.3 },
-  { id: "e0", t: 1.6, v: "thump", g: 0.45 },
-  { id: "e1", t: 1.75, v: "click", g: 0.5 },
-  { id: "e2", t: 1.9, v: "click", g: 0.5 },
-  { id: "e3", t: 2.05, v: "thump", g: 0.45 },
-  { id: "e4", t: 2.2, v: "click", g: 0.5 },
-  { id: "e5", t: 2.35, v: "click", g: 0.5 },
-  { id: "e6", t: 2.5, v: "click", g: 0.5 },
-  { id: "e7", t: 2.65, v: "thump", g: 0.45 },
-  { id: "drawn", t: 3.0, v: "chime", g: 0.45 },
-  { id: "m1", t: 3.5, v: "snap", g: 0.45 },
-  { id: "m2", t: 4.1, v: "snap", g: 0.45 },
-  { id: "m3", t: 4.7, v: "snap", g: 0.45 },
-  { id: "br_R", t: 6.0, v: "thump", g: 0.55 },
-  { id: "br_V", t: 6.6, v: "thump", g: 0.45 },
-  { id: "eqs", t: 6.9, v: "snap", g: 0.4 },
-  { id: "b_d1", t: 7.2, v: "snap", g: 0.6 },
-  { id: "l_d1", t: 8.25, v: "click", g: 0.65 },
-  { id: "b_d2", t: 9.2, v: "snap", g: 0.6 },
-  { id: "l_d2", t: 10.25, v: "click", g: 0.65 },
-  { id: "b_d3", t: 11.2, v: "snap", g: 0.6 },
-  { id: "l_d3", t: 12.25, v: "click", g: 0.65 },
-  { id: "b_o12", t: 13.2, v: "snap", g: 0.6 },
-  { id: "l_o12", t: 14.25, v: "click", g: 0.65 },
-  { id: "b_o23", t: 15.2, v: "snap", g: 0.6 },
-  { id: "l_o23", t: 16.25, v: "click", g: 0.65 },
-  { id: "b_o13", t: 17.2, v: "snap", g: 0.6 },
-  { id: "l_o13", t: 18.25, v: "click", g: 0.65 },
-  { id: "b_v1", t: 19.2, v: "snap", g: 0.6 },
-  { id: "l_v1", t: 20.25, v: "click", g: 0.65 },
-  { id: "b_v2", t: 21.2, v: "snap", g: 0.6 },
-  { id: "l_v2", t: 22.25, v: "click", g: 0.65 },
-  { id: "b_v3", t: 23.2, v: "snap", g: 0.6 },
-  { id: "l_v3", t: 24.25, v: "click", g: 0.65 },
-  { id: "final", t: 25.2, v: "chime", g: 0.55 },
-  { id: "cta", t: 25.9, v: "thump", g: 0.55 },
-  { id: "rip1", t: 26.6, v: "click", g: 0.35 },
-  { id: "rip2", t: 26.95, v: "click", g: 0.35 },
-  { id: "press", t: 28.0, v: "relay_thump", g: 1.0 },
-  { id: "open", t: 28.12, v: "chime", g: 0.5 },
+  [0.0, "thump"], // Hook strike
+  [0.04, "snap"], // Stage activation
+  [2.0, "click"], // Mesh 1 tracer start
+  [2.8, "snap"], // R11 locks (4)
+  [3.2, "click"], // Mesh 2 tracer start
+  [4.0, "snap"], // R22 locks (9)
+  [4.4, "click"], // Mesh 3 tracer start
+  [5.2, "snap"], // R33 locks (5)
+  [5.8, "snap"], // R12/R21 lock (-2)
+  [7.0, "snap"], // R23/R32 lock (-4)
+  [8.2, "click"], // R13/R31 lock (0)
+  [9.2, "snap"], // v1 locks (-8)
+  [10.2, "snap"], // v2 locks (-16)
+  [11.1, "thump"], // v3 locks (13) and vector complete
+  [11.8, "snap"], // Final equation glow
+  [12.2, "click"], // Verification checkmark
 ];
 // @CUES-END
 
-const T = (id) => {
-  const c = CUES.find((x) => x.id === id);
-  if (!c) throw new Error("missing cue " + id);
-  return c.t;
+// every visual lock must sit on a cue: picture and sound cannot drift apart
+const cue = (t) => {
+  if (!CUES.some((c) => c[0] === t)) throw new Error("no audio cue at " + t);
+  return t;
 };
 
-const BRK = ["V1", "R1", "R3", "V2", "R2", "R4", "R5", "V3"]; // draw order
-const NODES = ["TL", "N1", "TR", "N3", "N2"];
-const BLUE = "#0088FF";
+const BLUE = "#0088FF",
+  PURPLE = "#B026FF",
+  RED = "#FF0044";
 const RGB = { "#0088FF": "0,136,255", "#B026FF": "176,38,255", "#FF0044": "255,0,68" };
+const HOT = { "#0088FF": "#A8D4FF", "#B026FF": "#DDA8FF", "#FF0044": "#FF8AA6" };
+const glow = (rgb, a, px) => `drop-shadow(0px 0px ${px}px rgba(${rgb},${a}))`;
 const tl = gsap.timeline({ paused: true });
 
-// helpers: opacity / transform only (never letter-spacing or font-size)
-const fadeIn = (sel, t, d = 0.3, y = 8) =>
+// ---------------- 0.0 hook: everything is already on screen; the banner and the plate punch ----------------
+tl.fromTo("#bv-0", { scale: 1.14 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 0);
+tl.fromTo(
+  "#plate",
+  { boxShadow: "inset 0 0 80px rgba(0,136,255,0.6)" },
+  { boxShadow: "inset 0 0 0px rgba(0,136,255,0)", duration: 0.6, ease: "power2.out" },
+  0,
+);
+
+// ---------------- banner changes (zone 3) ----------------
+const banner = (from, to, t) => {
+  tl.to("#bv-" + from, { opacity: 0, duration: 0.1 }, t);
   tl.fromTo(
-    sel,
-    { opacity: 0, y },
-    { opacity: 1, y: 0, duration: d, ease: "power2.out", immediateRender: false },
-    t,
+    "#bv-" + to,
+    { opacity: 0, scale: 1.12 },
+    { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)", immediateRender: false },
+    t + 0.1,
   );
-const fadeOut = (sel, t, d = 0.25, y = -8) =>
-  tl.to(sel, { opacity: 0, y, duration: d, ease: "power2.in" }, t);
-const pop = (sel, t, d = 0.25) =>
-  tl.fromTo(
-    sel,
-    { opacity: 0, scale: 0.35 },
-    { opacity: 1, scale: 1, duration: d, ease: "back.out(2.2)", immediateRender: false },
-    t,
-  );
-const swap = (from, to, t) => {
-  fadeOut(from, t, 0.2);
-  fadeIn(to, t + 0.12, 0.3);
 };
-const shadow = (rgb, a, px) => `drop-shadow(0px 0px ${px}px rgba(${rgb},${a}))`;
+banner(0, 1, 2.0);
+banner(1, 2, 5.5);
+banner(2, 3, 9.0);
+banner(3, 4, 11.8);
 
-// ================= 0.0 - 3.5  REDRAW (light packets, then the parts drop in) =================
-const wires = BRK.concat(["GND"]);
-const ENDS = {};
-wires.forEach((k) => {
-  const w = document.getElementById("w-" + k);
-  ENDS[k] = {
-    x: +w.getAttribute("x2") - +w.getAttribute("x1"),
-    y: +w.getAttribute("y2") - +w.getAttribute("y1"),
-    L: w.getTotalLength(),
-  };
-});
-wires.forEach((k, i) => {
-  const t = T("w" + i),
-    d = 0.5,
-    e = ENDS[k];
+// ---------------- helpers ----------------
+function hold(k, t0, t1, color) {
+  // a branch glows hot between t0 and t1, then relaxes to its base glow
+  const isR = k[0] === "R",
+    part = `#el-${k} ${isR ? ".res" : ".src"}`;
+  const base = isR ? BLUE : RED,
+    baseRgb = RGB[base];
   tl.fromTo(
-    "#w-" + k,
-    { strokeDashoffset: e.L },
-    { strokeDashoffset: 0, duration: d, ease: "none", immediateRender: false },
-    t,
+    part,
+    { stroke: base, filter: glow(baseRgb, 0.6, 6) },
+    {
+      stroke: HOT[color],
+      filter: glow(RGB[color], 1, 20),
+      duration: 0.12,
+      ease: "power2.out",
+      immediateRender: false,
+    },
+    t0,
   );
-  tl.fromTo(
-    "#pk-" + k,
-    { x: 0, y: 0, opacity: 1 },
-    { x: e.x, y: e.y, duration: d, ease: "none", immediateRender: false },
-    t,
+  tl.to(
+    part,
+    { stroke: base, filter: glow(baseRgb, 0.6, 6), duration: 0.3, ease: "power2.in" },
+    t1,
   );
-  tl.to("#pk-" + k, { opacity: 0, duration: 0.15 }, t + d);
-  tl.fromTo(
-    "#w-" + k,
-    { stroke: "#CFE6FF" },
-    { stroke: "#3E5C94", duration: 0.5, ease: "power1.out", immediateRender: false },
-    t + d,
-  );
-});
-tl.fromTo(
-  "#gnd",
-  { opacity: 0, y: -10 },
-  { opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
-  T("w8") + 0.45,
-);
-tl.fromTo(
-  ".gnode",
-  { opacity: 0 },
-  { opacity: 1, duration: 0.3, immediateRender: false },
-  T("w8") + 0.45,
-);
-NODES.forEach((n, i) =>
-  tl.fromTo(
-    "#nd-" + n,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.25, immediateRender: false },
-    T("w" + (i + 1)) + 0.4,
-  ),
-);
-BRK.forEach((k, i) => {
-  const t = T("e" + i);
-  tl.fromTo(
-    "#el-" + k,
-    { opacity: 0, y: -40 },
-    { opacity: 1, y: 0, duration: 0.42, ease: "back.out(1.8)", immediateRender: false },
-    t,
-  );
-  fadeIn("#lb-" + k, t + 0.14, 0.3, 10);
-});
-NODES.concat(["GND"]).forEach((n, i) => fadeIn("#nt-" + n, T("drawn") - 0.1 + i * 0.05, 0.3, 6));
+}
 
-// ================= 3.4 - 6.0  CLOCKWISE MESH CURRENTS =================
-swap("#sub-0", "#sub-1", 3.35);
-swap("#sb-hook", "#sb-mesh", 3.35);
-[1, 2, 3].forEach((n) => {
-  const t = T("m" + n);
-  tl.fromTo(
-    "#mesh-" + n,
-    { strokeDashoffset: +document.getElementById("mesh-" + n).getAttribute("stroke-dasharray") },
-    { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut", immediateRender: false },
-    t,
-  );
-  tl.fromTo(
-    "#mhead-" + n,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.12, immediateRender: false },
-    t + 0.55,
-  );
-  fadeIn("#ml-" + n, t + 0.25, 0.3, 0);
-});
-
-// ================= 6.0 - 7.2  SET UP  R . I = V =================
-swap("#sub-1", "#sub-5", 5.95);
-swap("#sb-mesh", "#sb-form", 5.95);
-fadeIn("#rules", 6.1, 0.4, 0);
-["brl-R", "brr-R"].forEach((id) => {
-  const L = +document.getElementById(id).getAttribute("stroke-dasharray");
-  tl.fromTo(
-    "#" + id,
-    { strokeDashoffset: L },
-    { strokeDashoffset: 0, duration: 0.55, ease: "power2.inOut", immediateRender: false },
-    T("br_R"),
-  );
-});
-[1, 2, 3].forEach((c, i) => {
-  fadeIn("#col-" + c, T("br_R") + 0.45 + i * 0.08, 0.3, 6);
-  fadeIn("#rl-" + c, T("br_R") + 0.45 + i * 0.08, 0.3, 0);
-});
-["brl-V", "brr-V"].forEach((id) => {
-  const L = +document.getElementById(id).getAttribute("stroke-dasharray");
-  tl.fromTo(
-    "#" + id,
-    { strokeDashoffset: L },
-    { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut", immediateRender: false },
-    T("br_V"),
-  );
-});
-fadeIn("#col-V", T("br_V") + 0.35, 0.3, 6);
-fadeIn("#eqsign", T("eqs"), 0.25, 0);
-
-// ================= 7.2 - 25.2  ONE BEAT PER GROUP OF ENTRIES =================
-const state = {}; // last drawn style of each part, so every fromTo starts exactly where the previous one ended
-BRK.forEach((k) => {
-  state[k] = {
-    op: 1,
-    stroke: k[0] === "R" ? BLUE : "#FF0044",
-    sh: shadow(k[0] === "R" ? RGB[BLUE] : RGB["#FF0044"], 0, 0),
-  };
-});
-const meshOp = { 1: 1, 2: 1, 3: 1 };
-
-function light(t, b) {
-  // b = null -> restore everything
-  BRK.forEach((k) => {
-    const isR = k[0] === "R",
-      base = isR ? BLUE : "#FF0044";
-    const on = !b || b.res.includes(k) || b.src.includes(k);
-    const hot = !!b && on;
-    const to = {
-      op: on ? 1 : 0.28,
-      stroke: hot && isR ? b.color : base,
-      sh: hot ? shadow(RGB[hot && isR ? b.color : base], 0.95, 9) : shadow(RGB[base], 0, 0),
-    };
-    const from = state[k];
-    tl.fromTo(
-      [`#el-${k}`, `#lb-${k}`, `#w-${k}`],
-      { opacity: from.op },
-      { opacity: to.op, duration: 0.3, immediateRender: false },
-      t,
-    );
-    const part = isR ? `#el-${k} .res` : `#el-${k} .src`;
-    tl.fromTo(
-      part,
-      { stroke: from.stroke, filter: from.sh },
-      { stroke: to.stroke, filter: to.sh, duration: 0.3, immediateRender: false },
-      t,
-    );
-    state[k] = to;
-  });
-  [1, 2, 3].forEach((m) => {
-    const to = !b || b.meshes.includes(m) ? 1 : 0.25;
-    tl.fromTo(
-      [`#mesh-${m}`, `#mhead-${m}`, `#ml-${m}`],
-      { opacity: meshOp[m] },
-      { opacity: to, duration: 0.3, immediateRender: false },
-      t,
-    );
-    meshOp[m] = to;
+function focus(t0, t1, active) {
+  // dim every branch that is not part of the current explanation
+  DATA.BRK.forEach((k) => {
+    if (active.includes(k)) return;
+    const sel = [`#el-${k}`, `#lb-${k}`, `#w-${k}`];
+    tl.fromTo(sel, { opacity: 1 }, { opacity: 0.3, duration: 0.15, immediateRender: false }, t0);
+    tl.to(sel, { opacity: 1, duration: 0.12 }, t1);
   });
 }
 
-const SUBS = { 2: "d1", 3: "o12", 4: "v1" }; // subtitle changes at the first beat of each group
-let curSub = "#sub-5",
-  curBt = "#sb-form";
-DATA.beats.forEach((b) => {
-  const t0 = T("b_" + b.id),
-    tl_ = T("l_" + b.id);
-  const sub = Object.keys(SUBS).find((k) => SUBS[k] === b.id);
-  if (sub) {
-    swap(curSub, "#sub-" + sub, t0 - 0.05);
-    curSub = "#sub-" + sub;
+function lock(cid, t, color) {
+  // the value slams into its matrix cell
+  const rgb = RGB[color];
+  tl.to(`#${cid} .ghost`, { opacity: 0, duration: 0.08 }, t);
+  tl.set(`#${cid} .sum`, { opacity: 0, display: "none" }, t);
+  tl.fromTo(
+    `#${cid} .val`,
+    { opacity: 0, scale: 2.2 },
+    { opacity: 1, scale: 1, duration: 0.22, ease: "power4.out", immediateRender: false },
+    t,
+  );
+  tl.fromTo(
+    `#${cid} .val`,
+    { textShadow: `0 0 0px rgba(${rgb},0)` },
+    {
+      textShadow: `0 0 26px rgba(${rgb},1)`,
+      duration: 0.2,
+      ease: "power2.out",
+      immediateRender: false,
+    },
+    t,
+  );
+  tl.to(
+    `#${cid} .val`,
+    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
+    t + 0.3,
+  );
+  tl.fromTo(
+    `#${cid} .ring`,
+    { opacity: 0.9, scale: 0.5 },
+    { opacity: 0, scale: 1.7, duration: 0.45, ease: "power2.out", immediateRender: false },
+    t,
+  );
+}
+
+function sweep(g) {
+  // the Electric Blue tracer laps the inner perimeter of the mesh, clockwise
+  const m = g.mesh,
+    P = DATA.tracers[m].pts,
+    seg = DATA.tracers[m].seg,
+    total = seg.reduce((a, b) => a + b, 0),
+    s = g.start;
+  const dash = +document.getElementById("trail-" + m).getAttribute("stroke-dasharray");
+  tl.set(`#head-${m}`, { opacity: 1 }, s);
+  tl.set(`#trail-${m}`, { opacity: 1 }, s);
+  tl.fromTo(
+    `#trail-${m}`,
+    { strokeDashoffset: dash },
+    { strokeDashoffset: 0, duration: DATA.SWEEP, ease: "none", immediateRender: false },
+    s,
+  );
+  let t = s;
+  for (let i = 0; i < 4; i++) {
+    const a = P[i],
+      b = P[(i + 1) % 4],
+      d = (DATA.SWEEP * seg[i]) / total;
+    tl.fromTo(
+      `#head-${m}`,
+      { x: a[0] - P[0][0], y: a[1] - P[0][1] },
+      { x: b[0] - P[0][0], y: b[1] - P[0][1], duration: d, ease: "none", immediateRender: false },
+      t,
+    );
+    t += d;
   }
-  swap(curBt, "#bt-" + b.id, t0 - 0.05);
-  curBt = "#bt-" + b.id;
-  light(t0, b);
-  tl.to("#rule-" + b.rule, { opacity: 1, duration: 0.25 }, t0);
-  tl.to("#rule-" + b.rule, { opacity: 0.4, duration: 0.25 }, t0 + 1.75);
-  b.cells.forEach((cid) => {
-    const f = DATA.fly[cid],
-      rgb = RGB[b.color];
+  tl.to(`#head-${m}`, { opacity: 0, duration: 0.1 }, s + DATA.SWEEP);
+  tl.to(`#trail-${m}`, { opacity: 0, duration: 0.3 }, s + DATA.SWEEP + 0.05);
+}
+
+function flights(g) {
+  // numerals hurled from the part into the matrix
+  g.items.forEach((it) => {
+    const el = "#" + it.id,
+      dur = it.arrive - it.launch;
+    tl.set(el, { opacity: 1 }, it.launch);
     tl.fromTo(
-      "#fly-" + cid,
-      { x: f.dx, y: f.dy, scale: 1.5, opacity: 0 },
-      {
-        x: 0,
-        y: 0,
-        scale: 1,
-        opacity: 1,
-        duration: tl_ - t0 - 0.5,
-        ease: "power2.inOut",
-        immediateRender: false,
-      },
-      t0 + 0.5,
+      el,
+      { x: it.dx, y: it.dy, scale: 1.25 },
+      { x: 0, y: 0, scale: 0.85, duration: dur, ease: "power3.in", immediateRender: false },
+      it.launch,
     );
-    tl.set("#fly-" + cid, { opacity: 0 }, tl_);
-    pop("#" + cid, tl_, 0.3);
-    tl.fromTo(
-      `#${cid} b`,
-      { textShadow: `0 0 0px rgba(${rgb},0)` },
-      {
-        textShadow: `0 0 22px rgba(${rgb},0.95)`,
-        duration: 0.3,
-        ease: "power2.out",
-        immediateRender: false,
-      },
-      tl_,
-    );
-    tl.to(
-      `#${cid} b`,
-      { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
-      tl_ + 0.5,
-    );
+    tl.set(el, { opacity: 0 }, it.arrive);
+    if (it.beam) {
+      const L = +document.getElementById(it.beam).getAttribute("stroke-dasharray");
+      tl.set("#" + it.beam, { opacity: 1 }, it.launch);
+      tl.fromTo(
+        "#" + it.beam,
+        { strokeDashoffset: L },
+        { strokeDashoffset: 0, duration: dur, ease: "power2.out", immediateRender: false },
+        it.launch,
+      );
+      tl.to("#" + it.beam, { opacity: 0, duration: 0.3 }, g.lock + 0.1);
+    }
   });
+}
+
+// ---------------- 2.0 - 11.1: one group per set of entries ----------------
+DATA.groups.forEach((g) => {
+  cue(g.lock);
+  if (g.kind === "diag") cue(g.start); // tracer start has its own click
+  if (g.active) focus(g.focus[0], g.focus[1], g.active);
+
+  if (g.kind === "diag") {
+    sweep(g);
+    g.items.forEach((it) => hold(it.src, it.pulse, it.pulse + 0.1, BLUE));
+  }
+  if (g.kind === "off") {
+    hold(g.shared, g.start, g.focus[1], PURPLE);
+    // two blue currents slide past each other in opposite directions inside the shared resistor
+    DATA.sparks[g.shared].forEach(([id, a, b]) => {
+      tl.set("#" + id, { opacity: 1 }, g.start);
+      tl.fromTo(
+        "#" + id,
+        { x: 0, y: 0 },
+        {
+          x: b[0] - a[0],
+          y: b[1] - a[1],
+          duration: g.lock - g.start,
+          ease: "power1.inOut",
+          immediateRender: false,
+        },
+        g.start,
+      );
+      tl.to("#" + id, { opacity: 0, duration: 0.1 }, g.lock);
+    });
+  }
+  if (g.kind === "zero") {
+    // meshes 1 and 3 touch no common resistor: their boundaries flash, then 0
+    [1, 3].forEach((m) => {
+      tl.fromTo(
+        `#perim-${m}`,
+        { opacity: 0 },
+        { opacity: 0.95, duration: 0.1, immediateRender: false },
+        g.start,
+      );
+      tl.to(`#perim-${m}`, { opacity: 0, duration: 0.45, ease: "power2.in" }, g.start + 0.12);
+    });
+  }
+  if (g.kind === "src") {
+    g.items.forEach((it) => hold(it.src, it.launch, it.launch + 0.45, RED));
+  }
+  flights(g);
+  if (g.sum) {
+    // "2+2", "2+3+4", "5-13": the numerals combine in the cell just before the lock
+    const sumAt = Math.max(...g.items.map((i) => i.arrive));
+    tl.to(`#${g.cells[0]} .ghost`, { opacity: 0, duration: 0.06 }, sumAt);
+    tl.set(`#${g.cells[0]} .sum`, { display: "block" }, sumAt);
+    tl.fromTo(
+      `#${g.cells[0]} .sum`,
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.15, ease: "back.out(2)", immediateRender: false },
+      sumAt,
+    );
+  }
+  g.cells.forEach((cid) => lock(cid, g.lock, g.color));
 });
 
-// ================= 25.2 - 25.9  WHOLE MATRIX =================
-swap("#sub-4", "#sub-6", T("final") - 0.05);
-swap(curBt, "#sb-final", T("final") - 0.05);
-light(T("final"), null);
-fadeIn("#cardnote", T("final") + 0.1, 0.4, 0);
+// ---------------- 11.8 - 13.0: whole equation pulses, then a static hold ----------------
+cue(11.8);
+cue(12.2);
+tl.fromTo(
+  "#card",
+  { boxShadow: "0 0 0px rgba(176,38,255,0)" },
+  {
+    boxShadow: "0 0 44px rgba(176,38,255,0.85)",
+    duration: 0.3,
+    ease: "power2.out",
+    immediateRender: false,
+  },
+  11.8,
+);
+tl.to("#card", { boxShadow: "0 0 0px rgba(176,38,255,0)", duration: 0.6, ease: "power2.in" }, 12.2);
+tl.fromTo(
+  "#eqhead",
+  { textShadow: "0 0 0px rgba(255,255,255,0)" },
+  { textShadow: "0 0 24px rgba(255,255,255,0.95)", duration: 0.3, immediateRender: false },
+  11.8,
+);
+tl.to("#eqhead", { textShadow: "0 0 0px rgba(255,255,255,0)", duration: 0.6 }, 12.2);
 [
-  ["#card .cell.d b", "0,136,255"],
-  ["#card .cell.p b", "176,38,255"],
-  ["#card .cell.s b", "255,0,68"],
+  ["#card .cell.d .val", "0,136,255"],
+  ["#card .cell.p .val", "176,38,255"],
+  ["#card .cell.s .val", "255,0,68"],
 ].forEach(([sel, rgb]) => {
   tl.fromTo(
     sel,
     { textShadow: `0 0 0px rgba(${rgb},0)` },
     {
-      textShadow: `0 0 20px rgba(${rgb},0.95)`,
-      duration: 0.35,
+      textShadow: `0 0 24px rgba(${rgb},1)`,
+      duration: 0.3,
       ease: "power2.out",
       immediateRender: false,
     },
-    T("final"),
+    11.8,
   );
-  tl.to(
-    sel,
-    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.45, ease: "power2.in" },
-    T("final") + 0.45,
-  );
+  tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.6, ease: "power2.in" }, 12.2);
 });
-
-// ================= 25.9 - 28.8  CTA =================
-fadeOut("#rules", T("cta") - 0.3, 0.3, 0);
 tl.fromTo(
-  "#cta",
-  { opacity: 0, y: -22 },
-  { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", immediateRender: false },
-  T("cta"),
+  "#ck",
+  { strokeDashoffset: 30 },
+  { strokeDashoffset: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
+  12.2,
 );
-[
-  ["#rip-1", "rip1"],
-  ["#rip-2", "rip2"],
-].forEach(([id, c]) =>
-  tl.fromTo(
-    id,
-    { scale: 1, opacity: 0.9 },
-    { scale: 1.12, opacity: 0, duration: 0.75, ease: "power2.out", immediateRender: false },
-    T(c),
-  ),
-);
-// cursor tip is at (6,4) inside its 60px svg: glide from the lower right to the right end of the button
-tl.set("#cursor", { x: 874, y: 1596 }, 0);
-tl.fromTo("#cursor", { opacity: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, 27.0);
-tl.fromTo(
-  "#cursor",
-  { x: 874, y: 1596 },
-  { x: 774, y: 1558, duration: 0.9, ease: "power2.inOut", immediateRender: false },
-  27.0,
-);
-tl.fromTo(
-  "#cta-btn",
-  { scale: 1 },
-  { scale: 0.94, duration: 0.08, ease: "power2.out", immediateRender: false },
-  T("press"),
-);
-tl.to("#cta-btn", { scale: 1, duration: 0.25, ease: "back.out(2.5)" }, T("press") + 0.08);
-tl.fromTo(
-  "#btn-flash",
-  { opacity: 0 },
-  { opacity: 0.95, duration: 0.1, ease: "power1.out", immediateRender: false },
-  T("press") + 0.02,
-);
-tl.set("#btn-a", { opacity: 0 }, T("open"));
-tl.set("#btn-b", { opacity: 1 }, T("open"));
-tl.to("#btn-flash", { opacity: 0, duration: 0.3, ease: "power2.in" }, T("open"));
+// 12.8 - 13.0: nothing moves
 
 window.__timelines = window.__timelines || {};
 window.__timelines["main"] = tl;
