@@ -6,25 +6,20 @@
 <meta name="viewport" content="width=1080, height=1920" />
 <script src="{{GSAP_SRC}}"></script>
 <style>
-  /* every glyph is KaTeX: Main Bold/Regular for text + numbers, Math Italic for variables */
-  @font-face { font-family: "KaTeX_Math"; font-style: italic; font-weight: 400; src: url("assets/fonts/KaTeX_Math-Italic.woff2") format("woff2"); }
-  @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 700; src: url("assets/fonts/KaTeX_Main-Bold.woff2") format("woff2"); }
-  @font-face { font-family: "KaTeX_Main"; font-style: normal; font-weight: 400; src: url("assets/fonts/KaTeX_Main-Regular.woff2") format("woff2"); }
+  /* KaTeX 0.16.11 (MIT): woff2 only, shipped in assets/fonts */
+{{KATEX_CSS}}
 
   :root { --bg:#0A0A10; --grid:#161622; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; }
   html, body { margin: 0; padding: 0; background: var(--bg); }
   body { width: 1080px; height: 1920px; overflow: hidden; }
-  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 700;
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 700; font-style: {{FONT_STYLE}};
     background-color: var(--bg);
     background-image: linear-gradient(var(--grid) 2px, transparent 2px), linear-gradient(90deg, var(--grid) 2px, transparent 2px);
     background-size: 60px 60px; }
   #root div, #root svg { box-sizing: border-box; }
   .abs { position: absolute; }
-  .mi { font-family: "KaTeX_Math", serif; font-style: italic; font-weight: 400; }
-  .ms { font-family: "KaTeX_Main", serif; font-size: .7em; vertical-align: -.28em; margin-left: 1px; }
-  .n  { font-family: "KaTeX_Main", serif; font-weight: 700; }
-  .eq { font-weight: 400; }
-  .u  { font-weight: 400; font-size: .86em; opacity: .85; }
+  .katex { font-size: 1.1em; }
+{{ITALIC_CSS}}
 
   /* ---------- zone 1: header, centred on x = 540 ---------- */
   #hdr { left: 0; top: 110px; width: 1080px; height: 200px; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -33,10 +28,10 @@
   #rule { margin-top: 17px; width: 120px; height: 3px; background: linear-gradient(90deg, var(--red), var(--purple)); }
 
   /* ---------- zone 2: circuit plate ---------- */
-  #plate { left: 90px; top: 340px; width: 900px; height: 560px; border-radius: 32px; background: rgba(30,30,46,.52); border: 1px solid rgba(255,255,255,.08); overflow: hidden; }
-  #wm { position: absolute; left: 0; top: 238px; width: 900px; height: 84px; text-align: center; font-size: 84px; line-height: 84px; color: #fff; opacity: .08; z-index: 0; white-space: nowrap; }
-  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 560px; z-index: 1; }
-  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 560px; z-index: 2; }
+  #plate { left: 90px; top: 340px; width: 900px; height: 550px; border-radius: 32px; background: rgba(30,30,46,.52); border: 1px solid rgba(255,255,255,.08); overflow: hidden; }
+  #wm { position: absolute; left: 0; top: 232px; width: 900px; height: 84px; text-align: center; font-size: 84px; line-height: 84px; color: #fff; opacity: .04; z-index: 0; white-space: nowrap; }
+  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 1; opacity: .3; }
+  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 2; opacity: .3; }
   .wire { stroke: #8DB8FF; stroke-width: 4; fill: none; stroke-linecap: round; filter: drop-shadow(0px 0px 5px rgba(0,136,255,.55)); }
   .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0px 0px 6px rgba(0,136,255,.6)); }
   .mask { fill: #1b1b2a; }
@@ -45,40 +40,65 @@
   .gl { stroke: #8DB8FF; stroke-width: 4; stroke-linecap: round; }
   .node { fill: #fff; stroke: #1b1b2a; stroke-width: 3; filter: drop-shadow(0px 0px 5px rgba(255,255,255,.6)); }
   .lb { position: absolute; color: #fff; white-space: nowrap; }
-  .elabel { font-size: 27px; } .mlabel { font-size: 36px; } .gtag { font-size: 22px; opacity: .8; }
+  .elabel { font-size: 24px; } .mlabel { font-size: 34px; } .gtag { font-size: 22px; opacity: .8; }
   .trail { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
   .perim { fill: none; stroke: var(--blue); stroke-width: 4; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
   .head, .spark { opacity: 0; }
 
-  /* ---------- zone 3: banner ---------- */
-  #banner { left: 180px; top: 948px; width: 720px; height: 95px; border-radius: 22px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
-  .bv { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 22px; font-size: 30px; line-height: 38px; opacity: 0; }
+  /* hook overlay: crossed-out KVL algebra, then it shatters */
+  #ov { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 8; }
+  .shbg { position: absolute; left: 0; top: 0; width: 900px; height: 550px; background: rgba(10,10,16,.68); }
+  .mess, .ovq, .ovx { will-change: transform; }
+  .mess { position: absolute; color: #fff; opacity: .62; white-space: nowrap; transform-origin: left center; }
+  .strike { position: absolute; left: -10px; right: -10px; top: 50%; height: 5px; margin-top: -2px; background: var(--red); border-radius: 3px; }
+  .ovq { position: absolute; text-align: center; font-size: 40px; line-height: 56px; color: #fff; }
+  .ovx { position: absolute; }
+  #shards { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 9; pointer-events: none; }
+  .shard { position: absolute; left: 0; top: 0; width: 900px; height: 550px; opacity: 0; }
+
+  /* ---------- zone 3: live resistor accumulator ---------- */
+  #banner { left: 150px; top: 940px; width: 780px; height: 110px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
+  .bv { position: absolute; left: 0; top: 0; width: 776px; height: 106px; opacity: 0; }
   #bv-0 { opacity: 1; }
-  .bv svg { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
-  .hp { color: var(--purple); } .hb { color: var(--blue); } .hr { color: var(--red); }
+  .bt { position: absolute; left: 0; top: 0; width: 776px; height: 106px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 32px; line-height: 40px; }
+  .ic { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
+  .bl { position: absolute; left: 0; width: 776px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 32px; white-space: nowrap; }
+  .l1 { top: 4px; } .l2 { top: 54px; }
+  .pc { display: inline-block; opacity: .22; }
+  .vr { opacity: 0; }
+  .pill { position: absolute; width: 124px; height: 48px; border-radius: 24px; background: rgba(0,136,255,.22); border: 2px solid var(--blue); text-align: center; font-size: 28px; line-height: 44px; opacity: 0; z-index: 31; box-shadow: 0 0 18px rgba(0,136,255,.7); }
 
   /* ---------- zone 4: glass matrix card ---------- */
   #card { left: 160px; top: 1100px; width: 760px; height: 500px; border-radius: 44px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); }
   #cardin { position: absolute; left: -1px; top: -1px; width: 760px; height: 500px; }
-  #eqhead { position: absolute; left: 0; top: 18px; width: 760px; height: 70px; text-align: center; font-size: 52px; line-height: 70px; }
+  #eqhead { position: absolute; left: 0; top: 18px; width: 760px; height: 70px; text-align: center; font-size: 50px; line-height: 70px; }
   #brk { position: absolute; left: 0; top: 0; width: 760px; height: 500px; }
   .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
   .cell { position: absolute; width: 120px; height: 110px; text-align: center; }
-  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 110px; line-height: 110px; white-space: nowrap; }
-  .cell .ghost { font-size: 44px; opacity: .38; }
-  .cell .val { font-size: 58px; opacity: 0; }
-  .cell .sum { font-size: 34px; opacity: 0; display: none; }
+  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 110px; line-height: 110px; white-space: nowrap; font-weight: 700; }
+  .cell .ghost { font-size: 40px; opacity: .4; }
+  .cell .val { font-size: 56px; opacity: 0; }
   .cell .ring { position: absolute; left: 15px; top: 10px; width: 90px; height: 90px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
-  .ivec { position: absolute; width: 80px; height: 110px; line-height: 110px; text-align: center; font-size: 50px; }
-  #eqsign { position: absolute; left: 540px; top: 230px; width: 50px; height: 110px; line-height: 110px; text-align: center; font-size: 54px; }
+  .ivec { position: absolute; width: 80px; height: 110px; line-height: 110px; text-align: center; font-size: 46px; }
+  #eqsign { position: absolute; left: 539px; top: 230px; width: 50px; height: 110px; line-height: 110px; text-align: center; font-size: 52px; }
   #legend { position: absolute; left: 0; top: 452px; width: 760px; height: 36px; display: flex; justify-content: center; gap: 34px; font-size: 25px; line-height: 36px; }
   #legend .sw { display: inline-block; width: 16px; height: 16px; border-radius: 4px; margin-right: 9px; vertical-align: -1px; }
 
-  /* ---------- flying numerals + beams ---------- */
+  /* ---------- flights ---------- */
   .fly { position: absolute; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 30; text-shadow: 0 0 16px currentColor; }
   #fx { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 25; pointer-events: none; }
   .beam { stroke-width: 5; stroke-linecap: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(176,38,255,.95)); }
+
+  /* ---------- state B: CTA takeover ---------- */
+  #cta { left: 90px; top: 1150px; width: 900px; height: 420px; border-radius: 36px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; }
+  #cta-t, #cta-div, #cta-q, #cta-b { opacity: 0; }
+  #cta-t { position: absolute; left: 0; top: 40px; width: 898px; text-align: center; font-size: 44px; line-height: 56px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
+  #cta-t svg { display: inline-block; width: 36px; height: 44px; vertical-align: -6px; margin-left: 10px; }
+  #cta-div { position: absolute; left: 330px; top: 176px; width: 240px; height: 3px; background: linear-gradient(90deg, var(--red), var(--purple)); }
+  #cta-q { position: absolute; left: 0; top: 196px; width: 898px; text-align: center; font-size: 32px; line-height: 46px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
+  #cta-q svg { display: inline-block; width: 30px; height: 34px; vertical-align: -6px; margin-left: 10px; }
+  #cta-b { position: absolute; left: 0; top: 340px; width: 898px; text-align: center; font-size: 24px; line-height: 36px; color: #fff; opacity: .7; }
 </style>
 </head>
 <body>
@@ -91,26 +111,28 @@
   </div>
 
   <div id="plate" class="abs">
-    <div id="wm">@MAE.Academy</div>
-    <svg id="circuit" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+    <div id="wm" data-layout-ignore>@MAE.Academy</div>
+    <svg id="circuit" viewBox="0 0 900 550" xmlns="http://www.w3.org/2000/svg">
 {{CIRCUIT_SVG}}
     </svg>
     <div id="labels">
 {{CIRCUIT_LABELS}}
     </div>
+    <div id="ov" data-layout-ignore><div class="shbg"></div>
+{{OVERLAY}}
+    </div>
+    <div id="shards" data-layout-ignore>
+{{SHARDS}}
+    </div>
   </div>
 
   <div id="banner" class="abs">
-    <div id="bv-0" class="bv"><span>STOP WRITING KVL EQUATIONS:<br>BUILD THE MATRIX BY SIGHT<svg viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#fff"/></svg></span></div>
-    <div id="bv-1" class="bv"><span>DIAGONALS: SUM OF RESISTORS<br>AROUND EACH MESH</span></div>
-    <div id="bv-2" class="bv"><span>OFF-DIAGONALS: NEGATIVE OF<br>SHARED RESISTORS (<span class="hp">−</span><span class="mi hp">R</span><span class="ms hp">ij</span>)</span></div>
-    <div id="bv-3" class="bv"><span>SOURCES: VOLTAGE RISES (+)<br>MINUS DROPS (−)</span></div>
-    <div id="bv-4" class="bv"><span>MATRIX COMPLETE IN 5 SECONDS:<br><span class="mi">R</span> ⋅ <span class="mi">I</span> = <span class="mi">V</span><svg viewBox="0 0 24 24" style="margin-left:14px"><path id="ck" d="M4 13 L10 19 L21 5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="30" stroke-dashoffset="30"/></svg></span></div>
+{{BANNER}}
   </div>
 
   <div id="card" class="abs">
     <div id="cardin">
-      <div id="eqhead">R ⋅ I = V</div>
+      <div id="eqhead">{{HEAD_EQ}}</div>
       <svg id="brk" viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
 {{MATRIX}}
       <div id="eqsign">=</div>
@@ -121,6 +143,13 @@
   <svg id="fx" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
 {{BEAMS}}
   </svg>
+
+  <div id="cta" class="abs">
+    <div id="cta-t">SAVE THIS TRICK FOR YOUR<br>NEXT EXAM<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
+    <div id="cta-div"></div>
+    <div id="cta-q">{{CTA_Q}}<svg viewBox="0 0 24 28"><path d="M12 2v18M4 13l8 9 8-9" fill="none" stroke="#0088FF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="cta-b">MAE ACADEMY ⋅ CIRCUIT THEORY MASTERCLASS</div>
+  </div>
 
   <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="{{DURATION}}" data-track-index="2" data-volume="1"></audio>
 </div>

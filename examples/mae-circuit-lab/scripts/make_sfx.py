@@ -4,9 +4,12 @@
 Timing comes ONLY from the CUES array (between @CUES-BEGIN / @CUES-END) in src/timeline.js: [[seconds, "voice"], ...].
 Length = the root data-duration in index.html, so audio and video always have the same length.
 
-Bed   : continuous 50 Hz hum at -22 dBFS peak, no gaps, 0.0 s to the end.
-Voices: click (1400/1800 Hz), snap (2200 + 4400 Hz transient with a 70 Hz sub-bass thud underneath),
-        thump (85 Hz sub impact).
+Bed   : continuous 50 Hz hum at -22 dBFS peak, unbroken from 0.0 s to the end.
+Voices: click  = 1400 Hz sine burst, 6 ms decay. Clicks that follow each other within 0.5 s (a tracer start and the resistor
+                 touches after it) form a run and rise 2 semitones per step, so each resistor tick has its own pitch and
+                 the run climbs toward the lock.
+        snap   = 2200 + 4400 Hz transient over a short 55 Hz sub-bass layer.
+        thump  = heavy sub-bass: 55 Hz sine that drops from 90 Hz, 40 ms attack.
 """
 import re, wave
 from pathlib import Path
@@ -14,7 +17,9 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent.parent
 SR = 48000
-GAIN = {"click": 0.40, "snap": 0.50, "thump": 0.70}      # peak amplitude of each voice before the bed is added
+GAIN = {"click": 0.36, "snap": 0.42, "thump": 0.58}      # peak amplitude of each voice before the bed is added
+RUN_GAP = 0.5                                            # seconds: clicks closer than this belong to one rising run
+SEMITONE = 2 ** (1 / 12)
 
 
 def read_cues():
@@ -30,10 +35,15 @@ def read_duration():
     return float(re.search(r'id="root"[^>]*data-duration="([\d.]+)"', html).group(1))
 
 
+def env(n, attack, tau):
+    t = np.arange(n) / SR
+    return np.minimum(t / attack, 1.0) * np.exp(-t / tau)
+
+
 def tone(f, dur, tau, attack=0.002):
     n = int(dur * SR)
     t = np.arange(n) / SR
-    return np.sin(2 * np.pi * f * t) * np.minimum(t / attack, 1.0) * np.exp(-t / tau)
+    return np.sin(2 * np.pi * f * t) * env(n, attack, tau)
 
 
 def mix(*parts):
@@ -43,13 +53,18 @@ def mix(*parts):
     return out
 
 
-def voice(name):
+def voice(name, step=0):
     if name == "click":
-        return mix(tone(1400, 0.06, 0.007), 0.7 * tone(1800, 0.06, 0.006))
+        f = 1400 * SEMITONE ** (2 * step)
+        return tone(f, 0.06, 0.006)                         # 6 ms decay
     if name == "snap":
-        return mix(tone(2200, 0.12, 0.014, 0.0008), 0.6 * tone(4400, 0.08, 0.008, 0.0008), 1.4 * tone(70, 0.30, 0.07, 0.003))
+        return mix(tone(2200, 0.12, 0.014, 0.0008), 0.6 * tone(4400, 0.08, 0.008, 0.0008), 1.2 * tone(55, 0.30, 0.07, 0.003))
     if name == "thump":
-        return tone(85, 0.50, 0.10, 0.004)
+        n = int(0.55 * SR)
+        t = np.arange(n) / SR
+        f = 55 + 35 * np.exp(-t / 0.05)                     # 90 Hz falling onto 55 Hz
+        ph = 2 * np.pi * np.cumsum(f) / SR
+        return np.sin(ph) * env(n, 0.04, 0.12)              # 40 ms attack
     raise ValueError(name)
 
 
@@ -61,9 +76,13 @@ def main():
     db = lambda x: 10 ** (x / 20)
     bed = db(-22) * np.sin(2 * np.pi * 50 * t)
     L, R = bed.copy(), bed.copy()
+    step, last_click = 0, None
     for i, (ct, name) in enumerate(cues):
         assert 0 <= ct < dur, (ct, name)
-        w = voice(name)
+        if name == "click":
+            step = step + 1 if (last_click is not None and ct - last_click <= RUN_GAP) else 0
+            last_click = ct
+        w = voice(name, step if name == "click" else 0)
         w = w / (np.max(np.abs(w)) + 1e-9) * GAIN[name]
         s = int(round(ct * SR))
         e = min(n, s + len(w))
