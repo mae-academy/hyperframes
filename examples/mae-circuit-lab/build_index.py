@@ -201,7 +201,7 @@ def build_circuit():
         labels.append(box(x, y, 210, 36, al, html, f"lb-{k}", "elabel"))
     for i, (cx, cy) in enumerate(MESH_C):
         labels.append(box(cx, cy, 70, 44, "c", K(Il(str(i + 1))), f"ml-{i+1}", "mlabel"))
-    labels.append(box(536, GY + 28, 80, 26, "r", K(r"\text{GND}"), "gtag", "gtag"))
+    labels.append(box(536, GY + 28, 80, 26, "r", K(r"\textit{GND}"), "gtag", "gtag"))
     return "\n".join(svg), "\n".join(labels), LAPS, TOUCH
 
 
@@ -243,8 +243,8 @@ BOLT = '<svg class="ic" viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 
 
 
 def build_banner():
-    h = ['<div id="bv-h2" class="bv"><div class="bt">SOLVE BY SIGHT IN 5 SECONDS' + BOLT + '</div></div>',
-         '<div id="bv-fin" class="bv"><div class="bt">' + K(r"R\cdot I=V\quad\text{[SYSTEM FULLY SOLVED}") + BOLT + K(r"\text{]}") + '</div></div>']
+    h = ['<div id="bv-h2" class="bv"><div class="bt">' + K(r"\textit{BUILD THE R-MATRIX}") + '<div class="btl">' + K(r"\textit{BY SIGHT IN 5 SECONDS}") + BOLT + '</div></div></div>',
+         '<div id="bv-fin" class="bv"><div class="bt"><div class="btl">' + K(r"R\cdot I=V\quad\textit{[SYSTEM FULLY SOLVED}") + BOLT + K(r"\textit{]}") + '</div></div></div>']
     for m, spec in DIAG.items():
         res = sorted(MESH_RES[m])
         assert A0[m - 1][m - 1] == sum(Rv[k] for k in res)
@@ -258,19 +258,19 @@ def build_banner():
             numr.append(piece(f"d{m}-n{i}", pre + str(Rv[r])))
         l2 = piece(f"d{m}-e", "=") + "".join(numr) + piece(f"d{m}-f", "=" + kohm(A0[m - 1][m - 1]))
         h.append(f'<div id="bv-d{m}" class="bv bvc"><div class="bl l1">{l1}{"".join(sym)}</div><div class="bl l2">{l2}</div></div>')
-    off = '<div id="bv-off" class="bv bvc"><div class="bl l1">' + K(Rm("ij") + r"=-(\text{Shared Resistor})") + '</div>'
+    off = '<div id="bv-off" class="bv bvc"><div class="bl l1">' + K(Rm("ij") + r"=-(\textit{Shared Resistor})") + '</div>'
     var = []
     for (i, j), vid in zip(((1, 2), (2, 3), (1, 3)), ("a", "b", "c")):
         sh = SHARED[(i, j)]
         val = -Rv[sh] if sh else 0
         assert A0[i - 1][j - 1] == A0[j - 1][i - 1] == val
         if sh:
-            tex = r"\text{SHARED BETWEEN MESH " + f"{i} \\& {j}" + r"}\implies " + Rm(f"{i}{j}") + "=" + Rm(f"{j}{i}") + "=-" + kohm(Rv[sh])
+            tex = r"\textit{SHARED BETWEEN MESH " + f"{i} \\& {j}" + r"}\implies " + Rm(f"{i}{j}") + "=" + Rm(f"{j}{i}") + "=-" + kohm(Rv[sh])
         else:
-            tex = r"\text{NO RESISTOR SHARED BETWEEN " + f"{i} \\& {j}" + r"}\implies " + Rm(f"{i}{j}") + "=" + Rm(f"{j}{i}") + "=0"
+            tex = r"\textit{NO RESISTOR SHARED BETWEEN " + f"{i} \\& {j}" + r"}\implies " + Rm(f"{i}{j}") + "=" + Rm(f"{j}{i}") + "=0"
         var.append(f'<div id="off-{vid}" class="bl l2 vr">{K(tex)}</div>')
     h.append(off + "".join(var) + "</div>")
-    src = '<div id="bv-src" class="bv bvc"><div class="bl l1">' + K(r"v_i=\sum V_{\text{rises}}-\sum V_{\text{drops}}") + '</div>'
+    src = '<div id="bv-src" class="bv bvc"><div class="bl l1">' + K(r"v_i=\sum V_{\textit{rises}}-\sum V_{\textit{drops}}") + '</div>'
     sv = []
     for m in (1, 2, 3):
         terms = MESH_SRC[m]
@@ -290,32 +290,33 @@ def build_banner():
     return "\n".join(h)
 
 
-# ------------------------------------------------------------------ hook (zone 3): crossed-out handwriting that shatters into particles at 0.8 s
+# ------------------------------------------------------------------ hook (zone 2): a full-width graphic card over the circuit that shatters at 0.8 s
 def build_hook():
-    s1 = K("(" + Rl("1") + "+" + Rl("2") + ")" + Il("1") + "-" + Rl("2") + Il("2") + "=" + Vl("1") + "-" + Vl("3"))
-    s2 = K("-" + Rl("4") + Il("2") + "+(" + Rl("4") + "+" + Rl("5") + ")" + Il("3") + "=" + Vl("3"))
-    html = ('<div id="hk"><div id="hk-bg"></div>'
-            f'<div id="hk-a" class="hk-s" style="left:24px;top:8px">{s1}<i class="strike"></i></div>'
-            f'<div id="hk-b" class="hk-s" style="left:462px;top:14px">{s2}<i class="strike"></i></div>'
-            '<div id="hk-q" class="hk-q">15 MINUTES OF KVL?</div>'
-            '<svg id="hk-x" viewBox="0 0 60 60" width="52" height="52"><rect x="2" y="2" width="56" height="56" rx="12" fill="#FF0044"/>'
-            '<path d="M18 18 L42 42 M42 18 L18 42" stroke="#fff" stroke-width="7" stroke-linecap="round"/></svg></div>')
+    eqs = [K("(" + Rl("1") + "+" + Rl("2") + ")" + Il("1") + "-" + Rl("2") + Il("2") + "=" + Vl("1") + "-" + Vl("3")),
+           K("-" + Rl("2") + Il("1") + "+(" + Rl("2") + "+" + Rl("3") + "+" + Rl("4") + ")" + Il("2") + "-" + Rl("4") + Il("3") + "=-" + Vl("2")),
+           K("-" + Rl("4") + Il("2") + "+(" + Rl("4") + "+" + Rl("5") + ")" + Il("3") + "=" + Vl("3"))]
+    tops, rots = [58, 126, 194], [-1.6, 1.2, -0.8]
+    lines = "".join(f'<div id="hk-{c}" class="hk-s" style="top:{t}px">{e}<i class="strike"></i></div>' for c, t, e in zip("abc", tops, eqs))
+    q = K(r"15\textit{ MINUTES OF KVL ALGEBRA? }\times")
+    cols, rows = 6, 4
+    cw, ch = 900 / cols, 550 / rows
     rnd = random.Random(23)
-    pts, pdata = [], []
-    for i in range(44):
-        x, y = rnd.uniform(150, 920), rnd.uniform(930, 1030)
-        w, hh = rnd.uniform(8, 20), rnd.uniform(8, 20)
-        col = rnd.choice(["#FF0044", "#FFFFFF", "#B026FF", "#FF0044"])
-        poly = f"{rnd.uniform(0,40):.0f}% 0,100% {rnd.uniform(0,60):.0f}%,{rnd.uniform(30,90):.0f}% 100%,0 {rnd.uniform(40,100):.0f}%"
-        pts.append(f'<i id="pt-{i}" class="pt" style="left:{x:.0f}px;top:{y:.0f}px;width:{w:.0f}px;height:{hh:.0f}px;background:{col};clip-path:polygon({poly})"></i>')
-        ang = rnd.uniform(-math.pi, 0) if rnd.random() < 0.7 else rnd.uniform(0, math.pi)
-        dist = rnd.uniform(120, 360)
-        dx = max(104 - x, min(976 - (x + w), math.cos(ang) * dist))       # debris never leaves the 90-990 safe margins
-        pdata.append(dict(id=f"pt-{i}", x=round(dx, 1), y=round(math.sin(ang) * dist + rnd.uniform(40, 180), 1),
-                          rot=round(rnd.uniform(-240, 240), 1), d=round(rnd.uniform(0, 0.15), 3)))
-    pieces = [dict(id="hk-a", r0=-2.2, x=-34, y=-120, rot=-14, d=0.0), dict(id="hk-b", r0=1.8, x=24, y=-130, rot=12, d=0.03),
-              dict(id="hk-q", r0=0, x=-30, y=170, rot=-6, d=0.05), dict(id="hk-x", r0=0, x=44, y=190, rot=40, d=0.08)]    # all stay inside x 90-990
-    return html, "\n".join(pts), dict(pieces=pieces, particles=pdata)
+    shards, sdata = [], []
+    for r in range(rows):
+        for c in range(cols):
+            for h, poly in enumerate(("0 0,100% 0,0 100%", "100% 0,100% 100%,0 100%")):
+                sid = f"sh-{r}-{c}-{h}"
+                shards.append(f'<i id="{sid}" class="sh" style="left:{c*cw:.1f}px;top:{r*ch:.1f}px;width:{cw+0.6:.1f}px;height:{ch+0.6:.1f}px;clip-path:polygon({poly})"></i>')
+                cx, cy = (c + 0.5) * cw - 450, (r + 0.5) * ch - 275
+                ang = math.atan2(cy, cx) + rnd.uniform(-0.5, 0.5)
+                dist = rnd.uniform(160, 380)
+                sdata.append(dict(id=sid, x=round(math.cos(ang) * dist, 1), y=round(math.sin(ang) * dist + rnd.uniform(60, 220), 1),
+                                  rot=round(rnd.uniform(-200, 200), 1), d=round(rnd.uniform(0, 0.14), 3)))
+    html = ('<div id="hkc" data-layout-ignore><i id="hk-bd"></i>' + "".join(shards) + lines +
+            f'<div id="hk-q">{q}</div></div>')
+    pieces = [dict(id="hk-a", r0=rots[0], x=-90, y=-150, rot=-16, d=0.0), dict(id="hk-b", r0=rots[1], x=60, y=-190, rot=12, d=0.03),
+              dict(id="hk-c", r0=rots[2], x=-40, y=-120, rot=-9, d=0.05), dict(id="hk-q", r0=0, x=30, y=200, rot=7, d=0.06)]
+    return html, dict(pieces=pieces, shards=sdata)
 
 
 # ------------------------------------------------------------------ choreography: every flight is a number extracted from a component
@@ -384,20 +385,20 @@ def groups(TOUCH):
 
 
 def build_cues(G):
-    """Sound only for physical things. One click each time a component pops (R1 pops: one click; a mesh with 2 resistors: exactly 2 clicks,
-    with 3 resistors: exactly 3), one deep thump when a full matrix row or the whole vector has locked. Nothing for operators, text or transitions."""
+    """Sound only for physical things: one relay click per component touched (13 in total: mesh 1 = 2, mesh 2 = 3, mesh 3 = 2, two shared
+    resistors, four sources), one mechanical snap per matrix lock event (9), one deep thump when the whole matrix is complete."""
     C = set()
     for g in G:
         for f in g["flights"]:
             if f["kind"] == "pop":
                 C.add((f["t0"], "click"))
-    lock = {}
-    for g in G:
-        for c in g["cells"]:
-            lock[c] = g["lock"]
-    for r in range(3):
-        C.add((max(lock[f"e-{r}-{c}"] for c in range(3)), "thump"))      # row r is complete when its last cell has locked
-    C.add((max(lock[f"v-{r}"] for r in range(3)), "thump"))              # the vector is complete
+        C.add((g["lock"], "snap"))
+    C.add((max(g["lock"] for g in G), "thump"))
+    clicks = [c for c in C if c[1] == "click"]
+    assert len(clicks) == 13, len(clicks)
+    for m in (1, 2, 3):
+        assert sum(1 for g in G if g["kind"] == "diag" and g["mesh"] == m for f in g["flights"] if f["kind"] == "pop") == len(MESH_RES[m])
+    assert sum(1 for c in C if c[1] == "snap") == 9
     return sorted(C)
 
 
@@ -423,7 +424,7 @@ def main():
                 t["idx"] = g["res"].index(t["res"])
     cues = build_cues(G)
     write_cues(cues)
-    hook_html, particles_html, hook_data = build_hook()
+    hook_html, hook_data = build_hook()
     data = dict(END=CONFIG["DURATION"], groups=G, tracers=LAPS, hook=hook_data)
     css = (HERE / "scripts" / "vendor" / "katex.min.css").read_text()
     keep = ("KaTeX_Main-Regular", "KaTeX_Main-Bold", "KaTeX_Main-Italic", "KaTeX_Main-BoldItalic", "KaTeX_Math-Italic", "KaTeX_Math-BoldItalic",
@@ -440,10 +441,12 @@ def main():
     html = (HERE / "src" / "template.html").read_text()
     repl = {"DURATION": f"{CONFIG['DURATION']:g}", "GSAP_SRC": "assets/gsap.min.js" if local else GSAP_CDN,
             "KATEX_CSS": "\n".join(faces) + "\n" + rules, "CIRCUIT_SVG": svg, "CIRCUIT_LABELS": labels, "MATRIX": build_matrix(),
-            "BRACKETS": brackets(), "BANNER": build_banner(), "HOOK": hook_html, "PARTICLES": particles_html,
+            "BRACKETS": brackets(), "BANNER": build_banner(), "HOOK": hook_html,
             "FLY": "\n".join(clones),
             "HEAD_EQ": K(r"R\cdot I=V"),
-            "CTA_Q": K(r"\text{CAN YOU FIND }I_1\text{?}") + "<br>" + K(r"\text{DROP YOUR ANSWER BELOW}"),
+            "CTA_1": K(r"\textbf{SAVE THIS TRICK FOR}"), "CTA_2": K(r"\textbf{YOUR EXAM}"),
+            "CTA_3": K(r"\textit{CAN YOU SOLVE FOR }I_1\textit{?}"), "CTA_4": K(r"\textit{COMMENT BELOW }\downarrow"),
+            "CTA_5": K(r"\textit{MAE ACADEMY}\ \cdot\ \textit{CIRCUIT THEORY}"),
             "DATA_JSON": json.dumps(data), "TIMELINE_JS": (HERE / "src" / "timeline.js").read_text()}
     for k, v in repl.items():
         html = html.replace("{{" + k + "}}", v)

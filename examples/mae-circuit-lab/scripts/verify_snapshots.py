@@ -12,7 +12,7 @@ from PIL import Image
 HERE = Path(__file__).resolve().parent.parent
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else HERE / "snapshots")
 END = 21.0
-times = sorted({round(0.6 * i, 2) for i in range(0, 35)} | {0.0, 0.3, 0.85, 0.95, 1.05, 1.1, 1.2, 1.3, 1.4, 2.75, 2.95, 3.3, 3.75, 4.45, 9.4, 9.7, 12.95, 13.3, 15.7, 18.0, 20.99})
+times = sorted({round(0.6 * i, 2) for i in range(0, 35)} | {0.0, 0.3, 0.85, 0.95, 1.05, 1.1, 1.2, 1.3, 1.4, 2.75, 2.95, 3.3, 3.75, 4.45, 9.4, 9.7, 12.95, 13.3, 15.7, 18.0, 20.99, 16.7, 17.5, 20.8})
 times = [t for t in times if t < END]
 OUT.mkdir(exist_ok=True, parents=True)
 for f in OUT.glob("*.png"): f.unlink()

@@ -9,7 +9,8 @@ slide, chirp or pitch movement anywhere: every voice is a fixed-frequency, insta
 
   bed   : continuous 50 Hz stereo hum at -22 dBFS peak, unbroken from 0.0 s to the end (no silent gap).
   click : one crisp mechanical relay click per component pop     1800 Hz sine x exp(-t/3 ms), 15 ms.
-  thump : one deep clean sub-bass hit when a matrix row or the vector completes     55 Hz sine x exp(-t/40 ms).
+  snap  : one tactile mechanical snap each time a matrix cell locks     2400 Hz + noise burst x exp(-t/5 ms), 35 ms.
+  thump : one deep clean sub-bass hit when the whole matrix is complete     55 Hz sine x exp(-t/40 ms).
 """
 import re
 from pathlib import Path
@@ -19,7 +20,7 @@ from scipy.io import wavfile
 HERE = Path(__file__).resolve().parent.parent
 SR = 48000
 sample_rate = SR
-GAIN = {"click": 0.45, "thump": 0.60}      # peak amplitude of each voice before the bed is added
+GAIN = {"click": 0.45, "snap": 0.40, "thump": 0.60}      # peak amplitude of each voice before the bed is added
 
 
 def read_cues():
@@ -39,10 +40,14 @@ def voice(name):
     if name == "click":
         t = np.linspace(0, 0.015, int(sample_rate * 0.015), endpoint=False)
         return np.sin(2 * np.pi * 1800 * t) * np.exp(-t / 0.003)
+    if name == "snap":
+        t = np.linspace(0, 0.035, int(sample_rate * 0.035), endpoint=False)
+        rng = np.random.default_rng(7)
+        return (np.sin(2 * np.pi * 2400 * t) + 0.5 * rng.normal(0, 0.3, len(t))) * np.exp(-t / 0.005)
     if name == "thump":
         t = np.linspace(0, 0.20, int(sample_rate * 0.20), endpoint=False)       # 5 time constants: the 40 ms decay has died away
         return np.sin(2 * np.pi * 55 * t) * np.exp(-t / 0.04)
-    raise ValueError(f"unknown voice {name!r} (only click and thump exist)")
+    raise ValueError(f"unknown voice {name!r} (only click, snap and thump exist)")
 
 
 def main():
@@ -66,7 +71,7 @@ def main():
     pcm = (np.stack([L, R], 1) * 32767).astype("<i2")
     out = HERE / "assets" / "sfx.wav"
     wavfile.write(str(out), SR, pcm)
-    kinds = {v: sum(1 for _, x in cues if x == v) for v in ("click", "thump")}
+    kinds = {v: sum(1 for _, x in cues if x == v) for v in ("click", "snap", "thump")}
     print(f"wrote {out.name}: {n/SR:.3f} s, cues {kinds}, peak {20*np.log10(peak):.1f} dBFS, hum 50 Hz at -22 dBFS")
 
 

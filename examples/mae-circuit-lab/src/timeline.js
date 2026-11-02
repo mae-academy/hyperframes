@@ -1,6 +1,6 @@
 /* THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS. 21.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
    DATA (groups, comet laps, flights, hook) is injected by build_index.py, which also writes the CUES block below from the same schedule.
-   The circuit in zone 2 is never dimmed, hidden or moved. Pop-and-drop: the NUMBER that is already written on a component pops to 2.2x
+   The circuit in zone 2 is never dimmed, hidden or moved. Pop-and-drop: the NUMBER that is already written on a component pops to 2.5x
    right where it sits, then that very number glides along a curve into its equation slot or matrix cell and settles to scale 1.0 there.
    There are no badge backgrounds: the only things that move are the numbers themselves. */
 
@@ -8,19 +8,26 @@
 const CUES = [
   [2.696, "click"],
   [3.0, "click"],
+  [3.9, "snap"],
   [4.336, "click"],
   [4.691, "click"],
   [5.4, "click"],
+  [6.3, "snap"],
   [7.17, "click"],
   [7.6, "click"],
+  [8.5, "snap"],
   [9.3, "click"],
+  [9.9, "snap"],
   [10.8, "click"],
-  [11.4, "thump"],
-  [12.4, "thump"],
+  [11.4, "snap"],
+  [12.4, "snap"],
   [12.85, "click"],
   [13.0, "click"],
+  [13.9, "snap"],
   [14.4, "click"],
+  [15.0, "snap"],
   [15.5, "click"],
+  [16.1, "snap"],
   [16.1, "thump"],
 ];
 // @CUES-END
@@ -104,6 +111,7 @@ function contour(m, t0, t1) {
 function lockCell(cid, t, color) {
   // the placeholder becomes the final value instantly, with a brief glow
   const rgb = RGB[color];
+  cue(t); // every cell lock carries one mechanical snap
   tl.set(`#${cid} .ghost`, { opacity: 0 }, t);
   tl.set(`#${cid} .val`, { opacity: 1 }, t);
   tl.fromTo(
@@ -162,7 +170,8 @@ function centre(spec) {
 // 1. POP: the number text already on the component scales to 2.2x instantly, with a neon pulse, right at its schematic coordinate.
 // 2. DROP: that number glides along a curve (x and y on different eases) into its slot / cell, shrinking to the size of its destination.
 // 3. LAND: it settles at scale 1.0, the target cell pulses 1.2x and locks, the clone is gone.
-const SRC_FONT = 24,
+const POP_SCALE = 2.5,
+  SRC_FONT = 24,
   CLONE_FONT = 42; // px of the number on the circuit label and of the travelling number
 const popped = new Set();
 function extract(f) {
@@ -177,7 +186,7 @@ function extract(f) {
       // a shared resistor pops once and its number splits into two
       popped.add(key);
       cue(f.t0);
-      tl.set(f.num, { scale: 2.2, color: col }, f.t0);
+      tl.set(f.num, { scale: POP_SCALE, color: col }, f.t0);
       tl.fromTo(
         f.num,
         { textShadow: `0 0 0px rgba(${rgb},0)` },
@@ -189,21 +198,17 @@ function extract(f) {
         },
         f.t0,
       );
-      tl.to(
+      // the number leaves the component (it IS the travelling clone, so the label is blank for the flight: never two copies of the text)
+      tl.set(
         f.num,
-        {
-          scale: 1,
-          color: "#ffffff",
-          textShadow: `0 0 0px rgba(${rgb},0)`,
-          duration: 0.12,
-          ease: "power2.out",
-        },
+        { opacity: 0, scale: 1, color: "#ffffff", textShadow: "0 0 0px rgba(0,0,0,0)" },
         f.t1,
-      ); // the label keeps its number
+      );
+      tl.set(f.num, { opacity: 1 }, f.t2); // restored the instant the clone has landed
     }
   }
   const src = f.kind === "pop" ? { slot: f.num } : f.src;
-  const s0 = f.kind === "pop" ? (2.2 * SRC_FONT) / CLONE_FONT : 0.76;
+  const s0 = f.kind === "pop" ? (POP_SCALE * SRC_FONT) / CLONE_FONT : 0.76;
   tl.set(el, { display: "block", opacity: 1 }, f.t1);
   tl.fromTo(
     el,
@@ -232,10 +237,10 @@ function extract(f) {
   if (f.cell) cellPulse(f.cell, f.t2);
 }
 
-// ================= 0.0 - 2.0  HOOK: the circuit is live from frame 0; the crossed-out graphic in zone 3 shatters into particles at 0.8 s =================
+// ================= 0.0 - 2.0  HOOK: a full-width card in zone 2 (crossed-out KVL algebra) shatters at 0.8 s; zone 3 already reads BUILD THE R-MATRIX... =================
 DATA.hook.pieces.forEach((p) => tl.set("#" + p.id, { rotation: p.r0 }, 0));
-tl.to("#hk-bg", { opacity: 0, duration: 0.12, ease: "power1.in" }, 0.8);
-DATA.hook.pieces.forEach((p) =>
+tl.to("#hk-bd", { opacity: 0, duration: 0.12, ease: "power1.in" }, 0.8);
+DATA.hook.pieces.forEach((p) => {
   tl.fromTo(
     "#" + p.id,
     { x: 0, y: 0, rotation: p.r0 },
@@ -249,13 +254,10 @@ DATA.hook.pieces.forEach((p) =>
       immediateRender: false,
     },
     0.8,
-  ),
-);
-DATA.hook.pieces.forEach((p) =>
-  tl.to("#" + p.id, { opacity: 0, duration: 0.18, ease: "power1.in" }, 0.8 + p.d + 0.05),
-); // gone before it can touch the revealed line
-DATA.hook.particles.forEach((p) => {
-  tl.set("#" + p.id, { opacity: 1 }, 0.8);
+  );
+  tl.to("#" + p.id, { opacity: 0, duration: 0.18, ease: "power1.in" }, 0.8 + p.d + 0.2);
+});
+DATA.hook.shards.forEach((p) => {
   tl.fromTo(
     "#" + p.id,
     { x: 0, y: 0, rotation: 0, opacity: 1 },
@@ -264,14 +266,15 @@ DATA.hook.particles.forEach((p) => {
       y: p.y,
       rotation: p.rot,
       opacity: 0,
-      duration: 0.7,
+      duration: 0.6,
       delay: p.d,
-      ease: "power2.out",
+      ease: "power2.in",
       immediateRender: false,
     },
     0.8,
   );
 });
+tl.set("#hkc", { display: "none" }, 1.7); // nothing of the card remains
 
 // ================= 2.0 - 8.8  DIAGONALS: the comet touches a resistor, its number pops and glides into the equation; the sum drops into the matrix =================
 DATA.groups.forEach((g) => {
@@ -435,47 +438,35 @@ tl.fromTo(
   16.5,
 );
 tl.to("#eqhead", { textShadow: "0 0 0px rgba(255,255,255,0)", duration: 0.8 }, 17.2);
-// 17.5: the CTA card slides up into y 1380 - 1620. The matrix (y 1060 - 1360, scale 1.0) and the banner do not move or scale.
+// 16.6: the CTA panel fades in under the matrix (opacity + a 6% scale-up: nothing moves outside the safe zone). The circuit and the matrix stay put.
 tl.fromTo(
   "#cta",
-  { y: 40 },
-  { y: 0, duration: 0.8, ease: "power3.out", immediateRender: false },
-  17.5,
+  { opacity: 0, scale: 0.94 },
+  { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out", immediateRender: false },
+  16.6,
+);
+[
+  ["#cl1", 16.9, 1],
+  ["#cl2", 17.1, 1],
+  ["#cl3", 17.6, 1],
+  ["#cl4", 17.9, 1],
+  ["#cl5", 18.3, 0.6],
+].forEach(([sel, t, o]) =>
+  tl.fromTo(
+    sel,
+    { opacity: 0 },
+    { opacity: o, duration: 0.3, ease: "power1.out", immediateRender: false },
+    t,
+  ),
 );
 tl.fromTo(
-  "#cta",
-  { opacity: 0 },
-  { opacity: 1, duration: 0.4, ease: "power1.out", immediateRender: false },
-  17.5,
-);
-tl.fromTo(
-  "#cta",
-  { boxShadow: "inset 0 0 0px rgba(255,0,68,0)" },
-  { boxShadow: "inset 0 0 50px rgba(255,0,68,0.5)", duration: 0.25, immediateRender: false },
-  17.6,
-);
-tl.to("#cta", { boxShadow: "inset 0 0 0px rgba(255,0,68,0)", duration: 0.8 }, 17.9);
-tl.fromTo(
-  "#cta-t",
-  { opacity: 0, y: 12 },
-  { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", immediateRender: false },
-  17.7,
-);
-tl.fromTo(
-  "#cta-q",
-  { opacity: 0, y: 12 },
-  { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", immediateRender: false },
-  18.0,
-);
-tl.fromTo("#cta-b", { opacity: 0 }, { opacity: 0.7, duration: 0.4, immediateRender: false }, 18.4);
-tl.fromTo(
-  "#cta-q",
+  "#cl3",
   { textShadow: "0 0 0px rgba(0,136,255,0)" },
   { textShadow: "0 0 26px rgba(0,136,255,0.95)", duration: 0.3, immediateRender: false },
-  18.2,
+  17.9,
 );
-tl.to("#cta-q", { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.8 }, 18.6);
-// 19.4 - 21.0: nothing moves. The solved matrix and the CTA hold for the rest of the film (3.5 s from the slide-up at 17.5)
+tl.to("#cl3", { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.8 }, 18.3);
+// 19.1 - 21.0: nothing moves. The solved matrix and the CTA hold; 20.8 - 21.0 is a static zero-delta hold.
 
 window.__timelines = window.__timelines || {};
 window.__timelines["main"] = tl;

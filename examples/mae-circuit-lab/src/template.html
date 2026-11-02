@@ -54,16 +54,15 @@
   #banner { left: 130px; top: 920px; width: 820px; height: 120px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
   .bv { position: absolute; left: 0; top: 0; width: 816px; height: 116px; opacity: 0; }
   #bv-h2 { opacity: 1; }
-  /* hook: crossed-out handwriting + question, shatters into particles at 0.8 s and reveals the line underneath */
-  #hk { position: absolute; left: -2px; top: -2px; width: 820px; height: 120px; z-index: 6; }
-  #hk-bg { position: absolute; left: 0; top: 0; width: 820px; height: 120px; border-radius: 24px; background: #14060c; border: 2px solid rgba(255,0,68,.85); box-shadow: 0 0 26px rgba(255,0,68,.35); }
-  .hk-s { position: absolute; font-size: 24px; color: #fff; opacity: .78; white-space: nowrap; font-weight: 400; }
-  .strike { position: absolute; left: -8px; right: -8px; top: 50%; height: 4px; margin-top: -2px; background: var(--red); border-radius: 2px; }
-  .hk-q { position: absolute; left: 0; top: 58px; width: 760px; text-align: center; font-size: 38px; line-height: 52px; color: #fff; }
-  #hk-x { position: absolute; left: 722px; top: 58px; }
-  #pts { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 35; pointer-events: none; }
-  .pt { position: absolute; opacity: 0; }
-  .bt { position: absolute; left: 0; top: 0; width: 816px; height: 116px; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center; font-size: 34px; line-height: 44px; white-space: nowrap; }
+  /* hook: full-width graphic card inside zone 2 (the plate clips it): crossed-out equations, shatters into shards at 0.8 s */
+  #hkc { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 6; }
+  .sh { position: absolute; background: #14060c; }
+  #hk-bd { position: absolute; left: 2px; top: 2px; width: 892px; height: 542px; border-radius: 30px; border: 3px solid rgba(255,0,68,.85); box-shadow: inset 0 0 40px rgba(255,0,68,.3); }
+  .hk-s { position: absolute; left: 0; width: 900px; text-align: center; font-size: 30px; line-height: 40px; color: #fff; opacity: .85; white-space: nowrap; }
+  .strike { position: absolute; left: 40px; right: 40px; top: 50%; height: 5px; margin-top: -2px; background: var(--red); border-radius: 3px; }
+  #hk-q { position: absolute; left: 0; top: 330px; width: 900px; text-align: center; font-size: 36px; line-height: 60px; color: var(--red); text-shadow: 0 0 24px rgba(255,0,68,.5); white-space: nowrap; }
+  .bt { position: absolute; left: 0; top: 0; width: 816px; height: 116px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; text-align: center; font-size: 34px; line-height: 44px; white-space: nowrap; }
+  .btl { display: flex; align-items: center; justify-content: center; }
   .ic { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
   .bl { position: absolute; left: 0; width: 816px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 32px; white-space: nowrap; }
   .l1 { top: 7px; } .l2 { top: 59px; }
@@ -93,14 +92,15 @@
   /* value clones: lift off a component, project straight into a matrix cell in 0.25 s, then leave the layout (display: none) */
   .xfer { display: none; position: absolute; left: 0; top: 0; width: 130px; height: 56px; text-align: center; font-size: 42px; line-height: 56px; opacity: 0; z-index: 40; text-shadow: 0 0 14px currentColor; font-weight: 400; }
 
-  /* ---------- the CTA expands under the compacted matrix ---------- */
-  #cta { left: 120px; top: 1380px; width: 840px; height: 240px; border-radius: 32px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; }
-  #cta-t, #cta-q, #cta-b { opacity: 0; }
-  #cta-t { position: absolute; left: 0; top: 14px; width: 838px; text-align: center; font-size: 42px; line-height: 52px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); white-space: nowrap; }
-  #cta-t svg { display: inline-block; width: 30px; height: 38px; vertical-align: -6px; margin-left: 10px; }
-  #cta-q { position: absolute; left: 0; top: 84px; width: 838px; text-align: center; font-size: 32px; line-height: 40px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
-  #cta-q svg { display: inline-block; width: 28px; height: 32px; vertical-align: -6px; margin-left: 10px; }
-  #cta-b { position: absolute; left: 0; top: 196px; width: 838px; text-align: center; font-size: 24px; line-height: 30px; color: #fff; }
+  /* ---------- CTA: glass panel in the free space under the matrix (largest panel inside the 90-990 / 1670 safe zone) ---------- */
+  #cta { left: 90px; top: 1376px; width: 900px; height: 290px; border-radius: 36px; background: rgba(30,30,46,.62); border: 1px solid rgba(255,255,255,.14); opacity: 0; }
+  .cl { position: absolute; left: 0; width: 898px; text-align: center; white-space: nowrap; opacity: 0; }
+  #cl1 { top: 12px; font-size: 41.8px; line-height: 52px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
+  #cl2 { top: 64px; font-size: 41.8px; line-height: 52px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
+  #cl2 svg { display: inline-block; width: 30px; height: 38px; vertical-align: -6px; margin-left: 12px; }
+  #cl3 { top: 134px; font-size: 30.9px; line-height: 40px; color: var(--blue); }
+  #cl4 { top: 176px; font-size: 30.9px; line-height: 40px; color: var(--blue); }
+  #cl5 { top: 236px; font-size: 23.6px; line-height: 30px; color: #fff; }
 </style>
 </head>
 <body>
@@ -120,14 +120,11 @@
     <div id="labels">
 {{CIRCUIT_LABELS}}
     </div>
+{{HOOK}}
   </div>
 
   <div id="banner" class="abs">
 {{BANNER}}
-{{HOOK}}
-  </div>
-  <div id="pts" data-layout-ignore>
-{{PARTICLES}}
   </div>
 
   <div id="card" class="abs">
@@ -142,9 +139,11 @@
 {{FLY}}
 
   <div id="cta" class="abs">
-    <div id="cta-t">SAVE THIS FOR YOUR EXAM<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
-    <div id="cta-q">{{CTA_Q}}<svg viewBox="0 0 24 28"><path d="M12 2v18M4 13l8 9 8-9" fill="none" stroke="#0088FF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div id="cta-b">MAE ACADEMY ⋅ CIRCUIT LAB</div>
+    <div id="cl1" class="cl">{{CTA_1}}</div>
+    <div id="cl2" class="cl">{{CTA_2}}<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
+    <div id="cl3" class="cl">{{CTA_3}}</div>
+    <div id="cl4" class="cl">{{CTA_4}}</div>
+    <div id="cl5" class="cl">{{CTA_5}}</div>
   </div>
 
   <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="{{DURATION}}" data-track-index="2" data-volume="1"></audio>
