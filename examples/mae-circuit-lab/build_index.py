@@ -105,12 +105,13 @@ def point_at(pts, d):
     return pts[0]
 
 
-# one clockwise lap per mesh at constant speed. `pin` = (resistor, time): the lap length is solved so the comet touches that
-# resistor exactly on its audio click. Each lap starts as soon as the previous number has landed (zero downtime).
+# One clockwise lap per mesh at constant speed (start corner chosen so the resistors are met in the order of the equation).
+# Each window starts the instant the previous number has landed and finished its 0.3 s impact (zero downtime).
+FLIGHT = 0.45        # seconds a ghost needs to travel from a component into an equation slot
 DIAG = {
-    1: dict(path=["BL", "TL", "TR", "BR"], banner=2.2, start=2.0, pin=("R2", 2.8), lock=3.5, until=4.0),
-    2: dict(path=["TL", "TR", "BR", "BL"], banner=4.0, start=4.0, pin=("R4", 4.8), lock=5.7, until=6.2),
-    3: dict(path=["BL", "TL", "TR", "BR"], banner=6.2, start=6.2, pin=("R5", 7.2), lock=8.0, until=8.5),
+    1: dict(path=["BL", "TL", "TR", "BR"], banner=2.0, start=2.0, end=3.4, lock=3.9, until=4.2),
+    2: dict(path=["BL", "TL", "TR", "BR"], banner=4.2, start=4.2, end=5.7, lock=6.3, until=6.6),
+    3: dict(path=["BL", "TL", "TR", "BR"], banner=6.6, start=6.6, end=8.1, lock=8.5, until=8.8),
 }
 MESH_RES = {1: ["R1", "R2"], 2: ["R2", "R3", "R4"], 3: ["R4", "R5"]}
 MESH_SRC = {1: [("V1", +1), ("V3", -1)], 2: [("V2", -1)], 3: [("V3", +1)]}
@@ -123,9 +124,6 @@ def lap(m, spec):
     seg = seglens(pts)
     total = sum(seg)
     touches = sorted(((arc_pos(pts, BR[r][3]), r) for r in MESH_RES[m]))
-    pr, pt = spec["pin"]
-    d_pin = dict((r, d) for d, r in touches)[pr]
-    spec["end"] = spec["start"] + (pt - spec["start"]) * total / d_pin      # whole lap duration from the pinned touch
     assert spec["end"] < spec["lock"], (m, spec["end"], spec["lock"])        # the lap is finished before the number lands
     t_of = lambda d: spec["start"] + (spec["end"] - spec["start"]) * d / total
     run, cum = 0.0, []
@@ -134,7 +132,7 @@ def lap(m, spec):
         run += L
     ds = sorted({round(x, 3) for x in cum + [total] + [d for d, _ in touches]})
     wps = [dict(d=d, t=round(t_of(d), 4), x=round(point_at(pts, d)[0], 2), y=round(point_at(pts, d)[1], 2)) for d in ds]
-    return dict(pts=[list(p) for p in pts], total=round(total, 2), wps=wps), [dict(res=r, t=round(t_of(d), 3), cued=(r == pr)) for d, r in touches]
+    return dict(pts=[list(p) for p in pts], total=round(total, 2), wps=wps), [dict(res=r, t=round(t_of(d), 3)) for d, r in touches]
 
 
 # ------------------------------------------------------------------ circuit (SVG + KaTeX labels)
@@ -277,6 +275,11 @@ def build_banner():
         sym = "".join(("+" if sg > 0 else "-") + Vl(k[1]) for k, sg in terms)
         numeric = "".join(("-" if sg < 0 else ("+" if i else "")) + str(Vv[k]) for i, (k, sg) in enumerate(terms))
         sign = "+" if (val > 0 and m == 3) else ""
+        if m == 1:      # two terms: "+5" and "-13" fly in from V1 and V3 and meet here, then the result drops into row 1
+            pieces = (piece("v1-p0", vb("1") + "=+" + Vl("1") + "-" + Vl("3") + "=") + piece("v1-n0", "5") + piece("v1-n1", "{}-13")
+                      + piece("v1-f", "=" + bold(volt(val))))
+            sv.append(f'<div id="src-{m}" class="bl l2 vr">{pieces}</div>')
+            continue
         tex = vb(str(m)) + "=" + sym + ("=" + numeric if len(terms) > 1 else "") + "=" + bold(sign + volt(val))
         sv.append(f'<div id="src-{m}" class="bl l2 vr">{K(tex)}</div>')
     h.append(src + "".join(sv) + "</div>")
@@ -301,42 +304,94 @@ def build_overlay():
 
 
 # ------------------------------------------------------------------ choreography
+COMP = {k: (PLATE[0] + BR[k][3][0], PLATE[1] + BR[k][3][1]) for k in BR}          # exact canvas coordinate of every component
+ZERO_SRC = (PLATE[0] + X1, PLATE[1] + 345)       # on the V3 branch, the boundary between mesh 1 and mesh 3 (no resistor lives there)
+
+
+def cell_pt(cid):
+    kind, r, *c = cid.split("-")
+    return cell_abs(int(r), 3 if kind == "v" else int(c[0]))
+
+
+def slot(sel):
+    return {"slot": sel}
+
+
+def at(x, y):
+    return {"x": x, "y": y}
+
+
 def groups(TOUCH):
     G = []
     for m, spec in DIAG.items():
+        cell = f"e-{m-1}-{m-1}"
+        res = sorted(MESH_RES[m])
+        fl = []
+        for k, t in enumerate(TOUCH[m]):             # a ghost of each touched value lifts off its resistor into its term
+            fl.append(dict(id=f"gh-d{m}-{k}", text=str(Rv[t["res"]]), cls="d", t0=t["t"], t1=round(t["t"] + FLIGHT, 3),
+                           src=at(*COMP[t["res"]]), tgt=slot(f"#d{m}-n{res.index(t['res'])}"), merge=res.index(t["res"])))
+        fl.append(dict(id=f"gh-d{m}-r", text=n(A0[m - 1][m - 1]), cls="d", t0=round(spec["lock"] - 0.3, 3), t1=spec["lock"],
+                       src=slot(f"#d{m}-f"), tgt=at(*cell_pt(cell))))
         G.append(dict(id=f"d{m}", kind="diag", color=BLUE, mesh=m, banner=spec["banner"], start=spec["start"], end=spec["end"], lock=spec["lock"], until=spec["until"],
-                      cells=[f"e-{m-1}-{m-1}"], res=sorted(MESH_RES[m]), touches=TOUCH[m], text=n(A0[m - 1][m - 1])))
-    for (i, j), (banner, lock, until) in zip(((1, 2), (2, 3), (1, 3)), ((8.5, 8.8, 9.8), (9.8, 10.0, 11.0), (11.0, 11.2, 12.0))):
+                      cells=[cell], res=res, touches=TOUCH[m], flights=fl))
+    for (i, j), (banner, launch, lock, until) in zip(((1, 2), (2, 3), (1, 3)), ((8.8, 9.3, 9.9, 10.3), (10.3, 10.8, 11.4, 11.8), (11.8, 12.0, 12.4, 12.8))):
         sh = SHARED[(i, j)]
         val = -Rv[sh] if sh else 0
-        G.append(dict(id=f"o{i}{j}", kind="off" if sh else "zero", color=PURPLE, banner=banner, start=banner, lock=lock, until=until,
-                      cells=[f"e-{i-1}-{j-1}", f"e-{j-1}-{i-1}"], shared=sh, text=n(val)))
-    for m, (banner, lock, until) in zip((1, 2, 3), ((12.0, 12.4, 13.2), (13.2, 13.5, 14.3), (14.3, 14.6, 15.5))):
-        terms = MESH_SRC[m]
-        val = sum(sg * Vv[k] for k, sg in terms)
-        G.append(dict(id=f"v{m}", kind="src", color=RED, mesh=m, banner=banner, start=banner, lock=lock, until=until, cells=[f"v-{m-1}"],
-                      src=[k for k, _ in terms], text=n(val)))
+        cells = [f"e-{i-1}-{j-1}", f"e-{j-1}-{i-1}"]
+        src = at(*COMP[sh]) if sh else at(*ZERO_SRC)
+        fl = [dict(id=f"gh-o{i}{j}-{k}", text=n(val), cls="p" if sh else "z", t0=launch, t1=lock, src=src, tgt=at(*cell_pt(c))) for k, c in enumerate(cells)]
+        G.append(dict(id=f"o{i}{j}", kind="off" if sh else "zero", color=PURPLE, banner=banner, start=banner, lock=lock, until=until, cells=cells, shared=sh, flights=fl))
+    # sources: v1 = two ghosts into the equation, then the result drops; v2 and v3 fly straight from their source into their row
+    v1 = dict(id="v1", kind="src", color=RED, mesh=1, banner=12.8, start=12.8, lock=13.9, until=14.2, cells=["v-0"], src=["V1", "V3"], flights=[
+        dict(id="gh-v1-0", text="+5", cls="s", t0=12.9, t1=13.35, src=at(*COMP["V1"]), tgt=slot("#v1-n0"), merge="v1-n0"),
+        dict(id="gh-v1-1", text="-13", cls="s", t0=13.0, t1=13.45, src=at(*COMP["V3"]), tgt=slot("#v1-n1"), merge="v1-n1"),
+        dict(id="gh-v1-r", text="-8", cls="s", t0=13.6, t1=13.9, src=slot("#v1-f"), tgt=at(*cell_pt("v-0")))])
+    v2 = dict(id="v2", kind="src", color=RED, mesh=2, banner=14.2, start=14.2, lock=15.0, until=15.3, cells=["v-1"], src=["V2"], flights=[
+        dict(id="gh-v2-0", text="-16", cls="s", t0=14.4, t1=15.0, src=at(*COMP["V2"]), tgt=at(*cell_pt("v-1")))])
+    v3 = dict(id="v3", kind="src", color=RED, mesh=3, banner=15.3, start=15.3, lock=16.1, until=16.5, cells=["v-2"], src=["V3"], flights=[
+        dict(id="gh-v3-0", text="+13", cls="s", t0=15.5, t1=16.1, src=at(*COMP["V3"]), tgt=at(*cell_pt("v-2")))])
+    for g, val in ((v1, -8), (v2, -16), (v3, 13)):
+        assert b0[g["mesh"] - 1] == val == sum(sg * Vv[k] for k, sg in MESH_SRC[g["mesh"]])
+    G += [v1, v2, v3]
     return G
+
+
+def build_cues(G):
+    """The audio schedule, derived from the very same data the picture uses: engage click at the start of each window,
+    a whoosh when a ghost lifts off, a click when it lands in an equation slot, a snap (thump for v3) when a value locks."""
+    C = {(0.0, "thump"), (1.2, "snap"), (16.5, "thump"), (17.5, "snap"), (18.2, "click")}
+    for g in G:
+        C.add((round(g["start"], 3), "click"))
+        for f in g["flights"]:
+            C.add((f["t0"], "whoosh"))
+            if "slot" in f["tgt"]:
+                C.add((f["t1"], "click"))
+        C.add((g["lock"], "thump" if g["id"] == "v3" else ("click" if g["kind"] == "zero" else "snap")))
+    return sorted(C)
+
+
+def write_cues(cues):
+    p = HERE / "src" / "timeline.js"
+    js = p.read_text()
+    block = "// @CUES-BEGIN\nconst CUES = [\n" + "".join(f'  [{t!r}, "{v}"],\n' for t, v in cues) + "];\n// @CUES-END"
+    js2 = re.sub(r"// @CUES-BEGIN.*?// @CUES-END", lambda m: block, js, flags=re.S)
+    if js2 != js:
+        p.write_text(js2)
 
 
 def main():
     local = "--local" in sys.argv
     svg, labels, LAPS, TOUCH = build_circuit()
     G = groups(TOUCH)
-    fly = []
+    ghosts = []
     for g in G:
-        cls = {"diag": "d", "off": "p", "zero": "p", "src": "s"}[g["kind"]]
-        g["drops"] = []
-        for k, cid in enumerate(g["cells"] if g["kind"] != "src" else []):
-            r, c = int(cid.split("-")[1]), (int(cid.split("-")[2]) if cid.startswith("e") else 3)
-            tx, ty = cell_abs(r, c)
-            fid = f"fly-{g['id']}-{k}"
-            fly.append(f'<div id="{fid}" class="fly {cls}" style="left:{tx-65}px;top:{ty-28}px">{K(bold(g["text"]))}</div>')
-            x0 = BANNER_C[0] + (100 if g["kind"] == "diag" else (12 if k else -12))   # a sum falls from where its result is written
-            g["drops"].append(dict(id=fid, dx=x0 - tx, dy=BANNER_C[1] + 16 - ty))
+        for f in g["flights"]:
+            f["cls"] = f["cls"]
+            ghosts.append(f'<div id="{f["id"]}" class="ghost {f["cls"]}">{K(bold(f["text"].replace("-", "-")))}</div>')
         if g["kind"] == "diag":
             for t in g["touches"]:
                 t["idx"] = g["res"].index(t["res"])       # which term of the equation this resistor ignites
+    write_cues(build_cues(G))
     overlay_inner, base_rot = build_overlay()
     data = dict(END=CONFIG["DURATION"], groups=G, tracers=LAPS, base_rot=base_rot)
     css = (HERE / "scripts" / "vendor" / "katex.min.css").read_text()
@@ -355,7 +410,7 @@ def main():
     repl = {"DURATION": f"{CONFIG['DURATION']:g}", "GSAP_SRC": "assets/gsap.min.js" if local else GSAP_CDN,
             "KATEX_CSS": "\n".join(faces) + "\n" + rules, "CIRCUIT_SVG": svg, "CIRCUIT_LABELS": labels, "MATRIX": build_matrix(),
             "BRACKETS": brackets(), "BANNER": build_banner(), "OVERLAY": overlay_inner,
-            "FLY": "\n".join(fly),
+            "FLY": "\n".join(ghosts),
             "HEAD_EQ": K(bold("R") + r"\cdot" + bold("I") + "=" + bold("V")),
             "CTA_Q": K(r"\textbf{CAN YOU CALCULATE }" + Il("1") + r"\textbf{?}") + "<br>" + K(r"\textbf{COMMENT BELOW}"),
             "DATA_JSON": json.dumps(data), "TIMELINE_JS": (HERE / "src" / "timeline.js").read_text()}

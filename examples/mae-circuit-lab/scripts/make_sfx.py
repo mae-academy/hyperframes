@@ -11,6 +11,8 @@ Voices (no two cues are identical: each one is varied by a seeded RNG, so there 
   snap  = a sharp tactile gate closing, centred on 2400 Hz (noise transient + 2400 Hz / 3600 Hz ring), over a cinematic
           55 Hz sub-bass boom so every matrix lock is felt.
   thump = deep resonant sub-bass impact: 55 Hz sine falling from ~110 Hz, long tail, soft low rumble.
+  whoosh = the micro-tone of a ghost number travelling from the circuit to its slot: a rising exponential gliss (about 380 to 1700 Hz)
+          with a swept band of air, 0.5 s. It is followed by the click (equation slot) or the snap (matrix cell) when the ghost lands.
 """
 import re
 from pathlib import Path
@@ -20,7 +22,7 @@ from scipy.signal import butter, sosfilt
 
 HERE = Path(__file__).resolve().parent.parent
 SR = 48000
-GAIN = {"click": 0.34, "snap": 0.40, "thump": 0.56}      # peak amplitude of each voice before the bed is added
+GAIN = {"click": 0.34, "snap": 0.40, "thump": 0.56, "whoosh": 0.24}      # peak amplitude of each voice before the bed is added
 rng_master = np.random.default_rng(2026)
 
 
@@ -97,6 +99,16 @@ def voice(name, rng):
         sos = butter(2, 140, btype="low", fs=SR, output="sos")
         out += 0.25 * sosfilt(sos, rng.standard_normal(n)) * np.exp(-t / 0.2)               # soft rumble
         return out * rng.uniform(0.92, 1.0)
+    if name == "whoosh":                                      # gliss + swept air: the ghost lifts off and travels
+        dur = 0.5
+        n = int(dur * SR)
+        t = tt(n)
+        f0, f1 = 380 * (1 + rng.uniform(-0.1, 0.1)), 1700 * (1 + rng.uniform(-0.1, 0.1))
+        f = f0 * (f1 / f0) ** (t / dur)                        # exponential gliss
+        env_ = np.minimum(t / 0.09, 1.0) * np.exp(-((t - 0.2) / 0.22) ** 2 * 0 - np.maximum(t - 0.2, 0) / 0.16)
+        tone_ = np.sin(2 * np.pi * np.cumsum(f) / SR) * env_
+        air = sosfilt(butter(2, [600, 5200], btype="band", fs=SR, output="sos"), rng.standard_normal(n)) * env_
+        return tone_ + 0.35 * air / (np.max(np.abs(air)) + 1e-9)
     raise ValueError(name)
 
 
