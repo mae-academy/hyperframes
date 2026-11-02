@@ -18,7 +18,7 @@
     background-size: 60px 60px; }
   #root div, #root svg { box-sizing: border-box; }
   .abs { position: absolute; }
-  .katex { font-size: 1.1em; }
+  .katex { font-size: 1.1em; font-weight: 400; }
 
   /* ---------- zone 1: header, centred on x = 540 ---------- */
   #hdr { left: 0; top: 110px; width: 1080px; height: 200px; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -41,22 +41,28 @@
   .marc { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; }
   .mhead { fill: var(--blue); }
   .lb { position: absolute; color: #fff; white-space: nowrap; }
-  .elabel { font-size: 24px; } .mlabel { font-size: 34px; } .gtag { font-size: 22px; opacity: .85; }
+  .elabel { font-size: 24px; }
+  .lp { display: inline-block; }
+  .lnum { display: inline-block; margin: 0 1px 0 6px; } .mlabel { font-size: 34px; } .gtag { font-size: 22px; opacity: .85; }
   .trail { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
   .perim { fill: none; stroke: var(--blue); stroke-width: 3; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 10px rgba(0,136,255,.95)); }
   .head { opacity: 0; }
 
-  /* hook overlay: four crossed-out KVL equations, then it dissolves */
-  #ov { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 8; background: rgba(10,10,16,.74); }
-  .mess { position: absolute; color: #fff; opacity: .7; white-space: nowrap; transform-origin: left center; }
   .strike { position: absolute; left: -10px; right: -10px; top: 50%; height: 5px; margin-top: -2px; background: var(--red); border-radius: 3px; }
-  .ovq { position: absolute; font-size: 38px; line-height: 50px; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.8); }
-  .ovx { position: absolute; }
 
   /* ---------- zone 3: the arithmetic banner, 820 x 110 ---------- */
   #banner { left: 130px; top: 920px; width: 820px; height: 120px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
   .bv { position: absolute; left: 0; top: 0; width: 816px; height: 116px; opacity: 0; }
-  #bv-h1 { opacity: 1; }
+  #bv-h2 { opacity: 1; }
+  /* hook: crossed-out handwriting + question, shatters into particles at 0.8 s and reveals the line underneath */
+  #hk { position: absolute; left: -2px; top: -2px; width: 820px; height: 120px; z-index: 6; }
+  #hk-bg { position: absolute; left: 0; top: 0; width: 820px; height: 120px; border-radius: 24px; background: #14060c; border: 2px solid rgba(255,0,68,.85); box-shadow: 0 0 26px rgba(255,0,68,.35); }
+  .hk-s { position: absolute; font-size: 24px; color: #fff; opacity: .78; white-space: nowrap; font-weight: 400; }
+  .strike { position: absolute; left: -8px; right: -8px; top: 50%; height: 4px; margin-top: -2px; background: var(--red); border-radius: 2px; }
+  .hk-q { position: absolute; left: 0; top: 58px; width: 760px; text-align: center; font-size: 38px; line-height: 52px; color: #fff; }
+  #hk-x { position: absolute; left: 722px; top: 58px; }
+  #pts { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 35; pointer-events: none; }
+  .pt { position: absolute; opacity: 0; }
   .bt { position: absolute; left: 0; top: 0; width: 816px; height: 116px; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center; font-size: 34px; line-height: 44px; white-space: nowrap; }
   .ic { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
   .bl { position: absolute; left: 0; width: 816px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 32px; white-space: nowrap; }
@@ -74,7 +80,7 @@
   .cell { position: absolute; width: 120px; height: 68px; text-align: center; }
   .vcol { position: absolute; width: 120px; height: 204px; display: grid; grid-template-rows: repeat(3, 68px); grid-template-columns: 120px; }
   .vcol .cell { position: relative; left: auto; top: auto; }
-  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 68px; line-height: 68px; white-space: nowrap; font-weight: 700; }
+  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 68px; line-height: 68px; white-space: nowrap; font-weight: 400; }
   .cell .ghost { font-size: 35px; opacity: .45; }
   .cell .val { font-size: 42px; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
@@ -85,16 +91,16 @@
 
   /* ---------- drops: a value falls from the banner into its cell ---------- */
   /* value clones: lift off a component, project straight into a matrix cell in 0.25 s, then leave the layout (display: none) */
-  .xfer { display: none; position: absolute; left: 0; top: 0; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 40; text-shadow: 0 0 14px currentColor; }
+  .xfer { display: none; position: absolute; left: 0; top: 0; width: 130px; height: 56px; text-align: center; font-size: 42px; line-height: 56px; opacity: 0; z-index: 40; text-shadow: 0 0 14px currentColor; font-weight: 400; }
 
   /* ---------- the CTA expands under the compacted matrix ---------- */
   #cta { left: 120px; top: 1380px; width: 840px; height: 240px; border-radius: 32px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; }
   #cta-t, #cta-q, #cta-b { opacity: 0; }
-  #cta-t { position: absolute; left: 0; top: 10px; width: 838px; text-align: center; font-size: 40px; line-height: 48px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
+  #cta-t { position: absolute; left: 0; top: 14px; width: 838px; text-align: center; font-size: 42px; line-height: 52px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); white-space: nowrap; }
   #cta-t svg { display: inline-block; width: 30px; height: 38px; vertical-align: -6px; margin-left: 10px; }
-  #cta-q { position: absolute; left: 0; top: 112px; width: 838px; text-align: center; font-size: 32px; line-height: 40px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
+  #cta-q { position: absolute; left: 0; top: 84px; width: 838px; text-align: center; font-size: 32px; line-height: 40px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
   #cta-q svg { display: inline-block; width: 28px; height: 32px; vertical-align: -6px; margin-left: 10px; }
-  #cta-b { position: absolute; left: 0; top: 204px; width: 838px; text-align: center; font-size: 24px; line-height: 30px; color: #fff; }
+  #cta-b { position: absolute; left: 0; top: 196px; width: 838px; text-align: center; font-size: 24px; line-height: 30px; color: #fff; }
 </style>
 </head>
 <body>
@@ -114,13 +120,14 @@
     <div id="labels">
 {{CIRCUIT_LABELS}}
     </div>
-    <div id="ov" data-layout-ignore>
-{{OVERLAY}}
-    </div>
   </div>
 
   <div id="banner" class="abs">
 {{BANNER}}
+{{HOOK}}
+  </div>
+  <div id="pts" data-layout-ignore>
+{{PARTICLES}}
   </div>
 
   <div id="card" class="abs">
@@ -135,9 +142,9 @@
 {{FLY}}
 
   <div id="cta" class="abs">
-    <div id="cta-t">SAVE THIS TRICK FOR YOUR<br>NEXT EXAM<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
+    <div id="cta-t">SAVE THIS FOR YOUR EXAM<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
     <div id="cta-q">{{CTA_Q}}<svg viewBox="0 0 24 28"><path d="M12 2v18M4 13l8 9 8-9" fill="none" stroke="#0088FF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div id="cta-b">MAE ACADEMY ⋅ CIRCUIT THEORY</div>
+    <div id="cta-b">MAE ACADEMY ⋅ CIRCUIT LAB</div>
   </div>
 
   <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="{{DURATION}}" data-track-index="2" data-volume="1"></audio>

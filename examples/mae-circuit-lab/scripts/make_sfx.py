@@ -4,13 +4,12 @@
 Timing comes ONLY from the CUES array (between @CUES-BEGIN / @CUES-END) in src/timeline.js: [[seconds, "voice"], ...].
 Length = the root data-duration in index.html, so audio and video always have the same length.
 
-Pure tactile lab acoustics. There are NO pitch bends, NO slides, NO chirps and no sweeps anywhere in this file:
-every voice is a fixed-frequency, instantly decaying transient.
+Sound exists ONLY for physical things. There is no sound for a mathematical operator, a text change or a transition, and no whoosh,
+slide, chirp or pitch movement anywhere: every voice is a fixed-frequency, instantly decaying transient.
 
   bed   : continuous 50 Hz stereo hum at -22 dBFS peak, unbroken from 0.0 s to the end (no silent gap).
-  click : sharp mechanical relay / switch transient   1800 Hz sine x exp(-t/3 ms), 20 ms.
-  snap  : high-frequency tactile contact              (2400 Hz sine + 0.5 x gaussian noise) x exp(-t/5 ms), 35 ms.
-  thump : deep sub-bass matrix-lock impact            55 Hz sine x exp(-t/20 ms), 80 ms.
+  click : one crisp mechanical relay click per component pop     1800 Hz sine x exp(-t/3 ms), 15 ms.
+  thump : one deep clean sub-bass hit when a matrix row or the vector completes     55 Hz sine x exp(-t/40 ms).
 """
 import re
 from pathlib import Path
@@ -20,7 +19,7 @@ from scipy.io import wavfile
 HERE = Path(__file__).resolve().parent.parent
 SR = 48000
 sample_rate = SR
-GAIN = {"click": 0.40, "snap": 0.34, "thump": 0.45}      # peak amplitude of each voice before the bed is added
+GAIN = {"click": 0.45, "thump": 0.60}      # peak amplitude of each voice before the bed is added
 
 
 def read_cues():
@@ -36,17 +35,14 @@ def read_duration():
     return float(re.search(r'id="root"[^>]*data-duration="([\d.]+)"', html).group(1))
 
 
-def voice(name, rng):
+def voice(name):
     if name == "click":
-        t = np.linspace(0, 0.02, int(sample_rate * 0.02), endpoint=False)
+        t = np.linspace(0, 0.015, int(sample_rate * 0.015), endpoint=False)
         return np.sin(2 * np.pi * 1800 * t) * np.exp(-t / 0.003)
-    if name == "snap":
-        t = np.linspace(0, 0.035, int(sample_rate * 0.035), endpoint=False)
-        return (np.sin(2 * np.pi * 2400 * t) + 0.5 * rng.normal(0, 0.3, len(t))) * np.exp(-t / 0.005)
     if name == "thump":
-        t = np.linspace(0, 0.08, int(sample_rate * 0.08), endpoint=False)
-        return np.sin(2 * np.pi * 55 * t) * np.exp(-t / 0.02)
-    raise ValueError(f"unknown voice {name!r} (only click, snap and thump exist)")
+        t = np.linspace(0, 0.20, int(sample_rate * 0.20), endpoint=False)       # 5 time constants: the 40 ms decay has died away
+        return np.sin(2 * np.pi * 55 * t) * np.exp(-t / 0.04)
+    raise ValueError(f"unknown voice {name!r} (only click and thump exist)")
 
 
 def main():
@@ -56,10 +52,9 @@ def main():
     t = np.arange(n) / SR
     bed = 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
     L, R = bed.copy(), bed.copy()
-    rng = np.random.default_rng(2026)                        # seeded: the noise in every snap is the same on every build
     for i, (ct, name) in enumerate(cues):
         assert 0 <= ct < dur, (ct, name)
-        w = voice(name, rng)
+        w = voice(name)
         w = w / (np.max(np.abs(w)) + 1e-9) * GAIN[name]
         s = int(round(ct * SR))
         e = min(n, s + len(w))
@@ -71,7 +66,8 @@ def main():
     pcm = (np.stack([L, R], 1) * 32767).astype("<i2")
     out = HERE / "assets" / "sfx.wav"
     wavfile.write(str(out), SR, pcm)
-    print(f"wrote {out.name}: {n/SR:.3f} s, {len(cues)} cues, peak {20*np.log10(peak):.1f} dBFS, hum 50 Hz at -22 dBFS")
+    kinds = {v: sum(1 for _, x in cues if x == v) for v in ("click", "thump")}
+    print(f"wrote {out.name}: {n/SR:.3f} s, cues {kinds}, peak {20*np.log10(peak):.1f} dBFS, hum 50 Hz at -22 dBFS")
 
 
 if __name__ == "__main__":
