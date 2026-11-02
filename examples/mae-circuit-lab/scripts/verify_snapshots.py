@@ -11,8 +11,8 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent.parent
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else HERE / "snapshots")
-END = 26.0
-times = sorted({round(0.6 * i, 2) for i in range(0, 44)} | {0.0, 1.0, 2.5, 4.4, 5.5, 7.0, 8.5, 12.0, 14.0, 16.0, 18.0, 20.0, 21.6, 22.4, 23.0, 25.99})
+END = 20.0
+times = sorted({round(0.6 * i, 2) for i in range(0, 34)} | {0.0, 1.35, 1.8, 3.3, 4.5, 7.7, 9.0, 11.4, 12.7, 15.45, 15.85, 16.4, 17.0, 17.8, 19.99})
 times = [t for t in times if t < END]
 OUT.mkdir(exist_ok=True, parents=True)
 for f in OUT.glob("*.png"): f.unlink()
@@ -51,9 +51,9 @@ for p in sorted(OUT.glob("at-*s.png"), key=lambda q: float(q.stem[3:-1])):
 post = [r["circuit_lit"] for r in rows if r["t"] >= 3.2]
 ref = float(np.median(post))
 for r in rows:
-    if r["t"] >= 3.2 and r["circuit_lit"] < 0.8 * ref:
+    if r["t"] >= 1.8 and r["circuit_lit"] < 0.8 * ref:
         fails.append((r["t"], "circuit dimmed/hidden", r["circuit_lit"]))
-print(f"circuit-lit fraction after 3.2 s: min {min(post):.4f}, median {ref:.4f}")
+print(f"circuit-lit fraction after 1.8 s: min {min(post):.4f}, median {ref:.4f}")
 (HERE / "reports" / "snapshot-verification.json").write_text(json.dumps(rows, indent=1))
 print(f"{len(rows)} snapshots checked; failures: {len(fails)}")
 for f in fails: print("  FAIL", f)

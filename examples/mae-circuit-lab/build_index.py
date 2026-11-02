@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generates index.html from src/template.html + src/timeline.js  ("THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS", 1080x1920, 26 s).
+"""Generates index.html from src/template.html + src/timeline.js  ("THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS", 1080x1920, 20 s).
 
     python3 build_index.py            # ships the cdnjs GSAP tag
     python3 build_index.py --local    # points the GSAP tag at assets/gsap.min.js (offline verification only)
@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / "scripts"))
 from solve import solve_mesh  # noqa: E402
 
-CONFIG = dict(DURATION=26.0, R=[2, 2, 3, 4, 1], V=[5, 16, 13])   # kOhm, volts
+CONFIG = dict(DURATION=20.0, R=[2, 2, 3, 4, 1], V=[5, 16, 13])   # kOhm, volts
 GSAP_CDN = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
 BLUE, PURPLE, RED = "#0088FF", "#B026FF", "#FF0044"
 Rv = dict(zip(["R1", "R2", "R3", "R4", "R5"], CONFIG["R"]))
@@ -105,11 +105,12 @@ def point_at(pts, d):
     return pts[0]
 
 
-# one clockwise lap per mesh at constant speed; the start corner spreads the resistors along the lap
+# one clockwise lap per mesh at constant speed. `pin` = (resistor, time): the lap length is solved so the comet touches that
+# resistor exactly on its audio click. Each lap starts as soon as the previous number has landed (zero downtime).
 DIAG = {
-    1: dict(path=["BL", "TL", "TR", "BR"], banner=3.0, start=3.2, end=5.0, lock=5.4, until=5.8),
-    2: dict(path=["TL", "TR", "BR", "BL"], banner=5.8, start=6.0, end=7.9, lock=8.2, until=8.6),
-    3: dict(path=["TL", "TR", "BR", "BL"], banner=8.6, start=8.8, end=10.7, lock=11.0, until=11.5),
+    1: dict(path=["BL", "TL", "TR", "BR"], banner=2.0, start=2.0, pin=("R2", 2.8), lock=3.5, until=4.0),
+    2: dict(path=["TL", "TR", "BR", "BL"], banner=4.0, start=4.0, pin=("R4", 4.8), lock=5.7, until=6.2),
+    3: dict(path=["BL", "TL", "TR", "BR"], banner=6.2, start=6.2, pin=("R5", 7.2), lock=8.0, until=8.5),
 }
 MESH_RES = {1: ["R1", "R2"], 2: ["R2", "R3", "R4"], 3: ["R4", "R5"]}
 MESH_SRC = {1: [("V1", +1), ("V3", -1)], 2: [("V2", -1)], 3: [("V3", +1)]}
@@ -121,15 +122,19 @@ def lap(m, spec):
     pts = [c[k] for k in spec["path"]]
     seg = seglens(pts)
     total = sum(seg)
-    t_of = lambda d: spec["start"] + (spec["end"] - spec["start"]) * d / total
     touches = sorted(((arc_pos(pts, BR[r][3]), r) for r in MESH_RES[m]))
+    pr, pt = spec["pin"]
+    d_pin = dict((r, d) for d, r in touches)[pr]
+    spec["end"] = spec["start"] + (pt - spec["start"]) * total / d_pin      # whole lap duration from the pinned touch
+    assert spec["end"] < spec["lock"], (m, spec["end"], spec["lock"])        # the lap is finished before the number lands
+    t_of = lambda d: spec["start"] + (spec["end"] - spec["start"]) * d / total
     run, cum = 0.0, []
     for L in seg:
         cum.append(run)
         run += L
     ds = sorted({round(x, 3) for x in cum + [total] + [d for d, _ in touches]})
     wps = [dict(d=d, t=round(t_of(d), 4), x=round(point_at(pts, d)[0], 2), y=round(point_at(pts, d)[1], 2)) for d in ds]
-    return dict(pts=[list(p) for p in pts], total=round(total, 2), wps=wps), [dict(res=r, t=round(t_of(d), 3)) for d, r in touches]
+    return dict(pts=[list(p) for p in pts], total=round(total, 2), wps=wps), [dict(res=r, t=round(t_of(d), 3), cued=(r == pr)) for d, r in touches]
 
 
 # ------------------------------------------------------------------ circuit (SVG + KaTeX labels)
@@ -229,8 +234,13 @@ def piece(pid, tex, cls="pc"):
     return f'<span id="{pid}" class="{cls}">{K(tex)}</span>'
 
 
+BOLT = '<svg class="ic" viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#fff"/></svg>'
+
+
 def build_banner():
-    h = ['<div id="bv-0" class="bv"><div class="bt">BUILD THE R-MATRIX IN SECONDS<br>BY SIGHT <svg class="ic" viewBox="0 0 24 24"><path d="M13.5 2 5 13.2h6L9.8 22 19 10.2h-6.2L13.5 2z" fill="#fff"/></svg></div></div>']
+    h = ['<div id="bv-h1" class="bv"><div class="bt">' + K(r"\mathbf{15\ MINUTES\ OF\ KVL\ ALGEBRA?\ \times}") + '</div></div>',
+         '<div id="bv-h2" class="bv"><div class="bt">' + K(r"\mathbf{BUILD\ THE\ R}\text{-}\mathbf{MATRIX\ BY\ SIGHT}") + BOLT + '</div></div>',
+         '<div id="bv-fin" class="bv"><div class="bt">' + K(r"\mathbf{R}\cdot\mathbf{I}=\mathbf{V}\quad\textbf{[SYSTEM\ FULLY\ SOLVED}") + BOLT + K(r"\textbf{]}") + '</div></div>']
     for m, spec in DIAG.items():
         res = sorted(MESH_RES[m])
         assert A0[m - 1][m - 1] == sum(Rv[k] for k in res)
@@ -283,8 +293,7 @@ def build_overlay():
     h = []
     for i, (tex, x, y, fs) in enumerate(lines):
         h.append(f'<div id="ms-{i}" class="mess" style="left:{x}px;top:{y}px;font-size:{fs}px">{K(tex)}<i class="strike"></i></div>')
-    h.append('<div class="ovq" style="left:40px;top:372px;width:720px;text-align:left">15 MINUTES OF KVL ALGEBRA?</div>')
-    h.append('<svg class="ovx" style="left:770px;top:372px" width="86" height="86" viewBox="0 0 86 86"><rect x="3" y="3" width="80" height="80" rx="16" fill="#FF0044"/>'
+    h.append('<svg class="ovx" style="left:407px;top:378px" width="86" height="86" viewBox="0 0 86 86"><rect x="3" y="3" width="80" height="80" rx="16" fill="#FF0044"/>'
              '<path d="M24 24 L62 62 M62 24 L24 62" stroke="#fff" stroke-width="10" stroke-linecap="round"/></svg>')
     return "\n".join(h), [-2.5, 1.8, -1.4, 2.6]
 
@@ -295,15 +304,15 @@ def groups(TOUCH):
     for m, spec in DIAG.items():
         G.append(dict(id=f"d{m}", kind="diag", color=BLUE, mesh=m, banner=spec["banner"], start=spec["start"], end=spec["end"], lock=spec["lock"], until=spec["until"],
                       cells=[f"e-{m-1}-{m-1}"], res=sorted(MESH_RES[m]), touches=TOUCH[m], text=n(A0[m - 1][m - 1])))
-    for (i, j), (banner, pulse, lock, until) in zip(((1, 2), (2, 3), (1, 3)), ((11.5, 11.8, 13.2, 13.5), (13.5, 13.8, 14.9, 15.2), (15.2, 15.5, 16.2, 16.5))):
+    for (i, j), (banner, lock, until) in zip(((1, 2), (2, 3), (1, 3)), ((8.5, 8.8, 9.8), (9.8, 10.0, 11.0), (11.0, 11.2, 12.0))):
         sh = SHARED[(i, j)]
         val = -Rv[sh] if sh else 0
-        G.append(dict(id=f"o{i}{j}", kind="off" if sh else "zero", color=PURPLE, banner=banner, start=pulse, lock=lock, until=until,
+        G.append(dict(id=f"o{i}{j}", kind="off" if sh else "zero", color=PURPLE, banner=banner, start=banner, lock=lock, until=until,
                       cells=[f"e-{i-1}-{j-1}", f"e-{j-1}-{i-1}"], shared=sh, text=n(val)))
-    for m, (banner, hl, lock, until) in zip((1, 2, 3), ((16.5, 16.8, 17.9, 18.2), (18.2, 18.5, 19.5, 19.8), (19.8, 20.1, 21.2, 21.5))):
+    for m, (banner, lock, until) in zip((1, 2, 3), ((12.0, 12.4, 13.2), (13.2, 13.5, 14.3), (14.3, 14.6, 15.5))):
         terms = MESH_SRC[m]
         val = sum(sg * Vv[k] for k, sg in terms)
-        G.append(dict(id=f"v{m}", kind="src", color=RED, mesh=m, banner=banner, start=hl, lock=lock, until=until, cells=[f"v-{m-1}"],
+        G.append(dict(id=f"v{m}", kind="src", color=RED, mesh=m, banner=banner, start=banner, lock=lock, until=until, cells=[f"v-{m-1}"],
                       src=[k for k, _ in terms], text=n(val)))
     return G
 
@@ -312,7 +321,7 @@ def main():
     local = "--local" in sys.argv
     svg, labels, LAPS, TOUCH = build_circuit()
     G = groups(TOUCH)
-    fly, pills = [], []
+    fly = []
     for g in G:
         cls = {"diag": "d", "off": "p", "zero": "p", "src": "s"}[g["kind"]]
         g["drops"] = []
@@ -321,13 +330,11 @@ def main():
             tx, ty = cell_abs(r, c)
             fid = f"fly-{g['id']}-{k}"
             fly.append(f'<div id="{fid}" class="fly {cls}" style="left:{tx-65}px;top:{ty-28}px">{K(bold(g["text"]))}</div>')
-            g["drops"].append(dict(id=fid, dx=BANNER_C[0] + (12 if k else -12) - tx, dy=BANNER_C[1] + 16 - ty))
+            x0 = BANNER_C[0] + (100 if g["kind"] == "diag" else (12 if k else -12))   # a sum falls from where its result is written
+            g["drops"].append(dict(id=fid, dx=x0 - tx, dy=BANNER_C[1] + 16 - ty))
         if g["kind"] == "diag":
-            for i, t in enumerate(g["touches"]):
-                sx, sy = PLATE[0] + BR[t["res"]][3][0], PLATE[1] + BR[t["res"]][3][1]
-                pid = f"pill-{g['id']}-{i}"
-                pills.append(f'<div id="{pid}" class="pill" style="left:{BANNER_C[0]-62}px;top:{BANNER_C[1]-36}px">{K(kohm(Rv[t["res"]]))}</div>')
-                t.update(pill=pid, dx=sx - BANNER_C[0], dy=sy - (BANNER_C[1] - 12), idx=g["res"].index(t["res"]))
+            for t in g["touches"]:
+                t["idx"] = g["res"].index(t["res"])       # which term of the equation this resistor ignites
     overlay_inner, base_rot = build_overlay()
     data = dict(END=CONFIG["DURATION"], groups=G, tracers=LAPS, base_rot=base_rot)
     css = (HERE / "scripts" / "vendor" / "katex.min.css").read_text()
@@ -346,7 +353,7 @@ def main():
     repl = {"DURATION": f"{CONFIG['DURATION']:g}", "GSAP_SRC": "assets/gsap.min.js" if local else GSAP_CDN,
             "KATEX_CSS": "\n".join(faces) + "\n" + rules, "CIRCUIT_SVG": svg, "CIRCUIT_LABELS": labels, "MATRIX": build_matrix(),
             "BRACKETS": brackets(), "BANNER": build_banner(), "OVERLAY": overlay_inner,
-            "FLY": "\n".join(fly + pills),
+            "FLY": "\n".join(fly),
             "HEAD_EQ": K(bold("R") + r"\cdot" + bold("I") + "=" + bold("V")),
             "CTA_Q": K(r"\textbf{CAN YOU CALCULATE }" + Il("1") + r"\textbf{?}") + "<br>" + K(r"\textbf{COMMENT BELOW}"),
             "DATA_JSON": json.dumps(data), "TIMELINE_JS": (HERE / "src" / "timeline.js").read_text()}
