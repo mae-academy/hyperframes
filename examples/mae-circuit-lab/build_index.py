@@ -105,13 +105,13 @@ def point_at(pts, d):
     return pts[0]
 
 
-# One clockwise lap per mesh at constant speed (start corner chosen so the resistors are met in the order of the equation).
-# Each window starts the instant the previous number has landed and finished its 0.3 s impact (zero downtime).
-FLIGHT = 0.45        # seconds a ghost needs to travel from a component into an equation slot
+# One clockwise lap per mesh at constant speed. The lap length is solved so that the last resistor it touches lifts its value off exactly
+# FLIGHT seconds before the number must land in its matrix cell (`lock`); each window starts as soon as the previous number has landed.
+FLIGHT = 0.25        # seconds a value needs to project from its component into its matrix cell
 DIAG = {
-    1: dict(path=["BL", "TL", "TR", "BR"], banner=2.0, start=2.0, end=3.4, lock=3.9, until=4.2),
-    2: dict(path=["BL", "TL", "TR", "BR"], banner=4.2, start=4.2, end=5.7, lock=6.3, until=6.6),
-    3: dict(path=["BL", "TL", "TR", "BR"], banner=6.6, start=6.6, end=8.1, lock=8.5, until=8.8),
+    1: dict(path=["BR", "BL", "TL", "TR"], banner=2.0, start=2.0, lock=3.9, until=4.2),
+    2: dict(path=["BL", "TL", "TR", "BR"], banner=4.2, start=4.2, lock=6.3, until=6.6),
+    3: dict(path=["BR", "BL", "TL", "TR"], banner=6.6, start=6.6, lock=8.5, until=8.8),
 }
 MESH_RES = {1: ["R1", "R2"], 2: ["R2", "R3", "R4"], 3: ["R4", "R5"]}
 MESH_SRC = {1: [("V1", +1), ("V3", -1)], 2: [("V2", -1)], 3: [("V3", +1)]}
@@ -124,7 +124,9 @@ def lap(m, spec):
     seg = seglens(pts)
     total = sum(seg)
     touches = sorted(((arc_pos(pts, BR[r][3]), r) for r in MESH_RES[m]))
-    assert spec["end"] < spec["lock"], (m, spec["end"], spec["lock"])        # the lap is finished before the number lands
+    last_touch = spec["lock"] - FLIGHT
+    spec["end"] = spec["start"] + (last_touch - spec["start"]) * total / touches[-1][0]     # constant speed: the last touch lands on `last_touch`
+    assert spec["end"] <= spec["until"] + 1e-9, (m, spec["end"], spec["until"])              # the lap is over before the next window starts
     t_of = lambda d: spec["start"] + (spec["end"] - spec["start"]) * d / total
     run, cum = 0.0, []
     for L in seg:
@@ -213,11 +215,11 @@ def build_matrix():
         for c in range(3):
             cls = "d" if r == c else "p"
             out.append(f'<div id="e-{r}-{c}" class="cell {cls}" style="left:{COLX[c]-60}px;top:{ROWY[r]-34}px">'
-                       f'<b class="ghost">{K(bold(Rm(f"{r+1}{c+1}")))}</b><b class="val">{K(bold(n(A0[r][c])))}</b><i class="ring"></i></div>')
+                       f'<b class="ghost">{K(bold(Rm(f"{r+1}{c+1}")))}</b><b class="val">{K(bold(n(A0[r][c])))}</b></div>')
         out.append(f'<div class="ivec" style="left:{IX-40}px;top:{ROWY[r]-34}px">{K(Il(str(r+1)))}</div>')
     # source vector V: one explicit 3-row grid (row 1: v1, row 2: v2, row 3: v3); a value can only ever render inside its own row
     rows = "".join(f'<div id="v-{r}" class="cell s vrow" style="grid-row:{r+1}">'
-                   f'<b class="ghost">{K(bold("v_{" + str(r+1) + "}"))}</b><b class="val">{K(bold(n(b0[r])))}</b><i class="ring"></i></div>' for r in range(3))
+                   f'<b class="ghost">{K(bold("v_{" + str(r+1) + "}"))}</b><b class="val">{K(bold(n(b0[r])))}</b></div>' for r in range(3))
     out.append(f'<div id="vvec" class="vcol" style="left:{VX-60}px;top:{ROWY[0]-34}px">{rows}</div>')
     return "\n".join(out)
 
@@ -322,51 +324,52 @@ def at(x, y):
 
 
 def groups(TOUCH):
+    def fl(gid, k, text, cls, t0, src, cell, merge=None):
+        return dict(id=f"gh-{gid}-{k}", text=text, cls=cls, t0=round(t0, 3), t1=round(t0 + FLIGHT, 3), src=src, tgt=at(*cell_pt(cell)), cell=cell, merge=merge)
+
     G = []
     for m, spec in DIAG.items():
         cell = f"e-{m-1}-{m-1}"
         res = sorted(MESH_RES[m])
-        fl = []
-        for k, t in enumerate(TOUCH[m]):             # a ghost of each touched value lifts off its resistor into its term
-            fl.append(dict(id=f"gh-d{m}-{k}", text=str(Rv[t["res"]]), cls="d", t0=t["t"], t1=round(t["t"] + FLIGHT, 3),
-                           src=at(*COMP[t["res"]]), tgt=slot(f"#d{m}-n{res.index(t['res'])}"), merge=res.index(t["res"])))
-        fl.append(dict(id=f"gh-d{m}-r", text=n(A0[m - 1][m - 1]), cls="d", t0=round(spec["lock"] - 0.3, 3), t1=spec["lock"],
-                       src=slot(f"#d{m}-f"), tgt=at(*cell_pt(cell))))
+        flights = [fl(f"d{m}", k, str(Rv[t["res"]]), "d", t["t"], at(*COMP[t["res"]]), cell, merge=res.index(t["res"])) for k, t in enumerate(TOUCH[m])]
+        assert abs(flights[-1]["t1"] - spec["lock"]) < 1e-6, (m, flights[-1]["t1"], spec["lock"])    # the last value lands exactly on the lock
         G.append(dict(id=f"d{m}", kind="diag", color=BLUE, mesh=m, banner=spec["banner"], start=spec["start"], end=spec["end"], lock=spec["lock"], until=spec["until"],
-                      cells=[cell], res=res, touches=TOUCH[m], flights=fl))
-    for (i, j), (banner, launch, lock, until) in zip(((1, 2), (2, 3), (1, 3)), ((8.8, 9.3, 9.9, 10.3), (10.3, 10.8, 11.4, 11.8), (11.8, 12.0, 12.4, 12.8))):
+                      cells=[cell], res=res, touches=TOUCH[m], flights=flights))
+    for (i, j), (banner, lock, until) in zip(((1, 2), (2, 3), (1, 3)), ((8.8, 9.9, 10.3), (10.3, 11.4, 11.8), (11.8, 12.4, 12.8))):
         sh = SHARED[(i, j)]
         val = -Rv[sh] if sh else 0
+        assert A0[i - 1][j - 1] == A0[j - 1][i - 1] == val
         cells = [f"e-{i-1}-{j-1}", f"e-{j-1}-{i-1}"]
         src = at(*COMP[sh]) if sh else at(*ZERO_SRC)
-        fl = [dict(id=f"gh-o{i}{j}-{k}", text=n(val), cls="p" if sh else "z", t0=launch, t1=lock, src=src, tgt=at(*cell_pt(c))) for k, c in enumerate(cells)]
-        G.append(dict(id=f"o{i}{j}", kind="off" if sh else "zero", color=PURPLE, banner=banner, start=banner, lock=lock, until=until, cells=cells, shared=sh, flights=fl))
-    # sources: v1 = two ghosts into the equation, then the result drops; v2 and v3 fly straight from their source into their row
+        flights = [fl(f"o{i}{j}", k, n(val), "p", lock - FLIGHT, src, c) for k, c in enumerate(cells)]
+        G.append(dict(id=f"o{i}{j}", kind="off" if sh else "zero", color=PURPLE, banner=banner, start=banner, lock=lock, until=until, cells=cells, shared=sh, flights=flights))
+    # sources: every source value projects straight into its row of V (v1 takes two values, one after the other)
     v1 = dict(id="v1", kind="src", color=RED, mesh=1, banner=12.8, start=12.8, lock=13.9, until=14.2, cells=["v-0"], src=["V1", "V3"], flights=[
-        dict(id="gh-v1-0", text="+5", cls="s", t0=12.9, t1=13.35, src=at(*COMP["V1"]), tgt=slot("#v1-n0"), merge="v1-n0"),
-        dict(id="gh-v1-1", text="-13", cls="s", t0=13.0, t1=13.45, src=at(*COMP["V3"]), tgt=slot("#v1-n1"), merge="v1-n1"),
-        dict(id="gh-v1-r", text="-8", cls="s", t0=13.6, t1=13.9, src=slot("#v1-f"), tgt=at(*cell_pt("v-0")))])
+        fl("v1", 0, "+5", "s", 13.4, at(*COMP["V1"]), "v-0", merge="v1-n0"),
+        fl("v1", 1, "-13", "s", 13.65, at(*COMP["V3"]), "v-0", merge="v1-n1")])
     v2 = dict(id="v2", kind="src", color=RED, mesh=2, banner=14.2, start=14.2, lock=15.0, until=15.3, cells=["v-1"], src=["V2"], flights=[
-        dict(id="gh-v2-0", text="-16", cls="s", t0=14.4, t1=15.0, src=at(*COMP["V2"]), tgt=at(*cell_pt("v-1")))])
+        fl("v2", 0, "-16", "s", 14.75, at(*COMP["V2"]), "v-1")])
     v3 = dict(id="v3", kind="src", color=RED, mesh=3, banner=15.3, start=15.3, lock=16.1, until=16.5, cells=["v-2"], src=["V3"], flights=[
-        dict(id="gh-v3-0", text="+13", cls="s", t0=15.5, t1=16.1, src=at(*COMP["V3"]), tgt=at(*cell_pt("v-2")))])
+        fl("v3", 0, "+13", "s", 15.85, at(*COMP["V3"]), "v-2")])
     for g, val in ((v1, -8), (v2, -16), (v3, 13)):
         assert b0[g["mesh"] - 1] == val == sum(sg * Vv[k] for k, sg in MESH_SRC[g["mesh"]])
+        assert abs(g["flights"][-1]["t1"] - g["lock"]) < 1e-6, g["id"]
     G += [v1, v2, v3]
     return G
 
 
 def build_cues(G):
-    """The audio schedule, derived from the very same data the picture uses: engage click at the start of each window,
-    a whoosh when a ghost lifts off, a click when it lands in an equation slot, a snap (thump for v3) when a value locks."""
+    """The audio schedule, derived from the very same data the picture uses. Only three voices exist: a click when a value lifts off its
+    component, a click when an intermediate value lands, and a snap + sub-bass thump when the final value locks into its matrix cell."""
     C = {(0.0, "thump"), (1.2, "snap"), (16.5, "thump"), (17.5, "snap"), (18.2, "click")}
     for g in G:
-        C.add((round(g["start"], 3), "click"))
         for f in g["flights"]:
-            C.add((f["t0"], "whoosh"))
-            if "slot" in f["tgt"]:
+            C.add((f["t0"], "click"))
+            if f["t1"] == g["lock"]:
+                C.add((f["t1"], "snap"))
+                C.add((f["t1"], "thump"))
+            else:
                 C.add((f["t1"], "click"))
-        C.add((g["lock"], "thump" if g["id"] == "v3" else ("click" if g["kind"] == "zero" else "snap")))
     return sorted(C)
 
 
@@ -387,7 +390,7 @@ def main():
     for g in G:
         for f in g["flights"]:
             f["cls"] = f["cls"]
-            ghosts.append(f'<div id="{f["id"]}" class="ghost {f["cls"]}">{K(bold(f["text"].replace("-", "-")))}</div>')
+            ghosts.append(f'<div id="{f["id"]}" class="xfer {f["cls"]}">{K(bold(f["text"]))}</div>')
         if g["kind"] == "diag":
             for t in g["touches"]:
                 t["idx"] = g["res"].index(t["res"])       # which term of the equation this resistor ignites

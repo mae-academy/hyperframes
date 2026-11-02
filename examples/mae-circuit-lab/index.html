@@ -89,7 +89,6 @@
   .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 68px; line-height: 68px; white-space: nowrap; font-weight: 700; }
   .cell .ghost { font-size: 35px; opacity: .45; }
   .cell .val { font-size: 42px; opacity: 0; }
-  .cell .ring { position: absolute; left: 28px; top: 2px; width: 64px; height: 64px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
   .ivec { position: absolute; width: 80px; height: 68px; line-height: 68px; text-align: center; font-size: 34px; }
   #eqsign { position: absolute; left: 543px; top: 126px; width: 50px; height: 68px; line-height: 68px; text-align: center; font-size: 38px; }
@@ -97,9 +96,8 @@
   #legend .sw { display: inline-block; width: 13px; height: 13px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
 
   /* ---------- drops: a value falls from the banner into its cell ---------- */
-  /* ghost clones: lift off a component, fly to an equation slot or a matrix cell, then vanish into it */
-  .ghost { position: absolute; left: 0; top: 0; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 40; text-shadow: 0 0 18px currentColor, 0 0 6px currentColor; }
-  .ghost.z { color: #D9A8FF; }
+  /* value clones: lift off a component, project straight into a matrix cell in 0.25 s, then leave the layout (display: none) */
+  .xfer { display: none; position: absolute; left: 0; top: 0; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 40; text-shadow: 0 0 14px currentColor; }
 
   /* ---------- the CTA expands under the compacted matrix ---------- */
   #cta { left: 120px; top: 1380px; width: 840px; height: 240px; border-radius: 32px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; }
@@ -156,12 +154,12 @@
 <polygon id="perim-1" points="176,104 398,104 398,456 176,456" class="perim"/>
 <polygon id="perim-2" points="426,104 718,104 718,286 426,286" class="perim"/>
 <polygon id="perim-3" points="426,314 718,314 718,456 426,456" class="perim"/>
-<polyline id="trail-1" points="176,456 176,104 398,104 398,456 176,456" class="trail" stroke-dasharray="1148.0" stroke-dashoffset="1148.0"/>
+<polyline id="trail-1" points="398,456 176,456 176,104 398,104 398,456" class="trail" stroke-dasharray="1148.0" stroke-dashoffset="1148.0"/>
 <polyline id="trail-2" points="426,286 426,104 718,104 718,286 426,286" class="trail" stroke-dasharray="948.0" stroke-dashoffset="948.0"/>
-<polyline id="trail-3" points="426,456 426,314 718,314 718,456 426,456" class="trail" stroke-dasharray="868.0" stroke-dashoffset="868.0"/>
-<g id="head-1" class="head"><circle cx="176" cy="456" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="176" cy="456" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="176" cy="456" r="3.8" fill="#fff"/></g>
+<polyline id="trail-3" points="718,456 426,456 426,314 718,314 718,456" class="trail" stroke-dasharray="868.0" stroke-dashoffset="868.0"/>
+<g id="head-1" class="head"><circle cx="398" cy="456" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="398" cy="456" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="398" cy="456" r="3.8" fill="#fff"/></g>
 <g id="head-2" class="head"><circle cx="426" cy="286" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="426" cy="286" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="426" cy="286" r="3.8" fill="#fff"/></g>
-<g id="head-3" class="head"><circle cx="426" cy="456" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="426" cy="456" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="426" cy="456" r="3.8" fill="#fff"/></g>
+<g id="head-3" class="head"><circle cx="718" cy="456" r="15" fill="#0088FF" opacity=".35" filter="url(#glow)"/><circle cx="718" cy="456" r="8.5" fill="#0088FF" filter="url(#glow)"/><circle cx="718" cy="456" r="3.8" fill="#fff"/></g>
     </svg>
     <div id="labels">
 <div id="lb-R1" class="lb elabel" style="left:182px;top:34px;width:210px;height:36px;line-height:36px;text-align:center"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathrm">k</span><span class="mord">Ω</span></span></span></span></div>
@@ -201,44 +199,40 @@
     <div id="cardin">
       <div id="eqhead"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord mathbf">R</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord mathbf">I</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord mathbf" style="margin-right:0.01597em;">V</span></span></span></span></div>
       <svg id="brk" viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg"><path d="M66 58 H50 V262 H66" class="brk"/><path d="M408 58 H424 V262 H408" class="brk"/><path d="M466 58 H454 V262 H466" class="brk"/><path d="M516 58 H528 V262 H516" class="brk"/><path d="M618 58 H602 V262 H618" class="brk"/><path d="M732 58 H748 V262 H732" class="brk"/></svg>
-<div id="e-0-0" class="cell d" style="left:60px;top:58px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">11</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></b><i class="ring"></i></div>
-<div id="e-0-1" class="cell p" style="left:180px;top:58px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">12</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></b><i class="ring"></i></div>
-<div id="e-0-2" class="cell p" style="left:300px;top:58px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">13</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></b><i class="ring"></i></div>
+<div id="e-0-0" class="cell d" style="left:60px;top:58px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">11</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></b></div>
+<div id="e-0-1" class="cell p" style="left:180px;top:58px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">12</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></b></div>
+<div id="e-0-2" class="cell p" style="left:300px;top:58px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">13</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></b></div>
 <div class="ivec" style="left:450px;top:58px"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div>
-<div id="e-1-0" class="cell p" style="left:60px;top:126px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">21</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></b><i class="ring"></i></div>
-<div id="e-1-1" class="cell d" style="left:180px;top:126px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">22</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">9</span></span></span></span></b><i class="ring"></i></div>
-<div id="e-1-2" class="cell p" style="left:300px;top:126px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">23</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></b><i class="ring"></i></div>
+<div id="e-1-0" class="cell p" style="left:60px;top:126px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">21</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></b></div>
+<div id="e-1-1" class="cell d" style="left:180px;top:126px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">22</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">9</span></span></span></span></b></div>
+<div id="e-1-2" class="cell p" style="left:300px;top:126px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">23</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></b></div>
 <div class="ivec" style="left:450px;top:126px"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div>
-<div id="e-2-0" class="cell p" style="left:60px;top:194px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">31</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></b><i class="ring"></i></div>
-<div id="e-2-1" class="cell p" style="left:180px;top:194px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">32</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></b><i class="ring"></i></div>
-<div id="e-2-2" class="cell d" style="left:300px;top:194px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">33</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">5</span></span></span></span></b><i class="ring"></i></div>
+<div id="e-2-0" class="cell p" style="left:60px;top:194px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">31</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></b></div>
+<div id="e-2-1" class="cell p" style="left:180px;top:194px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">32</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></b></div>
+<div id="e-2-2" class="cell d" style="left:300px;top:194px"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8361em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">33</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">5</span></span></span></span></b></div>
 <div class="ivec" style="left:450px;top:194px"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div>
-<div id="vvec" class="vcol" style="left:615px;top:58px"><div id="v-0" class="cell s vrow" style="grid-row:1"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.016em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">8</span></span></span></span></span></b><i class="ring"></i></div><div id="v-1" class="cell s vrow" style="grid-row:2"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.016em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">16</span></span></span></span></span></b><i class="ring"></i></div><div id="v-2" class="cell s vrow" style="grid-row:3"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.016em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord"><span class="mord mathbf">13</span></span></span></span></span></b><i class="ring"></i></div></div>
+<div id="vvec" class="vcol" style="left:615px;top:58px"><div id="v-0" class="cell s vrow" style="grid-row:1"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.016em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">8</span></span></span></span></span></b></div><div id="v-1" class="cell s vrow" style="grid-row:2"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.016em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">16</span></span></span></span></span></b></div><div id="v-2" class="cell s vrow" style="grid-row:3"><b class="ghost"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.016em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathbf mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></b><b class="val"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord"><span class="mord mathbf">13</span></span></span></span></span></b></div></div>
       <div id="eqsign">=</div>
       <div id="legend"><span><i class="sw" style="background:#0088FF"></i>self</span><span><i class="sw" style="background:#B026FF"></i>shared</span><span><i class="sw" style="background:#FF0044"></i>sources</span></div>
     </div>
   </div>
-<div id="gh-d1-0" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">2</span></span></span></span></div>
-<div id="gh-d1-1" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">2</span></span></span></span></div>
-<div id="gh-d1-r" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></div>
-<div id="gh-d2-0" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">2</span></span></span></span></div>
-<div id="gh-d2-1" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">3</span></span></span></span></div>
-<div id="gh-d2-2" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></div>
-<div id="gh-d2-r" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">9</span></span></span></span></div>
-<div id="gh-d3-0" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></div>
-<div id="gh-d3-1" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">1</span></span></span></span></div>
-<div id="gh-d3-r" class="ghost d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">5</span></span></span></span></div>
-<div id="gh-o12-0" class="ghost p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></div>
-<div id="gh-o12-1" class="ghost p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></div>
-<div id="gh-o23-0" class="ghost p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></div>
-<div id="gh-o23-1" class="ghost p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></div>
-<div id="gh-o13-0" class="ghost z"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></div>
-<div id="gh-o13-1" class="ghost z"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></div>
-<div id="gh-v1-0" class="ghost s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">+</span><span class="mord mathbf">5</span></span></span></span></span></div>
-<div id="gh-v1-1" class="ghost s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">13</span></span></span></span></span></div>
-<div id="gh-v1-r" class="ghost s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">8</span></span></span></span></span></div>
-<div id="gh-v2-0" class="ghost s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">16</span></span></span></span></span></div>
-<div id="gh-v3-0" class="ghost s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">+</span><span class="mord mathbf">13</span></span></span></span></span></div>
+<div id="gh-d1-0" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">2</span></span></span></span></div>
+<div id="gh-d1-1" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">2</span></span></span></span></div>
+<div id="gh-d2-0" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">2</span></span></span></span></div>
+<div id="gh-d2-1" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">3</span></span></span></span></div>
+<div id="gh-d2-2" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></div>
+<div id="gh-d3-0" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">4</span></span></span></span></div>
+<div id="gh-d3-1" class="xfer d"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">1</span></span></span></span></div>
+<div id="gh-o12-0" class="xfer p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></div>
+<div id="gh-o12-1" class="xfer p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">2</span></span></span></span></span></div>
+<div id="gh-o23-0" class="xfer p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></div>
+<div id="gh-o23-1" class="xfer p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">4</span></span></span></span></span></div>
+<div id="gh-o13-0" class="xfer p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></div>
+<div id="gh-o13-1" class="xfer p"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord mathbf">0</span></span></span></span></div>
+<div id="gh-v1-0" class="xfer s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">+</span><span class="mord mathbf">5</span></span></span></span></span></div>
+<div id="gh-v1-1" class="xfer s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">13</span></span></span></span></span></div>
+<div id="gh-v2-0" class="xfer s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">−</span><span class="mord mathbf">16</span></span></span></span></span></div>
+<div id="gh-v3-0" class="xfer s"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">+</span><span class="mord mathbf">13</span></span></span></span></span></div>
 
   <div id="cta" class="abs">
     <div id="cta-t">SAVE THIS TRICK FOR YOUR<br>NEXT EXAM<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
@@ -249,61 +243,52 @@
   <audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="21" data-track-index="2" data-volume="1"></audio>
 </div>
 
-<script>const DATA = {"END": 21.0, "groups": [{"id": "d1", "kind": "diag", "color": "#0088FF", "mesh": 1, "banner": 2.0, "start": 2.0, "end": 3.4, "lock": 3.9, "until": 4.2, "cells": ["e-0-0"], "res": ["R1", "R2"], "touches": [{"res": "R1", "t": 2.565, "idx": 0}, {"res": "R2", "t": 2.811, "idx": 1}], "flights": [{"id": "gh-d1-0", "text": "2", "cls": "d", "t0": 2.565, "t1": 3.015, "src": {"x": 378, "y": 431}, "tgt": {"slot": "#d1-n0"}, "merge": 0}, {"id": "gh-d1-1", "text": "2", "cls": "d", "t0": 2.811, "t1": 3.261, "src": {"x": 503, "y": 536}, "tgt": {"slot": "#d1-n1"}, "merge": 1}, {"id": "gh-d1-r", "text": "4", "cls": "d", "t0": 3.6, "t1": 3.9, "src": {"slot": "#d1-f"}, "tgt": {"x": 270, "y": 1152}}]}, {"id": "d2", "kind": "diag", "color": "#0088FF", "mesh": 2, "banner": 4.2, "start": 4.2, "end": 5.7, "lock": 6.3, "until": 6.6, "cells": ["e-1-1"], "res": ["R2", "R3", "R4"], "touches": [{"res": "R2", "t": 4.344, "idx": 0}, {"res": "R3", "t": 4.719, "idx": 1}, {"res": "R4", "t": 5.469, "idx": 2}], "flights": [{"id": "gh-d2-0", "text": "2", "cls": "d", "t0": 4.344, "t1": 4.794, "src": {"x": 503, "y": 536}, "tgt": {"slot": "#d2-n0"}, "merge": 0}, {"id": "gh-d2-1", "text": "3", "cls": "d", "t0": 4.719, "t1": 5.169, "src": {"x": 663, "y": 431}, "tgt": {"slot": "#d2-n1"}, "merge": 1}, {"id": "gh-d2-2", "text": "4", "cls": "d", "t0": 5.469, "t1": 5.919, "src": {"x": 663, "y": 641}, "tgt": {"slot": "#d2-n2"}, "merge": 2}, {"id": "gh-d2-r", "text": "9", "cls": "d", "t0": 6.0, "t1": 6.3, "src": {"slot": "#d2-f"}, "tgt": {"x": 390, "y": 1220}}]}, {"id": "d3", "kind": "diag", "color": "#0088FF", "mesh": 3, "banner": 6.6, "start": 6.6, "end": 8.1, "lock": 8.5, "until": 8.8, "cells": ["e-2-2"], "res": ["R4", "R5"], "touches": [{"res": "R4", "t": 7.098, "idx": 0}, {"res": "R5", "t": 7.473, "idx": 1}], "flights": [{"id": "gh-d3-0", "text": "4", "cls": "d", "t0": 7.098, "t1": 7.548, "src": {"x": 663, "y": 641}, "tgt": {"slot": "#d3-n0"}, "merge": 0}, {"id": "gh-d3-1", "text": "1", "cls": "d", "t0": 7.473, "t1": 7.923, "src": {"x": 823, "y": 726}, "tgt": {"slot": "#d3-n1"}, "merge": 1}, {"id": "gh-d3-r", "text": "5", "cls": "d", "t0": 8.2, "t1": 8.5, "src": {"slot": "#d3-f"}, "tgt": {"x": 510, "y": 1288}}]}, {"id": "o12", "kind": "off", "color": "#B026FF", "banner": 8.8, "start": 8.8, "lock": 9.9, "until": 10.3, "cells": ["e-0-1", "e-1-0"], "shared": "R2", "flights": [{"id": "gh-o12-0", "text": "-2", "cls": "p", "t0": 9.3, "t1": 9.9, "src": {"x": 503, "y": 536}, "tgt": {"x": 390, "y": 1152}}, {"id": "gh-o12-1", "text": "-2", "cls": "p", "t0": 9.3, "t1": 9.9, "src": {"x": 503, "y": 536}, "tgt": {"x": 270, "y": 1220}}]}, {"id": "o23", "kind": "off", "color": "#B026FF", "banner": 10.3, "start": 10.3, "lock": 11.4, "until": 11.8, "cells": ["e-1-2", "e-2-1"], "shared": "R4", "flights": [{"id": "gh-o23-0", "text": "-4", "cls": "p", "t0": 10.8, "t1": 11.4, "src": {"x": 663, "y": 641}, "tgt": {"x": 510, "y": 1220}}, {"id": "gh-o23-1", "text": "-4", "cls": "p", "t0": 10.8, "t1": 11.4, "src": {"x": 663, "y": 641}, "tgt": {"x": 390, "y": 1288}}]}, {"id": "o13", "kind": "zero", "color": "#B026FF", "banner": 11.8, "start": 11.8, "lock": 12.4, "until": 12.8, "cells": ["e-0-2", "e-2-0"], "shared": null, "flights": [{"id": "gh-o13-0", "text": "0", "cls": "z", "t0": 12.0, "t1": 12.4, "src": {"x": 503, "y": 686}, "tgt": {"x": 510, "y": 1152}}, {"id": "gh-o13-1", "text": "0", "cls": "z", "t0": 12.0, "t1": 12.4, "src": {"x": 503, "y": 686}, "tgt": {"x": 270, "y": 1288}}]}, {"id": "v1", "kind": "src", "color": "#FF0044", "mesh": 1, "banner": 12.8, "start": 12.8, "lock": 13.9, "until": 14.2, "cells": ["v-0"], "src": ["V1", "V3"], "flights": [{"id": "gh-v1-0", "text": "+5", "cls": "s", "t0": 12.9, "t1": 13.35, "src": {"x": 253, "y": 621}, "tgt": {"slot": "#v1-n0"}, "merge": "v1-n0"}, {"id": "gh-v1-1", "text": "-13", "cls": "s", "t0": 13.0, "t1": 13.45, "src": {"x": 503, "y": 726}, "tgt": {"slot": "#v1-n1"}, "merge": "v1-n1"}, {"id": "gh-v1-r", "text": "-8", "cls": "s", "t0": 13.6, "t1": 13.9, "src": {"slot": "#v1-f"}, "tgt": {"x": 825, "y": 1152}}]}, {"id": "v2", "kind": "src", "color": "#FF0044", "mesh": 2, "banner": 14.2, "start": 14.2, "lock": 15.0, "until": 15.3, "cells": ["v-1"], "src": ["V2"], "flights": [{"id": "gh-v2-0", "text": "-16", "cls": "s", "t0": 14.4, "t1": 15.0, "src": {"x": 823, "y": 536}, "tgt": {"x": 825, "y": 1220}}]}, {"id": "v3", "kind": "src", "color": "#FF0044", "mesh": 3, "banner": 15.3, "start": 15.3, "lock": 16.1, "until": 16.5, "cells": ["v-2"], "src": ["V3"], "flights": [{"id": "gh-v3-0", "text": "+13", "cls": "s", "t0": 15.5, "t1": 16.1, "src": {"x": 503, "y": 726}, "tgt": {"x": 825, "y": 1288}}]}], "tracers": {"1": {"pts": [[176, 456], [176, 104], [398, 104], [398, 456]], "total": 1148.0, "wps": [{"d": 0.0, "t": 2.0, "x": 176.0, "y": 456.0}, {"d": 352.0, "t": 2.4293, "x": 176.0, "y": 104.0}, {"d": 463.0, "t": 2.5646, "x": 287.0, "y": 104.0}, {"d": 574.0, "t": 2.7, "x": 398.0, "y": 104.0}, {"d": 665.0, "t": 2.811, "x": 398.0, "y": 195.0}, {"d": 926.0, "t": 3.1293, "x": 398.0, "y": 456.0}, {"d": 1148.0, "t": 3.4, "x": 176.0, "y": 456.0}]}, "2": {"pts": [[426, 286], [426, 104], [718, 104], [718, 286]], "total": 948.0, "wps": [{"d": 0.0, "t": 4.2, "x": 426.0, "y": 286.0}, {"d": 91.0, "t": 4.344, "x": 426.0, "y": 195.0}, {"d": 182.0, "t": 4.488, "x": 426.0, "y": 104.0}, {"d": 328.0, "t": 4.719, "x": 572.0, "y": 104.0}, {"d": 474.0, "t": 4.95, "x": 718.0, "y": 104.0}, {"d": 656.0, "t": 5.238, "x": 718.0, "y": 286.0}, {"d": 802.0, "t": 5.469, "x": 572.0, "y": 286.0}, {"d": 948.0, "t": 5.7, "x": 426.0, "y": 286.0}]}, "3": {"pts": [[426, 456], [426, 314], [718, 314], [718, 456]], "total": 868.0, "wps": [{"d": 0.0, "t": 6.6, "x": 426.0, "y": 456.0}, {"d": 142.0, "t": 6.8454, "x": 426.0, "y": 314.0}, {"d": 288.0, "t": 7.0977, "x": 572.0, "y": 314.0}, {"d": 434.0, "t": 7.35, "x": 718.0, "y": 314.0}, {"d": 505.0, "t": 7.4727, "x": 718.0, "y": 385.0}, {"d": 576.0, "t": 7.5954, "x": 718.0, "y": 456.0}, {"d": 868.0, "t": 8.1, "x": 426.0, "y": 456.0}]}}, "base_rot": [-2.5, 1.8, -1.4, 2.6]};</script>
+<script>const DATA = {"END": 21.0, "groups": [{"id": "d1", "kind": "diag", "color": "#0088FF", "mesh": 1, "banner": 2.0, "start": 2.0, "end": 4.135512965050733, "lock": 3.9, "until": 4.2, "cells": ["e-0-0"], "res": ["R1", "R2"], "touches": [{"res": "R1", "t": 3.274, "idx": 0}, {"res": "R2", "t": 3.65, "idx": 1}], "flights": [{"id": "gh-d1-0", "text": "2", "cls": "d", "t0": 3.274, "t1": 3.524, "src": {"x": 378, "y": 431}, "tgt": {"x": 270, "y": 1152}, "cell": "e-0-0", "merge": 0}, {"id": "gh-d1-1", "text": "2", "cls": "d", "t0": 3.65, "t1": 3.9, "src": {"x": 503, "y": 536}, "tgt": {"x": 270, "y": 1152}, "cell": "e-0-0", "merge": 1}]}, {"id": "d2", "kind": "diag", "color": "#0088FF", "mesh": 2, "banner": 4.2, "start": 4.2, "end": 6.386783042394015, "lock": 6.3, "until": 6.6, "cells": ["e-1-1"], "res": ["R2", "R3", "R4"], "touches": [{"res": "R2", "t": 4.41, "idx": 0}, {"res": "R3", "t": 4.957, "idx": 1}, {"res": "R4", "t": 6.05, "idx": 2}], "flights": [{"id": "gh-d2-0", "text": "2", "cls": "d", "t0": 4.41, "t1": 4.66, "src": {"x": 503, "y": 536}, "tgt": {"x": 390, "y": 1220}, "cell": "e-1-1", "merge": 0}, {"id": "gh-d2-1", "text": "3", "cls": "d", "t0": 4.957, "t1": 5.207, "src": {"x": 663, "y": 431}, "tgt": {"x": 390, "y": 1220}, "cell": "e-1-1", "merge": 1}, {"id": "gh-d2-2", "text": "4", "cls": "d", "t0": 6.05, "t1": 6.3, "src": {"x": 663, "y": 641}, "tgt": {"x": 390, "y": 1220}, "cell": "e-1-1", "merge": 2}]}, {"id": "d3", "kind": "diag", "color": "#0088FF", "mesh": 3, "banner": 6.6, "start": 6.6, "end": 8.396988707653701, "lock": 8.5, "until": 8.8, "cells": ["e-2-2"], "res": ["R4", "R5"], "touches": [{"res": "R4", "t": 7.801, "idx": 0}, {"res": "R5", "t": 8.25, "idx": 1}], "flights": [{"id": "gh-d3-0", "text": "4", "cls": "d", "t0": 7.801, "t1": 8.051, "src": {"x": 663, "y": 641}, "tgt": {"x": 510, "y": 1288}, "cell": "e-2-2", "merge": 0}, {"id": "gh-d3-1", "text": "1", "cls": "d", "t0": 8.25, "t1": 8.5, "src": {"x": 823, "y": 726}, "tgt": {"x": 510, "y": 1288}, "cell": "e-2-2", "merge": 1}]}, {"id": "o12", "kind": "off", "color": "#B026FF", "banner": 8.8, "start": 8.8, "lock": 9.9, "until": 10.3, "cells": ["e-0-1", "e-1-0"], "shared": "R2", "flights": [{"id": "gh-o12-0", "text": "-2", "cls": "p", "t0": 9.65, "t1": 9.9, "src": {"x": 503, "y": 536}, "tgt": {"x": 390, "y": 1152}, "cell": "e-0-1", "merge": null}, {"id": "gh-o12-1", "text": "-2", "cls": "p", "t0": 9.65, "t1": 9.9, "src": {"x": 503, "y": 536}, "tgt": {"x": 270, "y": 1220}, "cell": "e-1-0", "merge": null}]}, {"id": "o23", "kind": "off", "color": "#B026FF", "banner": 10.3, "start": 10.3, "lock": 11.4, "until": 11.8, "cells": ["e-1-2", "e-2-1"], "shared": "R4", "flights": [{"id": "gh-o23-0", "text": "-4", "cls": "p", "t0": 11.15, "t1": 11.4, "src": {"x": 663, "y": 641}, "tgt": {"x": 510, "y": 1220}, "cell": "e-1-2", "merge": null}, {"id": "gh-o23-1", "text": "-4", "cls": "p", "t0": 11.15, "t1": 11.4, "src": {"x": 663, "y": 641}, "tgt": {"x": 390, "y": 1288}, "cell": "e-2-1", "merge": null}]}, {"id": "o13", "kind": "zero", "color": "#B026FF", "banner": 11.8, "start": 11.8, "lock": 12.4, "until": 12.8, "cells": ["e-0-2", "e-2-0"], "shared": null, "flights": [{"id": "gh-o13-0", "text": "0", "cls": "p", "t0": 12.15, "t1": 12.4, "src": {"x": 503, "y": 686}, "tgt": {"x": 510, "y": 1152}, "cell": "e-0-2", "merge": null}, {"id": "gh-o13-1", "text": "0", "cls": "p", "t0": 12.15, "t1": 12.4, "src": {"x": 503, "y": 686}, "tgt": {"x": 270, "y": 1288}, "cell": "e-2-0", "merge": null}]}, {"id": "v1", "kind": "src", "color": "#FF0044", "mesh": 1, "banner": 12.8, "start": 12.8, "lock": 13.9, "until": 14.2, "cells": ["v-0"], "src": ["V1", "V3"], "flights": [{"id": "gh-v1-0", "text": "+5", "cls": "s", "t0": 13.4, "t1": 13.65, "src": {"x": 253, "y": 621}, "tgt": {"x": 825, "y": 1152}, "cell": "v-0", "merge": "v1-n0"}, {"id": "gh-v1-1", "text": "-13", "cls": "s", "t0": 13.65, "t1": 13.9, "src": {"x": 503, "y": 726}, "tgt": {"x": 825, "y": 1152}, "cell": "v-0", "merge": "v1-n1"}]}, {"id": "v2", "kind": "src", "color": "#FF0044", "mesh": 2, "banner": 14.2, "start": 14.2, "lock": 15.0, "until": 15.3, "cells": ["v-1"], "src": ["V2"], "flights": [{"id": "gh-v2-0", "text": "-16", "cls": "s", "t0": 14.75, "t1": 15.0, "src": {"x": 823, "y": 536}, "tgt": {"x": 825, "y": 1220}, "cell": "v-1", "merge": null}]}, {"id": "v3", "kind": "src", "color": "#FF0044", "mesh": 3, "banner": 15.3, "start": 15.3, "lock": 16.1, "until": 16.5, "cells": ["v-2"], "src": ["V3"], "flights": [{"id": "gh-v3-0", "text": "+13", "cls": "s", "t0": 15.85, "t1": 16.1, "src": {"x": 503, "y": 726}, "tgt": {"x": 825, "y": 1288}, "cell": "v-2", "merge": null}]}], "tracers": {"1": {"pts": [[398, 456], [176, 456], [176, 104], [398, 104]], "total": 1148.0, "wps": [{"d": 0.0, "t": 2.0, "x": 398.0, "y": 456.0}, {"d": 222.0, "t": 2.413, "x": 176.0, "y": 456.0}, {"d": 574.0, "t": 3.0678, "x": 176.0, "y": 104.0}, {"d": 685.0, "t": 3.2742, "x": 287.0, "y": 104.0}, {"d": 796.0, "t": 3.4807, "x": 398.0, "y": 104.0}, {"d": 887.0, "t": 3.65, "x": 398.0, "y": 195.0}, {"d": 1148.0, "t": 4.1355, "x": 398.0, "y": 456.0}]}, "2": {"pts": [[426, 286], [426, 104], [718, 104], [718, 286]], "total": 948.0, "wps": [{"d": 0.0, "t": 4.2, "x": 426.0, "y": 286.0}, {"d": 91.0, "t": 4.4099, "x": 426.0, "y": 195.0}, {"d": 182.0, "t": 4.6198, "x": 426.0, "y": 104.0}, {"d": 328.0, "t": 4.9566, "x": 572.0, "y": 104.0}, {"d": 474.0, "t": 5.2934, "x": 718.0, "y": 104.0}, {"d": 656.0, "t": 5.7132, "x": 718.0, "y": 286.0}, {"d": 802.0, "t": 6.05, "x": 572.0, "y": 286.0}, {"d": 948.0, "t": 6.3868, "x": 426.0, "y": 286.0}]}, "3": {"pts": [[718, 456], [426, 456], [426, 314], [718, 314]], "total": 868.0, "wps": [{"d": 0.0, "t": 6.6, "x": 718.0, "y": 456.0}, {"d": 292.0, "t": 7.2045, "x": 426.0, "y": 456.0}, {"d": 434.0, "t": 7.4985, "x": 426.0, "y": 314.0}, {"d": 580.0, "t": 7.8008, "x": 572.0, "y": 314.0}, {"d": 726.0, "t": 8.103, "x": 718.0, "y": 314.0}, {"d": 797.0, "t": 8.25, "x": 718.0, "y": 385.0}, {"d": 868.0, "t": 8.397, "x": 718.0, "y": 456.0}]}}, "base_rot": [-2.5, 1.8, -1.4, 2.6]};</script>
 <script>
 /* THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS. 21.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
    DATA (groups, comet laps, flights) is injected by build_index.py, which also writes the CUES block below from the same schedule.
-   The circuit in zone 2 is never dimmed, hidden or moved. Every value that reaches an equation or the matrix first lifts off its
-   own component as a glowing ghost clone and flies there along a curved path; nothing is ever spawned out of thin air. */
+   The circuit in zone 2 is never dimmed, hidden or moved. Every value reaches the matrix by lifting off its own component as a glowing
+   numeric clone and projecting straight into its cell in 0.25 s; the clone then leaves the layout. No badges, no leftovers. */
 
 // @CUES-BEGIN
 const CUES = [
   [0.0, "thump"],
   [1.2, "snap"],
-  [2.0, "click"],
-  [2.565, "whoosh"],
-  [2.811, "whoosh"],
-  [3.015, "click"],
-  [3.261, "click"],
-  [3.6, "whoosh"],
+  [3.274, "click"],
+  [3.524, "click"],
+  [3.65, "click"],
   [3.9, "snap"],
-  [4.2, "click"],
-  [4.344, "whoosh"],
-  [4.719, "whoosh"],
-  [4.794, "click"],
-  [5.169, "click"],
-  [5.469, "whoosh"],
-  [5.919, "click"],
-  [6.0, "whoosh"],
+  [3.9, "thump"],
+  [4.41, "click"],
+  [4.66, "click"],
+  [4.957, "click"],
+  [5.207, "click"],
+  [6.05, "click"],
   [6.3, "snap"],
-  [6.6, "click"],
-  [7.098, "whoosh"],
-  [7.473, "whoosh"],
-  [7.548, "click"],
-  [7.923, "click"],
-  [8.2, "whoosh"],
+  [6.3, "thump"],
+  [7.801, "click"],
+  [8.051, "click"],
+  [8.25, "click"],
   [8.5, "snap"],
-  [8.8, "click"],
-  [9.3, "whoosh"],
+  [8.5, "thump"],
+  [9.65, "click"],
   [9.9, "snap"],
-  [10.3, "click"],
-  [10.8, "whoosh"],
+  [9.9, "thump"],
+  [11.15, "click"],
   [11.4, "snap"],
-  [11.8, "click"],
-  [12.0, "whoosh"],
-  [12.4, "click"],
-  [12.8, "click"],
-  [12.9, "whoosh"],
-  [13.0, "whoosh"],
-  [13.35, "click"],
-  [13.45, "click"],
-  [13.6, "whoosh"],
+  [11.4, "thump"],
+  [12.15, "click"],
+  [12.4, "snap"],
+  [12.4, "thump"],
+  [13.4, "click"],
+  [13.65, "click"],
   [13.9, "snap"],
-  [14.2, "click"],
-  [14.4, "whoosh"],
+  [13.9, "thump"],
+  [14.75, "click"],
   [15.0, "snap"],
-  [15.3, "click"],
-  [15.5, "whoosh"],
+  [15.0, "thump"],
+  [15.85, "click"],
+  [16.1, "snap"],
   [16.1, "thump"],
   [16.5, "thump"],
   [17.5, "snap"],
@@ -324,7 +309,6 @@ const RGB = { "#0088FF": "0,136,255", "#B026FF": "176,38,255", "#FF0044": "255,0
 const HOT = { "#0088FF": "#A8D4FF", "#B026FF": "#DDA8FF", "#FF0044": "#FF8AA6" };
 const glow = (rgb, a, px) => `drop-shadow(0px 0px ${px}px rgba(${rgb},${a}))`;
 const tl = gsap.timeline({ paused: true });
-const root = document.getElementById("root");
 
 // ---------------- banner (zone 3): crossfades are 0.15 s out, then 0.15 s in, never a hard cut ----------------
 let curBanner = "#bv-h2";
@@ -352,8 +336,8 @@ function variant(next, t) {
 }
 
 // ---------------- helpers ----------------
-function halo(k, t0, t1, color, rel = 0.5) {
-  // a component blooms in `color` from t0, and relaxes to its base glow between t1 and t1 + rel
+function halo(k, t0, t1, color, rel = 0.35) {
+  // a component blooms in `color` (0.15 s attack) from t0 and relaxes to its base glow from t1
   const isR = k[0] === "R",
     part = `#el-${k} ${isR ? ".res" : ".src"}`;
   const base = isR ? BLUE : RED,
@@ -364,7 +348,7 @@ function halo(k, t0, t1, color, rel = 0.5) {
     {
       stroke: HOT[color],
       filter: glow(RGB[color], 1, 24),
-      duration: 0.3,
+      duration: 0.15,
       ease: "power2.out",
       immediateRender: false,
     },
@@ -387,21 +371,16 @@ function contour(m, t0, t1) {
   tl.to(`#perim-${m}`, { opacity: 0, duration: 0.4, ease: "power2.in" }, t1);
 }
 function lockCell(cid, t, color) {
-  // the value lands in its matrix cell
+  // the placeholder becomes the final value instantly, with a brief glow
   const rgb = RGB[color];
-  tl.to(`#${cid} .ghost`, { opacity: 0, duration: 0.1 }, t);
-  tl.fromTo(
-    `#${cid} .val`,
-    { opacity: 0, scale: 1.9 },
-    { opacity: 1, scale: 1, duration: 0.3, ease: "power4.out", immediateRender: false },
-    t,
-  );
+  tl.set(`#${cid} .ghost`, { opacity: 0 }, t);
+  tl.set(`#${cid} .val`, { opacity: 1 }, t);
   tl.fromTo(
     `#${cid} .val`,
     { textShadow: `0 0 0px rgba(${rgb},0)` },
     {
-      textShadow: `0 0 28px rgba(${rgb},1)`,
-      duration: 0.25,
+      textShadow: `0 0 26px rgba(${rgb},1)`,
+      duration: 0.1,
       ease: "power2.out",
       immediateRender: false,
     },
@@ -409,14 +388,8 @@ function lockCell(cid, t, color) {
   );
   tl.to(
     `#${cid} .val`,
-    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.7, ease: "power2.in" },
-    t + 0.35,
-  );
-  tl.fromTo(
-    `#${cid} .ring`,
-    { opacity: 0.9, scale: 0.5 },
-    { opacity: 0, scale: 1.8, duration: 0.6, ease: "power2.out", immediateRender: false },
-    t,
+    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
+    t + 0.15,
   );
 }
 function ignite(sel, t, rgb = RGB[BLUE]) {
@@ -436,56 +409,28 @@ function ignite(sel, t, rgb = RGB[BLUE]) {
   tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5 }, t + 0.3);
 }
 
-// canvas-space centre of a flight end: a fixed coordinate (a component or a matrix cell) or a live equation slot in the banner.
-// Slots are measured when their tween first renders, i.e. after the KaTeX fonts have loaded and the layout is final.
-function centre(spec) {
-  if (!spec.slot) return { x: spec.x, y: spec.y };
-  const r = document.querySelector(spec.slot).getBoundingClientRect(),
-    R = root.getBoundingClientRect(),
-    k = R.width / 1080;
-  return { x: (r.left + r.width / 2 - R.left) / k, y: (r.top + r.height / 2 - R.top) / k };
-}
+// A value is extracted: its numeric clone appears at the component's exact SVG coordinate and projects straight into the target cell in
+// exactly 0.25 s (power3.out). On arrival the cell pulses 1.2x and the clone leaves at once (opacity 0, display none).
 function fly(f) {
-  // a ghost clone lifts off its source, arcs to its target and vanishes into it
   const el = "#" + f.id,
-    d = f.t1 - f.t0,
-    lift = 0.16,
     W = 65,
     H = 28;
   cue(f.t0);
-  if (f.tgt.slot) cue(f.t1);
-  tl.set(el, { opacity: f.cls === "z" ? 0.75 : 1 }, f.t0);
+  cue(f.t1);
+  tl.set(el, { display: "block", opacity: f.cls === "z" ? 0.75 : 1 }, f.t0);
   tl.fromTo(
     el,
-    { scale: 0.7 },
-    { scale: 1.3, duration: lift, ease: "power2.out", immediateRender: false },
-    f.t0,
-  ); // lift-off pop
-  tl.to(el, { scale: 0.95, duration: d - lift, ease: "power1.inOut" }, f.t0 + lift);
-  tl.fromTo(
-    el,
-    { x: () => centre(f.src).x - W },
-    { x: () => centre(f.tgt).x - W, duration: d, ease: "power2.inOut", immediateRender: false },
+    { x: f.src.x - W, y: f.src.y - H },
+    { x: f.tgt.x - W, y: f.tgt.y - H, duration: 0.25, ease: "power3.out", immediateRender: false },
     f.t0,
   );
+  tl.set(el, { opacity: 0, display: "none" }, f.t1);
   tl.fromTo(
-    el,
-    { y: () => centre(f.src).y - H },
-    {
-      y: () => centre(f.src).y - H - 34,
-      duration: lift,
-      ease: "power2.out",
-      immediateRender: false,
-    },
-    f.t0,
+    "#" + f.cell,
+    { scale: 1.2 },
+    { scale: 1, duration: 0.25, ease: "power2.out", immediateRender: false },
+    f.t1,
   );
-  tl.fromTo(
-    el,
-    { y: () => centre(f.src).y - H - 34 },
-    { y: () => centre(f.tgt).y - H, duration: d - lift, ease: "power2.in", immediateRender: false },
-    f.t0 + lift,
-  );
-  tl.set(el, { opacity: 0 }, f.t1);
 }
 
 // ================= 0.0 - 2.0  HOOK: paper overlay and banner say the same thing; at 1.2 s both give way, zone 3 is never empty =================
@@ -519,13 +464,12 @@ tl.to(
   1.8,
 );
 
-// ================= 2.0 - 8.8  DIAGONALS: values lift off the resistors the comet touches and add up in the banner =================
+// ================= 2.0 - 8.8  DIAGONALS: the comet touches a resistor, which flashes, and its value projects into the matrix cell =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "diag") return;
   const m = g.mesh,
     tr = DATA.tracers[m],
     W = tr.wps;
-  cue(g.start);
   cue(g.lock);
   bswap("#bv-d" + m, g.banner);
   tl.to(`#d${m}-p0`, { opacity: 1, duration: 0.2 }, g.banner + 0.2);
@@ -557,32 +501,28 @@ DATA.groups.forEach((g) => {
   tl.to(`#head-${m}`, { opacity: 0, duration: 0.15 }, end);
   tl.to(`#trail-${m}`, { opacity: 0, duration: 0.4 }, end + 0.05);
 
-  // each touched resistor blooms; a ghost of its value flies into its term and lights it
-  g.touches.forEach((t) => halo(t.res, t.t, t.t + 0.5, BLUE));
+  // each touched resistor flashes (0.15 s bloom), its term ignites in the banner and its value projects into the cell
+  g.touches.forEach((t) => halo(t.res, t.t, t.t + 0.15, BLUE));
   g.flights.forEach((f) => {
     fly(f);
-    if (f.merge !== undefined) {
-      ignite(`#d${m}-s${f.merge}`, f.t1);
-      ignite(`#d${m}-n${f.merge}`, f.t1);
-    } else {
-      ignite(`#d${m}-f`, f.t0); // the sum lights up as it starts to fall into its matrix slot
-    }
+    ignite(`#d${m}-s${f.merge}`, f.t0);
+    ignite(`#d${m}-n${f.merge}`, f.t0);
   });
+  ignite(`#d${m}-f`, g.lock); // the result lights up as the cell turns into its final value
   lockCell(g.cells[0], g.lock, g.color);
 });
 
-// ================= 8.8 - 12.8  OFF-DIAGONALS: -(shared resistor), split into two symmetric tags =================
+// ================= 8.8 - 12.8  OFF-DIAGONALS: -(shared resistor), split into two symmetric values =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "off" && g.kind !== "zero") return;
-  cue(g.start);
   cue(g.lock);
   const id = { o12: "#off-a", o23: "#off-b", o13: "#off-c" }[g.id];
   if (g.id === "o12") bswap("#bv-off", g.banner);
   variant(id, g.banner);
   if (g.kind === "off") {
-    halo(g.shared, g.start + 0.15, g.until - 0.5, PURPLE);
+    halo(g.shared, g.start + 0.15, g.until - 0.5, PURPLE); // the shared resistor glows Neon Purple until its values are away
   } else {
-    // meshes 1 and 3 touch no common resistor: their boundaries glow, a zero tag appears between them
+    // meshes 1 and 3 touch no common resistor: their boundaries glow
     [1, 3].forEach((m) => contour(m, g.start + 0.15, g.until - 0.4));
   }
   g.flights.forEach(fly);
@@ -592,7 +532,6 @@ DATA.groups.forEach((g) => {
 // ================= 12.8 - 16.5  SOURCES: rises minus drops =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "src") return;
-  cue(g.start);
   cue(g.lock);
   if (g.mesh === 1) bswap("#bv-src", g.banner);
   variant("#src-" + g.mesh, g.banner);
@@ -600,9 +539,9 @@ DATA.groups.forEach((g) => {
   contour(g.mesh, g.start + 0.15, g.until - 0.3);
   g.flights.forEach((f) => {
     fly(f);
-    if (f.merge) ignite("#" + f.merge, f.t1, RGB[RED]);
-    if (f.id === "gh-v1-r") ignite("#v1-f", f.t0, RGB[RED]);
+    if (f.merge) ignite("#" + f.merge, f.t0, RGB[RED]);
   });
+  if (g.id === "v1") ignite("#v1-f", g.lock, RGB[RED]);
   lockCell(g.cells[0], g.lock, g.color);
 });
 
@@ -627,7 +566,7 @@ bswap("#bv-fin", 16.5);
   );
   tl.to(sel, { filter: glow(base, a, px), duration: 0.8, ease: "power2.inOut" }, 17.4);
 });
-// the matrix pulses as a neon energy wave, travelling along the diagonal from R11 to v3
+// the matrix pulses as a neon energy wave, travelling along the diagonal from R11 to v3 (glow only: no extra shapes)
 const WAVE = [
   ["e-0-0"],
   ["e-0-1", "e-1-0"],
@@ -656,12 +595,6 @@ WAVE.forEach((cells, i) => {
       `#${cid} .val`,
       { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
       t + 0.3,
-    );
-    tl.fromTo(
-      `#${cid} .ring`,
-      { opacity: 0.9, scale: 0.6 },
-      { opacity: 0, scale: 1.7, duration: 0.5, ease: "power2.out", immediateRender: false },
-      t,
     );
   });
 });

@@ -1,56 +1,47 @@
 /* THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS. 21.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
    DATA (groups, comet laps, flights) is injected by build_index.py, which also writes the CUES block below from the same schedule.
-   The circuit in zone 2 is never dimmed, hidden or moved. Every value that reaches an equation or the matrix first lifts off its
-   own component as a glowing ghost clone and flies there along a curved path; nothing is ever spawned out of thin air. */
+   The circuit in zone 2 is never dimmed, hidden or moved. Every value reaches the matrix by lifting off its own component as a glowing
+   numeric clone and projecting straight into its cell in 0.25 s; the clone then leaves the layout. No badges, no leftovers. */
 
 // @CUES-BEGIN
 const CUES = [
   [0.0, "thump"],
   [1.2, "snap"],
-  [2.0, "click"],
-  [2.565, "whoosh"],
-  [2.811, "whoosh"],
-  [3.015, "click"],
-  [3.261, "click"],
-  [3.6, "whoosh"],
+  [3.274, "click"],
+  [3.524, "click"],
+  [3.65, "click"],
   [3.9, "snap"],
-  [4.2, "click"],
-  [4.344, "whoosh"],
-  [4.719, "whoosh"],
-  [4.794, "click"],
-  [5.169, "click"],
-  [5.469, "whoosh"],
-  [5.919, "click"],
-  [6.0, "whoosh"],
+  [3.9, "thump"],
+  [4.41, "click"],
+  [4.66, "click"],
+  [4.957, "click"],
+  [5.207, "click"],
+  [6.05, "click"],
   [6.3, "snap"],
-  [6.6, "click"],
-  [7.098, "whoosh"],
-  [7.473, "whoosh"],
-  [7.548, "click"],
-  [7.923, "click"],
-  [8.2, "whoosh"],
+  [6.3, "thump"],
+  [7.801, "click"],
+  [8.051, "click"],
+  [8.25, "click"],
   [8.5, "snap"],
-  [8.8, "click"],
-  [9.3, "whoosh"],
+  [8.5, "thump"],
+  [9.65, "click"],
   [9.9, "snap"],
-  [10.3, "click"],
-  [10.8, "whoosh"],
+  [9.9, "thump"],
+  [11.15, "click"],
   [11.4, "snap"],
-  [11.8, "click"],
-  [12.0, "whoosh"],
-  [12.4, "click"],
-  [12.8, "click"],
-  [12.9, "whoosh"],
-  [13.0, "whoosh"],
-  [13.35, "click"],
-  [13.45, "click"],
-  [13.6, "whoosh"],
+  [11.4, "thump"],
+  [12.15, "click"],
+  [12.4, "snap"],
+  [12.4, "thump"],
+  [13.4, "click"],
+  [13.65, "click"],
   [13.9, "snap"],
-  [14.2, "click"],
-  [14.4, "whoosh"],
+  [13.9, "thump"],
+  [14.75, "click"],
   [15.0, "snap"],
-  [15.3, "click"],
-  [15.5, "whoosh"],
+  [15.0, "thump"],
+  [15.85, "click"],
+  [16.1, "snap"],
   [16.1, "thump"],
   [16.5, "thump"],
   [17.5, "snap"],
@@ -71,7 +62,6 @@ const RGB = { "#0088FF": "0,136,255", "#B026FF": "176,38,255", "#FF0044": "255,0
 const HOT = { "#0088FF": "#A8D4FF", "#B026FF": "#DDA8FF", "#FF0044": "#FF8AA6" };
 const glow = (rgb, a, px) => `drop-shadow(0px 0px ${px}px rgba(${rgb},${a}))`;
 const tl = gsap.timeline({ paused: true });
-const root = document.getElementById("root");
 
 // ---------------- banner (zone 3): crossfades are 0.15 s out, then 0.15 s in, never a hard cut ----------------
 let curBanner = "#bv-h2";
@@ -99,8 +89,8 @@ function variant(next, t) {
 }
 
 // ---------------- helpers ----------------
-function halo(k, t0, t1, color, rel = 0.5) {
-  // a component blooms in `color` from t0, and relaxes to its base glow between t1 and t1 + rel
+function halo(k, t0, t1, color, rel = 0.35) {
+  // a component blooms in `color` (0.15 s attack) from t0 and relaxes to its base glow from t1
   const isR = k[0] === "R",
     part = `#el-${k} ${isR ? ".res" : ".src"}`;
   const base = isR ? BLUE : RED,
@@ -111,7 +101,7 @@ function halo(k, t0, t1, color, rel = 0.5) {
     {
       stroke: HOT[color],
       filter: glow(RGB[color], 1, 24),
-      duration: 0.3,
+      duration: 0.15,
       ease: "power2.out",
       immediateRender: false,
     },
@@ -134,21 +124,16 @@ function contour(m, t0, t1) {
   tl.to(`#perim-${m}`, { opacity: 0, duration: 0.4, ease: "power2.in" }, t1);
 }
 function lockCell(cid, t, color) {
-  // the value lands in its matrix cell
+  // the placeholder becomes the final value instantly, with a brief glow
   const rgb = RGB[color];
-  tl.to(`#${cid} .ghost`, { opacity: 0, duration: 0.1 }, t);
-  tl.fromTo(
-    `#${cid} .val`,
-    { opacity: 0, scale: 1.9 },
-    { opacity: 1, scale: 1, duration: 0.3, ease: "power4.out", immediateRender: false },
-    t,
-  );
+  tl.set(`#${cid} .ghost`, { opacity: 0 }, t);
+  tl.set(`#${cid} .val`, { opacity: 1 }, t);
   tl.fromTo(
     `#${cid} .val`,
     { textShadow: `0 0 0px rgba(${rgb},0)` },
     {
-      textShadow: `0 0 28px rgba(${rgb},1)`,
-      duration: 0.25,
+      textShadow: `0 0 26px rgba(${rgb},1)`,
+      duration: 0.1,
       ease: "power2.out",
       immediateRender: false,
     },
@@ -156,14 +141,8 @@ function lockCell(cid, t, color) {
   );
   tl.to(
     `#${cid} .val`,
-    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.7, ease: "power2.in" },
-    t + 0.35,
-  );
-  tl.fromTo(
-    `#${cid} .ring`,
-    { opacity: 0.9, scale: 0.5 },
-    { opacity: 0, scale: 1.8, duration: 0.6, ease: "power2.out", immediateRender: false },
-    t,
+    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
+    t + 0.15,
   );
 }
 function ignite(sel, t, rgb = RGB[BLUE]) {
@@ -183,56 +162,28 @@ function ignite(sel, t, rgb = RGB[BLUE]) {
   tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5 }, t + 0.3);
 }
 
-// canvas-space centre of a flight end: a fixed coordinate (a component or a matrix cell) or a live equation slot in the banner.
-// Slots are measured when their tween first renders, i.e. after the KaTeX fonts have loaded and the layout is final.
-function centre(spec) {
-  if (!spec.slot) return { x: spec.x, y: spec.y };
-  const r = document.querySelector(spec.slot).getBoundingClientRect(),
-    R = root.getBoundingClientRect(),
-    k = R.width / 1080;
-  return { x: (r.left + r.width / 2 - R.left) / k, y: (r.top + r.height / 2 - R.top) / k };
-}
+// A value is extracted: its numeric clone appears at the component's exact SVG coordinate and projects straight into the target cell in
+// exactly 0.25 s (power3.out). On arrival the cell pulses 1.2x and the clone leaves at once (opacity 0, display none).
 function fly(f) {
-  // a ghost clone lifts off its source, arcs to its target and vanishes into it
   const el = "#" + f.id,
-    d = f.t1 - f.t0,
-    lift = 0.16,
     W = 65,
     H = 28;
   cue(f.t0);
-  if (f.tgt.slot) cue(f.t1);
-  tl.set(el, { opacity: f.cls === "z" ? 0.75 : 1 }, f.t0);
+  cue(f.t1);
+  tl.set(el, { display: "block", opacity: f.cls === "z" ? 0.75 : 1 }, f.t0);
   tl.fromTo(
     el,
-    { scale: 0.7 },
-    { scale: 1.3, duration: lift, ease: "power2.out", immediateRender: false },
-    f.t0,
-  ); // lift-off pop
-  tl.to(el, { scale: 0.95, duration: d - lift, ease: "power1.inOut" }, f.t0 + lift);
-  tl.fromTo(
-    el,
-    { x: () => centre(f.src).x - W },
-    { x: () => centre(f.tgt).x - W, duration: d, ease: "power2.inOut", immediateRender: false },
+    { x: f.src.x - W, y: f.src.y - H },
+    { x: f.tgt.x - W, y: f.tgt.y - H, duration: 0.25, ease: "power3.out", immediateRender: false },
     f.t0,
   );
+  tl.set(el, { opacity: 0, display: "none" }, f.t1);
   tl.fromTo(
-    el,
-    { y: () => centre(f.src).y - H },
-    {
-      y: () => centre(f.src).y - H - 34,
-      duration: lift,
-      ease: "power2.out",
-      immediateRender: false,
-    },
-    f.t0,
+    "#" + f.cell,
+    { scale: 1.2 },
+    { scale: 1, duration: 0.25, ease: "power2.out", immediateRender: false },
+    f.t1,
   );
-  tl.fromTo(
-    el,
-    { y: () => centre(f.src).y - H - 34 },
-    { y: () => centre(f.tgt).y - H, duration: d - lift, ease: "power2.in", immediateRender: false },
-    f.t0 + lift,
-  );
-  tl.set(el, { opacity: 0 }, f.t1);
 }
 
 // ================= 0.0 - 2.0  HOOK: paper overlay and banner say the same thing; at 1.2 s both give way, zone 3 is never empty =================
@@ -266,13 +217,12 @@ tl.to(
   1.8,
 );
 
-// ================= 2.0 - 8.8  DIAGONALS: values lift off the resistors the comet touches and add up in the banner =================
+// ================= 2.0 - 8.8  DIAGONALS: the comet touches a resistor, which flashes, and its value projects into the matrix cell =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "diag") return;
   const m = g.mesh,
     tr = DATA.tracers[m],
     W = tr.wps;
-  cue(g.start);
   cue(g.lock);
   bswap("#bv-d" + m, g.banner);
   tl.to(`#d${m}-p0`, { opacity: 1, duration: 0.2 }, g.banner + 0.2);
@@ -304,32 +254,28 @@ DATA.groups.forEach((g) => {
   tl.to(`#head-${m}`, { opacity: 0, duration: 0.15 }, end);
   tl.to(`#trail-${m}`, { opacity: 0, duration: 0.4 }, end + 0.05);
 
-  // each touched resistor blooms; a ghost of its value flies into its term and lights it
-  g.touches.forEach((t) => halo(t.res, t.t, t.t + 0.5, BLUE));
+  // each touched resistor flashes (0.15 s bloom), its term ignites in the banner and its value projects into the cell
+  g.touches.forEach((t) => halo(t.res, t.t, t.t + 0.15, BLUE));
   g.flights.forEach((f) => {
     fly(f);
-    if (f.merge !== undefined) {
-      ignite(`#d${m}-s${f.merge}`, f.t1);
-      ignite(`#d${m}-n${f.merge}`, f.t1);
-    } else {
-      ignite(`#d${m}-f`, f.t0); // the sum lights up as it starts to fall into its matrix slot
-    }
+    ignite(`#d${m}-s${f.merge}`, f.t0);
+    ignite(`#d${m}-n${f.merge}`, f.t0);
   });
+  ignite(`#d${m}-f`, g.lock); // the result lights up as the cell turns into its final value
   lockCell(g.cells[0], g.lock, g.color);
 });
 
-// ================= 8.8 - 12.8  OFF-DIAGONALS: -(shared resistor), split into two symmetric tags =================
+// ================= 8.8 - 12.8  OFF-DIAGONALS: -(shared resistor), split into two symmetric values =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "off" && g.kind !== "zero") return;
-  cue(g.start);
   cue(g.lock);
   const id = { o12: "#off-a", o23: "#off-b", o13: "#off-c" }[g.id];
   if (g.id === "o12") bswap("#bv-off", g.banner);
   variant(id, g.banner);
   if (g.kind === "off") {
-    halo(g.shared, g.start + 0.15, g.until - 0.5, PURPLE);
+    halo(g.shared, g.start + 0.15, g.until - 0.5, PURPLE); // the shared resistor glows Neon Purple until its values are away
   } else {
-    // meshes 1 and 3 touch no common resistor: their boundaries glow, a zero tag appears between them
+    // meshes 1 and 3 touch no common resistor: their boundaries glow
     [1, 3].forEach((m) => contour(m, g.start + 0.15, g.until - 0.4));
   }
   g.flights.forEach(fly);
@@ -339,7 +285,6 @@ DATA.groups.forEach((g) => {
 // ================= 12.8 - 16.5  SOURCES: rises minus drops =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "src") return;
-  cue(g.start);
   cue(g.lock);
   if (g.mesh === 1) bswap("#bv-src", g.banner);
   variant("#src-" + g.mesh, g.banner);
@@ -347,9 +292,9 @@ DATA.groups.forEach((g) => {
   contour(g.mesh, g.start + 0.15, g.until - 0.3);
   g.flights.forEach((f) => {
     fly(f);
-    if (f.merge) ignite("#" + f.merge, f.t1, RGB[RED]);
-    if (f.id === "gh-v1-r") ignite("#v1-f", f.t0, RGB[RED]);
+    if (f.merge) ignite("#" + f.merge, f.t0, RGB[RED]);
   });
+  if (g.id === "v1") ignite("#v1-f", g.lock, RGB[RED]);
   lockCell(g.cells[0], g.lock, g.color);
 });
 
@@ -374,7 +319,7 @@ bswap("#bv-fin", 16.5);
   );
   tl.to(sel, { filter: glow(base, a, px), duration: 0.8, ease: "power2.inOut" }, 17.4);
 });
-// the matrix pulses as a neon energy wave, travelling along the diagonal from R11 to v3
+// the matrix pulses as a neon energy wave, travelling along the diagonal from R11 to v3 (glow only: no extra shapes)
 const WAVE = [
   ["e-0-0"],
   ["e-0-1", "e-1-0"],
@@ -403,12 +348,6 @@ WAVE.forEach((cells, i) => {
       `#${cid} .val`,
       { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
       t + 0.3,
-    );
-    tl.fromTo(
-      `#${cid} .ring`,
-      { opacity: 0.9, scale: 0.6 },
-      { opacity: 0, scale: 1.7, duration: 0.5, ease: "power2.out", immediateRender: false },
-      t,
     );
   });
 });
