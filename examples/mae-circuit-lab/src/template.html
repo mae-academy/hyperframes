@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>The R-Matrix Trick</title>
+<title>The R-Matrix Trick: The Complete Masterclass</title>
 <meta name="viewport" content="width=1080, height=1920" />
 <script src="{{GSAP_SRC}}"></script>
 <style>
@@ -12,14 +12,13 @@
   :root { --bg:#0A0A10; --grid:#161622; --blue:#0088FF; --purple:#B026FF; --red:#FF0044; }
   html, body { margin: 0; padding: 0; background: var(--bg); }
   body { width: 1080px; height: 1920px; overflow: hidden; }
-  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 700; font-style: {{FONT_STYLE}};
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #fff; font-family: "KaTeX_Main", serif; font-weight: 700; font-style: normal;
     background-color: var(--bg);
     background-image: linear-gradient(var(--grid) 2px, transparent 2px), linear-gradient(90deg, var(--grid) 2px, transparent 2px);
     background-size: 60px 60px; }
   #root div, #root svg { box-sizing: border-box; }
   .abs { position: absolute; }
   .katex { font-size: 1.1em; }
-{{ITALIC_CSS}}
 
   /* ---------- zone 1: header, centred on x = 540 ---------- */
   #hdr { left: 0; top: 110px; width: 1080px; height: 200px; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -27,11 +26,11 @@
   #subtitle { margin-top: 3px; font-size: 34px; line-height: 44px; color: var(--purple); white-space: nowrap; }
   #rule { margin-top: 17px; width: 120px; height: 3px; background: linear-gradient(90deg, var(--red), var(--purple)); }
 
-  /* ---------- zone 2: circuit plate ---------- */
+  /* ---------- zone 2: the circuit arena (always fully visible) ---------- */
   #plate { left: 90px; top: 340px; width: 900px; height: 550px; border-radius: 32px; background: rgba(30,30,46,.52); border: 1px solid rgba(255,255,255,.08); overflow: hidden; }
-  #wm { position: absolute; left: 0; top: 232px; width: 900px; height: 84px; text-align: center; font-size: 84px; line-height: 84px; color: #fff; opacity: .04; z-index: 0; white-space: nowrap; }
-  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 1; opacity: .3; }
-  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 2; opacity: .3; }
+  #wm { position: absolute; left: 0; top: 511px; width: 900px; height: 38px; text-align: center; font-size: 36px; line-height: 38px; color: #fff; opacity: .04; z-index: 0; white-space: nowrap; }
+  #circuit { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 1; }
+  #labels { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 2; }
   .wire { stroke: #8DB8FF; stroke-width: 4; fill: none; stroke-linecap: round; filter: drop-shadow(0px 0px 5px rgba(0,136,255,.55)); }
   .res { fill: none; stroke: var(--blue); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0px 0px 6px rgba(0,136,255,.6)); }
   .mask { fill: #1b1b2a; }
@@ -39,66 +38,61 @@
   .pm { stroke: var(--red); stroke-width: 4; fill: none; stroke-linecap: round; }
   .gl { stroke: #8DB8FF; stroke-width: 4; stroke-linecap: round; }
   .node { fill: #fff; stroke: #1b1b2a; stroke-width: 3; filter: drop-shadow(0px 0px 5px rgba(255,255,255,.6)); }
+  .marc { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; }
+  .mhead { fill: var(--blue); }
   .lb { position: absolute; color: #fff; white-space: nowrap; }
-  .elabel { font-size: 24px; } .mlabel { font-size: 34px; } .gtag { font-size: 22px; opacity: .8; }
+  .elabel { font-size: 24px; } .mlabel { font-size: 34px; } .gtag { font-size: 22px; opacity: .85; }
   .trail { fill: none; stroke: var(--blue); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
-  .perim { fill: none; stroke: var(--blue); stroke-width: 4; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(0,136,255,.95)); }
-  .head, .spark { opacity: 0; }
+  .perim { fill: none; stroke: var(--blue); stroke-width: 3; stroke-linejoin: round; opacity: 0; filter: drop-shadow(0px 0px 10px rgba(0,136,255,.95)); }
+  .head { opacity: 0; }
 
-  /* hook overlay: crossed-out KVL algebra, then it shatters */
-  #ov { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 8; }
-  .shbg { position: absolute; left: 0; top: 0; width: 900px; height: 550px; background: rgba(10,10,16,.68); }
-  .mess, .ovq, .ovx { will-change: transform; }
-  .mess { position: absolute; color: #fff; opacity: .62; white-space: nowrap; transform-origin: left center; }
+  /* hook overlay: four crossed-out KVL equations, then it dissolves */
+  #ov { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 8; background: rgba(10,10,16,.74); }
+  .mess { position: absolute; color: #fff; opacity: .7; white-space: nowrap; transform-origin: left center; }
   .strike { position: absolute; left: -10px; right: -10px; top: 50%; height: 5px; margin-top: -2px; background: var(--red); border-radius: 3px; }
-  .ovq { position: absolute; text-align: center; font-size: 40px; line-height: 56px; color: #fff; }
+  .ovq { position: absolute; font-size: 38px; line-height: 50px; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.8); }
   .ovx { position: absolute; }
-  #shards { position: absolute; left: 0; top: 0; width: 900px; height: 550px; z-index: 9; pointer-events: none; }
-  .shard { position: absolute; left: 0; top: 0; width: 900px; height: 550px; opacity: 0; }
 
-  /* ---------- zone 3: live resistor accumulator ---------- */
-  #banner { left: 150px; top: 940px; width: 780px; height: 110px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
-  .bv { position: absolute; left: 0; top: 0; width: 776px; height: 106px; opacity: 0; }
-  #bv-0 { opacity: 1; }
-  .bt { position: absolute; left: 0; top: 0; width: 776px; height: 106px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 32px; line-height: 40px; }
+  /* ---------- zone 3: the arithmetic banner, 820 x 110 ---------- */
+  #banner { left: 130px; top: 940px; width: 820px; height: 110px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
+  .bv { position: absolute; left: 0; top: 0; width: 816px; height: 106px; opacity: 0; }
+  .bt { position: absolute; left: 0; top: 0; width: 816px; height: 106px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 34px; line-height: 44px; }
   .ic { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
-  .bl { position: absolute; left: 0; width: 776px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 32px; white-space: nowrap; }
-  .l1 { top: 4px; } .l2 { top: 54px; }
-  .pc { display: inline-block; opacity: .22; }
-  .vr { opacity: 0; }
+  .bl { position: absolute; left: 0; width: 816px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 32px; white-space: nowrap; }
+  .l1 { top: 3px; } .l2 { top: 53px; }
+  .pc { display: inline-block; opacity: .3; }
+  .vr { opacity: 0; font-size: 24px; }
+  #src-1, #src-2, #src-3 { font-size: 30px; }
   .pill { position: absolute; width: 124px; height: 48px; border-radius: 24px; background: rgba(0,136,255,.22); border: 2px solid var(--blue); text-align: center; font-size: 28px; line-height: 44px; opacity: 0; z-index: 31; box-shadow: 0 0 18px rgba(0,136,255,.7); }
 
-  /* ---------- zone 4: glass matrix card ---------- */
-  #card { left: 160px; top: 1100px; width: 760px; height: 500px; border-radius: 44px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); }
-  #cardin { position: absolute; left: -1px; top: -1px; width: 760px; height: 500px; }
-  #eqhead { position: absolute; left: 0; top: 18px; width: 760px; height: 70px; text-align: center; font-size: 50px; line-height: 70px; }
-  #brk { position: absolute; left: 0; top: 0; width: 760px; height: 500px; }
+  /* ---------- zone 4: glass matrix card, 780 x 460 ---------- */
+  #card { left: 150px; top: 1100px; width: 780px; height: 460px; border-radius: 36px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); transform-origin: 50% 0; }
+  #cardin { position: absolute; left: -1px; top: -1px; width: 780px; height: 460px; }
+  #eqhead { position: absolute; left: 0; top: 16px; width: 780px; height: 64px; text-align: center; font-size: 48px; line-height: 64px; }
+  #brk { position: absolute; left: 0; top: 0; width: 780px; height: 460px; }
   .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-  .cell { position: absolute; width: 120px; height: 110px; text-align: center; }
-  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 110px; line-height: 110px; white-space: nowrap; font-weight: 700; }
-  .cell .ghost { font-size: 40px; opacity: .4; }
-  .cell .val { font-size: 56px; opacity: 0; }
-  .cell .ring { position: absolute; left: 15px; top: 10px; width: 90px; height: 90px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
+  .cell { position: absolute; width: 120px; height: 100px; text-align: center; }
+  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 100px; line-height: 100px; white-space: nowrap; font-weight: 700; }
+  .cell .ghost { font-size: 38px; opacity: .42; }
+  .cell .val { font-size: 54px; opacity: 0; }
+  .cell .ring { position: absolute; left: 15px; top: 5px; width: 90px; height: 90px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
-  .ivec { position: absolute; width: 80px; height: 110px; line-height: 110px; text-align: center; font-size: 46px; }
-  #eqsign { position: absolute; left: 539px; top: 230px; width: 50px; height: 110px; line-height: 110px; text-align: center; font-size: 52px; }
-  #legend { position: absolute; left: 0; top: 452px; width: 760px; height: 36px; display: flex; justify-content: center; gap: 34px; font-size: 25px; line-height: 36px; }
+  .ivec { position: absolute; width: 80px; height: 100px; line-height: 100px; text-align: center; font-size: 44px; }
+  #eqsign { position: absolute; left: 543px; top: 215px; width: 50px; height: 100px; line-height: 100px; text-align: center; font-size: 50px; }
+  #legend { position: absolute; left: 0; top: 422px; width: 780px; height: 32px; display: flex; justify-content: center; gap: 34px; font-size: 24px; line-height: 32px; }
   #legend .sw { display: inline-block; width: 16px; height: 16px; border-radius: 4px; margin-right: 9px; vertical-align: -1px; }
 
-  /* ---------- flights ---------- */
+  /* ---------- drops: a value falls from the banner into its cell ---------- */
   .fly { position: absolute; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 30; text-shadow: 0 0 16px currentColor; }
-  #fx { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; z-index: 25; pointer-events: none; }
-  .beam { stroke-width: 5; stroke-linecap: round; opacity: 0; filter: drop-shadow(0px 0px 8px rgba(176,38,255,.95)); }
 
-  /* ---------- state B: CTA takeover ---------- */
-  #cta { left: 90px; top: 1150px; width: 900px; height: 420px; border-radius: 36px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; }
-  #cta-t, #cta-div, #cta-q, #cta-b { opacity: 0; }
-  #cta-t { position: absolute; left: 0; top: 40px; width: 898px; text-align: center; font-size: 44px; line-height: 56px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
-  #cta-t svg { display: inline-block; width: 36px; height: 44px; vertical-align: -6px; margin-left: 10px; }
-  #cta-div { position: absolute; left: 330px; top: 176px; width: 240px; height: 3px; background: linear-gradient(90deg, var(--red), var(--purple)); }
-  #cta-q { position: absolute; left: 0; top: 196px; width: 898px; text-align: center; font-size: 32px; line-height: 46px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
-  #cta-q svg { display: inline-block; width: 30px; height: 34px; vertical-align: -6px; margin-left: 10px; }
-  #cta-b { position: absolute; left: 0; top: 340px; width: 898px; text-align: center; font-size: 24px; line-height: 36px; color: #fff; opacity: .7; }
+  /* ---------- the CTA expands under the compacted matrix ---------- */
+  #cta { left: 150px; top: 1370px; width: 780px; height: 290px; border-radius: 36px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; transform-origin: 50% 0; }
+  #cta-t, #cta-q, #cta-b { opacity: 0; }
+  #cta-t { position: absolute; left: 0; top: 16px; width: 778px; text-align: center; font-size: 42px; line-height: 52px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
+  #cta-t svg { display: inline-block; width: 32px; height: 40px; vertical-align: -6px; margin-left: 10px; }
+  #cta-q { position: absolute; left: 0; top: 130px; width: 778px; text-align: center; font-size: 32px; line-height: 42px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
+  #cta-q svg { display: inline-block; width: 28px; height: 32px; vertical-align: -6px; margin-left: 10px; }
+  #cta-b { position: absolute; left: 0; top: 240px; width: 778px; text-align: center; font-size: 24px; line-height: 34px; color: #fff; }
 </style>
 </head>
 <body>
@@ -118,11 +112,8 @@
     <div id="labels">
 {{CIRCUIT_LABELS}}
     </div>
-    <div id="ov" data-layout-ignore><div class="shbg"></div>
+    <div id="ov" data-layout-ignore>
 {{OVERLAY}}
-    </div>
-    <div id="shards" data-layout-ignore>
-{{SHARDS}}
     </div>
   </div>
 
@@ -133,20 +124,16 @@
   <div id="card" class="abs">
     <div id="cardin">
       <div id="eqhead">{{HEAD_EQ}}</div>
-      <svg id="brk" viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
+      <svg id="brk" viewBox="0 0 780 460" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
 {{MATRIX}}
       <div id="eqsign">=</div>
       <div id="legend"><span><i class="sw" style="background:#0088FF"></i>self</span><span><i class="sw" style="background:#B026FF"></i>shared</span><span><i class="sw" style="background:#FF0044"></i>sources</span></div>
     </div>
   </div>
 {{FLY}}
-  <svg id="fx" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
-{{BEAMS}}
-  </svg>
 
   <div id="cta" class="abs">
     <div id="cta-t">SAVE THIS TRICK FOR YOUR<br>NEXT EXAM<svg viewBox="0 0 24 30"><path d="M3 2h18v26l-9-7-9 7z" fill="#FF0044" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div>
-    <div id="cta-div"></div>
     <div id="cta-q">{{CTA_Q}}<svg viewBox="0 0 24 28"><path d="M12 2v18M4 13l8 9 8-9" fill="none" stroke="#0088FF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div id="cta-b">MAE ACADEMY ⋅ CIRCUIT THEORY MASTERCLASS</div>
   </div>

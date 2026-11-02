@@ -1,158 +1,181 @@
 ◆  Checking mae-circuit-lab
 [INFO] [Compiler] Fetched 7 font face(s) for "EB Garamond" from Google Fonts (cached to /root/.cache/hyperframes/fonts/eb-garamond)
 [INFO] [Compiler] Injected deterministic @font-face rules for 1 requested font families
-[hyperframes] browserGpuMode probe → software (WebGL unavailable)
-[hyperframes] check: overlap 1/15
-[hyperframes] check: overlap 2/15
-[hyperframes] check: overlap 3/15
-[hyperframes] check: overlap 4/15
-[hyperframes] check: overlap 5/15
-[hyperframes] check: overlap 6/15
-[hyperframes] check: overlap 7/15
-[hyperframes] check: overlap 8/15
-[hyperframes] check: overlap 9/15
-[hyperframes] check: overlap 10/15
-[hyperframes] check: overlap 11/15
-[hyperframes] check: overlap 12/15
-[hyperframes] check: overlap 13/15
-[hyperframes] check: overlap 14/15
-[hyperframes] check: overlap 15/15
+[hyperframes] check: overlap 1/23
+[hyperframes] check: overlap 2/23
+[hyperframes] check: overlap 3/23
+[hyperframes] check: overlap 4/23
+[hyperframes] check: overlap 5/23
+[hyperframes] check: overlap 6/23
+[hyperframes] check: overlap 7/23
+[hyperframes] check: overlap 8/23
+[hyperframes] check: overlap 9/23
+[hyperframes] check: overlap 10/23
+[hyperframes] check: overlap 11/23
+[hyperframes] check: overlap 12/23
+[hyperframes] check: overlap 13/23
+[hyperframes] check: overlap 14/23
+[hyperframes] check: overlap 15/23
+[hyperframes] check: overlap 16/23
+[hyperframes] check: overlap 17/23
+[hyperframes] check: overlap 18/23
+[hyperframes] check: overlap 19/23
+[hyperframes] check: overlap 20/23
+[hyperframes] check: overlap 21/23
+[hyperframes] check: overlap 22/23
+[hyperframes] check: overlap 23/23
 [hyperframes] check: analyze 0/3
 [hyperframes] check: analyze 1/3
 [hyperframes] check: analyze 2/3
 
 Lint
-  ⚠ composition_file_too_large: This HTML composition file has 654 lines. Smaller sub-compositions are easier to read, iterate on, and diff.
+  ⚠ composition_file_too_large: This HTML composition file has 529 lines. Smaller sub-compositions are easier to read, iterate on, and diff.
     /home/user/hyperframes/examples/mae-circuit-lab/index.html [data-composition-id] t=0s
     Fix: Split coherent scenes or layers into separate .html files under compositions/, then mount them from the parent with data-composition-src so each file stays small enough to inspect, revise, and validate independently.
   0 error(s), 1 warning(s), 0 info(s)
 
 Runtime
-  ⚠ gsap_tween_tail: In timeline "main", a tween on textShadow of b.val ends at 11.400 s, 0.000 s after a later tween on textShadow ends at 11.400 s. For that tail the earlier tween takes textShadow back and leaves its own end value on screen, so the later tween's end never shows. End the earlier tween by 11.200 s, or add overwrite: "auto" to the later tween.
-    index.html [data-composition-id] t=11.399999999999999s
-  0 error(s), 1 warning(s), 0 info(s)
+  ◇ 0 errors, 0 warnings
 
 Layout
-  ⚠ t=6.25, 6.375s content_overlap #fly-o12-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #fly-o12-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "2" — Two text blocks overlap and may render unreadable.
+  ⚠ t=5.084, 5.229s content_overlap #d1-n1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) inside #fly-d1-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "2" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=2.875s content_overlap #d1-f > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(4) inside #fly-d1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "kΩ" — Two text blocks overlap and may render unreadable.
+  ⚠ t=12.927, 13, 13.073s content_overlap #off-a > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-o12-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "SHARED BETWEEN MESH 1 & 2" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.375s content_overlap #lb-R4 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #pill-d2-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "R" — Two text blocks overlap and may render unreadable.
+  ⚠ t=12.927, 13, 13.073s content_overlap #fly-o12-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #fly-o12-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "2" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.375s content_overlap #lb-R4 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #pill-d2-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-
+  ⚠ t=14.67, 14.816s content_overlap #fly-o23-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #fly-o23-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "4" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.375, 7.5s content_overlap #lb-R4 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) inside #pill-d2-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) "=" — Two text blocks overlap and may render unreadable.
+  ⚠ t=15.889, 15.978s content_overlap #off-c > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-o13-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "NO RESISTOR SHARED BETWEEN 1 & 3" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.375, 7.5s content_overlap #lb-R4 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #pill-d2-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) "4" — Two text blocks overlap and may render unreadable.
+  ⚠ t=15.889, 15.978s content_overlap #fly-o13-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) inside #fly-o13-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "0" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.5s content_overlap #d2-f > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #fly-d2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "9" — Two text blocks overlap and may render unreadable.
+  ⚠ t=20.916, 21.061s content_overlap #src-3 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(3) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #fly-v3-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.625s content_overlap #e-1-1 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-1-1 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "R" — Two text blocks overlap and may render unreadable.
+  ℹ t=4.793s content_overlap #d1-s0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #pill-d1-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) "R" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=4.625s content_overlap #e-1-1 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-1-1 > b:nth-of-type(2) > span:nth-of-type(1) > 
+  ℹ t=4.793s content_overlap #d1-s0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #pill-d1-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=5.875s content_overlap #d3-f > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(4) inside #fly-d3 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "kΩ" — Two text blocks overlap and may render unreadable.
+  ℹ t=5.229s content_overlap #d1-n1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) inside #fly-d1-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "+" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=6.25, 6.375s content_overlap #fly-o12-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-o12-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "−" — Two text blocks overlap and may render unreadable.
+  ℹ t=6.682s content_overlap #gtag > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #pill-d2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(5) "GND" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=7.5s content_overlap #fly-o23-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #fly-o23-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "4" — Two text blocks overlap and may render unreadable.
+  ℹ t=6.827, 8.279s content_overlap #d2-s0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #pill-d2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=7.625s content_overlap #e-1-2 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-1-2 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "R" — Two text blocks overlap and may render unreadable.
+  ℹ t=6.827, 7.698, 8.279s content_overlap #d2-s1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) inside #pill-d2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) "+" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=7.625s content_overlap #e-1-2 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-1-2 > b:nth-of-type(2) > span:nth-of-type(1) > 
+  ℹ t=7.989s content_overlap #d2-n2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) inside #fly-d2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "+" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=7.625s content_overlap #e-2-1 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-2-1 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "R" — Two text blocks overlap and may render unreadable.
+  ℹ t=8.134, 16.123s content_overlap #eqhead > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) inside #fly-d2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "R" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=7.625s content_overlap #e-2-1 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-2-1 > b:nth-of-type(2) > span:nth-of-type(1) > 
+  ℹ t=8.134s content_overlap #eqhead > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) inside #fly-d2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "⋅" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=8.625s content_overlap #e-0-2 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-0-2 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "R" — Two text blocks overlap and may render unreadable.
+  ℹ t=10.022s content_overlap #d3-s1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) inside #pill-d3-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(5) "+" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=8.625s content_overlap #e-0-2 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-0-2 > b:nth-of-type(2) > span:nth-of-type(1) > 
+  ℹ t=9.587, 10.022, 10.111s content_overlap #d3-s0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #pill-d3-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) "R" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=8.625s content_overlap #e-2-0 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-2-0 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "R" — Two text blocks overlap and may render unreadable.
+  ℹ t=9.587, 10.111s content_overlap #d3-s0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #pill-d3-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=8.625s content_overlap #e-2-0 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-2-0 > b:nth-of-type(2) > span:nth-of-type(1) > 
+  ℹ t=10.749s content_overlap #d3-n1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) inside #fly-d3-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) "1" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=9.75s content_overlap #lb-V2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-v2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "V" — Two text blocks overlap and may render unreadable.
+  ℹ t=12.927s content_overlap #fly-o12-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-o12-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "−" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=10.625s content_overlap #v-2 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #v-2 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "v" — Two text blocks overlap and may render unreadable.
+  ℹ t=13.218s content_overlap #e-0-1 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-0-1 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "R" — Two text blocks overlap and may render unreadable.
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  ℹ t=10.625s content_overlap #v-2 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #v-2 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > spa
+  ℹ t=13.218s content_overlap #e-0-1 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-0-1 > b:nth-of-type(2) > span:nth-of-type(1) >
         Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
-  0 error(s), 1 warning(s), 22 info(s)
+  ℹ t=13.218s content_overlap #e-1-0 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #e-1-0 > b:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "R" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=13.218s content_overlap #e-1-0 > b:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #e-1-0 > b:nth-of-type(2) > span:nth-of-type(1) >
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=14.67s content_overlap #off-b > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-o23-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "SHARED BETWEEN MESH 2 & 3" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=14.67s content_overlap #fly-o23-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-o23-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "−" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=16.704s content_overlap #bv-off > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) inside #bv-src > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "R" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=16.704s content_overlap #bv-off > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) inside #bv-src > div:nth-of-type(1) > span:nth-of-typ
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=16.704s content_overlap #bv-off > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) inside #bv-src > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) "=" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=16.704s content_overlap #bv-off > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #bv-src > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "−" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=16.704s content_overlap #bv-off > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(3) inside #bv-src > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "(" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=16.704s content_overlap #bv-off > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(4) > span:nth-of-type(1) inside #bv-src > div:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(4) > span:nth-of-type(1) "Shared Resistor" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=17.721s content_overlap #src-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(3) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-v1-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "V" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=17.721s content_overlap #src-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(3) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #fly-v1-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=17.721s content_overlap #src-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(3) > span:nth-of-type(4) inside #fly-v1-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "=" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=17.721s content_overlap #src-1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) > span:nth-of-type(2) inside #fly-v1-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "5" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=19.318s content_overlap #src-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(3) > span:nth-of-type(1) inside #fly-v2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "V" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=19.318s content_overlap #src-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(3) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) inside #fly-v2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=19.318s content_overlap #src-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(5) inside #fly-v2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "=" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=19.318s content_overlap #src-2 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(3) > span:nth-of-type(2) > span:nth-of-type(1) inside #fly-v2-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) "−" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=20.916s content_overlap #src-3 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) inside #fly-v3-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "+" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=20.916s content_overlap #src-3 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(3) > span:nth-of-type(1) inside #fly-v3-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "V" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  ℹ t=20.916s content_overlap #src-3 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(5) inside #fly-v3-0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) "=" — Two text blocks overlap and may render unreadable.
+        Fix: Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply.
+  0 error(s), 7 warning(s), 37 info(s)
 
 Motion
   ◇ 0 errors, 0 warnings
 
 Contrast
-  ◇ 470/470 text checks pass WCAG AA
+  ✗ div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(5) > span > span > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span > span:nth-of-type(1) > span:nth-of-type(1) > span > span:nth-of-type(2) > span > span 3.94:1 (need 4.5:1, t=1.444s)
+    Try rgb(24,24,24); source index.html
+  0 error(s), 1 warning(s), 0 info(s)
 
 Craft
-  ⚠ line_unread: "STOP WRITING KVL EQUATIONS: BUILD IT BY SIGHT" (8 words) is on screen 0.64 s (±0.01 s), under its 2.17 s floor: hold it about 0.5 s + 0.3 s a word (2.90 s here) before it leaves or changes; see references/motion.md.
-    index.html #bv-0 > div:nth-of-type(1) t=0s
-  ⚠ line_unread: "BUILD THE R-MATRIX IN 5 SECONDS BY SIGHT" (9 words) is on screen 1.07 s (±0.01 s), under its 2.40 s floor: hold it about 0.5 s + 0.3 s a word (3.20 s here) before it leaves or changes; see references/motion.md.
-    index.html #bv-1 > div:nth-of-type(1) t=0.719s
-  ⚠ text_below_floor: Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 66 text elements stay under it for 0.5 s or more, the smallest "1" at 18 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.
-    index.html #lb-R1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) t=0, 0, 0, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0
-  ⚠ line_unread: "2kΩ" (1 word) is on screen 0.13 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d1-0 t=2.203s
-  ⚠ line_unread: "2kΩ" (1 word) is on screen 0.13 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d1-1 t=2.602s
-  ⚠ line_unread: "4" (1 word) is on screen 0.15 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-d1 t=2.852s
-  ⚠ line_unread: "=4kΩ" (1 word) is on screen 0.15 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #d1-f t=3.039s
-  ⚠ line_unread: "2kΩ" (1 word) is on screen 0.13 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d2-0 t=3.602s
-  ⚠ line_unread: "3kΩ" (1 word) is on screen 0.14 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d2-1 t=4s
-  ⚠ line_unread: "4kΩ" (1 word) is on screen 0.13 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d2-2 t=4.305s
-  ⚠ line_unread: "9" (1 word) is on screen 0.15 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-d2 t=4.453s
-  ⚠ line_unread: "+R 4 ​" (2 words) is on screen 0.22 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (1.10 s here) before it leaves or changes; see references/motion.md.
-    index.html #d2-s2 t=4.469s
-  ⚠ line_unread: "+4" (1 word) is on screen 0.22 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #d2-n2 t=4.469s
-  ⚠ line_unread: "4kΩ" (1 word) is on screen 0.13 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d3-0 t=5.102s
-  ⚠ line_unread: "1kΩ" (1 word) is on screen 0.14 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #pill-d3-1 t=5.5s
-  ⚠ line_unread: "5" (1 word) is on screen 0.15 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-d3 t=5.852s
-  ⚠ line_unread: "=5kΩ" (1 word) is on screen 0.15 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #d3-f t=6.039s
-  ⚠ line_unread: "−2" (1 word) is on screen 0.23 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-o12-0 t=6.25s
-  ⚠ line_unread: "−2" (1 word) is on screen 0.23 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-o12-1 t=6.25s
-  ⚠ line_unread: "Mesh 1 & Mesh 2: R 12 ​ =R 21 ​ =−R 2 ​ =−2kΩ" (11 words) is on screen 1.13 s (±0.06 s), under its 2.85 s floor: hold it about 0.5 s + 0.3 s a word (3.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #off-a > span:nth-of-type(1) t=6.375s
-  ⚠ line_unread: "−4" (1 word) is on screen 0.13 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-o23-0 t=7.5s
-  ⚠ line_unread: "−4" (1 word) is on screen 0.13 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-o23-1 t=7.5s
-  ⚠ line_unread: "Mesh 2 & Mesh 3: R 23 ​ =R 32 ​ =−R 4 ​ =−4kΩ" (11 words) is on screen 0.88 s (±0.06 s), under its 2.85 s floor: hold it about 0.5 s + 0.3 s a word (3.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #off-b > span:nth-of-type(1) t=7.625s
-  ⚠ line_unread: "Mesh 1 & Mesh 3 share nothing: R 13 ​ =R 31 ​ =0" (11 words) is on screen 0.38 s (±0.06 s), under its 2.85 s floor: hold it about 0.5 s + 0.3 s a word (3.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #off-c > span:nth-of-type(1) t=8.625s
-  ⚠ line_unread: "Mesh 1: v 1 ​ =+V 1 ​ −V 3 ​ =5−13=−8V" (11 words) is on screen 0.63 s (±0.06 s), under its 2.85 s floor: hold it about 0.5 s + 0.3 s a word (3.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #src-1 > span:nth-of-type(1) t=9.125s
-  ⚠ line_unread: "+5" (1 word) is on screen 0.13 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-v1-0 t=9.125s
-  ⚠ line_unread: "−13" (1 word) is on screen 0.13 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-v1-1 t=9.125s
-  ⚠ line_unread: "−16" (1 word) is on screen 0.13 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-v2-0 t=9.75s
-  ⚠ line_unread: "Mesh 2: v 2 ​ =−V 2 ​ =−16V" (7 words) is on screen 0.63 s (±0.06 s), under its 1.95 s floor: hold it about 0.5 s + 0.3 s a word (2.60 s here) before it leaves or changes; see references/motion.md.
-    index.html #src-2 > span:nth-of-type(1) t=9.875s
-  ⚠ line_unread: "+13" (1 word) is on screen 0.13 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
-    index.html #fly-v3-0 t=10.5s
-  ⚠ line_unread: "Mesh 3: v 3 ​ =+V 3 ​ =13V" (7 words) is on screen 0.75 s (±0.06 s), under its 1.95 s floor: hold it about 0.5 s + 0.3 s a word (2.60 s here) before it leaves or changes; see references/motion.md.
-    index.html #src-3 > span:nth-of-type(1) t=10.625s
-  ⚠ line_unread: The film's last line "WHAT IS THE VALUE OF I 1 ​ ? DROP IT BELOW" (10 words) is on screen 2.56 s (±0.06 s), under the 2.63 s a closing line needs: hold it about 0.5 s + 0.3 s a word and at least 2 s before the film ends; see references/motion.md.
-    index.html #cta-q t=12s
-  0 error(s), 32 warning(s), 0 info(s)
+  ⚠ text_below_floor: Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 95 text elements stay under it for 0.5 s or more, the smallest "self" at 13 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.
+    index.html #legend > span:nth-of-type(1) t=0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3.5, 4.625, 4.875, 6.25, 7, 7.875, 8.375, 9, 9.75, 10.25, 11.75, 11.875, 11.875, 11.875, 11.875, 11.875, 11.875, 11.875, 11.875, 13.875, 13.875, 13.875, 13.875, 13.875, 13.875, 13.875, 13.875, 15.5, 15.5, 15.5, 15.5, 15.5
+  ⚠ line_unread: "BUILD THE R-MATRIX IN SECONDS BY SIGHT" (8 words) is on screen 0.97 s (±0.01 s), under its 2.17 s floor: hold it about 0.5 s + 0.3 s a word (2.90 s here) before it leaves or changes; see references/motion.md.
+    index.html div.bt t=2.219s
+  ⚠ line_unread: "1" (1 word) is on screen 0.05 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #d1-s0 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(2) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) t=4.5s
+  ⚠ line_unread: "4" (1 word) is on screen 0.32 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-d1-0 t=5.086s
+  ⚠ line_unread: "3" (1 word) is on screen 0.05 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #d2-s1 > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(4) > span:nth-of-type(2) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) > span:nth-of-type(1) t=6.867s
+  ⚠ line_unread: "9" (1 word) is on screen 0.31 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-d2-0 t=7.891s
+  ⚠ line_unread: "5" (1 word) is on screen 0.31 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-d3-0 t=10.688s
+  ⚠ line_unread: "SHARED BETWEEN MESH 1 & 2⟹R 12 ​ =R 21 ​ =−2kΩ" (10 words) is on screen 1.81 s (±0.01 s), under its 2.63 s floor: hold it about 0.5 s + 0.3 s a word (3.50 s here) before it leaves or changes; see references/motion.md.
+    index.html #off-a > span:nth-of-type(1) t=11.805s
+  ⚠ line_unread: "−2" (1 word) is on screen 0.31 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-o12-0 t=12.891s
+  ⚠ line_unread: "−2" (1 word) is on screen 0.31 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-o12-1 t=12.891s
+  ⚠ line_unread: "SHARED BETWEEN MESH 2 & 3⟹R 23 ​ =R 32 ​ =−4kΩ" (10 words) is on screen 1.55 s (±0.01 s), under its 2.63 s floor: hold it about 0.5 s + 0.3 s a word (3.50 s here) before it leaves or changes; see references/motion.md.
+    index.html #off-b > span:nth-of-type(1) t=13.773s
+  ⚠ line_unread: "−4" (1 word) is on screen 0.32 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-o23-0 t=14.586s
+  ⚠ line_unread: "−4" (1 word) is on screen 0.32 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-o23-1 t=14.586s
+  ⚠ line_unread: "NO RESISTOR SHARED BETWEEN 1 & 3⟹R 13 ​ =R 31 ​ =0" (11 words) is on screen 1.13 s (±0.01 s), under its 2.85 s floor: hold it about 0.5 s + 0.3 s a word (3.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #off-c > span:nth-of-type(1) t=15.469s
+  ⚠ line_unread: "0" (1 word) is on screen 0.31 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-o13-0 t=15.891s
+  ⚠ line_unread: "0" (1 word) is on screen 0.31 s (±0.01 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-o13-1 t=15.891s
+  ⚠ line_unread: "v 1 ​ =+V 1 ​ −V 3 ​ =5−13=−8V" (9 words) is on screen 1.50 s (±0.06 s), under its 2.40 s floor: hold it about 0.5 s + 0.3 s a word (3.20 s here) before it leaves or changes; see references/motion.md.
+    index.html #src-1 > span:nth-of-type(1) t=16.875s
+  ⚠ line_unread: "−16" (1 word) is on screen 0.25 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-v2-0 t=19.25s
+  ⚠ line_unread: "13" (1 word) is on screen 0.25 s (±0.06 s), under its 0.40 s floor: hold it about 0.5 s + 0.3 s a word (0.80 s here) before it leaves or changes; see references/motion.md.
+    index.html #fly-v3-0 t=21s
+  0 error(s), 19 warning(s), 0 info(s)
 
 Audio
   ◇ 0 errors, 0 warnings
@@ -161,5 +184,5 @@ Snapshots
   ◇ disabled
 
 ◇  Check passed
-Report: /home/user/hyperframes/examples/mae-circuit-lab/.hyperframes/artifacts/checks/ea1990c7-9eee-4ad3-8191-51144d88c7e1.json
-Revision: a91dcc13-bc1c-4793-bd2f-653f8ebc9e11 (recorded-revision)
+Report: /home/user/hyperframes/examples/mae-circuit-lab/.hyperframes/artifacts/checks/c06cd74f-9b63-439c-a0db-4ec5ed49e62a.json
+Revision: f8df6930-f03e-47e4-b56f-57eeacb02ea3 (recorded-revision)

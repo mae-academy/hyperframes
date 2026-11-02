@@ -1,40 +1,40 @@
-# THE R-MATRIX TRICK · build the mesh matrix by inspection (1080×1920, 60 fps, 14.5 s)
+# THE R-MATRIX TRICK · THE COMPLETE MASTERCLASS (1080×1920, 60 fps, 26.0 s)
 
-Opens on a crossed-out wall of KVL algebra ("15 MINUTES OF MESH EQUATIONS? ✕") that shatters at 0.6 s and lights the circuit.
-A blue comet then laps each mesh clockwise; at every resistor it touches, that resistor blooms, its value is pulled down into a pill
-and the running sum ignites term by term in the Zone 3 banner (`R₂₂ = R₂ + R₃ + R₄` / `= 2 + 3 + 4 = 9 kΩ`) before the result is
-thrown into the matrix. Shared resistors fire purple beams into R_ij; sources fill v. At 11.2 s the matrix glows, pushes up, and the
-"SAVE THIS TRICK" card takes over the bottom of the screen. No URL bar, no cursor, no link, no screen recording, no Gaussian elimination.
+Builds the mesh matrices by inspection, unhurried. The circuit in zone 2 is fully lit and anchored for all 26 s (it is never dimmed,
+hidden or moved; every highlight is a glow). The matrix card never moves until the finale, where it compacts in place.
 
-| Time (s)    | Beat                                                                                                                        |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 0.0 - 1.8   | hook: crossed-out algebra, shatter at 0.6, circuit illuminates, banner "BUILD THE R-MATRIX IN 5 SECONDS BY SIGHT"           |
-| 1.8 - 6.2   | diagonals: comet on mesh 1 / 2 / 3, ticks at 2.2 2.6 · 3.6 4.0 4.3 · 5.1 5.5, locks 3.0 4.6 6.0 → R11 = 4, R22 = 9, R33 = 5 |
-| 6.2 - 9.0   | off-diagonals: shared R2 → R12 = R21 = −2 (6.5), shared R4 → R23 = R32 = −4 (7.6), nothing shared → 0 (8.6)                 |
-| 9.0 - 11.2  | sources: v1 = +5 − 13 = −8 (9.2), v2 = −16 (9.9), v3 = +13 (10.6)                                                           |
-| 11.2 - 14.5 | matrix glows (11.2), card pushes up, CTA slides up (11.4 / 11.45), resonance (12.8), static hold from 13.5                  |
+| Time (s)    | Beat                                                                                                                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.0 - 3.0   | hook: four crossed-out KVL equations over the circuit ("15 MINUTES OF KVL ALGEBRA?"), clean dissolve 2.0-3.0, banner "BUILD THE R-MATRIX IN SECONDS BY SIGHT"                                                                           |
+| 3.0 - 11.5  | diagonals: the mesh contour glows, a blue comet laps it once clockwise, each resistor blooms as it is touched, its value is pulled into a pill and the sum builds in the banner, the result drops into R11 (5.4), R22 (8.2), R33 (11.0) |
+| 11.5 - 16.5 | off-diagonals: shared R2 glows purple → R12 = R21 = −2 (13.2); shared R4 → R23 = R32 = −4 (14.9); meshes 1 and 3 share nothing → 0 (16.2)                                                                                               |
+| 16.5 - 21.5 | sources: v1 = +V1 − V3 = 5 − 13 = −8 (17.9), v2 = −V2 = −16 (19.5), v3 = +V3 = +13 (21.2)                                                                                                                                               |
+| 21.5 - 26.0 | the system pulses (21.5), the matrix compacts in place, the CTA expands below it (22.0 - 23.0), hold from 24.9                                                                                                                          |
 
-R = [[4, −2, 0], [−2, 9, −4], [0, −4, 5]] kΩ, V = [−8, −16, 13]ᵀ V, mesh currents clockwise (asserted against `scripts/solve.py`).
+R = [[4, −2, 0], [−2, 9, −4], [0, −4, 5]] kΩ, V = [−8, −16, 13]ᵀ V, mesh currents clockwise. Mesh 3 reads R₃₃ = R₄ + R₅ = 4 + 1 = 5 kΩ:
+the builder derives the index from the mesh number and asserts it, together with every sum and sign, against `scripts/solve.py`.
 
 ## Typography
 
-Every formula is rendered by KaTeX 0.16.11 at build time (vendored in `scripts/vendor`, fonts in `assets/fonts`, woff2 only).
-**All KaTeX is italic** (`ITALIC = True` in `build_index.py`): names, subscripts, numbers, units (`k\varOmega`, `V`) and `\textit` text are
-italic, bold is bold-italic, and the KaTeX_Main titles/banners/CTA inherit italic from the root. Set `ITALIC = False` to get the
-earlier upright-roman hygiene (`\mathbf{R}`, `\mathrm{11}`, `2\,\mathrm{k}\Omega`) back. Units keep their thin space.
-⚡, 🔖 and 👇 are SVG icons (KaTeX has no such glyphs). Palette: Electric Blue #0088FF diagonals, Neon Purple #B026FF off-diagonals,
-Flame Red #FF0044 sources, white; no green, no yellow.
+Formulas are rendered by KaTeX 0.16.11 at build time from the TeX of the brief (vendored in `scripts/vendor`, woff2 fonts in `assets/fonts`):
+variables are math italic (`R_1`, `V_1`, `I_1`), indices and units are upright (`R_{\mathrm{11}}`, `2\,\mathrm{k}\Omega`), results are bold.
+Titles, banner text and the CTA use KaTeX_Main Bold. ⚡, 🔖 and 👇 are SVG icons (KaTeX has no such glyphs). Palette: Electric Blue #0088FF diagonals,
+Neon Purple #B026FF off-diagonals, Flame Red #FF0044 sources, white; no green, no yellow.
+
+## Audio
+
+`scripts/make_sfx.py` (numpy + scipy.io.wavfile) reads the CUES block and writes a 26.0 s stereo WAV: a continuous 50 Hz hum at -22 dBFS with no gap,
+relay clicks around 1100 Hz, gate-close snaps around 2400 Hz laid over a 55 Hz sub-bass boom, and 55 Hz thumps. Every cue is varied by its own seed, so no two are identical.
 
 ## Files
 
 ```
 src/template.html   markup + CSS          src/timeline.js   GSAP timeline + CUES (@CUES-BEGIN / @CUES-END)
-build_index.py      derives every sum, sign and comet waypoint, renders the KaTeX -> index.html
-scripts/katex_render.cjs + scripts/vendor/   KaTeX at build time          scripts/solve.py   exact solver (assertions)
-scripts/make_sfx.py CUES -> assets/sfx.wav (14.5 s stereo, 50 Hz hum at -22 dBFS, click / snap / thump)
-scripts/verify_snapshots.py   snapshots every 0.6 s + pixel checks (x 90-990, y 110-1670, no yellow)
-export_clean.sh     metadata/chapters stripped, 4 px crop + rescale, light noise, loudnorm, faststart yuv420p (+ bitexact flags)
-reports/            check-report.txt, solution.json     snapshots/critical/  frames at 0, 0.9, 2.9, 4.5, 6.4, 9.2, 11.6, 14.49 s
+build_index.py      derives every sum, sign and comet timing, renders the KaTeX -> index.html
+scripts/solve.py    exact solver (assertions)    scripts/katex_render.cjs + scripts/vendor/   KaTeX at build time
+scripts/make_sfx.py CUES -> assets/sfx.wav       scripts/verify_snapshots.py   every 0.6 s: safe zones, no yellow, circuit stays lit
+export_clean.sh     clean export -> mesh_inspection_masterclass_clean.mp4
+reports/            check-report.txt, solution.json, snapshot-verification.json     snapshots/critical/   key frames
 ```
 
 ## Rebuild
@@ -45,12 +45,12 @@ python3 scripts/make_sfx.py
 npx hyperframes lint && npx hyperframes check
 python3 scripts/verify_snapshots.py
 npx hyperframes render --fps 60 -o renders/raw_render.mp4
-cd renders && ../export_clean.sh raw_render.mp4 mesh_inspection_matrix_perfect.mp4
+cd renders && ../export_clean.sh raw_render.mp4 mesh_inspection_masterclass_clean.mp4
 ```
 
 `assets/sfx.wav` and `renders/` are git-ignored.
 
 ## Check status
 
-`npx hyperframes check`: 0 errors. Warnings (`reports/check-report.txt`): `line_unread` (locks and ticks are short by design),
-type under 28 px (subscripts, circuit labels, legend), single-file length. `MAE_STYLE_SPEC.md` is not in this repository; the numbers in the brief were used.
+`npx hyperframes check`: 0 errors. Warnings (`reports/check-report.txt`): `line_unread`, type under 28 px (subscripts, circuit labels, legend),
+single-file length, and a transient white-on-red contrast sample. `MAE_STYLE_SPEC.md` is not in this repository; the numbers in the brief were used.

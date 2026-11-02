@@ -1,33 +1,32 @@
-/* THE R-MATRIX TRICK: 14.5 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
-   DATA (groups, tracer waypoints, shard motion, flight offsets) is injected by build_index.py. Whole file, rewritten as a unit. */
+/* THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS. 26.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
+   DATA (groups, comet laps, drop offsets) is injected by build_index.py. Whole file, rewritten as a unit.
+   The circuit in zone 2 is never dimmed, hidden or moved: every highlight is a glow, never a fade of the rest. */
 
 // @CUES-BEGIN
 const CUES = [
-  [0.0, "thump"], // Hook strike
-  [0.6, "snap"], // Paper shatter
-  [1.8, "click"], // Mesh 1 tracer start
-  [2.2, "click"], // R1 touched
-  [2.6, "click"], // R2 touched
-  [3.0, "snap"], // R11 locked (4)
-  [3.2, "click"], // Mesh 2 tracer start
-  [3.6, "click"], // R2 touched
-  [4.0, "click"], // R3 touched
-  [4.3, "click"], // R4 touched
-  [4.6, "snap"], // R22 locked (9)
-  [4.7, "click"], // Mesh 3 tracer start
-  [5.1, "click"], // R4 touched
-  [5.5, "click"], // R5 touched
-  [6.0, "snap"], // R33 locked (5)
-  [6.5, "snap"], // R12/R21 locked (-2)
-  [7.6, "snap"], // R23/R32 locked (-4)
-  [8.6, "click"], // R13/R31 locked (0)
-  [9.2, "snap"], // v1 locked (-8)
-  [9.9, "snap"], // v2 locked (-16)
-  [10.6, "thump"], // v3 locked (13) and vector complete
-  [11.2, "snap"], // Matrix glow confirmation
-  [11.4, "thump"], // Massive CTA card impact
-  [11.45, "snap"], // CTA glow lock
-  [12.8, "click"], // Final subtle resonance
+  [0.0, "thump"],
+  [2.0, "snap"],
+  [3.2, "click"],
+  [5.4, "snap"],
+  [6.0, "click"],
+  [8.2, "snap"],
+  [8.8, "click"],
+  [11.0, "snap"],
+  [11.8, "click"],
+  [13.2, "snap"],
+  [13.8, "click"],
+  [14.9, "snap"],
+  [15.5, "click"],
+  [16.2, "snap"],
+  [16.8, "click"],
+  [17.9, "snap"],
+  [18.5, "click"],
+  [19.5, "snap"],
+  [20.1, "click"],
+  [21.2, "thump"],
+  [21.5, "thump"],
+  [22.0, "snap"],
+  [23.5, "click"],
 ];
 // @CUES-END
 
@@ -46,31 +45,33 @@ const glow = (rgb, a, px) => `drop-shadow(0px 0px ${px}px rgba(${rgb},${a}))`;
 const tl = gsap.timeline({ paused: true });
 
 // ---------------- banner (zone 3) ----------------
-let curBanner = "#bv-0";
+let curBanner = null;
 function bswap(to, t) {
-  tl.to(curBanner, { opacity: 0, duration: 0.1 }, t);
+  if (curBanner) tl.to(curBanner, { opacity: 0, duration: 0.25, ease: "power1.in" }, t);
   tl.fromTo(
     to,
-    { opacity: 0, scale: 1.1 },
-    { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(2)", immediateRender: false },
-    t + 0.08,
+    { opacity: 0, y: 10 },
+    { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", immediateRender: false },
+    t + 0.12,
   );
   curBanner = to;
 }
-function variant(prev, next, t) {
-  // second banner line changes inside a container
-  if (prev) tl.to(prev, { opacity: 0, duration: 0.1 }, t);
+let curVar = null;
+function variant(next, t) {
+  // the second banner line changes inside a container
+  if (curVar) tl.to(curVar, { opacity: 0, duration: 0.2 }, t);
   tl.fromTo(
     next,
     { opacity: 0, y: 8 },
-    { opacity: 1, y: 0, duration: 0.22, ease: "power2.out", immediateRender: false },
-    t + 0.06,
+    { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", immediateRender: false },
+    t + 0.12,
   );
+  curVar = next;
 }
 
 // ---------------- helpers ----------------
-function hold(k, t0, t1, color) {
-  // a branch blooms between t0 and t1, then relaxes to its base glow
+function halo(k, t0, t1, color) {
+  // a component blooms in `color` between t0 and t1, then relaxes to its base glow
   const isR = k[0] === "R",
     part = `#el-${k} ${isR ? ".res" : ".src"}`;
   const base = isR ? BLUE : RED,
@@ -80,8 +81,8 @@ function hold(k, t0, t1, color) {
     { stroke: base, filter: glow(baseRgb, 0.6, 6) },
     {
       stroke: HOT[color],
-      filter: glow(RGB[color], 1, 22),
-      duration: 0.1,
+      filter: glow(RGB[color], 1, 24),
+      duration: 0.35,
       ease: "power2.out",
       immediateRender: false,
     },
@@ -89,35 +90,36 @@ function hold(k, t0, t1, color) {
   );
   tl.to(
     part,
-    { stroke: base, filter: glow(baseRgb, 0.6, 6), duration: 0.3, ease: "power2.in" },
+    { stroke: base, filter: glow(baseRgb, 0.6, 6), duration: 0.5, ease: "power2.inOut" },
     t1,
   );
 }
-function focus(t0, t1, active) {
-  // dim every branch that is not part of the current explanation
-  DATA.BRK.forEach((k) => {
-    if (active.includes(k)) return;
-    const sel = [`#el-${k}`, `#lb-${k}`, `#w-${k}`];
-    tl.fromTo(sel, { opacity: 1 }, { opacity: 0.3, duration: 0.15, immediateRender: false }, t0);
-    tl.to(sel, { opacity: 1, duration: 0.12 }, t1);
-  });
+function contour(m, t0, t1) {
+  // a mesh boundary glows while it is the active mesh
+  tl.fromTo(
+    `#perim-${m}`,
+    { opacity: 0 },
+    { opacity: 0.55, duration: 0.5, ease: "power2.out", immediateRender: false },
+    t0,
+  );
+  tl.to(`#perim-${m}`, { opacity: 0, duration: 0.5, ease: "power2.in" }, t1);
 }
 function lockCell(cid, t, color) {
-  // the value slams into its matrix cell
+  // the value lands in its matrix cell
   const rgb = RGB[color];
-  tl.to(`#${cid} .ghost`, { opacity: 0, duration: 0.08 }, t);
+  tl.to(`#${cid} .ghost`, { opacity: 0, duration: 0.1 }, t);
   tl.fromTo(
     `#${cid} .val`,
-    { opacity: 0, scale: 2.2 },
-    { opacity: 1, scale: 1, duration: 0.22, ease: "power4.out", immediateRender: false },
+    { opacity: 0, scale: 1.9 },
+    { opacity: 1, scale: 1, duration: 0.3, ease: "power4.out", immediateRender: false },
     t,
   );
   tl.fromTo(
     `#${cid} .val`,
     { textShadow: `0 0 0px rgba(${rgb},0)` },
     {
-      textShadow: `0 0 26px rgba(${rgb},1)`,
-      duration: 0.2,
+      textShadow: `0 0 28px rgba(${rgb},1)`,
+      duration: 0.25,
       ease: "power2.out",
       immediateRender: false,
     },
@@ -125,127 +127,73 @@ function lockCell(cid, t, color) {
   );
   tl.to(
     `#${cid} .val`,
-    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.5, ease: "power2.in" },
-    t + 0.3,
+    { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.7, ease: "power2.in" },
+    t + 0.35,
   );
   tl.fromTo(
     `#${cid} .ring`,
     { opacity: 0.9, scale: 0.5 },
-    { opacity: 0, scale: 1.7, duration: 0.45, ease: "power2.out", immediateRender: false },
+    { opacity: 0, scale: 1.8, duration: 0.6, ease: "power2.out", immediateRender: false },
     t,
   );
 }
 function ignite(sel, t, rgb = RGB[BLUE]) {
-  // a term of the equation lights up and pops
+  // a term of the equation lights up
   tl.fromTo(
     sel,
-    { opacity: 0.22, scale: 1.25 },
-    { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2.5)", immediateRender: false },
+    { opacity: 0.3, scale: 1.2 },
+    { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false },
     t,
   );
   tl.fromTo(
     sel,
     { textShadow: `0 0 0px rgba(${rgb},0)` },
-    { textShadow: `0 0 22px rgba(${rgb},1)`, duration: 0.15, immediateRender: false },
+    { textShadow: `0 0 22px rgba(${rgb},1)`, duration: 0.25, immediateRender: false },
     t,
   );
-  tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.4 }, t + 0.25);
+  tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.6 }, t + 0.35);
 }
-function flights(g) {
-  // numerals hurled from the part into the matrix (off-diagonals, sources)
-  g.items.forEach((it) => {
-    const el = "#" + it.id,
-      dur = it.arrive - it.launch;
-    tl.set(el, { opacity: 1 }, it.launch);
+function drops(g) {
+  // the result falls from the banner straight into its cell
+  g.drops.forEach((d) => {
+    const el = "#" + d.id,
+      t0 = g.lock - 0.32;
+    tl.set(el, { opacity: 1 }, t0);
     tl.fromTo(
       el,
-      { x: it.dx, y: it.dy, scale: 1.25 },
-      { x: 0, y: 0, scale: 0.85, duration: dur, ease: "power3.in", immediateRender: false },
-      it.launch,
+      { x: d.dx, y: d.dy, scale: 1.5 },
+      { x: 0, y: 0, scale: 0.9, duration: 0.32, ease: "power3.in", immediateRender: false },
+      t0,
     );
-    tl.set(el, { opacity: 0 }, it.arrive);
-    if (it.beam) {
-      const L = +document.getElementById(it.beam).getAttribute("stroke-dasharray");
-      tl.set("#" + it.beam, { opacity: 1 }, it.launch);
-      tl.fromTo(
-        "#" + it.beam,
-        { strokeDashoffset: L },
-        { strokeDashoffset: 0, duration: dur, ease: "power2.out", immediateRender: false },
-        it.launch,
-      );
-      tl.to("#" + it.beam, { opacity: 0, duration: 0.3 }, g.lock + 0.1);
-    }
+    tl.set(el, { opacity: 0 }, g.lock);
   });
 }
 
-// ================= 0.0 - 1.8  HOOK: crossed-out KVL algebra shatters, the circuit illuminates =================
+// ================= 0.0 - 3.0  HOOK: four crossed-out KVL equations, then a clean dissolve =================
 cue(0.0);
-cue(0.6);
-DATA.pieces.forEach((p) => tl.set("#" + p.id, { rotation: p.r0 }, 0));
-tl.fromTo("#ov", { scale: 1.05 }, { scale: 1, duration: 0.28, ease: "back.out(2.4)" }, 0);
-tl.fromTo("#bv-0", { scale: 1.12 }, { scale: 1, duration: 0.28, ease: "back.out(2.4)" }, 0);
-tl.set("#ov .shbg", { opacity: 0 }, 0.6); // the glass sheet hands over to its 24 shards
-DATA.pieces.forEach((p) => {
-  // the crossed-out algebra breaks apart line by line
-  tl.fromTo(
-    "#" + p.id,
-    { x: 0, y: 0, rotation: p.r0, opacity: 1 },
-    {
-      x: p.x,
-      y: p.y,
-      rotation: p.rot,
-      opacity: 0,
-      duration: 0.6,
-      delay: p.d,
-      ease: "power2.in",
-      immediateRender: false,
-    },
-    0.6,
-  );
-});
-DATA.shards.forEach((s) => {
-  tl.set("#" + s.id, { opacity: 1 }, 0.6);
-  tl.fromTo(
-    "#" + s.id,
-    { x: 0, y: 0, rotation: 0, opacity: 1 },
-    {
-      x: s.x,
-      y: s.y,
-      rotation: s.rot,
-      opacity: 0,
-      duration: 0.6,
-      delay: s.d,
-      ease: "power2.in",
-      immediateRender: false,
-    },
-    0.6,
-  );
-});
-tl.fromTo(
-  ["#circuit", "#labels"],
-  { opacity: 0.3 },
-  { opacity: 1, duration: 0.35, ease: "power2.out", immediateRender: false },
-  0.6,
-);
+cue(2.0);
+DATA.base_rot.forEach((r, i) => tl.set("#ms-" + i, { rotation: r }, 0));
+tl.fromTo("#ov", { scale: 1.04 }, { scale: 1, duration: 0.5, ease: "back.out(2)" }, 0);
+tl.to("#ov", { opacity: 0, duration: 1.0, ease: "power1.inOut" }, 2.0); // pristine circuit shows through
 tl.fromTo(
   "#plate",
   { boxShadow: "inset 0 0 0px rgba(0,136,255,0)" },
   {
-    boxShadow: "inset 0 0 90px rgba(0,136,255,0.55)",
-    duration: 0.2,
+    boxShadow: "inset 0 0 70px rgba(0,136,255,0.5)",
+    duration: 0.5,
     ease: "power2.out",
     immediateRender: false,
   },
-  0.6,
+  2.0,
 );
 tl.to(
   "#plate",
-  { boxShadow: "inset 0 0 0px rgba(0,136,255,0)", duration: 0.6, ease: "power2.in" },
-  0.8,
+  { boxShadow: "inset 0 0 0px rgba(0,136,255,0)", duration: 0.8, ease: "power2.in" },
+  2.5,
 );
-bswap("#bv-1", 0.6);
+bswap("#bv-0", 2.0);
 
-// ================= 1.8 - 6.2  DIAGONALS: the comet touches each resistor and the sum builds up =================
+// ================= 3.0 - 11.5  DIAGONALS: sum of every resistor around the mesh =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "diag") return;
   const m = g.mesh,
@@ -253,13 +201,12 @@ DATA.groups.forEach((g) => {
     W = tr.wps;
   cue(g.start);
   cue(g.lock);
-  g.touches.forEach((t) => cue(t.t));
-  bswap("#bv-d" + m, g.start - 0.05);
-  tl.to(`#d${m}-p0`, { opacity: 1, duration: 0.15 }, g.start);
-  tl.to(`#d${m}-e`, { opacity: 1, duration: 0.15 }, g.start);
-  focus(g.focus[0], g.focus[1], g.active);
+  bswap("#bv-d" + m, g.banner);
+  tl.to(`#d${m}-p0`, { opacity: 1, duration: 0.4 }, g.banner + 0.3);
+  tl.to(`#d${m}-e`, { opacity: 1, duration: 0.4 }, g.banner + 0.3);
+  contour(m, g.start - 0.1, g.until - 0.35);
 
-  // the comet: piecewise-linear laps so it reaches every resistor exactly on its tick
+  // the comet glides once around the inner boundary at constant speed, clockwise
   const dash = tr.total;
   tl.set(`#head-${m}`, { opacity: 1 }, W[0].t);
   tl.set(`#trail-${m}`, { opacity: 1 }, W[0].t);
@@ -280,127 +227,84 @@ DATA.groups.forEach((g) => {
       a.t,
     );
   }
-  const end = W[W.length - 1].t;
-  tl.to(`#head-${m}`, { opacity: 0, duration: 0.1 }, end);
-  tl.to(`#trail-${m}`, { opacity: 0, duration: 0.3 }, end + 0.05);
+  tl.to(`#head-${m}`, { opacity: 0, duration: 0.25 }, g.end);
+  tl.to(`#trail-${m}`, { opacity: 0, duration: 0.7 }, g.end + 0.05);
 
-  // every touch: the resistor blooms, its value is pulled down into a pill, the equation term ignites
-  g.touches.forEach((t, i) => {
-    hold(t.res, t.t, t.t + 0.12, BLUE);
-    tl.set("#" + t.pill, { opacity: 1 }, t.t);
+  // each resistor the comet touches blooms; its value is pulled into a pill and the term ignites in the equation
+  g.touches.forEach((t) => {
+    halo(t.res, t.t, t.t + 0.7, BLUE);
+    tl.set("#" + t.pill, { opacity: 1 }, t.t + 0.1);
     tl.fromTo(
       "#" + t.pill,
       { x: t.dx, y: t.dy, scale: 1.15 },
-      { x: 0, y: 0, scale: 0.9, duration: 0.14, ease: "power2.in", immediateRender: false },
-      t.t,
+      { x: 0, y: 0, scale: 0.9, duration: 0.45, ease: "power2.inOut", immediateRender: false },
+      t.t + 0.1,
     );
-    tl.set("#" + t.pill, { opacity: 0 }, t.t + 0.14);
-    ignite(`#d${m}-s${i}`, t.t + 0.14);
-    ignite(`#d${m}-n${i}`, t.t + 0.14);
+    tl.set("#" + t.pill, { opacity: 0 }, t.t + 0.55);
+    ignite(`#d${m}-s${t.idx}`, t.t + 0.55);
+    ignite(`#d${m}-n${t.idx}`, t.t + 0.55);
   });
-
-  // lock: final number appears in the equation, drops into the matrix slot, cell slams
-  tl.fromTo(
-    `#d${m}-f`,
-    { opacity: 0, scale: 1.5 },
-    { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(2.2)", immediateRender: false },
-    g.lock,
-  );
-  tl.fromTo(
-    `#d${m}-f`,
-    { textShadow: "0 0 0px rgba(0,136,255,0)" },
-    { textShadow: "0 0 26px rgba(0,136,255,1)", duration: 0.2, immediateRender: false },
-    g.lock,
-  );
-  tl.to(`#d${m}-f`, { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.5 }, g.lock + 0.3);
-  const nf = g.numfly,
-    el = "#" + nf.id;
-  tl.set(el, { opacity: 1 }, g.lock - 0.16);
-  tl.fromTo(
-    el,
-    { x: nf.dx, y: nf.dy, scale: 1.4 },
-    { x: 0, y: 0, scale: 0.9, duration: 0.16, ease: "power3.in", immediateRender: false },
-    g.lock - 0.16,
-  );
-  tl.set(el, { opacity: 0 }, g.lock);
+  // lap complete: the result of the sum lights up, then falls into the matrix
+  ignite(`#d${m}-f`, g.end + 0.1);
+  drops(g);
   lockCell(g.cells[0], g.lock, g.color);
 });
 
-// ================= 6.2 - 9.0  OFF-DIAGONALS: -(shared resistor) =================
-bswap("#bv-off", 6.15);
-let curVar = null;
+// ================= 11.5 - 16.5  OFF-DIAGONALS: -(shared resistor) =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "off" && g.kind !== "zero") return;
+  cue(g.start);
   cue(g.lock);
   const id = { o12: "#off-a", o23: "#off-b", o13: "#off-c" }[g.id];
-  variant(curVar, id, g.start);
-  curVar = id;
-  if (g.focus) focus(g.focus[0], g.focus[1], g.active);
+  if (g.id === "o12") bswap("#bv-off", g.banner);
+  variant(id, g.banner + 0.05);
   if (g.kind === "off") {
-    hold(g.shared, g.start, g.focus[1], PURPLE);
-    // two currents slide past each other, in opposite directions, inside the shared resistor
-    DATA.sparks[g.shared].forEach(([sid, a, b]) => {
-      tl.set("#" + sid, { opacity: 1 }, g.start);
-      tl.fromTo(
-        "#" + sid,
-        { x: 0, y: 0 },
-        {
-          x: b[0] - a[0],
-          y: b[1] - a[1],
-          duration: g.lock - g.start,
-          ease: "power1.inOut",
-          immediateRender: false,
-        },
-        g.start,
-      );
-      tl.to("#" + sid, { opacity: 0, duration: 0.1 }, g.lock);
-    });
-    flights(g);
+    halo(g.shared, g.start, g.until - 0.2, PURPLE);
   } else {
-    // meshes 1 and 3 touch no common resistor: their boundaries flash
-    [1, 3].forEach((m) => {
-      tl.fromTo(
-        `#perim-${m}`,
-        { opacity: 0 },
-        { opacity: 0.95, duration: 0.1, immediateRender: false },
-        g.start,
-      );
-      tl.to(`#perim-${m}`, { opacity: 0, duration: 0.45, ease: "power2.in" }, g.start + 0.14);
-    });
+    // meshes 1 and 3 touch no common resistor: their boundaries glow together
+    [1, 3].forEach((m) => contour(m, g.start, g.until - 0.4));
   }
+  drops(g);
   g.cells.forEach((cid) => lockCell(cid, g.lock, g.color));
 });
 
-// ================= 9.0 - 11.2  SOURCES: rises minus drops =================
-bswap("#bv-src", 8.95);
+// ================= 16.5 - 21.5  SOURCES: rises minus drops =================
 DATA.groups.forEach((g) => {
   if (g.kind !== "src") return;
+  cue(g.start);
   cue(g.lock);
-  variant(curVar, "#src-" + g.mesh, g.start);
-  curVar = "#src-" + g.mesh;
-  focus(g.focus[0], g.focus[1], g.active);
-  g.items.forEach((it) => hold(it.src, it.launch, it.launch + 0.4, RED));
-  flights(g);
+  if (g.mesh === 1) bswap("#bv-src", g.banner);
+  variant("#src-" + g.mesh, g.banner + 0.05);
+  g.src.forEach((k) => halo(k, g.start, g.until - 0.2, RED));
+  contour(g.mesh, g.start, g.until - 0.3);
+  drops(g);
   lockCell(g.cells[0], g.lock, g.color);
 });
 
-// ================= 11.2 - 14.5  MATRIX LOCK, THEN THE CTA TAKEOVER =================
-cue(11.2);
-cue(11.4);
-cue(11.45);
-cue(12.8);
+// ================= 21.5 - 26.0  THE SYSTEM IS CONFIRMED; THE CTA EXPANDS UNDER THE (SMOOTHLY COMPACTED) MATRIX =================
+cue(21.5);
+cue(22.0);
+cue(23.5);
 tl.fromTo(
   "#card",
   { boxShadow: "0 0 0px rgba(0,136,255,0)" },
   {
-    boxShadow: "0 0 46px rgba(0,136,255,0.9)",
-    duration: 0.2,
+    boxShadow: "0 0 34px rgba(0,136,255,0.85), 0 0 54px rgba(176,38,255,0.55)",
+    duration: 0.4,
     ease: "power2.out",
     immediateRender: false,
   },
-  11.2,
+  21.5,
 );
-tl.to("#card", { boxShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.6, ease: "power2.in" }, 11.6);
+tl.to(
+  "#card",
+  {
+    boxShadow: "0 0 0px rgba(0,136,255,0), 0 0 0px rgba(176,38,255,0)",
+    duration: 1.0,
+    ease: "power2.in",
+  },
+  22.3,
+);
 [
   ["#card .cell.d .val", "0,136,255"],
   ["#card .cell.p .val", "176,38,255"],
@@ -410,59 +314,64 @@ tl.to("#card", { boxShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.6, ease: "p
     sel,
     { textShadow: `0 0 0px rgba(${rgb},0)` },
     {
-      textShadow: `0 0 26px rgba(${rgb},1)`,
-      duration: 0.2,
+      textShadow: `0 0 28px rgba(${rgb},1)`,
+      duration: 0.4,
       ease: "power2.out",
       immediateRender: false,
     },
-    11.2,
+    21.5,
   );
-  tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 0.6, ease: "power2.in" }, 11.6);
+  tl.to(sel, { textShadow: `0 0 0px rgba(${rgb},0)`, duration: 1.0, ease: "power2.in" }, 22.3);
 });
-tl.to("#banner", { opacity: 0, duration: 0.25 }, 11.25);
-tl.to("#plate", { opacity: 0, duration: 0.3 }, 11.25);
-tl.to("#card", { y: -630, duration: 0.6, ease: "power3.inOut" }, 11.4); // the matrix pushes up to centre stage
+tl.fromTo(
+  "#eqhead",
+  { textShadow: "0 0 0px rgba(255,255,255,0)" },
+  { textShadow: "0 0 26px rgba(255,255,255,0.95)", duration: 0.4, immediateRender: false },
+  21.5,
+);
+tl.to("#eqhead", { textShadow: "0 0 0px rgba(255,255,255,0)", duration: 1.0 }, 22.3);
+tl.to("#banner", { opacity: 0.55, duration: 0.6 }, 22.0); // the equation banner steps back, it never leaves
+tl.to("#card", { scale: 0.55, duration: 0.9, ease: "power3.inOut" }, 22.0); // compacts in place (top edge and centre fixed)
 tl.fromTo(
   "#cta",
-  { y: 60 },
-  { y: 0, duration: 0.5, ease: "power3.out", immediateRender: false },
-  11.4,
-); // sweeps up from below
-tl.fromTo("#cta", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: false }, 11.6); // and appears only once the matrix has cleared it
+  { scaleY: 0.2 },
+  { scaleY: 1, duration: 0.9, ease: "power3.out", immediateRender: false },
+  22.4,
+); // expands once the matrix has cleared its footprint
+tl.fromTo(
+  "#cta",
+  { opacity: 0 },
+  { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: false },
+  22.6,
+);
 tl.fromTo(
   "#cta",
   { boxShadow: "inset 0 0 0px rgba(255,0,68,0)" },
-  { boxShadow: "inset 0 0 50px rgba(255,0,68,0.55)", duration: 0.15, immediateRender: false },
-  11.45,
+  { boxShadow: "inset 0 0 50px rgba(255,0,68,0.5)", duration: 0.3, immediateRender: false },
+  22.8,
 );
-tl.to("#cta", { boxShadow: "inset 0 0 0px rgba(255,0,68,0)", duration: 0.6 }, 11.7);
+tl.to("#cta", { boxShadow: "inset 0 0 0px rgba(255,0,68,0)", duration: 0.9 }, 23.2);
 tl.fromTo(
   "#cta-t",
-  { opacity: 0, y: 16 },
-  { opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
-  11.5,
-);
-tl.fromTo(
-  "#cta-div",
-  { opacity: 0, scale: 0.4 },
-  { opacity: 1, scale: 1, duration: 0.3, immediateRender: false },
-  11.7,
+  { opacity: 0, y: 14 },
+  { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", immediateRender: false },
+  23.0,
 );
 tl.fromTo(
   "#cta-q",
-  { opacity: 0, y: 16 },
-  { opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false },
-  11.85,
+  { opacity: 0, y: 14 },
+  { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", immediateRender: false },
+  23.4,
 );
-tl.fromTo("#cta-b", { opacity: 0 }, { opacity: 0.7, duration: 0.3, immediateRender: false }, 12.15);
+tl.fromTo("#cta-b", { opacity: 0 }, { opacity: 0.7, duration: 0.5, immediateRender: false }, 23.9);
 tl.fromTo(
   "#cta-q",
   { textShadow: "0 0 0px rgba(0,136,255,0)" },
-  { textShadow: "0 0 24px rgba(0,136,255,0.9)", duration: 0.2, immediateRender: false },
-  12.8,
+  { textShadow: "0 0 26px rgba(0,136,255,0.95)", duration: 0.3, immediateRender: false },
+  23.5,
 );
-tl.to("#cta-q", { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.5 }, 13.0);
-// 13.5 - 14.5: nothing moves
+tl.to("#cta-q", { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.9 }, 23.9);
+// 24.9 - 26.0: nothing moves
 
 window.__timelines = window.__timelines || {};
 window.__timelines["main"] = tl;

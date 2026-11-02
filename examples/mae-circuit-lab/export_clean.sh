@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Clean export: strips container metadata/chapters, trims a 4 px edge and rescales, adds a trace of temporal noise,
 # normalises loudness, and writes a faststart yuv420p MP4.
-#   ./export_clean.sh                       -> raw_render.mp4 -> mesh_inspection_matrix_perfect.mp4
+#   ./export_clean.sh                       -> raw_render.mp4 -> mesh_inspection_masterclass_clean.mp4
 #   ./export_clean.sh in.mp4 out.mp4        -> explicit paths
 set -euo pipefail
 
 INPUT="${1:-raw_render.mp4}"
-OUTPUT="${2:-mesh_inspection_matrix_perfect.mp4}"
+OUTPUT="${2:-mesh_inspection_masterclass_clean.mp4}"
 
 ffmpeg -y -i "${INPUT}" \
   -map_metadata -1 -map_chapters -1 \

@@ -11,8 +11,8 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent.parent
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else HERE / "snapshots")
-END = 14.5
-times = sorted({round(0.6 * i, 2) for i in range(0, 25)} | {0.0, 0.9, 2.9, 4.5, 6.4, 9.2, 11.2, 11.6, 12.4, 14.49})
+END = 26.0
+times = sorted({round(0.6 * i, 2) for i in range(0, 44)} | {0.0, 1.0, 2.5, 4.4, 5.5, 7.0, 8.5, 12.0, 14.0, 16.0, 18.0, 20.0, 21.6, 22.4, 23.0, 25.99})
 times = [t for t in times if t < END]
 OUT.mkdir(exist_ok=True, parents=True)
 for f in OUT.glob("*.png"): f.unlink()
@@ -42,9 +42,18 @@ for p in sorted(OUT.glob("at-*s.png"), key=lambda q: float(q.stem[3:-1])):
     s = np.where(mx > 0, dl / np.maximum(mx, 1e-6), 0)
     y = (h >= 38) & (h <= 72) & (s > 0.45) & (mx > 0.45)
     ny = int(y.sum())
-    rows.append(dict(t=t, **bad, yellow=ny))
+    # circuit arena (x 90-990, y 340-890): after the hook has dissolved it must stay fully lit, never dimmed or hidden
+    lum = (0.299 * a[340:890, 90:990, 0] + 0.587 * a[340:890, 90:990, 1] + 0.114 * a[340:890, 90:990, 2])
+    lit = float((lum > 110).mean())
+    rows.append(dict(t=t, **bad, yellow=ny, circuit_lit=round(lit, 5)))
     if any(bad.values()) or ny:
         fails.append((t, bad, ny))
+post = [r["circuit_lit"] for r in rows if r["t"] >= 3.2]
+ref = float(np.median(post))
+for r in rows:
+    if r["t"] >= 3.2 and r["circuit_lit"] < 0.8 * ref:
+        fails.append((r["t"], "circuit dimmed/hidden", r["circuit_lit"]))
+print(f"circuit-lit fraction after 3.2 s: min {min(post):.4f}, median {ref:.4f}")
 (HERE / "reports" / "snapshot-verification.json").write_text(json.dumps(rows, indent=1))
 print(f"{len(rows)} snapshots checked; failures: {len(fails)}")
 for f in fails: print("  FAIL", f)

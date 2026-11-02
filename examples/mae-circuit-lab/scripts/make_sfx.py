@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
-"""Builds assets/sfx.wav (stereo, 48 kHz, 16-bit) by procedural synthesis only.
+"""Builds assets/sfx.wav (stereo, 48 kHz, 16-bit) by procedural synthesis only (numpy + scipy.io.wavfile).
 
 Timing comes ONLY from the CUES array (between @CUES-BEGIN / @CUES-END) in src/timeline.js: [[seconds, "voice"], ...].
 Length = the root data-duration in index.html, so audio and video always have the same length.
 
-Bed   : continuous 50 Hz hum at -22 dBFS peak, unbroken from 0.0 s to the end.
-Voices: click  = 1400 Hz sine burst, 6 ms decay. Clicks that follow each other within 0.5 s (a tracer start and the resistor
-                 touches after it) form a run and rise 2 semitones per step, so each resistor tick has its own pitch and
-                 the run climbs toward the lock.
-        snap   = 2200 + 4400 Hz transient over a short 55 Hz sub-bass layer.
-        thump  = heavy sub-bass: 55 Hz sine that drops from 90 Hz, 40 ms attack.
+Bed   : continuous 50 Hz hum at -22 dBFS peak, unbroken from 0.0 s to the end (no silent gap anywhere).
+Voices (no two cues are identical: each one is varied by a seeded RNG, so there is no mouse-click metronome):
+  click = a soft mechanical relay engaging, centred on 1100 Hz: contact transient + resonant body + a faint armature bounce
+          and a low case "clunk"; pitch, decay, bounce and level change from cue to cue.
+  snap  = a sharp tactile gate closing, centred on 2400 Hz (noise transient + 2400 Hz / 3600 Hz ring), over a cinematic
+          55 Hz sub-bass boom so every matrix lock is felt.
+  thump = deep resonant sub-bass impact: 55 Hz sine falling from ~110 Hz, long tail, soft low rumble.
 """
-import re, wave
+import re
 from pathlib import Path
 import numpy as np
+from scipy.io import wavfile
+from scipy.signal import butter, sosfilt
 
 HERE = Path(__file__).resolve().parent.parent
 SR = 48000
-GAIN = {"click": 0.36, "snap": 0.42, "thump": 0.58}      # peak amplitude of each voice before the bed is added
-RUN_GAP = 0.5                                            # seconds: clicks closer than this belong to one rising run
-SEMITONE = 2 ** (1 / 12)
+GAIN = {"click": 0.34, "snap": 0.40, "thump": 0.56}      # peak amplitude of each voice before the bed is added
+rng_master = np.random.default_rng(2026)
 
 
 def read_cues():
@@ -35,36 +37,66 @@ def read_duration():
     return float(re.search(r'id="root"[^>]*data-duration="([\d.]+)"', html).group(1))
 
 
-def env(n, attack, tau):
-    t = np.arange(n) / SR
-    return np.minimum(t / attack, 1.0) * np.exp(-t / tau)
+def tt(n):
+    return np.arange(n) / SR
 
 
-def tone(f, dur, tau, attack=0.002):
+def damped(f, dur, tau, attack=0.0008, phase=0.0):
+    t = tt(int(dur * SR))
+    return np.sin(2 * np.pi * f * t + phase) * np.minimum(t / attack, 1.0) * np.exp(-t / tau)
+
+
+def band_noise(rng, dur, lo, hi, tau, attack=0.0004):
     n = int(dur * SR)
-    t = np.arange(n) / SR
-    return np.sin(2 * np.pi * f * t) * env(n, attack, tau)
+    sos = butter(2, [lo, hi], btype="band", fs=SR, output="sos")
+    x = sosfilt(sos, rng.standard_normal(n))
+    t = tt(n)
+    return x / (np.max(np.abs(x)) + 1e-9) * np.minimum(t / attack, 1.0) * np.exp(-t / tau)
 
 
-def mix(*parts):
-    out = np.zeros(max(len(p) for p in parts))
-    for p in parts:
-        out[: len(p)] += p
-    return out
+def add(dst, src, at=0):
+    e = min(len(dst), at + len(src))
+    dst[at:e] += src[: e - at]
 
 
-def voice(name, step=0):
-    if name == "click":
-        f = 1400 * SEMITONE ** (2 * step)
-        return tone(f, 0.06, 0.006)                         # 6 ms decay
-    if name == "snap":
-        return mix(tone(2200, 0.12, 0.014, 0.0008), 0.6 * tone(4400, 0.08, 0.008, 0.0008), 1.2 * tone(55, 0.30, 0.07, 0.003))
-    if name == "thump":
-        n = int(0.55 * SR)
-        t = np.arange(n) / SR
-        f = 55 + 35 * np.exp(-t / 0.05)                     # 90 Hz falling onto 55 Hz
-        ph = 2 * np.pi * np.cumsum(f) / SR
-        return np.sin(ph) * env(n, 0.04, 0.12)              # 40 ms attack
+def boom(rng, dur=1.0, level=1.0):
+    n = int(dur * SR)
+    t = tt(n)
+    f = 55 + 40 * np.exp(-t / 0.045)                          # falls onto 55 Hz
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.minimum(t / 0.012, 1.0) * np.exp(-t / (0.16 * (0.9 + 0.2 * rng.random())))
+    return level * body
+
+
+def voice(name, rng):
+    if name == "click":                                       # soft mechanical relay engagement, ~1100 Hz
+        f = 1100 * (1 + rng.uniform(-0.07, 0.07))
+        tau = 0.010 * (1 + rng.uniform(-0.3, 0.3))
+        out = np.zeros(int(0.12 * SR))
+        add(out, 0.8 * band_noise(rng, 0.02, f * 0.6, f * 1.8, 0.004))                      # contact transient
+        add(out, damped(f, 0.09, tau))                                                      # resonant relay body
+        add(out, 0.5 * damped(f * 1.5, 0.05, tau * 0.6))
+        bounce = int(rng.uniform(0.008, 0.016) * SR)                                         # armature bounce
+        add(out, rng.uniform(0.25, 0.5) * damped(f * 0.92, 0.05, tau * 0.8), bounce)
+        add(out, 0.55 * damped(rng.uniform(170, 260), 0.06, 0.012))                         # case clunk
+        return out * rng.uniform(0.72, 1.0)
+    if name == "snap":                                        # sharp tactile gate close, ~2400 Hz, over a sub-bass boom
+        f = 2400 * (1 + rng.uniform(-0.04, 0.04))
+        out = np.zeros(int(1.0 * SR))
+        add(out, 0.9 * band_noise(rng, 0.03, f * 0.7, min(f * 2.4, SR / 2 - 100), 0.006, 0.0002))
+        add(out, damped(f, 0.12, 0.012 * (1 + rng.uniform(-0.2, 0.2)), 0.0004))
+        add(out, 0.55 * damped(f * 1.5, 0.08, 0.008, 0.0004))
+        add(out, boom(rng, 1.0, 1.25))
+        return out * rng.uniform(0.85, 1.0)
+    if name == "thump":                                       # deep resonant sub-bass impact
+        out = np.zeros(int(1.6 * SR))
+        n = int(1.6 * SR)
+        t = tt(n)
+        f = 55 + 60 * np.exp(-t / 0.06)
+        body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.minimum(t / 0.01, 1.0) * np.exp(-t / 0.28)
+        out += body
+        sos = butter(2, 140, btype="low", fs=SR, output="sos")
+        out += 0.25 * sosfilt(sos, rng.standard_normal(n)) * np.exp(-t / 0.2)               # soft rumble
+        return out * rng.uniform(0.92, 1.0)
     raise ValueError(name)
 
 
@@ -72,29 +104,24 @@ def main():
     dur = read_duration()
     cues = read_cues()
     n = int(round(dur * SR))
-    t = np.arange(n) / SR
-    db = lambda x: 10 ** (x / 20)
-    bed = db(-22) * np.sin(2 * np.pi * 50 * t)
+    t = tt(n)
+    bed = 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
     L, R = bed.copy(), bed.copy()
-    step, last_click = 0, None
     for i, (ct, name) in enumerate(cues):
         assert 0 <= ct < dur, (ct, name)
-        if name == "click":
-            step = step + 1 if (last_click is not None and ct - last_click <= RUN_GAP) else 0
-            last_click = ct
-        w = voice(name, step if name == "click" else 0)
+        rng = np.random.default_rng(1000 + i)                # per-cue seed: every cue sounds a little different
+        w = voice(name, rng)
         w = w / (np.max(np.abs(w)) + 1e-9) * GAIN[name]
         s = int(round(ct * SR))
         e = min(n, s + len(w))
-        pan = 0.12 * (1 if i % 2 else -1)                    # tiny deterministic stereo spread
+        pan = rng.uniform(-0.18, 0.18)
         L[s:e] += w[: e - s] * (1 - pan)
         R[s:e] += w[: e - s] * (1 + pan)
     peak = max(np.max(np.abs(L)), np.max(np.abs(R)))
     assert peak < 0.98, f"clipping: peak {peak:.3f}"
     pcm = (np.stack([L, R], 1) * 32767).astype("<i2")
     out = HERE / "assets" / "sfx.wav"
-    with wave.open(str(out), "wb") as f:
-        f.setnchannels(2); f.setsampwidth(2); f.setframerate(SR); f.writeframes(pcm.tobytes())
+    wavfile.write(str(out), SR, pcm)
     print(f"wrote {out.name}: {n/SR:.3f} s, {len(cues)} cues, peak {20*np.log10(peak):.1f} dBFS, hum 50 Hz at -22 dBFS")
 
 
