@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generates index.html from src/template.html + src/timeline.js  ("THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS", 1080x1920, 20 s).
+"""Generates index.html from src/template.html + src/timeline.js  ("THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS", 1080x1920, 21 s).
 
     python3 build_index.py            # ships the cdnjs GSAP tag
     python3 build_index.py --local    # points the GSAP tag at assets/gsap.min.js (offline verification only)
@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / "scripts"))
 from solve import solve_mesh  # noqa: E402
 
-CONFIG = dict(DURATION=20.0, R=[2, 2, 3, 4, 1], V=[5, 16, 13])   # kOhm, volts
+CONFIG = dict(DURATION=21.0, R=[2, 2, 3, 4, 1], V=[5, 16, 13])   # kOhm, volts
 GSAP_CDN = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
 BLUE, PURPLE, RED = "#0088FF", "#B026FF", "#FF0044"
 Rv = dict(zip(["R1", "R2", "R3", "R4", "R5"], CONFIG["R"]))
@@ -56,8 +56,8 @@ def bold(s): return r"\mathbf{" + s + "}"
 
 # ------------------------------------------------------------------ geometry (plate-local 900x550)
 PLATE = (91, 341)             # padding-box origin of #plate (left 90, top 340, 1 px border)
-CARD = (150, 1100)            # origin of #cardin (card: left 150, top 1100, 780x460)
-BANNER_C = (540, 995)
+CARD = (150, 1060)            # origin of #cardin (card: left 150, top 1060, 780x300: never scaled)
+BANNER_C = (540, 980)
 DX = 12
 X0, X1, X2, GY = 150 + DX, 400 + DX, 720 + DX, 470
 NODES = {"TL": (X0, 90), "N1": (X1, 90), "TR": (X2, 90), "N3": (X1, 300), "N2": (X2, 300)}
@@ -108,7 +108,7 @@ def point_at(pts, d):
 # one clockwise lap per mesh at constant speed. `pin` = (resistor, time): the lap length is solved so the comet touches that
 # resistor exactly on its audio click. Each lap starts as soon as the previous number has landed (zero downtime).
 DIAG = {
-    1: dict(path=["BL", "TL", "TR", "BR"], banner=2.0, start=2.0, pin=("R2", 2.8), lock=3.5, until=4.0),
+    1: dict(path=["BL", "TL", "TR", "BR"], banner=2.2, start=2.0, pin=("R2", 2.8), lock=3.5, until=4.0),
     2: dict(path=["TL", "TR", "BR", "BL"], banner=4.0, start=4.0, pin=("R4", 4.8), lock=5.7, until=6.2),
     3: dict(path=["BL", "TL", "TR", "BR"], banner=6.2, start=6.2, pin=("R5", 7.2), lock=8.0, until=8.5),
 }
@@ -202,7 +202,7 @@ def build_circuit():
 
 
 # ------------------------------------------------------------------ matrix card (card-local coordinates, card 780x460)
-COLX, ROWY, VX, IX = [120, 240, 360], [165, 265, 365], 675, 490
+COLX, ROWY, VX, IX = [120, 240, 360], [92, 160, 228], 675, 490     # row pitch 68 px
 
 
 def cell_abs(r, c):
@@ -214,16 +214,18 @@ def build_matrix():
     for r in range(3):
         for c in range(3):
             cls = "d" if r == c else "p"
-            out.append(f'<div id="e-{r}-{c}" class="cell {cls}" style="left:{COLX[c]-60}px;top:{ROWY[r]-50}px">'
+            out.append(f'<div id="e-{r}-{c}" class="cell {cls}" style="left:{COLX[c]-60}px;top:{ROWY[r]-34}px">'
                        f'<b class="ghost">{K(bold(Rm(f"{r+1}{c+1}")))}</b><b class="val">{K(bold(n(A0[r][c])))}</b><i class="ring"></i></div>')
-        out.append(f'<div id="v-{r}" class="cell s" style="left:{VX-60}px;top:{ROWY[r]-50}px">'
-                   f'<b class="ghost">{K(bold("v_{" + str(r+1) + "}"))}</b><b class="val">{K(bold(n(b0[r])))}</b><i class="ring"></i></div>')
-        out.append(f'<div class="ivec" style="left:{IX-40}px;top:{ROWY[r]-50}px">{K(Il(str(r+1)))}</div>')
+        out.append(f'<div class="ivec" style="left:{IX-40}px;top:{ROWY[r]-34}px">{K(Il(str(r+1)))}</div>')
+    # source vector V: one explicit 3-row grid (row 1: v1, row 2: v2, row 3: v3); a value can only ever render inside its own row
+    rows = "".join(f'<div id="v-{r}" class="cell s vrow" style="grid-row:{r+1}">'
+                   f'<b class="ghost">{K(bold("v_{" + str(r+1) + "}"))}</b><b class="val">{K(bold(n(b0[r])))}</b><i class="ring"></i></div>' for r in range(3))
+    out.append(f'<div id="vvec" class="vcol" style="left:{VX-60}px;top:{ROWY[0]-34}px">{rows}</div>')
     return "\n".join(out)
 
 
 def brackets():
-    def br(x, left, y0=114, y1=416, a=16):
+    def br(x, left, y0=58, y1=262, a=16):
         d = f"M{x+a} {y0} H{x} V{y1} H{x+a}" if left else f"M{x-a} {y0} H{x} V{y1} H{x-a}"
         return f'<path d="{d}" class="brk"/>'
     return "".join([br(50, True), br(424, False), br(454, True, a=12), br(528, False, a=12), br(602, True), br(748, False)])
@@ -325,7 +327,7 @@ def main():
     for g in G:
         cls = {"diag": "d", "off": "p", "zero": "p", "src": "s"}[g["kind"]]
         g["drops"] = []
-        for k, cid in enumerate(g["cells"]):
+        for k, cid in enumerate(g["cells"] if g["kind"] != "src" else []):
             r, c = int(cid.split("-")[1]), (int(cid.split("-")[2]) if cid.startswith("e") else 3)
             tx, ty = cell_abs(r, c)
             fid = f"fly-{g['id']}-{k}"

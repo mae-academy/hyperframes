@@ -1,4 +1,4 @@
-/* THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS. 20.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
+/* THE R-MATRIX TRICK: THE COMPLETE MASTERCLASS. 21.0 s, GSAP 3.12.5, one paused root timeline: window.__timelines["main"].
    DATA (groups, comet laps, drop offsets) is injected by build_index.py. Whole file, rewritten as a unit.
    The circuit in zone 2 is never dimmed, hidden or moved, and nothing ever detaches from its component:
    every highlight is a glow, every result falls from the banner straight into its matrix cell. */
@@ -178,9 +178,9 @@ tl.to("#bv-h1", { opacity: 0, duration: 0.3, ease: "power1.inOut" }, 1.2); // ..
 tl.fromTo(
   "#bv-h2",
   { opacity: 0 },
-  { opacity: 1, duration: 0.3, ease: "power2.out", immediateRender: false },
-  1.5,
-);
+  { opacity: 1, duration: 0.3, ease: "power1.inOut", immediateRender: false },
+  1.2,
+); // zone 3 is never empty: the new line fades in while the old one fades out, then holds until the first mesh banner at 2.2
 tl.fromTo(
   "#plate",
   { boxShadow: "inset 0 0 0px rgba(0,136,255,0)" },
@@ -277,7 +277,7 @@ DATA.groups.forEach((g) => {
   lockCell(g.cells[0], g.lock, g.color);
 });
 
-// ================= 15.5 - 20.0  SYSTEM SOLVED, THEN THE CTA =================
+// ================= 15.5 - 21.0  SYSTEM SOLVED, THEN THE CTA =================
 cue(15.5);
 cue(16.5);
 cue(17.5);
@@ -363,48 +363,47 @@ tl.fromTo(
   15.5,
 );
 tl.to("#eqhead", { textShadow: "0 0 0px rgba(255,255,255,0)", duration: 0.8 }, 16.2);
-// 16.5: the matrix compacts in place (top edge and centre fixed) and the CTA card slides up into the cleared space
-tl.to("#card", { scale: 0.55, duration: 0.9, ease: "power3.inOut" }, 16.5);
+// 16.0: the CTA card slides up into y 1380 - 1620. The matrix (y 1060 - 1360, scale 1.0) and the banner (y 920 - 1040) do not move or scale.
 tl.fromTo(
   "#cta",
-  { scaleY: 0.2 },
-  { scaleY: 1, duration: 0.9, ease: "power3.out", immediateRender: false },
-  16.9,
+  { y: 40 },
+  { y: 0, duration: 0.8, ease: "power3.out", immediateRender: false },
+  16.0,
 );
 tl.fromTo(
   "#cta",
   { opacity: 0 },
-  { opacity: 1, duration: 0.5, ease: "power1.out", immediateRender: false },
-  17.0,
+  { opacity: 1, duration: 0.4, ease: "power1.out", immediateRender: false },
+  16.0,
 );
 tl.fromTo(
   "#cta",
   { boxShadow: "inset 0 0 0px rgba(255,0,68,0)" },
-  { boxShadow: "inset 0 0 50px rgba(255,0,68,0.5)", duration: 0.3, immediateRender: false },
-  17.2,
+  { boxShadow: "inset 0 0 50px rgba(255,0,68,0.5)", duration: 0.25, immediateRender: false },
+  16.5,
 );
-tl.to("#cta", { boxShadow: "inset 0 0 0px rgba(255,0,68,0)", duration: 0.9 }, 17.6);
+tl.to("#cta", { boxShadow: "inset 0 0 0px rgba(255,0,68,0)", duration: 0.8 }, 16.8);
 tl.fromTo(
   "#cta-t",
-  { opacity: 0, y: 14 },
-  { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", immediateRender: false },
-  17.3,
+  { opacity: 0, y: 12 },
+  { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", immediateRender: false },
+  16.2,
 );
 tl.fromTo(
   "#cta-q",
-  { opacity: 0, y: 14 },
-  { opacity: 1, y: 0, duration: 0.5, ease: "power2.out", immediateRender: false },
-  17.5,
+  { opacity: 0, y: 12 },
+  { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", immediateRender: false },
+  16.5,
 );
-tl.fromTo("#cta-b", { opacity: 0 }, { opacity: 0.7, duration: 0.5, immediateRender: false }, 18.0);
+tl.fromTo("#cta-b", { opacity: 0 }, { opacity: 0.7, duration: 0.4, immediateRender: false }, 16.9);
 tl.fromTo(
   "#cta-q",
   { textShadow: "0 0 0px rgba(0,136,255,0)" },
   { textShadow: "0 0 26px rgba(0,136,255,0.95)", duration: 0.3, immediateRender: false },
-  17.6,
+  17.5,
 );
-tl.to("#cta-q", { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.8 }, 18.0);
-// 18.8 - 20.0: nothing moves (static anchor for the loop)
+tl.to("#cta-q", { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.8 }, 17.8);
+// 18.6 - 21.0: nothing moves. The solved matrix and the CTA hold for the rest of the film (viewers read the question and comment)
 
 window.__timelines = window.__timelines || {};
 window.__timelines["main"] = tl;

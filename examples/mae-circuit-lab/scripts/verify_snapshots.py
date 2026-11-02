@@ -11,8 +11,8 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent.parent
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else HERE / "snapshots")
-END = 20.0
-times = sorted({round(0.6 * i, 2) for i in range(0, 34)} | {0.0, 1.35, 1.8, 3.3, 4.5, 7.7, 9.0, 11.4, 12.7, 15.45, 15.85, 16.4, 17.0, 17.8, 19.99})
+END = 21.0
+times = sorted({round(0.6 * i, 2) for i in range(0, 35)} | {0.0, 1.3, 1.7, 2.1, 3.3, 4.5, 7.7, 9.0, 11.4, 12.6, 13.7, 14.4, 14.8, 15.45, 15.85, 16.1, 16.8, 20.99})
 times = [t for t in times if t < END]
 OUT.mkdir(exist_ok=True, parents=True)
 for f in OUT.glob("*.png"): f.unlink()

@@ -27,13 +27,22 @@
     "circuit_lit": 0.01508
   },
   {
-    "t": 1.35,
+    "t": 1.3,
     "left<90": 0,
     "right>990": 0,
     "above<110": 0,
     "below>1670": 0,
     "yellow": 0,
-    "circuit_lit": 0.03033
+    "circuit_lit": 0.01946
+  },
+  {
+    "t": 1.7,
+    "left<90": 0,
+    "right>990": 0,
+    "above<110": 0,
+    "below>1670": 0,
+    "yellow": 0,
+    "circuit_lit": 0.03154
   },
   {
     "t": 1.8,
@@ -43,6 +52,15 @@
     "below>1670": 0,
     "yellow": 0,
     "circuit_lit": 0.03155
+  },
+  {
+    "t": 2.1,
+    "left<90": 0,
+    "right>990": 0,
+    "above<110": 0,
+    "below>1670": 0,
+    "yellow": 0,
+    "circuit_lit": 0.03165
   },
   {
     "t": 2.4,
@@ -234,15 +252,6 @@
     "circuit_lit": 0.03576
   },
   {
-    "t": 12.7,
-    "left<90": 0,
-    "right>990": 0,
-    "above<110": 0,
-    "below>1670": 0,
-    "yellow": 0,
-    "circuit_lit": 0.03576
-  },
-  {
     "t": 13.2,
     "left<90": 0,
     "right>990": 0,
@@ -250,6 +259,15 @@
     "below>1670": 0,
     "yellow": 0,
     "circuit_lit": 0.03152
+  },
+  {
+    "t": 13.7,
+    "left<90": 0,
+    "right>990": 0,
+    "above<110": 0,
+    "below>1670": 0,
+    "yellow": 0,
+    "circuit_lit": 0.03364
   },
   {
     "t": 13.8,
@@ -268,6 +286,15 @@
     "below>1670": 0,
     "yellow": 0,
     "circuit_lit": 0.03152
+  },
+  {
+    "t": 14.8,
+    "left<90": 0,
+    "right>990": 0,
+    "above<110": 0,
+    "below>1670": 0,
+    "yellow": 0,
+    "circuit_lit": 0.03364
   },
   {
     "t": 15.0,
@@ -306,7 +333,7 @@
     "circuit_lit": 0.03149
   },
   {
-    "t": 16.2,
+    "t": 16.1,
     "left<90": 0,
     "right>990": 0,
     "above<110": 0,
@@ -315,7 +342,7 @@
     "circuit_lit": 0.03149
   },
   {
-    "t": 16.4,
+    "t": 16.2,
     "left<90": 0,
     "right>990": 0,
     "above<110": 0,
@@ -333,25 +360,7 @@
     "circuit_lit": 0.03145
   },
   {
-    "t": 17.0,
-    "left<90": 0,
-    "right>990": 0,
-    "above<110": 0,
-    "below>1670": 0,
-    "yellow": 0,
-    "circuit_lit": 0.03144
-  },
-  {
     "t": 17.4,
-    "left<90": 0,
-    "right>990": 0,
-    "above<110": 0,
-    "below>1670": 0,
-    "yellow": 0,
-    "circuit_lit": 0.03144
-  },
-  {
-    "t": 17.8,
     "left<90": 0,
     "right>990": 0,
     "above<110": 0,
@@ -396,7 +405,16 @@
     "circuit_lit": 0.03144
   },
   {
-    "t": 19.99,
+    "t": 20.4,
+    "left<90": 0,
+    "right>990": 0,
+    "above<110": 0,
+    "below>1670": 0,
+    "yellow": 0,
+    "circuit_lit": 0.03144
+  },
+  {
+    "t": 20.99,
     "left<90": 0,
     "right>990": 0,
     "above<110": 0,

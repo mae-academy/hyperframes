@@ -54,45 +54,47 @@
   .ovx { position: absolute; }
 
   /* ---------- zone 3: the arithmetic banner, 820 x 110 ---------- */
-  #banner { left: 130px; top: 940px; width: 820px; height: 110px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
-  .bv { position: absolute; left: 0; top: 0; width: 816px; height: 106px; opacity: 0; }
+  #banner { left: 130px; top: 920px; width: 820px; height: 120px; border-radius: 24px; background: rgba(255,0,68,.08); border: 2px solid rgba(255,0,68,.55); }
+  .bv { position: absolute; left: 0; top: 0; width: 816px; height: 116px; opacity: 0; }
   #bv-h1 { opacity: 1; }
-  .bt { position: absolute; left: 0; top: 0; width: 816px; height: 106px; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center; font-size: 34px; line-height: 44px; white-space: nowrap; }
+  .bt { position: absolute; left: 0; top: 0; width: 816px; height: 116px; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center; font-size: 34px; line-height: 44px; white-space: nowrap; }
   .ic { display: inline-block; width: 30px; height: 30px; vertical-align: -5px; margin-left: 8px; }
   .bl { position: absolute; left: 0; width: 816px; height: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 32px; white-space: nowrap; }
-  .l1 { top: 3px; } .l2 { top: 53px; }
+  .l1 { top: 7px; } .l2 { top: 59px; }
   .pc { display: inline-block; opacity: .3; }
   .vr { opacity: 0; font-size: 24px; }
   #src-1, #src-2, #src-3 { font-size: 30px; }
 
   /* ---------- zone 4: glass matrix card, 780 x 460 ---------- */
-  #card { left: 150px; top: 1100px; width: 780px; height: 460px; border-radius: 36px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); transform-origin: 50% 0; }
-  #cardin { position: absolute; left: -1px; top: -1px; width: 780px; height: 460px; }
-  #eqhead { position: absolute; left: 0; top: 16px; width: 780px; height: 64px; text-align: center; font-size: 48px; line-height: 64px; }
-  #brk { position: absolute; left: 0; top: 0; width: 780px; height: 460px; }
+  #card { left: 150px; top: 1060px; width: 780px; height: 300px; border-radius: 30px; background: rgba(30,30,46,.55); border: 1px solid rgba(255,255,255,.1); }
+  #cardin { position: absolute; left: -1px; top: -1px; width: 780px; height: 300px; }
+  #eqhead { position: absolute; left: 0; top: 4px; width: 780px; height: 50px; text-align: center; font-size: 38px; line-height: 50px; }
+  #brk { position: absolute; left: 0; top: 0; width: 780px; height: 300px; }
   .brk { fill: none; stroke: #EAF2FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-  .cell { position: absolute; width: 120px; height: 100px; text-align: center; }
-  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 100px; line-height: 100px; white-space: nowrap; font-weight: 700; }
-  .cell .ghost { font-size: 38px; opacity: .42; }
-  .cell .val { font-size: 54px; opacity: 0; }
-  .cell .ring { position: absolute; left: 15px; top: 5px; width: 90px; height: 90px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
+  .cell { position: absolute; width: 120px; height: 68px; text-align: center; }
+  .vcol { position: absolute; width: 120px; height: 204px; display: grid; grid-template-rows: repeat(3, 68px); grid-template-columns: 120px; }
+  .vcol .cell { position: relative; left: auto; top: auto; }
+  .cell b { position: absolute; left: 0; top: 0; width: 120px; height: 68px; line-height: 68px; white-space: nowrap; font-weight: 700; }
+  .cell .ghost { font-size: 35px; opacity: .45; }
+  .cell .val { font-size: 42px; opacity: 0; }
+  .cell .ring { position: absolute; left: 28px; top: 2px; width: 64px; height: 64px; border-radius: 50%; border: 3px solid currentColor; opacity: 0; }
   .d { color: var(--blue); } .p { color: var(--purple); } .s { color: var(--red); }
-  .ivec { position: absolute; width: 80px; height: 100px; line-height: 100px; text-align: center; font-size: 44px; }
-  #eqsign { position: absolute; left: 543px; top: 215px; width: 50px; height: 100px; line-height: 100px; text-align: center; font-size: 50px; }
-  #legend { position: absolute; left: 0; top: 422px; width: 780px; height: 32px; display: flex; justify-content: center; gap: 34px; font-size: 24px; line-height: 32px; }
-  #legend .sw { display: inline-block; width: 16px; height: 16px; border-radius: 4px; margin-right: 9px; vertical-align: -1px; }
+  .ivec { position: absolute; width: 80px; height: 68px; line-height: 68px; text-align: center; font-size: 34px; }
+  #eqsign { position: absolute; left: 543px; top: 126px; width: 50px; height: 68px; line-height: 68px; text-align: center; font-size: 38px; }
+  #legend { position: absolute; left: 0; top: 270px; width: 780px; height: 26px; display: flex; justify-content: center; gap: 30px; font-size: 19px; line-height: 26px; }
+  #legend .sw { display: inline-block; width: 13px; height: 13px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
 
   /* ---------- drops: a value falls from the banner into its cell ---------- */
   .fly { position: absolute; width: 130px; height: 56px; text-align: center; font-size: 40px; line-height: 56px; opacity: 0; z-index: 30; text-shadow: 0 0 16px currentColor; }
 
   /* ---------- the CTA expands under the compacted matrix ---------- */
-  #cta { left: 150px; top: 1370px; width: 780px; height: 290px; border-radius: 36px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; transform-origin: 50% 0; }
+  #cta { left: 120px; top: 1380px; width: 840px; height: 240px; border-radius: 32px; background: rgba(30,30,46,.6); border: 1px solid rgba(255,255,255,.12); opacity: 0; }
   #cta-t, #cta-q, #cta-b { opacity: 0; }
-  #cta-t { position: absolute; left: 0; top: 16px; width: 778px; text-align: center; font-size: 42px; line-height: 52px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
-  #cta-t svg { display: inline-block; width: 32px; height: 40px; vertical-align: -6px; margin-left: 10px; }
-  #cta-q { position: absolute; left: 0; top: 130px; width: 778px; text-align: center; font-size: 32px; line-height: 42px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
+  #cta-t { position: absolute; left: 0; top: 10px; width: 838px; text-align: center; font-size: 40px; line-height: 48px; color: var(--red); text-shadow: 0 0 22px rgba(255,0,68,.45); }
+  #cta-t svg { display: inline-block; width: 30px; height: 38px; vertical-align: -6px; margin-left: 10px; }
+  #cta-q { position: absolute; left: 0; top: 112px; width: 838px; text-align: center; font-size: 32px; line-height: 40px; color: var(--blue); text-shadow: 0 0 18px rgba(0,136,255,.5); white-space: nowrap; }
   #cta-q svg { display: inline-block; width: 28px; height: 32px; vertical-align: -6px; margin-left: 10px; }
-  #cta-b { position: absolute; left: 0; top: 240px; width: 778px; text-align: center; font-size: 24px; line-height: 34px; color: #fff; }
+  #cta-b { position: absolute; left: 0; top: 204px; width: 838px; text-align: center; font-size: 24px; line-height: 30px; color: #fff; }
 </style>
 </head>
 <body>
@@ -124,7 +126,7 @@
   <div id="card" class="abs">
     <div id="cardin">
       <div id="eqhead">{{HEAD_EQ}}</div>
-      <svg id="brk" viewBox="0 0 780 460" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
+      <svg id="brk" viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg">{{BRACKETS}}</svg>
 {{MATRIX}}
       <div id="eqsign">=</div>
       <div id="legend"><span><i class="sw" style="background:#0088FF"></i>self</span><span><i class="sw" style="background:#B026FF"></i>shared</span><span><i class="sw" style="background:#FF0044"></i>sources</span></div>
