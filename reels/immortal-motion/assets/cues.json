@@ -1,0 +1,52 @@
+[
+  {
+    "t": 0,
+    "kind": "thump",
+    "ref": "open"
+  },
+  {
+    "t": 1.5,
+    "kind": "snap",
+    "ref": "ignite"
+  },
+  {
+    "t": 3.2,
+    "kind": "snap",
+    "ref": "clamp"
+  },
+  {
+    "t": 3.5,
+    "kind": "click",
+    "ref": "land"
+  },
+  {
+    "t": 4.5,
+    "kind": "click",
+    "ref": "fly"
+  },
+  {
+    "t": 6.5,
+    "kind": "click",
+    "ref": "mid"
+  },
+  {
+    "t": 8.5,
+    "kind": "snap",
+    "ref": "top"
+  },
+  {
+    "t": 9.5,
+    "kind": "thump",
+    "ref": "final"
+  },
+  {
+    "t": 10.5,
+    "kind": "snap",
+    "ref": "cta"
+  },
+  {
+    "t": 12,
+    "kind": "click",
+    "ref": "pulse"
+  }
+]
