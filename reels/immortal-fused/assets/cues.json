@@ -1,0 +1,257 @@
+[
+  {
+    "t": 0,
+    "kind": "thump",
+    "ref": "open"
+  },
+  {
+    "t": 1,
+    "kind": "snap",
+    "ref": "stamp"
+  },
+  {
+    "t": 2.8,
+    "kind": "click",
+    "ref": "milestone"
+  },
+  {
+    "t": 2.9,
+    "kind": "tick",
+    "ref": "spark:1"
+  },
+  {
+    "t": 3,
+    "kind": "tick",
+    "ref": "spark:2"
+  },
+  {
+    "t": 3.1,
+    "kind": "tick",
+    "ref": "spark:3"
+  },
+  {
+    "t": 3.2,
+    "kind": "tick",
+    "ref": "spark:4"
+  },
+  {
+    "t": 3.3,
+    "kind": "tick",
+    "ref": "spark:5"
+  },
+  {
+    "t": 3.4,
+    "kind": "tick",
+    "ref": "spark:6"
+  },
+  {
+    "t": 3.5,
+    "kind": "tick",
+    "ref": "spark:7"
+  },
+  {
+    "t": 3.6,
+    "kind": "tick",
+    "ref": "spark:8"
+  },
+  {
+    "t": 3.7,
+    "kind": "tick",
+    "ref": "spark:9"
+  },
+  {
+    "t": 3.8,
+    "kind": "tick",
+    "ref": "spark:10"
+  },
+  {
+    "t": 3.9,
+    "kind": "tick",
+    "ref": "spark:11"
+  },
+  {
+    "t": 4,
+    "kind": "click",
+    "ref": "milestone"
+  },
+  {
+    "t": 4.1,
+    "kind": "tick",
+    "ref": "spark:13"
+  },
+  {
+    "t": 4.2,
+    "kind": "tick",
+    "ref": "spark:14"
+  },
+  {
+    "t": 4.3,
+    "kind": "tick",
+    "ref": "spark:15"
+  },
+  {
+    "t": 4.4,
+    "kind": "tick",
+    "ref": "spark:16"
+  },
+  {
+    "t": 4.5,
+    "kind": "tick",
+    "ref": "spark:17"
+  },
+  {
+    "t": 4.6,
+    "kind": "tick",
+    "ref": "spark:18"
+  },
+  {
+    "t": 4.7,
+    "kind": "tick",
+    "ref": "spark:19"
+  },
+  {
+    "t": 4.8,
+    "kind": "tick",
+    "ref": "spark:20"
+  },
+  {
+    "t": 4.9,
+    "kind": "tick",
+    "ref": "spark:21"
+  },
+  {
+    "t": 5,
+    "kind": "tick",
+    "ref": "spark:22"
+  },
+  {
+    "t": 5.1,
+    "kind": "tick",
+    "ref": "spark:23"
+  },
+  {
+    "t": 5.2,
+    "kind": "click",
+    "ref": "milestone"
+  },
+  {
+    "t": 5.3,
+    "kind": "tick",
+    "ref": "spark:25"
+  },
+  {
+    "t": 5.4,
+    "kind": "tick",
+    "ref": "spark:26"
+  },
+  {
+    "t": 5.5,
+    "kind": "tick",
+    "ref": "spark:27"
+  },
+  {
+    "t": 5.6,
+    "kind": "tick",
+    "ref": "spark:28"
+  },
+  {
+    "t": 5.7,
+    "kind": "tick",
+    "ref": "spark:29"
+  },
+  {
+    "t": 5.8,
+    "kind": "tick",
+    "ref": "spark:30"
+  },
+  {
+    "t": 5.9,
+    "kind": "tick",
+    "ref": "spark:31"
+  },
+  {
+    "t": 6,
+    "kind": "tick",
+    "ref": "spark:32"
+  },
+  {
+    "t": 6.1,
+    "kind": "tick",
+    "ref": "spark:33"
+  },
+  {
+    "t": 6.2,
+    "kind": "tick",
+    "ref": "spark:34"
+  },
+  {
+    "t": 6.3,
+    "kind": "tick",
+    "ref": "spark:35"
+  },
+  {
+    "t": 6.4,
+    "kind": "tick",
+    "ref": "spark:36"
+  },
+  {
+    "t": 6.5,
+    "kind": "click",
+    "ref": "milestone"
+  },
+  {
+    "t": 6.6,
+    "kind": "tick",
+    "ref": "spark:38"
+  },
+  {
+    "t": 6.7,
+    "kind": "tick",
+    "ref": "spark:39"
+  },
+  {
+    "t": 6.8,
+    "kind": "tick",
+    "ref": "spark:40"
+  },
+  {
+    "t": 6.9,
+    "kind": "tick",
+    "ref": "spark:41"
+  },
+  {
+    "t": 7,
+    "kind": "tick",
+    "ref": "spark:42"
+  },
+  {
+    "t": 7.5,
+    "kind": "snap",
+    "ref": "clamp"
+  },
+  {
+    "t": 9,
+    "kind": "click",
+    "ref": "land"
+  },
+  {
+    "t": 10.5,
+    "kind": "click",
+    "ref": "slope"
+  },
+  {
+    "t": 11.5,
+    "kind": "thump",
+    "ref": "final"
+  },
+  {
+    "t": 12.5,
+    "kind": "snap",
+    "ref": "cta"
+  },
+  {
+    "t": 14,
+    "kind": "click",
+    "ref": "cta-pulse"
+  }
+]
