@@ -1,0 +1,67 @@
+[
+  {
+    "t": 2.15,
+    "kind": "click",
+    "ref": "pop:v0"
+  },
+  {
+    "t": 3.3,
+    "kind": "snap",
+    "ref": "lock:v0"
+  },
+  {
+    "t": 5,
+    "kind": "click",
+    "ref": "pop:s0"
+  },
+  {
+    "t": 6.15,
+    "kind": "snap",
+    "ref": "lock:s0"
+  },
+  {
+    "t": 6.55,
+    "kind": "click",
+    "ref": "pop:v1"
+  },
+  {
+    "t": 7.7,
+    "kind": "snap",
+    "ref": "lock:v1"
+  },
+  {
+    "t": 8,
+    "kind": "click",
+    "ref": "pop:s1"
+  },
+  {
+    "t": 9.15,
+    "kind": "snap",
+    "ref": "lock:s1"
+  },
+  {
+    "t": 9.55,
+    "kind": "click",
+    "ref": "pop:v2"
+  },
+  {
+    "t": 10.7,
+    "kind": "snap",
+    "ref": "lock:v2"
+  },
+  {
+    "t": 11,
+    "kind": "click",
+    "ref": "pop:s2"
+  },
+  {
+    "t": 12.15,
+    "kind": "snap",
+    "ref": "lock:s2"
+  },
+  {
+    "t": 14.95,
+    "kind": "thump",
+    "ref": "identity:f'=f"
+  }
+]
