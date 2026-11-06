@@ -448,7 +448,7 @@ html,body{background:${"#0A0A10"};width:${W}px;height:${H}px;overflow:hidden}
 #mbr{position:absolute;left:0;top:0;pointer-events:none}
 .br{fill:none;stroke:rgba(255,255,255,.55);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
 .cell{opacity:0}
-#cta{position:absolute;left:90px;top:1376px;width:900px;height:290px;opacity:0}
+#cta{position:absolute;left:0;top:0;width:${W}px;height:${H}px;opacity:0}
 #cta-panel{position:absolute;left:90px;top:1376px;width:900px;height:290px;border-radius:36px;background:rgba(30,30,46,.55);border:2px solid rgba(255,0,68,.5);opacity:0;box-sizing:border-box}
 .clone{position:absolute;left:0;top:0;display:none;font-size:24px;line-height:1;white-space:nowrap;z-index:50}
 `;
