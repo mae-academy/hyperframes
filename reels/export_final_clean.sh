@@ -10,6 +10,11 @@ OUTPUT="${2:-final_clean.mp4}"
 TEMP="$(dirname "${OUTPUT}")/temp_sanitized.mp4"
 AF_PRE="highpass=f=40,lowpass=f=19000"
 
+# Output keeps the input resolution (1080x1920 or 2160x3840 ...); the micro-crop is 4 px per 1080 px of width.
+W=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "${INPUT}")
+H=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "${INPUT}")
+CROP=$(( W / 270 ))
+
 # 0. Two-pass loudness: measure first, then apply linearly, so the master really lands on -14 LUFS / -1.5 dBTP.
 STATS=$(ffmpeg -hide_banner -nostats -i "${INPUT}" -vn -af "${AF_PRE},loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json" -f null - 2>&1 | sed -n '/^{/,/^}/p')
 j() { echo "${STATS}" | sed -n "s/.*\"$1\" *: *\"\\([^\"]*\\)\".*/\\1/p"; }
@@ -19,7 +24,7 @@ ffmpeg -y -i "${INPUT}" \
   -map_metadata -1 \
   -map_chapters -1 \
   -fflags +bitexact -flags:v +bitexact -flags:a +bitexact \
-  -vf "crop=in_w-4:in_h-4,scale=1080:1920:flags=lanczos,noise=alls=1:allf=t,eq=contrast=1.008:brightness=0.001:saturation=1.005" \
+  -vf "crop=in_w-${CROP}:in_h-${CROP},scale=${W}:${H}:flags=lanczos,noise=alls=1:allf=t,eq=contrast=1.008:brightness=0.001:saturation=1.005" \
   -af "${AF_PRE},loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=$(j input_i):measured_TP=$(j input_tp):measured_LRA=$(j input_lra):measured_thresh=$(j input_thresh):offset=$(j target_offset):linear=true" \
   -c:v libx264 -preset slow -crf 17 -pix_fmt yuv420p \
   -c:a aac -b:a 192k -ar 44100 \
