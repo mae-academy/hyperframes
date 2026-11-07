@@ -71,3 +71,21 @@ the track must feel like the picture is breathing. A reel made only of clicks an
 - Voice master gain 0.085; air gain 0.020; pad notes 0.030 / 0.026 / 0.022 / 0.014 (+0.020 for C#).
 - Pad gain curve (s: gain): 0: 0, 0.4: 0.35, 1.5: 0.55, 3.2: 0.8, 8.5: 1.0, 9.5: 1.15, 12.5: 1.0, 14.3: 0.7, 15.0: 0.55.
 - Third (C#) gate: 0 until 9.45 s, 1.0 at 9.9 s.
+
+---
+
+## Variant: timbre follows the picture (additive synthesis)
+
+Use this when the picture is itself a sum of components (Fourier series, epicycles, layers, particles):
+
+- The **voice** is the same sum, played. If the picture has weights `w_n(t) = smoothstep(clamp(N(t) - (n - 1), 0, 1))`
+  for the n-th component, the sound has the n-th partial with the _same_ weight, so one more circle on screen is one
+  more partial in the sound. Rewinding the picture rewinds the sound.
+- Fixed pitch (the key's tonic, e.g. A3 220 Hz) with a **detuned pair** (+/- 0.9 Hz) for a slow shimmer; partial
+  amplitudes follow the math (1/k for a square wave); leave out partials above 12 kHz; a gentle low-pass at ~9 kHz.
+- A **square-wave accent** (band-limited: odd harmonics, 1/k, low-passed at ~7 kHz, 110 Hz + 220 Hz, ~0.17 s decay)
+  is reserved for the moment the limit is reached ("infinity" / the lock), and for the opening slam if the reel opens
+  on the finished result. Never use a raw (aliased) square or saw as a continuous tone.
+- **Air** follows how fast components are being added (|dN/dt|), not the clock.
+- One soft bell per stage step, climbing a pentatonic scale (A4 C#5 E5 A5 C#6), so progress is audible.
+- Reference: `reels/fourier-square/scripts/make_sfx.py`.
