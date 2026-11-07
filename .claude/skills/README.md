@@ -55,3 +55,17 @@ normal `npx skills add` discovery and from `npx skills add ... --all`. A named
 `metadata.internal`; no environment variable is needed. `INSTALL_INTERNAL_SKILLS=1`
 opts internal skills into normal discovery and bulk installation. This does not
 change local agent discovery.
+
+## MAE Academy reels: /theme-1 and /export-4k
+
+Two user-invocable commands that make every new reel come out in the same house style and export clean.
+
+- `/theme-1` followed by an idea: the `theme-1` skill (palette, KaTeX math italic, zones, hook, stages, recorded-history
+  traces, lock effect, CTA with the oversized cursor, the Connected Living Sounds, watermark policy, build and verify
+  gates). Files: `theme-1/SKILL.md`, `theme-1/tokens.json`, `theme-1/theme1-lint.mjs`. Reference projects are under
+  `reels/` and the sound spec is `reels/prompts/connected-living-sounds.md`.
+- `/export-4k`: the `export-4k` skill (4K 60 fps render, clean-export pipeline, optional bit-identical audio, audit).
+  Files: `export-4k/SKILL.md`, `export-4k/export-4k.sh`, `export-4k/audit-clean.sh`, and `reels/export_final_clean.sh`.
+
+These live on the branch they were committed to; to have them in every new session, merge that branch into the default
+branch.

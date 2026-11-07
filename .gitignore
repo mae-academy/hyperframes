@@ -131,6 +131,8 @@ packages/studio/data/
 !.claude/skills/seam-craft
 !.claude/skills/captions-overlay
 !.claude/skills/oversized-cursor
+!.claude/skills/theme-1
+!.claude/skills/export-4k
 
 .agents/*
 !.agents/skills
