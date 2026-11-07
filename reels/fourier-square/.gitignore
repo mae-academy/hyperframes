@@ -1,5 +1,12 @@
 assets/sfx.wav
+assets/cues.json
+assets/sched.json
+layout.json
+snapshots/
 dist/
 out/
 raw_render*.mp4
+raw_audio*.mkv
 *.mp4
+work-*/
+.raw_render*/
