@@ -11,7 +11,13 @@ Continuous layers
          smooth(clamp(N(t) - (n-1))) that sizes the epicycles on screen. One harmonic = one more circle = one more
          partial in the sound. N = 1 is a pure sine, N = 50 a bright almost-square tone, N -> infinity a band-limited
          square wave (partials above 12 kHz are inaudible and left out). Rewinding the picture rewinds the sound.
+  clarity a second additive layer with a flatter spectrum (1/sqrt(k)) on the same weights, so every partial that
+         joins is plainly audible instead of hiding under the 1/k roll-off of a true square wave.
   air    a breath of low-passed noise that follows how fast harmonics are being added (|dN/dt|).
+Damped harmonic pings
+  every time a new circle joins the picture, its own partial rings once at its own frequency k*220 Hz as a
+  damped sine (decay 0.12 - 0.26 s): you hear 660, 1100, 1540 ... climb stage by stage; the lock adds a
+  cascade of pings up to 9 kHz. They are derived from N(t), exactly like the circles.
 Accents
   tick 3600 Hz / 8 ms (the rewind ticks glide down), click 1800 Hz / 15 ms (+ a soft pentatonic bell on each stage),
   snap = metallic vice lock, thump 55 Hz, stab = band-limited SQUARE-WAVE stab (110 Hz + 220 Hz) at the opening
@@ -85,8 +91,20 @@ for n in range(1, nmax + 1):
     osc = 0.5 * (np.sin(2 * np.pi * k * (F0 - 0.9) * t) + np.sin(2 * np.pi * k * (F0 + 0.9) * t))  # detuned pair: slow shimmer
     voice += w * osc / k
 voice_gain = smooth_env(env([(0, 1.1), (0.8, 1.0), (0.9, 0.8), (1.7, 0.6), (4.6, 0.62), (15.2, 0.8), (LOCK, 1.05), (17.4, 0.85), (18.6, 0.8), (22.0, 0.35)]), 0.06)
-voice = lowpass(voice, 9000.0)  # take the edge off the square
-mix += 0.085 * voice_gain * voice
+voice = lowpass(voice, 12000.0)  # take only the very top off the square
+mix += 0.105 * voice_gain * voice
+
+# ------------------------------------------------------------------ clarity layer: flatter spectrum on the same weights
+clar = np.zeros(n_s)
+for n in range(1, nmax + 1):
+    k = 2 * n - 1
+    x = np.clip(Neff - (n - 1), 0, 1)
+    w = x * x * (3 - 2 * x)
+    if not w.any():
+        continue
+    clar += w * np.sin(2 * np.pi * k * F0 * t + 0.7 * k) / np.sqrt(k)
+clar_gain = smooth_env(env([(0, 1.0), (0.85, 0.9), (1.7, 0.55), (4.6, 0.6), (15.2, 0.75), (LOCK, 1.0), (18.6, 0.7), (22.0, 0.3)]), 0.06)
+mix += 0.026 * clar_gain * clar
 
 # ------------------------------------------------------------------ air: follows the speed of harmonic additions
 dN = np.abs(np.gradient(Neff, 1 / SR))
@@ -114,6 +132,26 @@ def square_stab(f0, length, tau, amp):
 
 def bell(freq_hz, amp, tau=0.7, length=1.6):
     return tone(freq_hz, length, tau, amp) + tone(2.76 * freq_hz, length, tau * 0.5, amp * 0.18)
+
+# ------------------------------------------------------------------ damped pings: one per harmonic that joins the picture
+def ping(freq_hz, amp, tau):
+    tt = np.arange(int(SR * min(1.2, 6 * tau))) / SR
+    return amp * np.sin(2 * np.pi * freq_hz * tt) * np.exp(-tt / tau) * np.minimum(1, tt / 0.002)
+
+ping_log = []
+after = t > 1.6
+for n in range(2, 21):  # k = 3 .. 39  (660 Hz .. 8.6 kHz)
+    idx = np.nonzero(after & (Neff >= n - 0.5))[0]
+    if len(idx) == 0:
+        continue
+    t_n = float(t[idx[0]])
+    k = 2 * n - 1
+    add(t_n, ping(k * F0, 0.075 * k ** -0.3, 0.26 / (1 + k / 22.0)))
+    ping_log.append((round(t_n, 2), k))
+for i, k in enumerate(range(21, 43, 2)):  # the cascade while N runs on to infinity
+    t_c = 15.25 + 0.085 * i
+    add(t_c, ping(k * F0, 0.05 * k ** -0.2, 0.12))
+    ping_log.append((round(t_c, 2), k))
 
 BELLS = [440.0, 554.37, 659.26, 880.0, 1108.73]  # A4 C#5 E5 A5 C#6, one per stage step
 STAGE_T = [4.6, 7.6, 10.2, 12.8, 15.2]
@@ -163,4 +201,4 @@ pcm = (np.repeat(np.clip(mix, -1, 1)[:, None], 2, axis=1) * 32767).astype("<i2")
 out = root / "assets" / "sfx.wav"
 with wave.open(str(out), "wb") as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(pcm.tobytes())
-print(f"{out.name}: {len(cues)} cues {counts}, peak {peak:.3f}, quietest 0.5 s window {min(rms):.1f} dBFS, loudest {max(rms):.1f}; layers: hum, pad, additive voice, air")
+print(f"{out.name}: {len(cues)} cues {counts}, peak {peak:.3f}, quietest 0.5 s window {min(rms):.1f} dBFS, loudest {max(rms):.1f}; layers: hum, pad, additive voice + clarity layer, air; {len(ping_log)} damped harmonic pings")

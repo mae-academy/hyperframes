@@ -92,15 +92,15 @@ const G = {
 const SCHED = {
   lock: 16.2,
   ramps: [
-    { t0: 0.9, t1: 1.5, from: 100, to: 0 },
+    { t0: 0.9, t1: 1.5, from: 200, to: 0 },
     { t0: 1.7, t1: 2.3, from: 0, to: 1 },
     { t0: 4.6, t1: 5.2, from: 1, to: 3 },
     { t0: 7.6, t1: 8.2, from: 3, to: 7 },
     { t0: 10.2, t1: 10.8, from: 7, to: 15 },
     { t0: 12.8, t1: 13.5, from: 15, to: 50 },
-    { t0: 15.2, t1: 16.2, from: 50, to: 100 },
+    { t0: 15.2, t1: 16.2, from: 50, to: 200 },
   ],
-  start: 100,
+  start: 200,
 };
 
 // ------------------------------------------------------------------ header + counter/formula states
@@ -157,17 +157,6 @@ const CAPS = [
 ];
 const banner = `<div id="banner">${CAPS.map(([id, t], i) => `<div id="${id}" class="ba" style="opacity:${i === 0 ? 1 : 0}">${tx(t)}${id === "cI" ? tx("\\checkmark") : ""}</div>`).join("")}</div>`;
 
-// ------------------------------------------------------------------ drifting handle badge (3 positions, cross-faded)
-const BADGES = [
-  { id: "bd1", x: 930, y: 648 },
-  { id: "bd2", x: 175, y: 1312 },
-  { id: "bd3", x: 930, y: 1312 },
-];
-const badges = BADGES.map(
-  (b, i) =>
-    `<div id="${b.id}" class="bd" style="left:${b.x - 120}px;top:${b.y - 44}px;opacity:${i === 0 ? 1 : 0}">${GLYPH(46)}<div class="bdt">${tx("\\textit{@MAE.ACADEMY}")}</div></div>`,
-).join("");
-
 // ------------------------------------------------------------------ CTA
 const sub = SITE_URL
   ? tx(it("VISIT THE WEBSITE ") + "\\downarrow")
@@ -192,7 +181,7 @@ const cta = `<div id="cta" style="opacity:0">
 </div>`;
 
 // ------------------------------------------------------------------ typography guard: strict KaTeX math italic
-const all = [header, states, spectrum, banner, badges, cta].join("");
+const all = [header, states, spectrum, banner, cta].join("");
 if (/class="[^"]*\b(mathbf|mathrm|mathbb|mathsf|mathtt|textrm|textsf|texttt)\b/.test(all))
   throw new Error("upright / bold math style found");
 if ((all.match(/class="[^"]*\btextbf\b/g) || []).length !== 1)
@@ -227,7 +216,7 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 `;
 
 const anim = fs.readFileSync(new URL("./anim.js", import.meta.url), "utf8");
-const CFG = { G, SCHED, BADGES };
+const CFG = { G, SCHED };
 
 function page(gsapSrc) {
   return `<!doctype html>
@@ -241,13 +230,12 @@ function page(gsapSrc) {
 <body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="${DUR}" data-width="${W}" data-height="${H}" data-fps="60">
 <div id="stage">
-${box({ id: "wm", cx: 540, cy: G.CY, w: 1000, h: 120, size: 100, color: C.red, html: tx(it("@MAE.Academy")), style: "opacity:.12" })}
+${box({ id: "wm", cx: 540, cy: G.CY, w: 1000, h: 120, size: 100, color: C.red, html: tx(it("@MAE.Academy")), style: "opacity:.12" }).replace(`id="wm"`, `id="wm" data-layout-ignore`)}
 <canvas id="cv" width="${W}" height="${H}" data-layout-allow-overflow></canvas>
 ${header}
 ${states}
 ${spectrum}
 ${banner}
-${badges}
 <svg id="chk" width="120" height="120" viewBox="0 0 120 120" style="position:absolute;left:770px;top:352px;opacity:0;filter:drop-shadow(0 0 10px #B026FF)"><path id="chkp" d="M16,64 L46,94 L104,28" fill="none" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="150" stroke-dashoffset="150"/></svg>
 <div id="lockflash" style="position:absolute;left:0;top:560px;width:1080px;height:900px;background:radial-gradient(ellipse at 66% 50%,rgba(176,38,255,.55),rgba(255,255,255,.18) 30%,transparent 62%);opacity:0"></div>
 </div>

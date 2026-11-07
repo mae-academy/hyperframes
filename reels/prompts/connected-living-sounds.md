@@ -89,3 +89,8 @@ Use this when the picture is itself a sum of components (Fourier series, epicycl
 - **Air** follows how fast components are being added (|dN/dt|), not the clock.
 - One soft bell per stage step, climbing a pentatonic scale (A4 C#5 E5 A5 C#6), so progress is audible.
 - Reference: `reels/fourier-square/scripts/make_sfx.py`.
+- **Make the frequencies audible.** Add (1) a _clarity layer_: the same additive sum on the same weights but with a
+  flatter spectrum (1/sqrt(k)) at low level, so each partial that joins can be heard; and (2) a _damped ping_ when a
+  component joins: a sine at that component's own frequency (k _ f0), decay 0.12 - 0.26 s, shorter for higher k,
+  amplitude about 0.075 _ k^-0.3. Stage by stage you hear 660, 1100, 1540 Hz ... and a cascade of pings into the
+  lock. Hum, pad and the existing accents stay untouched.

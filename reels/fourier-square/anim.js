@@ -31,9 +31,8 @@
   const tgtAlpha = (t) =>
     t < 1.1 ? 1 : t < 1.5 ? 1 - (t - 1.1) / 0.4 : t < 1.7 ? 0 : clamp((t - 1.7) / 0.6, 0, 1);
   const sweepX = (t) => -90 + 1260 * c3(clamp((t - S.lock) / 0.42, 0, 1));
-  const fuseGlobal = (t) => (t < 0.9 ? 1 : t < 1.3 ? 1 - (t - 0.9) / 0.4 : 0);
 
-  const NMAX = 100;
+  const NMAX = 200;
   function sumAt(tp, N) {
     let s = 0;
     const nmax = Math.min(NMAX, Math.ceil(N));
@@ -45,7 +44,6 @@
     }
     return (4 / Math.PI) * s;
   }
-  const sqAt = (tp) => (Math.sin(OM * tp) >= 0 ? 1 : -1);
 
   // ------------------------------------------------------------------ canvas
   const cvs = document.getElementById("cv");
@@ -110,7 +108,6 @@
     const preview = t < 0.9;
     const locked = t >= S.lock;
     const xs = locked ? sweepX(t) : preview ? 1e9 : -1e9; // x < xs : the "perfect square" look
-    const fg = fuseGlobal(t);
     const hasRig = !(t >= 1.5 && t < 1.7) && !(t >= 1.6 && tau < 0);
 
     // --- axes
@@ -209,44 +206,64 @@
       tipy = cy;
     }
 
-    // --- the trace: partial sum (blue) / perfect square (fused purple), the sweep line decides at lock
+    // --- the trace is a RECORD: every point keeps the shape it had at the moment the dot drew it.
+    //     Adding a harmonic only changes the points drawn from then on; the old part never changes.
     if (hasRig) {
       const xa = t >= 1.6 ? Math.max(-20, dotx - tau * G.SPEED) : -20;
       const xb = dotx;
-      const exactEnd = Math.min(xb, xs),
-        partStart = Math.max(xa, xs);
+      const aHist = t < 1.2 ? 1 : t < 1.55 ? clamp(1 - (t - 1.2) / 0.35, 0, 1) : t < 1.7 ? 0 : 1; // the preview's record fades out in the rewind
       const glitch = t >= 0.9 && t < 1.5;
-      // exact (fused) segment
-      if (exactEnd > xa) {
-        const pts = [];
-        for (let x = xa; x <= exactEnd; x += 0.5)
-          pts.push([x, CY - G.H * sqAt(tau - (dotx - x) / G.SPEED)]);
-        strokePoly(pts, COL.purple, 7, 1, 18);
-        strokePoly(pts, COL.white, 2.6, 0.85, 0);
+      const twOf = (x) => t - (dotx - x) / G.SPEED; // the moment the dot drew the point that is now at screen x
+      const fuseOf = (x) => {
+        const tw = twOf(x);
+        const byTime = tw < 0.9 ? 1 : tw < 1.3 ? 1 - (tw - 0.9) / 0.4 : tw >= S.lock ? 1 : 0;
+        return locked && x < xs ? 1 : byTime; // the sweep line only recolours; it never reshapes
+      };
+      const mixCol = (f) => `rgb(${Math.round(0 + 176 * f)},${Math.round(136 - 98 * f)},255)`; // blue -> purple
+      const pts = [];
+      for (let x = xa; x <= xb; x += 0.5) {
+        const tw = twOf(x);
+        pts.push([x, CY - G.H * sumAt(tauOf(tw), Neff(tw))]);
       }
-      // partial-sum segment
-      if (xb > partStart) {
-        const pts = [];
-        for (let x = partStart; x <= xb; x += 1)
-          pts.push([x, CY - G.H * sumAt(tau - (dotx - x) / G.SPEED, N)]);
-        const f = fg; // 1: still fused (preview), 0: blue
-        if (f < 1) strokePoly(pts, COL.blue, 6, 1 - f, 14);
-        if (f > 0) strokePoly(pts, COL.purple, 7, f, 18);
-        strokePoly(pts, COL.white, 2.2, 0.6, 0);
+      if (pts.length > 1 && aHist > 0.001) {
+        const span = Math.max(1, xb - xa);
+        const g = ctx.createLinearGradient(xa, 0, xb, 0);
+        const keys = [xa, xb];
+        for (const tk of [0.9, 1.3, S.lock]) {
+          const kx = dotx - (t - tk) * G.SPEED;
+          if (kx > xa && kx < xb) keys.push(kx - 0.5, kx + 0.5);
+        }
+        if (locked) keys.push(clamp(xs - 0.5, xa, xb), clamp(xs + 0.5, xa, xb));
+        for (let i = 0; i <= 24; i++) keys.push(xa + (span * i) / 24);
+        keys.sort((p, q) => p - q);
+        for (const kx of keys) g.addColorStop(clamp((kx - xa) / span, 0, 1), mixCol(fuseOf(kx)));
+        ctx.save();
+        ctx.globalAlpha = aHist;
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 7;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        glow(preview || locked ? COL.purple : COL.blue, 16);
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.stroke();
+        ctx.restore();
+        strokePoly(pts, COL.white, 2.4, 0.65 * aHist, 0);
         if (glitch) {
           const gx = 7 * Math.sin(t * 91) + 3;
           strokePoly(
             pts.map((p) => [p[0] + gx, p[1]]),
             COL.red,
             3,
-            0.7,
+            0.7 * aHist,
             0,
           );
           strokePoly(
             pts.map((p) => [p[0] - gx, p[1]]),
             COL.blue,
             3,
-            0.7,
+            0.7 * aHist,
             0,
           );
         }
@@ -508,15 +525,6 @@
 
   // rig engages
   hit(1.7, "snap", "engage");
-
-  // drifting handle badge
-  [
-    [6.0, "bd1", "bd2"],
-    [13.0, "bd2", "bd3"],
-  ].forEach(([t, o, n]) => {
-    tl.to("#" + o, { opacity: 0, duration: 0.3, ease: "power1.in" }, t);
-    ft("#" + n, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, t + 0.1);
-  });
 
   // lock: flash + check mark + glow on N = infinity
   const LK = S.lock;
