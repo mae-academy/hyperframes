@@ -94,3 +94,7 @@ Use this when the picture is itself a sum of components (Fourier series, epicycl
   component joins: a sine at that component's own frequency (k _ f0), decay 0.12 - 0.26 s, shorter for higher k,
   amplitude about 0.075 _ k^-0.3. Stage by stage you hear 660, 1100, 1540 Hz ... and a cascade of pings into the
   lock. Hum, pad and the existing accents stay untouched.
+- **Keep it pleasant.** Clarity is not brightness: after the clarity layer and pings went in, the highs (2 - 10 kHz) were a
+  little tiring. Tuned values: voice low-pass 7.5 kHz, detune +/- 0.5 Hz, clarity layer low-passed at 5 kHz and 0.018,
+  pings with amplitude k^-0.55 (cascade k^-0.7, up to 8 kHz), square stab low-passed at 4.5 kHz, air 0.020, tick 0.16.
+  Net effect versus the brighter mix: 2 - 5 kHz about -3 dB, 5 - 10 kHz about -6 dB, everything below 2 kHz unchanged.

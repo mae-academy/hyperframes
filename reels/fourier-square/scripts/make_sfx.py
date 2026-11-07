@@ -88,11 +88,11 @@ for n in range(1, nmax + 1):
     w = x * x * (3 - 2 * x)  # smoothstep, identical to the picture
     if not w.any():
         continue
-    osc = 0.5 * (np.sin(2 * np.pi * k * (F0 - 0.9) * t) + np.sin(2 * np.pi * k * (F0 + 0.9) * t))  # detuned pair: slow shimmer
+    osc = 0.5 * (np.sin(2 * np.pi * k * (F0 - 0.5) * t) + np.sin(2 * np.pi * k * (F0 + 0.5) * t))  # detuned pair: slow shimmer
     voice += w * osc / k
-voice_gain = smooth_env(env([(0, 1.1), (0.8, 1.0), (0.9, 0.8), (1.7, 0.6), (4.6, 0.62), (15.2, 0.8), (LOCK, 1.05), (17.4, 0.85), (18.6, 0.8), (22.0, 0.35)]), 0.06)
-voice = lowpass(voice, 12000.0)  # take only the very top off the square
-mix += 0.105 * voice_gain * voice
+voice_gain = smooth_env(env([(0, 1.1), (0.8, 1.0), (0.9, 0.8), (1.7, 0.6), (4.6, 0.62), (15.2, 0.8), (LOCK, 0.95), (17.4, 0.82), (18.6, 0.8), (22.0, 0.35)]), 0.06)
+voice = lowpass(voice, 7500.0)  # soften the top of the square (less edge, same shape)
+mix += 0.100 * voice_gain * voice
 
 # ------------------------------------------------------------------ clarity layer: flatter spectrum on the same weights
 clar = np.zeros(n_s)
@@ -104,13 +104,14 @@ for n in range(1, nmax + 1):
         continue
     clar += w * np.sin(2 * np.pi * k * F0 * t + 0.7 * k) / np.sqrt(k)
 clar_gain = smooth_env(env([(0, 1.0), (0.85, 0.9), (1.7, 0.55), (4.6, 0.6), (15.2, 0.75), (LOCK, 1.0), (18.6, 0.7), (22.0, 0.3)]), 0.06)
-mix += 0.026 * clar_gain * clar
+clar = lowpass(clar, 5000.0)  # the clarity layer carries the mid partials, not the hiss
+mix += 0.018 * clar_gain * clar
 
 # ------------------------------------------------------------------ air: follows the speed of harmonic additions
 dN = np.abs(np.gradient(Neff, 1 / SR))
 act = smooth_env(np.clip(dN / 25.0, 0, 1), 0.12)
 air = lowpass(rng.uniform(-1, 1, n_s), 2600.0)
-mix += 0.030 * act * air
+mix += 0.020 * act * air
 
 # ------------------------------------------------------------------ accents
 def add(t0, sig, g=1.0):
@@ -127,7 +128,7 @@ def square_stab(f0, length, tau, amp):
     sig = np.zeros_like(tt)
     for k in range(1, int(11000 // f0) + 1, 2):  # band-limited square wave: odd harmonics, 1/k
         sig += np.sin(2 * np.pi * k * f0 * tt) / k
-    sig = lowpass(sig, 7000.0)
+    sig = lowpass(sig, 4500.0)
     return amp * sig * np.exp(-tt / tau) * np.minimum(1, tt / 0.004)
 
 def bell(freq_hz, amp, tau=0.7, length=1.6):
@@ -146,11 +147,11 @@ for n in range(2, 21):  # k = 3 .. 39  (660 Hz .. 8.6 kHz)
         continue
     t_n = float(t[idx[0]])
     k = 2 * n - 1
-    add(t_n, ping(k * F0, 0.075 * k ** -0.3, 0.26 / (1 + k / 22.0)))
+    add(t_n, ping(k * F0, 0.075 * k ** -0.55, 0.26 / (1 + k / 22.0)))
     ping_log.append((round(t_n, 2), k))
-for i, k in enumerate(range(21, 43, 2)):  # the cascade while N runs on to infinity
-    t_c = 15.25 + 0.085 * i
-    add(t_c, ping(k * F0, 0.05 * k ** -0.2, 0.12))
+for i, k in enumerate(range(21, 37, 2)):  # the cascade while N runs on to infinity (to 8 kHz)
+    t_c = 15.25 + 0.1 * i
+    add(t_c, ping(k * F0, 0.05 * k ** -0.7, 0.13))
     ping_log.append((round(t_c, 2), k))
 
 BELLS = [440.0, 554.37, 659.26, 880.0, 1108.73]  # A4 C#5 E5 A5 C#6, one per stage step
@@ -161,7 +162,7 @@ for c in cues:
     counts[k] = counts.get(k, 0) + 1
     if k == "tick":
         f = 3600.0 if t0 > 1.4 else 3600.0 - (t0 - 0.9) / 0.4 * 1500.0  # the rewind ticks fall
-        add(t0, tone(f, 0.008, 0.0012, 0.22))
+        add(t0, tone(f, 0.008, 0.0012, 0.16))
     elif k == "click":
         add(t0, tone(1800, 0.015, 0.003, 0.30))
         if any(abs(t0 - s) < 1e-6 for s in STAGE_T):
@@ -174,7 +175,7 @@ for c in cues:
     elif k == "snap":
         tt = np.arange(int(SR * 0.05)) / SR
         body = 0.20 * np.sin(2 * np.pi * 600 * tt) * np.exp(-tt / 0.012)
-        ring = (0.22 * np.sin(2 * np.pi * 2400 * tt) + 0.12 * np.sin(2 * np.pi * 3150 * tt)) * np.exp(-tt / 0.008)
+        ring = (0.18 * np.sin(2 * np.pi * 2400 * tt) + 0.08 * np.sin(2 * np.pi * 3150 * tt)) * np.exp(-tt / 0.008)
         hit = 0.30 * rng.uniform(-1, 1, len(tt)) * np.exp(-tt / 0.003)
         add(t0, body + ring + hit)
         if abs(t0 - 18.6) < 1e-6:
@@ -185,8 +186,8 @@ for c in cues:
             for i, fz in enumerate([220.0, 277.18, 329.63, 440.0, 554.37, 659.26]):
                 add(t0 + 0.03 + 0.045 * i, bell(fz, 0.04, 0.9, 2.2))
     elif k == "stab":
-        add(t0, square_stab(110.0, 0.55, 0.17, 0.14))
-        add(t0, square_stab(220.0, 0.45, 0.14, 0.07))
+        add(t0, square_stab(110.0, 0.55, 0.17, 0.12))
+        add(t0, square_stab(220.0, 0.45, 0.14, 0.06))
     else:
         raise SystemExit(f"unknown cue kind {k}")
 
