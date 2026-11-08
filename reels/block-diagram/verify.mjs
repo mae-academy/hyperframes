@@ -57,13 +57,13 @@ console.log(
   `cues: ${n("click")} click / ${n("snap")} snap / ${n("thump")} thump; mismatches: ${bad}`,
 );
 // determinism: the same time must render the same pixels after a forward and a backward seek
-await seek(26.2);
+await seek(16.0);
 const a = await page.screenshot();
-await seek(12.0);
-await seek(26.2);
+await seek(9.0);
+await seek(16.0);
 const b = await page.screenshot();
 const same = Buffer.compare(a, b) === 0;
-console.log("seek determinism (26.2 s forward vs after 12.0 s):", same ? "identical" : "DIFFERENT");
+console.log("seek determinism (16.0 s forward vs after 9.0 s):", same ? "identical" : "DIFFERENT");
 // zones
 const geo = await page.evaluate(() => {
   const r = {};

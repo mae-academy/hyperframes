@@ -1,31 +1,37 @@
 #!/usr/bin/env python3
-"""Generate assets/sfx.wav (48 kHz stereo, 16-bit, 46.0 s) from assets/cues.json and assets/sched.json.
+"""Generate assets/sfx.wav (48 kHz stereo, 16-bit, 31.0 s) from assets/cues.json and assets/sched.json.
 
-Connected Living Sounds, tied to the one variable on screen: the number of blocks N (8 -> 1).
-  hum     50 Hz, -22 dBFS, unbroken 0 - 46 s.
-  pad     open fifths A-E (A2 E3 A3 E4) with slow tremolos; it swells with every simplification and gains the
-          major third (C#) at the lock (36.6 s), exactly when the closed form is confirmed.
-  voice   the diagram's own voice: soft sine + 2nd/3rd harmonics (detuned pair), pitch = 220 Hz * 2^((8 - N) / 7),
-          so the pitch climbs a full octave (A3 -> A4) as eight blocks collapse to one; it glides 0.35 s to each new N
-          and holds. It is the same step function as the counter on screen.
-  air     low-passed breath riding the voice.
-  pings   every merge (the snap cues at 6.0, 10.6, ..., 33.6 s) carries a damped bell on the A-major pentatonic
-          ladder (A4 B4 C#5 E5 F#5 A5, then A5 + E6 at the last merge), so the simplification literally sounds like a scale.
-Accents from CUES: click 1800 Hz / 15 ms, snap = metallic lock, thump 55 Hz. The 36.6 s thump carries the bright
-arpeggio, the 40.8 s snap a bell pair, the 43.2 s click a small high shimmer. Peak is asserted < 0.98.
+Designed to sound played, not beeped: every sound is a small physical model, a little different each time, and sits in one room.
+
+  click   a soft mouse / key tap: a 4 ms band-passed noise transient (the contact) + a short wooden body whose pitch falls
+          (the housing) + a quieter, brighter release tick 55 ms later. Seeded variation per click (pitch, level, pan), so
+          a run of clicks never machine-guns.
+  merge   a marimba-style bar (inharmonic partials 1 : 3.99 : 9.2 with their own decays, a mallet thud) on the A-major
+          pentatonic ladder A4 B4 C#5 E5 F#5 A5, one note per reduction move; the last merge is an open chord. The ladder
+          replaces the old pitch-follows-count voice: it climbs, but as notes, not as a sliding tone.
+  kick    the opening thump and the lock: a pitched-down sine (110 -> 48 Hz) with a soft felt click, never a bare sine.
+  bell    the lock arpeggio, the CTA and the engagement ping: glockenspiel partials 1 : 2.76 : 5.4 : 8.93 with the high
+          ones dying first.
+  pad     warm open fifths A-E (A2 E3 A3 E4), each note a stack of 3 slightly detuned triangle-like voices with slow
+          tremolo; the brightness (not the pitch) opens as blocks disappear; the major third (C#) arrives at the lock.
+  hum     50 Hz at -22 dBFS, unbroken (house rule).  air: a quiet low-passed breath.
+Everything except the hum goes through one short plate-like reverb (synthetic, seeded) and a gentle soft clip, so the clicks and
+bells share a space. Peak is asserted < 0.98.
 """
 import json, pathlib, wave
 import numpy as np
 
-SR, DUR = 48000, 46.0
+SR, DUR = 48000, 31.0
 root = pathlib.Path(__file__).resolve().parent.parent
 cues = json.loads((root / "assets" / "cues.json").read_text())
 sched = json.loads((root / "assets" / "sched.json").read_text())
+rng = np.random.default_rng(2026)
 
 n = int(SR * DUR)
 t = np.arange(n) / SR
-mix = np.zeros(n)
-rng = np.random.default_rng(31)
+dry = np.zeros((2, n))      # direct sound (L, R)
+send = np.zeros(n)          # reverb send (mono)
+hum = np.zeros(n)
 
 def env(points):
     ts, vs = zip(*points)
@@ -37,67 +43,126 @@ def smooth(x, sec):
     out = (c[k:] - c[:-k]) / k
     return np.concatenate([np.full(k // 2, out[0]), out, np.full(k - k // 2 - 1, out[-1])])[: len(x)]
 
-def lowpass(x, fc):
-    a = 1 - np.exp(-2 * np.pi * fc / SR)
-    y = np.empty_like(x); s = 0.0
-    for i, v in enumerate(x):
-        s += a * (v - s); y[i] = s
-    return y
+def fband(x, lo, hi):
+    """smooth frequency-domain band-pass (lo or hi may be None)"""
+    m = len(x)
+    X = np.fft.rfft(x, 2 * m)
+    f = np.fft.rfftfreq(2 * m, 1 / SR)
+    g = np.ones_like(f)
+    if lo: g *= 1 / (1 + (lo / np.maximum(f, 1)) ** 4)
+    if hi: g *= 1 / (1 + (f / hi) ** 4)
+    return np.fft.irfft(X * g)[:m]
 
-def add(t0, sig, g=1.0):
+def place(t0, sig, gain=1.0, pan=0.0, wet=0.2):
     i = int(round(t0 * SR))
     if i >= n: return
     j = min(n, i + len(sig))
-    mix[i:j] += g * sig[: j - i]
+    s = sig[: j - i] * gain
+    l = np.cos((pan + 1) * np.pi / 4); r = np.sin((pan + 1) * np.pi / 4)
+    dry[0, i:j] += s * l * 1.414
+    dry[1, i:j] += s * r * 1.414
+    send[i:j] += s * wet
 
-def tone(freq_hz, length, tau, amp):
-    tt = np.arange(int(SR * length)) / SR
-    return amp * np.sin(2 * np.pi * freq_hz * tt) * np.exp(-tt / tau)
+def noise_burst(ms, tau_ms):
+    k = int(SR * ms / 1000)
+    tt = np.arange(k) / SR
+    return rng.uniform(-1, 1, k) * np.exp(-tt / (tau_ms / 1000))
 
-def bell(freq_hz, amp, length=1.8, tau=0.55):
-    tt = np.arange(int(SR * length)) / SR
-    d = np.exp(-tt / tau)
-    return amp * d * (np.sin(2 * np.pi * freq_hz * tt) + 0.30 * np.sin(2 * np.pi * 2.0 * freq_hz * tt) * np.exp(-tt / 0.2) + 0.12 * np.sin(2 * np.pi * 3.01 * freq_hz * tt) * np.exp(-tt / 0.1))
+# ------------------------------------------------------------------ the click: contact + wooden body + release
+def click(t0, level=1.0):
+    var = rng.uniform(0.94, 1.07)
+    g = level * 10 ** (rng.uniform(-1.2, 1.2) / 20)
+    pan = rng.uniform(-0.25, 0.25)
+    # contact transient (down)
+    ct = fband(noise_burst(8, 1.3), 1600 * var, 5200)
+    ct /= np.max(np.abs(ct)) + 1e-9
+    # wooden body: pitch falls 760 -> 330 Hz
+    k = int(SR * 0.09); tt = np.arange(k) / SR
+    f = 330 * var + 430 * var * np.exp(-tt / 0.012)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt / 0.014)
+    s = np.zeros(k); s[: len(ct)] += 0.55 * ct; s += 0.40 * body
+    place(t0, s, 0.30 * g, pan, 0.16)
+    # release tick (up): quieter, brighter, a hair later
+    rt = fband(noise_burst(5, 0.8), 2600, 6500)
+    rt /= np.max(np.abs(rt)) + 1e-9
+    place(t0 + 0.052 + rng.uniform(-0.004, 0.004), rt, 0.085 * g, pan, 0.12)
 
-# ------------------------------------------------------------------ hum
-mix += 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
+# ------------------------------------------------------------------ marimba bar
+def marimba(t0, f0, amp=0.5, long=1.0, pan=0.0):
+    length = 2.2 * long
+    k = int(SR * length); tt = np.arange(k) / SR
+    sc = (440.0 / f0) ** 0.5
+    parts = [(1.0, 1.0, 0.55 * long * sc), (3.99, 0.33, 0.13 * sc), (9.2, 0.10, 0.045 * sc)]
+    s = np.zeros(k)
+    for ratio, a, tau in parts:
+        s += a * np.sin(2 * np.pi * f0 * ratio * tt) * np.exp(-tt / tau)
+    mallet = fband(noise_burst(6, 1.5), 700, 2600)
+    mallet /= np.max(np.abs(mallet)) + 1e-9
+    s[: len(mallet)] += 0.35 * mallet
+    s *= np.minimum(1, tt / 0.002)      # no click on the attack
+    place(t0, s, amp, pan, 0.30)
 
-# ------------------------------------------------------------------ pad
-merges = sched["merges"]  # [[time, N], ...]
-pad_pts = [(0, 0.0), (0.5, 0.4), (3.6, 0.5)] + [(m[0], 0.5 + 0.08 * i) for i, m in enumerate(merges)] + [(36.6, 1.1), (38.5, 1.2), (43, 1.0), (46, 0.55)]
-pad_pts = sorted(pad_pts)
-pad_gain = smooth(env(pad_pts), 0.25)
-pad = np.zeros(n)
-for f0, amp, lfo_hz, ph in [(110.0, 0.030, 0.11, 0.0), (164.81, 0.026, 0.17, 1.3), (220.0, 0.022, 0.23, 2.1), (329.63, 0.014, 0.29, 3.4)]:
-    trem = 0.8 + 0.2 * np.sin(2 * np.pi * lfo_hz * t + ph)
-    pad += amp * trem * (np.sin(2 * np.pi * f0 * t) + 0.25 * np.sin(2 * np.pi * 2 * f0 * t))
-third = smooth(env([(0, 0), (36.55, 0), (37.0, 1.0), (43, 1.0), (46, 0.6)]), 0.1)
-pad += third * 0.020 * (0.85 + 0.15 * np.sin(2 * np.pi * 0.19 * t + 0.7)) * (np.sin(2 * np.pi * 277.18 * t) + 0.25 * np.sin(2 * np.pi * 554.36 * t))
-mix += pad * pad_gain
+# ------------------------------------------------------------------ glockenspiel / bell
+def bell(t0, f0, amp=0.3, long=1.0, pan=0.0):
+    length = 3.0 * long
+    k = int(SR * length); tt = np.arange(k) / SR
+    parts = [(1.0, 1.0, 1.5 * long), (2.76, 0.42, 0.7 * long), (5.4, 0.22, 0.32 * long), (8.93, 0.12, 0.16 * long)]
+    s = np.zeros(k)
+    for ratio, a, tau in parts:
+        s += a * np.sin(2 * np.pi * f0 * ratio * tt + rng.uniform(0, 6.28)) * np.exp(-tt / tau)
+    s *= np.minimum(1, tt / 0.001)
+    place(t0, s, amp, pan, 0.45)
 
-# ------------------------------------------------------------------ voice: pitch follows the block count N
-N = np.full(n, float(sched["initial"]))
+# ------------------------------------------------------------------ felt kick
+def kick(t0, amp=0.5):
+    k = int(SR * 0.45); tt = np.arange(k) / SR
+    f = 48 + 62 * np.exp(-tt / 0.03)
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt / 0.11)
+    felt = fband(noise_burst(10, 2.0), 150, 900)
+    felt /= np.max(np.abs(felt)) + 1e-9
+    s[: len(felt)] += 0.22 * felt
+    s *= np.minimum(1, tt / 0.0015)
+    place(t0, s, amp, 0.0, 0.14)
+
+# ------------------------------------------------------------------ continuous layers
+hum += 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
+
+merges = sched["merges"]
+prog = np.zeros(n)                  # 0 -> 1 as blocks disappear (same step function as the counter), used for brightness
+last = float(sched["initial"])
 for tm, nn in merges:
-    ramp = np.clip((t - tm) / 0.35, 0, 1)
+    ramp = np.clip((t - tm) / 0.5, 0, 1)
     ramp = ramp * ramp * (3 - 2 * ramp)
-    N = np.where(t >= tm, N * (1 - ramp) + nn * ramp, N)
-x = (8.0 - N) / 7.0                       # 0 -> 1 as the diagram collapses
-freq = 220.0 * 2.0 ** x
-level = 0.5 + 0.5 * x
-voice_env = smooth(env([(0, 0), (3.4, 0), (3.9, 0.8), (36.5, 1.0), (37.2, 0.28), (40.0, 0.0), (46, 0)]), 0.06) * level
-voice = np.zeros(n)
-for det in (-1.2, 1.2):
-    ph = 2 * np.pi * np.cumsum(freq + det) / SR
-    voice += 0.5 * (np.sin(ph) + 0.38 * np.sin(2 * ph) + 0.14 * np.sin(3 * ph))
-mix += 0.075 * voice_env * voice
+    prog = np.where(t >= tm, prog * (1 - ramp) + ((8.0 - nn) / 7.0) * ramp, prog)
 
-# ------------------------------------------------------------------ air
-air = lowpass(rng.uniform(-1, 1, n), 1800.0)
-air_env = smooth(env([(0, 0), (3.6, 0), (4.2, 0.5), (36.5, 0.9), (37.5, 0.2), (40, 0), (46, 0)]), 0.08)
-mix += 0.016 * air_env * (0.4 + 0.6 * x) * air
+pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (2.2, 0.6), (18.4, 0.9), (24.4, 1.15), (26.5, 1.2), (29.5, 0.95), (31, 0.5)]), 0.25)
+pad = np.zeros(n)
+def voice(f0, amp, lfo_hz, ph, third=False):
+    out = np.zeros(n)
+    for det in (-0.0016, 0.0, 0.0017):
+        f = f0 * (1 + det)
+        ph_ = 2 * np.pi * f * t + rng.uniform(0, 6.28)
+        v = np.sin(ph_)
+        for h, a in ((2, 0.30), (3, 0.14 * (0.25 + 0.75 * prog)), (4, 0.08 * (0.2 + 0.8 * prog)), (5, 0.04 * prog)):
+            v = v + a * np.sin(h * ph_)
+        out += v / 3
+    trem = 0.82 + 0.18 * np.sin(2 * np.pi * lfo_hz * t + ph)
+    return amp * trem * out
+for f0, amp, lfo_hz, ph in [(110.0, 0.034, 0.09, 0.0), (164.81, 0.028, 0.14, 1.3), (220.0, 0.022, 0.19, 2.1), (329.63, 0.014, 0.23, 3.4)]:
+    pad += voice(f0, amp, lfo_hz, ph)
+third = smooth(env([(0, 0), (24.35, 0), (24.9, 1.0), (29.5, 1.0), (31, 0.6)]), 0.12)
+pad += third * voice(277.18, 0.022, 0.17, 0.7)
+padL = pad * pad_gain * 1.9
+dry[0] += padL * 0.95; dry[1] += padL * 1.05
+send += padL * 0.25
+
+# a quiet breath: low-passed noise, slow swell, no pitch to follow
+air = fband(rng.uniform(-1, 1, n), 120, 2600)
+air_env = smooth(env([(0, 0), (1.0, 0.5), (24.4, 1.0), (26, 0.6), (31, 0.3)]), 0.4)
+dry[0] += 0.010 * air_env * air; dry[1] += 0.010 * air_env * np.roll(air, 977)
 
 # ------------------------------------------------------------------ events
-penta = [440.0, 493.88, 554.37, 659.26, 739.99, 880.0]
+penta = [440.0, 493.88, 554.37, 659.26, 739.99, 880.0]       # A4 B4 C#5 E5 F#5 A5
 merge_times = [round(m[0], 3) for m in merges]
 counts = {"click": 0, "snap": 0, "thump": 0}
 for c in cues:
@@ -106,35 +171,58 @@ for c in cues:
         raise SystemExit(f"unknown cue kind {k}")
     counts[k] += 1
     if k == "click":
-        add(t0, tone(1800, 0.015, 0.003, 0.30))
-        if abs(t0 - 43.2) < 1e-6:
-            add(t0, tone(1760, 0.5, 0.18, 0.035)); add(t0 + 0.05, tone(2217.5, 0.5, 0.15, 0.022))
+        click(t0, 1.0)
+        if abs(t0 - 29.8) < 1e-6:                  # engagement ping
+            bell(t0 + 0.01, 1760.0, 0.07, 0.8); bell(t0 + 0.07, 2217.5, 0.05, 0.8)
     elif k == "snap":
-        tt = np.arange(int(SR * 0.05)) / SR
-        body = 0.20 * np.sin(2 * np.pi * 600 * tt) * np.exp(-tt / 0.012)
-        ring = (0.22 * np.sin(2 * np.pi * 2400 * tt) + 0.12 * np.sin(2 * np.pi * 3150 * tt)) * np.exp(-tt / 0.008)
-        hit = 0.30 * rng.uniform(-1, 1, len(tt)) * np.exp(-tt / 0.003)
-        add(t0, body + ring + hit)
         if any(abs(t0 - mt) < 1e-6 for mt in merge_times):
             i = [abs(t0 - mt) < 1e-6 for mt in merge_times].index(True)
+            click(t0 - 0.004, 0.8)                 # the blocks touching
             if i < 6:
-                add(t0 + 0.01, bell(penta[i], 0.055))
-            else:  # the last merge: four blocks become one, a full open chord
-                add(t0 + 0.01, bell(880.0, 0.05)); add(t0 + 0.03, bell(1318.5, 0.045)); add(t0 + 0.05, bell(1760.0, 0.03))
-        if abs(t0 - 40.8) < 1e-6:
-            add(t0 + 0.02, tone(659.26, 1.4, 0.45, 0.05)); add(t0 + 0.09, tone(880.0, 1.4, 0.40, 0.04))
+                marimba(t0 + 0.004, penta[i], 0.30, 1.0, pan=-0.2 + 0.08 * i)
+            else:                                   # the last merge: four blocks become one, a full open chord
+                marimba(t0 + 0.004, 440.0, 0.17, 1.5, -0.2); marimba(t0 + 0.03, 659.26, 0.16, 1.5, 0.0)
+                marimba(t0 + 0.06, 880.0, 0.14, 1.5, 0.2); bell(t0 + 0.08, 1318.5, 0.04, 1.0)
+        else:                                       # CTA reveal: two bells, a fifth apart
+            click(t0, 0.9)
+            bell(t0 + 0.02, 659.26, 0.11, 1.0, -0.15); bell(t0 + 0.11, 880.0, 0.09, 1.0, 0.15)
     elif k == "thump":
-        add(t0, tone(55, 0.25, 0.045, 0.55))
-        if abs(t0 - 36.6) < 1e-6:
-            for i, fz in enumerate([220.0, 277.18, 329.63, 440.0, 554.36, 659.26]):
-                add(t0 + 0.03 + 0.045 * i, tone(fz, 2.2, 0.9, 0.040))
+        if abs(t0 - 24.4) < 1e-6:                   # the lock: felt kick + bright A-major arpeggio of bells
+            kick(t0, 0.38)
+            for i, fz in enumerate([440.0, 554.37, 659.26, 880.0, 1108.7, 1318.5]):
+                bell(t0 + 0.04 + 0.075 * i, fz, 0.085 - 0.006 * i, 1.2, pan=-0.3 + 0.12 * i)
+        else:
+            kick(t0, 0.42)
 
-peak = float(np.max(np.abs(mix)))
+# ------------------------------------------------------------------ the room: one synthetic plate (seeded), stereo-decorrelated
+def make_ir(seed, sec=1.6):
+    r = np.random.default_rng(seed)
+    m = int(SR * sec); tt = np.arange(m) / SR
+    x = r.standard_normal(m) * np.exp(-tt / 0.38)
+    x = fband(x, 180, 7500) * (1 - np.exp(-tt / 0.012))   # darker than the dry sound, soft onset
+    return x / np.sqrt(np.sum(x * x))
+def fftconv(a, b):
+    m = len(a) + len(b)
+    N = 1 << (m - 1).bit_length()
+    return np.fft.irfft(np.fft.rfft(a, N) * np.fft.rfft(b, N), N)[: len(a)]
+wetL = fftconv(send, make_ir(1)); wetR = fftconv(send, make_ir(2))
+L = dry[0] + 0.55 * wetL
+R_ = dry[1] + 0.55 * wetR
+# gentle soft clip, then the hum (never clipped, never ducked)
+L = np.tanh(1.25 * L) / 1.25 + hum
+R_ = np.tanh(1.25 * R_) / 1.25 + hum
+# high-pass the whole thing above the hum region so reverb tails carry no rumble
+mixLR = np.stack([L, R_])
+peak = float(np.max(np.abs(mixLR)))
 assert peak < 0.98, f"clipping risk: peak {peak:.3f}"
-pcm = (np.repeat(np.clip(mix, -1, 1)[:, None], 2, axis=1) * 32767).astype("<i2")
+pcm = (np.clip(mixLR.T, -1, 1) * 32767).astype("<i2")
 out = root / "assets" / "sfx.wav"
 with wave.open(str(out), "wb") as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(pcm.tobytes())
+mono = (L + R_) / 2
 win = int(0.5 * SR)
-rms = [20 * np.log10(np.sqrt(np.mean(mix[i:i + win] ** 2)) + 1e-12) for i in range(0, n - win + 1, win)]
-print(f"{out.name}: {len(cues)} cues {counts}, peak {peak:.3f}, {DUR:.1f} s; RMS per 0.5 s: min {min(rms):.1f} max {max(rms):.1f} dBFS; voice {freq.min():.0f} -> {freq.max():.0f} Hz")
+rms = [20 * np.log10(np.sqrt(np.mean(mono[i:i + win] ** 2)) + 1e-12) for i in range(0, n - win + 1, win)]
+# how much energy sits above 5 kHz (piercing check)
+F = np.abs(np.fft.rfft(mono)) ** 2; fr = np.fft.rfftfreq(n, 1 / SR)
+hi = 10 * np.log10(F[fr > 5000].sum() / F.sum() + 1e-12)
+print(f"{out.name}: {len(cues)} cues {counts}, peak {peak:.3f}, {DUR:.1f} s; RMS per 0.5 s: min {min(rms):.1f} max {max(rms):.1f} dBFS; energy above 5 kHz {hi:.1f} dB")

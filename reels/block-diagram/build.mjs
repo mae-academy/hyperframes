@@ -1,4 +1,4 @@
-// BLOCK DIAGRAM REDUCTION: eight blocks into one transfer function (46.0 s).
+// BLOCK DIAGRAM REDUCTION: eight blocks into one transfer function (31.0 s).
 //   node build.mjs  ->  index.html (GSAP from cdnjs) + dist/index.html (GSAP vendored, for offline render)
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -10,7 +10,7 @@ const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF"
 const DIM = "rgba(255,255,255,.6)";
 const W = 1080,
   H = 1920,
-  DUR = 46;
+  DUR = 31;
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
 (function assertMath() {
@@ -747,33 +747,58 @@ const ledger = LEDGER.map(([id, t], i) =>
 const FIN = "\\dfrac{C}{R}=\\dfrac{G_1G_7(G_3+G_4)}{(1+G_1G_2)(1+G_6G_7)+(G_1G_5-G_7G_8)(G_3+G_4)}";
 const closure = [
   box({
-    id: "clos",
+    id: "l1",
     cx: 540,
-    cy: 1030,
+    cy: 985,
     w: 860,
-    h: 120,
-    size: 52,
-    color: C.blue,
-    html: tx("\\dfrac{C}{R}=\\dfrac{G_1G_f}{1+G_1G_a-G_8G_f}"),
+    h: 60,
+    size: 44,
+    color: C.purple,
+    html: tx(it("LOOP 1: ") + "L_1=-G_1G_a"),
     m: true,
     style: "opacity:0",
   }),
   box({
-    id: "closcap",
+    id: "l2",
     cx: 540,
-    cy: 1130,
+    cy: 1050,
+    w: 860,
+    h: 60,
+    size: 44,
+    color: C.red,
+    html: tx(it("LOOP 2: ") + "L_2=+G_8G_f"),
+    m: true,
+    style: "opacity:0",
+  }),
+  box({
+    id: "l3",
+    cx: 540,
+    cy: 1140,
+    w: 880,
+    h: 100,
+    size: 40,
+    color: C.blue,
+    html: tx("\\dfrac{C}{R}=\\dfrac{G_1G_f}{1-(L_1+L_2)}=\\dfrac{G_1G_f}{1+G_1G_a-G_8G_f}"),
+    m: true,
+    style: "opacity:0",
+  }),
+  box({
+    id: "cap",
+    cx: 540,
+    cy: 1215,
     w: 860,
     h: 44,
-    size: 32,
+    size: 30,
     color: DIM,
-    html: tx(it("SUBSTITUTE ") + "G_f" + it(" AND ") + "G_a"),
+    html: tx(it("SUBSTITUTE ") + "G_f,\\,G_a" + it(", THEN CLEAR THE FRACTIONS")),
+    m: true,
     style: "opacity:0",
   }),
 ].join("\n");
-const RES = { cx: 540, cy: 1250, w: 880, h: 190 };
+const RES = { cx: 540, cy: 1310, w: 880, h: 150 };
 const result = `
-<div id="glow" style="position:absolute;left:${RES.cx - 440}px;top:${RES.cy - 200}px;width:880px;height:400px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
-${box({ id: "fin", cx: RES.cx, cy: RES.cy, w: 860, h: 170, size: 33, color: C.blue, html: tx(FIN), m: true, style: "opacity:0;z-index:2" })}
+<div id="glow" style="position:absolute;left:${RES.cx - 440}px;top:${RES.cy - 180}px;width:880px;height:360px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
+${box({ id: "fin", cx: RES.cx, cy: RES.cy, w: 860, h: 130, size: 33, color: C.blue, html: tx(FIN), m: true, style: "opacity:0;z-index:2" })}
 <svg id="resfx" width="${W}" height="${H}" style="position:absolute;left:0;top:0;overflow:visible;pointer-events:none" data-layout-ignore>
   <rect id="resbox" x="${RES.cx - RES.w / 2}" y="${RES.cy - RES.h / 2}" width="${RES.w}" height="${RES.h}" rx="26" fill="none" stroke="${C.blue}" stroke-width="5" stroke-dasharray="${2 * (RES.w + RES.h)}" stroke-dashoffset="${2 * (RES.w + RES.h)}" opacity="0" style="filter:drop-shadow(0 0 10px ${C.blue})"/>
   <line id="sweep" x1="0" y1="${RES.cy - RES.h / 2 - 8}" x2="0" y2="${RES.cy + RES.h / 2 + 8}" stroke="${C.purple}" stroke-width="6" stroke-linecap="round" opacity="0" style="filter:drop-shadow(0 0 10px ${C.purple})"/>
@@ -808,7 +833,6 @@ const bn = (id, l1, l2, op) =>
   `<div id="${id}" class="ba" style="opacity:${op}"><div class="l1">${tx(l1)}</div><div class="l2">${tx(l2)}</div></div>`;
 const banners = [
   bn("bn0", it("8 BLOCKS, 4 SUMMING POINTS"), it("HOW MANY LINES OF ALGEBRA?"), 1),
-  bn("bnH", it("FORGET THE EQUATIONS"), it("REDUCE THE PICTURE INSTEAD"), 0),
   bn("bn1", it("RULE 1: PARALLEL BLOCKS"), it("THEY ADD"), 0),
   bn("bn2", it("RULE 2: TAKE-OFF POINT PAST A BLOCK"), it("DIVIDE BY THAT BLOCK"), 0),
   bn("bn3", it("RULE 3: NEGATIVE FEEDBACK LOOP"), it("FORWARD OVER 1 + LOOP GAIN"), 0),
@@ -845,7 +869,18 @@ const boldCount = (allHtml.match(/class="[^"]*\btextbf\b/g) || []).length;
 if (boldCount !== 1)
   throw new Error("expected exactly one \\textbf (the header title), found " + boldCount);
 if (Object.keys(L).length) {
-  for (const k of [...LEDGER.map((l) => l[0]), "clos", "fin", "hk1", "hk2", "hk3", "hk4"]) {
+  for (const k of [
+    ...LEDGER.map((l) => l[0]),
+    "l1",
+    "l2",
+    "l3",
+    "cap",
+    "fin",
+    "hk1",
+    "hk2",
+    "hk3",
+    "hk4",
+  ]) {
     if (L[k] && L[k].w > 860) throw new Error(`${k} is ${L[k].w}px wide, limit 860`);
   }
   console.log("layout ok: every measured formula fits its limit");
@@ -854,12 +889,15 @@ console.log("typography ok: no \\mathbf / \\mathrm / upright math; one \\textbf 
 if (EL.some((e) => e.to < e.from)) throw new Error("element lifetime inverted");
 
 // the sound follows the block count: merge times are fixed in anim.js (ST + 1.2 s)
-const ST = [0, 4.8, 9.4, 14.0, 18.6, 23.2, 27.8, 32.4];
+const ST = [0, 2.2, 4.9, 7.6, 10.3, 13.0, 15.7, 18.4];
 fs.mkdirSync(new URL("./assets/", import.meta.url), { recursive: true });
 fs.writeFileSync(
   new URL("./assets/sched.json", import.meta.url),
   JSON.stringify({
-    merges: ST.slice(1).map((s, i) => [Math.round((s + 1.2) * 1000) / 1000, COUNT[i + 1]]),
+    merges: [
+      ...ST.slice(1, 7).map((s, i) => [Math.round((s + 0.7) * 1000) / 1000, COUNT[i + 1]]),
+      [21.6, 1],
+    ],
     initial: COUNT[0],
   }),
 );
@@ -896,7 +934,15 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 `;
 
 const anim = fs.readFileSync(new URL("./anim.js", import.meta.url), "utf8");
-const CFG = { el: EL, ST, count: COUNT, res: RES, tap: { x0: 728, x1: XO, y: Y(y2) } };
+const CFG = {
+  loop1: { wires: ["wAG14", "wG1B4", "wpG24", "wGaA"], blocks: ["g1b", "ga"] },
+  loop2: { wires: ["wBGf", "wGfo", "wo84", "wG8B4"], blocks: ["gf", "g8b"] },
+  el: EL,
+  ST,
+  count: COUNT,
+  res: RES,
+  tap: { x0: 728, x1: XO, y: Y(y2) },
+};
 function page(gsapSrc) {
   return `<!doctype html>
 <html lang="en">
