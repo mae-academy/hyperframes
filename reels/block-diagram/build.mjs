@@ -416,7 +416,7 @@ wire(
   true,
 );
 sum("sD", 0, 3, 215, y3);
-txt("sgD1", 0, 3, 262, y3 - 28, "+", 26, C.white, 30);
+txt("sgD1", 0, 3, 250, y3 - 46, "+", 26, C.white, 30);
 txt("sgD2", 0, 3, 240, y3 + 36, "+", 26, C.white, 30);
 wire(
   "wDA",
@@ -595,7 +595,7 @@ wire(
   true,
 );
 sum("sD4", 4, 5, 215, yG2);
-txt("sgD14", 4, 5, 262, yG2 - 28, "+", 26, C.white, 30);
+txt("sgD14", 4, 5, 250, yG2 - 46, "+", 26, C.white, 30);
 txt("sgD24", 4, 5, 240, yG2 + 36, "+", 26, C.white, 30);
 wire(
   "wDA4",

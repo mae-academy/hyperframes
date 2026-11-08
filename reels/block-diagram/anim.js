@@ -259,10 +259,10 @@
   ft("#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 41.5);
   ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 41.9);
   hit(43.2, "click", "#ctaglow");
-  ft("#ctaglow", { opacity: 0 }, { opacity: 0.9, duration: 0.2, ease: "power2.out" }, 43.2);
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.45, duration: 0.2, ease: "power2.out" }, 43.2);
   tl.fromTo(
     "#ctaglow",
-    { opacity: 0.9 },
+    { opacity: 0.45 },
     { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false },
     43.5,
   );
