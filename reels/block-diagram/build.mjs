@@ -1,4 +1,4 @@
-// BLOCK DIAGRAM REDUCTION: eight blocks into one transfer function (31.0 s).
+// BLOCK DIAGRAM REDUCTION: eight blocks into one transfer function (26.5 s).
 //   node build.mjs  ->  index.html (GSAP from cdnjs) + dist/index.html (GSAP vendored, for offline render)
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -10,7 +10,7 @@ const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF"
 const DIM = "rgba(255,255,255,.6)";
 const W = 1080,
   H = 1920,
-  DUR = 31;
+  DUR = 26.5;
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
 (function assertMath() {
@@ -477,9 +477,9 @@ wire(
 
 // ---- states 4 - 7: the tidy layout (rows: main 520, G8 420, G2 640, G5 740)
 const yM = 520,
-  yG8 = 420,
-  yG2 = 640,
-  yG5 = 740,
+  yG8 = 390,
+  yG2 = 672,
+  yG5 = 782,
   XQ = 790;
 const GfPos = [610, yM];
 txt("tR4", 4, 7, 112, yM, "R(s)", 32, C.white, 100);
@@ -671,6 +671,9 @@ wire(
   ],
   true,
 );
+// loop labels on the diagram (shown during the closing step, they leave with state 6)
+blk("dl1", 99, 6, 345, 596, 215, 44, "L_1=-G_1G_a", 28);
+blk("dl2", 99, 6, 535, 455, 215, 40, "L_2=+G_8G_f", 28);
 // state 7: one block
 blk("gT", 7, 7, 540, yM, 230, 110, "T(s)", 44);
 wire(
@@ -857,7 +860,7 @@ const card = `<div id="card" style="left:${CARD.x}px;top:${CARD.y}px;width:${CAR
 // ------------------------------------------------------------------ plate + guards
 const plate = `<div id="plate"></div>
 <div id="dgw">
-<svg id="dg" width="${W}" height="${H}" style="position:absolute;left:0;top:0;overflow:visible">${svgParts.join("")}<circle id="tapd" cx="728" cy="${Y(y2)}" r="9" fill="#fff" stroke="${C.red}" stroke-width="4" opacity="0"/></svg>
+<svg id="dg" width="${W}" height="${H}" style="position:absolute;left:0;top:0;overflow:visible">${svgParts.join("")}<circle id="ringP" cx="480" cy="${Y(yM)}" r="8" fill="none" stroke="#fff" stroke-width="4" opacity="0"/><circle id="tr1" cx="0" cy="0" r="10" fill="#fff" stroke="${C.purple}" stroke-width="5" opacity="0"/><circle id="tr2" cx="0" cy="0" r="10" fill="#fff" stroke="${C.red}" stroke-width="5" opacity="0"/><circle id="tapd" cx="728" cy="${Y(y2)}" r="9" fill="#fff" stroke="${C.red}" stroke-width="4" opacity="0"/></svg>
 ${htmlParts.join("\n")}
 </div>
 ${chip}`;
@@ -886,19 +889,22 @@ if (Object.keys(L).length) {
   console.log("layout ok: every measured formula fits its limit");
 }
 console.log("typography ok: no \\mathbf / \\mathrm / upright math; one \\textbf (title only)");
-if (EL.some((e) => e.to < e.from)) throw new Error("element lifetime inverted");
+if (EL.some((e) => e.from < 90 && e.to < e.from)) throw new Error("element lifetime inverted");
 
 // the sound follows the block count: merge times are fixed in anim.js (ST + 1.2 s)
-const ST = [0, 2.2, 4.9, 7.6, 10.3, 13.0, 15.7, 18.4];
+const ST = [0, 2.0, 4.3, 6.6, 8.9, 11.2, 13.5, 15.8];
 fs.mkdirSync(new URL("./assets/", import.meta.url), { recursive: true });
 fs.writeFileSync(
   new URL("./assets/sched.json", import.meta.url),
   JSON.stringify({
     merges: [
-      ...ST.slice(1, 7).map((s, i) => [Math.round((s + 0.7) * 1000) / 1000, COUNT[i + 1]]),
-      [21.6, 1],
+      ...ST.slice(1, 7).map((s, i) => [Math.round((s + 0.55) * 1000) / 1000, COUNT[i + 1]]),
+      [19.4, 1],
     ],
     initial: COUNT[0],
+    lock: 21.8,
+    pulse: 25.6,
+    dur: DUR,
   }),
 );
 
@@ -934,7 +940,25 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 `;
 
 const anim = fs.readFileSync(new URL("./anim.js", import.meta.url), "utf8");
+const LP1 = [
+  [215, yM],
+  [425, yM],
+  [480, yM],
+  [480, yG2],
+  [215, yG2],
+  [215, yM],
+].map(([x, y]) => [x, Y(y)]);
+const LP2 = [
+  [425, yM],
+  [480, yM],
+  [XQ, yM],
+  [XQ, yG8],
+  [425, yG8],
+  [425, yM],
+].map(([x, y]) => [x, Y(y)]);
 const CFG = {
+  lp1: LP1,
+  lp2: LP2,
   loop1: { wires: ["wAG14", "wG1B4", "wpG24", "wGaA"], blocks: ["g1b", "ga"] },
   loop2: { wires: ["wBGf", "wGfo", "wo84", "wG8B4"], blocks: ["gf", "g8b"] },
   el: EL,

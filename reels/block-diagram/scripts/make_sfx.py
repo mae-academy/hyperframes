@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate assets/sfx.wav (48 kHz stereo, 16-bit, 31.0 s) from assets/cues.json and assets/sched.json.
+"""Generate assets/sfx.wav (48 kHz stereo, 16-bit, 26.5 s) from assets/cues.json and assets/sched.json.
 
 Designed to sound played, not beeped: every sound is a small physical model, a little different each time, and sits in one room.
 
@@ -21,10 +21,11 @@ bells share a space. Peak is asserted < 0.98.
 import json, pathlib, wave
 import numpy as np
 
-SR, DUR = 48000, 31.0
+SR = 48000
 root = pathlib.Path(__file__).resolve().parent.parent
 cues = json.loads((root / "assets" / "cues.json").read_text())
 sched = json.loads((root / "assets" / "sched.json").read_text())
+DUR, LOCK, PULSE = float(sched["dur"]), float(sched["lock"]), float(sched["pulse"])
 rng = np.random.default_rng(2026)
 
 n = int(SR * DUR)
@@ -135,7 +136,7 @@ for tm, nn in merges:
     ramp = ramp * ramp * (3 - 2 * ramp)
     prog = np.where(t >= tm, prog * (1 - ramp) + ((8.0 - nn) / 7.0) * ramp, prog)
 
-pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (2.2, 0.6), (18.4, 0.9), (24.4, 1.15), (26.5, 1.2), (29.5, 0.95), (31, 0.5)]), 0.25)
+pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (2.0, 0.6), (15.8, 0.9), (LOCK, 1.15), (LOCK + 2, 1.2), (DUR - 1.5, 0.95), (DUR, 0.5)]), 0.25)
 pad = np.zeros(n)
 def voice(f0, amp, lfo_hz, ph, third=False):
     out = np.zeros(n)
@@ -150,7 +151,7 @@ def voice(f0, amp, lfo_hz, ph, third=False):
     return amp * trem * out
 for f0, amp, lfo_hz, ph in [(110.0, 0.034, 0.09, 0.0), (164.81, 0.028, 0.14, 1.3), (220.0, 0.022, 0.19, 2.1), (329.63, 0.014, 0.23, 3.4)]:
     pad += voice(f0, amp, lfo_hz, ph)
-third = smooth(env([(0, 0), (24.35, 0), (24.9, 1.0), (29.5, 1.0), (31, 0.6)]), 0.12)
+third = smooth(env([(0, 0), (LOCK - 0.05, 0), (LOCK + 0.5, 1.0), (DUR - 1.5, 1.0), (DUR, 0.6)]), 0.12)
 pad += third * voice(277.18, 0.022, 0.17, 0.7)
 padL = pad * pad_gain * 1.9
 dry[0] += padL * 0.95; dry[1] += padL * 1.05
@@ -158,7 +159,7 @@ send += padL * 0.25
 
 # a quiet breath: low-passed noise, slow swell, no pitch to follow
 air = fband(rng.uniform(-1, 1, n), 120, 2600)
-air_env = smooth(env([(0, 0), (1.0, 0.5), (24.4, 1.0), (26, 0.6), (31, 0.3)]), 0.4)
+air_env = smooth(env([(0, 0), (1.0, 0.5), (LOCK, 1.0), (LOCK + 1.6, 0.6), (DUR, 0.3)]), 0.4)
 dry[0] += 0.010 * air_env * air; dry[1] += 0.010 * air_env * np.roll(air, 977)
 
 # ------------------------------------------------------------------ events
@@ -172,7 +173,7 @@ for c in cues:
     counts[k] += 1
     if k == "click":
         click(t0, 1.0)
-        if abs(t0 - 29.8) < 1e-6:                  # engagement ping
+        if abs(t0 - PULSE) < 1e-6:                  # engagement ping
             bell(t0 + 0.01, 1760.0, 0.07, 0.8); bell(t0 + 0.07, 2217.5, 0.05, 0.8)
     elif k == "snap":
         if any(abs(t0 - mt) < 1e-6 for mt in merge_times):
@@ -187,7 +188,7 @@ for c in cues:
             click(t0, 0.9)
             bell(t0 + 0.02, 659.26, 0.11, 1.0, -0.15); bell(t0 + 0.11, 880.0, 0.09, 1.0, 0.15)
     elif k == "thump":
-        if abs(t0 - 24.4) < 1e-6:                   # the lock: felt kick + bright A-major arpeggio of bells
+        if abs(t0 - LOCK) < 1e-6:                   # the lock: felt kick + bright A-major arpeggio of bells
             kick(t0, 0.38)
             for i, fz in enumerate([440.0, 554.37, 659.26, 880.0, 1108.7, 1318.5]):
                 bell(t0 + 0.04 + 0.075 * i, fz, 0.085 - 0.006 * i, 1.2, pan=-0.3 + 0.12 * i)

@@ -1,4 +1,4 @@
-// Timeline for "BLOCK DIAGRAM REDUCTION" (31.0 s).
+// Timeline for "BLOCK DIAGRAM REDUCTION" (26.5 s).
 // Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
 (function () {
   const CFG = window.__CFG;
@@ -10,35 +10,34 @@
   // @CUES-BEGIN
   const CUES = [
     [0.0, "thump"], // opening impact on the monster diagram
-    [2.2, "click"], // rule 1 named
-    [2.9, "snap"], // G3 and G4 merge
-    [3.55, "click"], // ledger line 1
-    [4.9, "click"], // rule 2 named
-    [5.6, "snap"], // take-off point slides past G7
-    [6.25, "click"], // ledger line 2
-    [7.6, "click"], // rule 3 named
-    [8.3, "snap"], // G6 and G7 fold into one loop block
-    [8.95, "click"], // ledger line 3
-    [10.3, "click"], // rule 4 named
-    [11.0, "snap"], // series blocks multiply
-    [11.65, "click"], // ledger line 4
-    [13.0, "click"], // rule 2 again
-    [13.7, "snap"], // take-off point moves back
-    [14.35, "click"], // ledger line 5
-    [15.7, "click"], // rule 1 again
-    [16.4, "snap"], // G2 and the new branch merge
-    [17.05, "click"], // ledger line 6
-    [18.4, "click"], // close the loops
-    [19.2, "click"], // loop 1 named
-    [19.75, "click"], // loop 2 named
-    [20.4, "click"], // loop formula
-    [21.6, "snap"], // four blocks become one
-    [22.6, "click"], // substitute and clear the fractions
-    [23.2, "click"], // the full expression
-    [24.4, "thump"], // lock
-    [25.6, "click"], // 8 blocks gone in 6 moves
-    [27.6, "snap"], // CTA reveal
-    [29.8, "click"], // engagement pulse
+    [2.0, "click"], // rule 1 named
+    [2.55, "snap"], // G3 and G4 merge
+    [3.1, "click"], // ledger line 1
+    [4.3, "click"], // rule 2 named
+    [4.85, "snap"], // take-off point slides past G7
+    [5.4, "click"], // ledger line 2
+    [6.6, "click"], // rule 3 named
+    [7.15, "snap"], // G6 and G7 fold into one loop block
+    [7.7, "click"], // ledger line 3
+    [8.9, "click"], // rule 4 named
+    [9.45, "snap"], // series blocks multiply
+    [10.0, "click"], // ledger line 4
+    [11.2, "click"], // rule 2 again
+    [11.75, "snap"], // take-off point moves back
+    [12.3, "click"], // ledger line 5
+    [13.5, "click"], // rule 1 again
+    [14.05, "snap"], // G2 and the new branch merge
+    [14.6, "click"], // ledger line 6
+    [15.8, "click"], // close the loops
+    [16.2, "click"], // loop 1 traced and named
+    [17.2, "click"], // loop 2 traced and named
+    [18.2, "click"], // both loops touch at p: 1 - (L1 + L2)
+    [19.4, "snap"], // four blocks become one
+    [20.2, "click"], // substitute and clear the fractions
+    [20.8, "click"], // the full expression
+    [21.8, "thump"], // lock
+    [23.6, "snap"], // CTA reveal
+    [25.6, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -153,11 +152,11 @@
 
   for (let k = 1; k <= 6; k++) {
     const s0 = ST[k],
-      m = r2(s0 + 0.7);
+      m = r2(s0 + 0.55);
     hit(s0, "click", "#bn" + k);
     bnSwap("#bn" + k, s0);
     if (k === 1) ft("#hook", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power1.in" }, s0);
-    glow(HL[k], s0 + 0.2);
+    glow(HL[k], s0 + 0.15);
     merge(k, m);
     if (k === 2) {
       // the take-off point travels along the wire past G7
@@ -166,8 +165,8 @@
       ft("#tapd", { x: 0 }, { x: T.x1 - T.x0, duration: 0.55, ease: "power2.inOut" }, m);
       ft("#tapd", { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, m + 0.55);
     }
-    hit(r2(s0 + 1.35), "click", "#f" + k);
-    pop("#f" + k, r2(s0 + 1.35));
+    hit(r2(s0 + 1.1), "click", "#f" + k);
+    pop("#f" + k, r2(s0 + 1.1));
   }
 
   // ---------------------------------------------------------------- stage 7: name the two loops, close them, clear the fractions
@@ -195,23 +194,58 @@
       ),
     );
   };
-  hit(19.2, "click", "#l1");
-  paint("#B026FF", CFG.loop1, 19.2);
-  pop("#l1", 19.2);
-  hit(19.75, "click", "#l2");
-  paint("#FF0044", CFG.loop2, 19.75);
-  pop("#l2", 19.75);
-  hit(20.4, "click", "#l3");
-  pop("#l3", 20.4);
-  merge(7, 21.6);
-  hit(22.6, "click", "#cap");
-  pop("#cap", 22.6, 8);
-  hit(23.2, "click", "#fin");
-  pop("#fin", 23.2);
+  /** a dot runs once around a loop (the loop gain is the product of everything it passes) */
+  const trace = (id, pts, at) => {
+    let t = at;
+    ft("#" + id, { opacity: 0, x: pts[0][0], y: pts[0][1] }, { opacity: 1, duration: 0.01 }, t);
+    for (let i = 1; i < pts.length; i++) {
+      const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) / 1100;
+      ft(
+        "#" + id,
+        { x: pts[i - 1][0], y: pts[i - 1][1] },
+        { x: pts[i][0], y: pts[i][1], duration: d, ease: "none" },
+        t,
+      );
+      t += d;
+    }
+    ft("#" + id, { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "power1.in" }, t);
+  };
+  const tag = (id, c, at) => {
+    ft(
+      "#" + id,
+      { borderColor: "rgba(255,255,255,0.7)" },
+      { borderColor: c, duration: 0.2, ease: "power2.out" },
+      at,
+    );
+    ft(
+      "#" + id,
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" },
+      at,
+    );
+  };
+  hit(16.2, "click", "#l1");
+  paint("#B026FF", CFG.loop1, 16.2);
+  trace("tr1", CFG.lp1, 16.2);
+  tag("dl1", "#B026FF", 16.2);
+  pop("#l1", 16.2);
+  hit(17.2, "click", "#l2");
+  paint("#FF0044", CFG.loop2, 17.2);
+  trace("tr2", CFG.lp2, 17.2);
+  tag("dl2", "#FF0044", 17.2);
+  pop("#l2", 17.2);
+  hit(18.2, "click", "#l3");
+  burst("#ringP", 8, 46, 0.5, 18.2);
+  pop("#l3", 18.2);
+  merge(7, 19.4);
+  hit(20.2, "click", "#cap");
+  pop("#cap", 20.2, 8);
+  hit(20.8, "click", "#fin");
+  pop("#fin", 20.8);
 
   // ---------------------------------------------------------------- the lock: sweep, glints, sparks, two rings, glow, check, pulse
   const R = CFG.res,
-    T = 24.4;
+    T = 21.8;
   hit(T, "thump", "#glow");
   ft("#glow", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T);
   tl.fromTo(
@@ -280,28 +314,27 @@
     T + 0.65,
   );
 
-  hit(25.6, "click", "#bnF");
-  bnSwap("#bnF", 25.6);
+  bnSwap("#bnF", T);
 
   // ---------------------------------------------------------------- CTA
-  hit(27.6, "snap", "#card");
-  ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, 27.5);
-  ft("#banner", { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, 27.5);
-  ft("#card", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, 27.6);
-  ft("#ct1", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 27.7);
-  ft("#ct2", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 28.0);
-  ft("#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 28.3);
-  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 28.7);
-  hit(29.8, "click", "#ctaglow");
-  ft("#ctaglow", { opacity: 0 }, { opacity: 0.45, duration: 0.2, ease: "power2.out" }, 29.8);
+  hit(23.6, "snap", "#card");
+  ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, 23.5);
+  ft("#banner", { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, 23.5);
+  ft("#card", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, 23.6);
+  ft("#ct1", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 23.7);
+  ft("#ct2", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 24.0);
+  ft("#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 24.3);
+  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 24.7);
+  hit(25.6, "click", "#ctaglow");
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.45, duration: 0.2, ease: "power2.out" }, 25.6);
   tl.fromTo(
     "#ctaglow",
     { opacity: 0.45 },
     { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false },
-    30.1,
+    25.9,
   );
 
-  tl.to({}, { duration: 0.0001 }, 30.9999);
+  tl.to({}, { duration: 0.0001 }, 26.4999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t);
   window.__timelines = window.__timelines || {};

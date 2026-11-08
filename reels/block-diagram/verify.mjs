@@ -14,8 +14,8 @@ const times = process.argv
 const T = times.length
   ? times
   : [
-      0, 3.0, 4.2, 5.6, 6.4, 7.5, 9.0, 11.0, 12.5, 15.0, 17.0, 20.0, 22.5, 25.0, 28.0, 30.5, 33.0,
-      34.8, 36.0, 37.2, 39.0, 41.8, 45.0,
+      0, 1.5, 2.3, 5.0, 7.4, 10.0, 12.5, 15.0, 16.5, 17.5, 18.4, 19.0, 19.8, 20.5, 21.0, 22.2, 24.0,
+      26.4,
     ];
 const browser = await chromium.launch();
 const page = await browser.newPage({
@@ -57,13 +57,13 @@ console.log(
   `cues: ${n("click")} click / ${n("snap")} snap / ${n("thump")} thump; mismatches: ${bad}`,
 );
 // determinism: the same time must render the same pixels after a forward and a backward seek
-await seek(16.0);
+await seek(12.0);
 const a = await page.screenshot();
-await seek(9.0);
-await seek(16.0);
+await seek(6.0);
+await seek(12.0);
 const b = await page.screenshot();
 const same = Buffer.compare(a, b) === 0;
-console.log("seek determinism (16.0 s forward vs after 9.0 s):", same ? "identical" : "DIFFERENT");
+console.log("seek determinism (12.0 s forward vs after 6.0 s):", same ? "identical" : "DIFFERENT");
 // zones
 const geo = await page.evaluate(() => {
   const r = {};
