@@ -43,6 +43,20 @@ const allowedHex = new Set([
   "000",
   "000000",
 ]);
+// A project may opt in to extra colours the user asked for explicitly (a country's flag, a client brand):
+// palette-extra.json = { "reason": "...", "hex": ["#009B3A", ...] }. Without that file the palette stays strict.
+const extraPath = path.join(dir, "palette-extra.json");
+if (fs.existsSync(extraPath)) {
+  const extra = JSON.parse(fs.readFileSync(extraPath, "utf8"));
+  for (const h of extra.hex || []) allowedHex.add(h.replace("#", "").toLowerCase());
+  console.log(
+    "palette-extra.json: " +
+      (extra.hex || []).length +
+      " extra colours allowed (" +
+      (extra.reason || "no reason given") +
+      ")",
+  );
+}
 for (const m of own.matchAll(/#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g)) {
   const h = m[1].toLowerCase();
   if (!allowedHex.has(h) && !allowedHex.has(h.slice(0, 6)))
