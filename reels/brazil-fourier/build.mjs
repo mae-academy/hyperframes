@@ -1,4 +1,4 @@
-// THE FLAG OF BRAZIL, DRAWN BY ROTATING CIRCLES (24.5 s).
+// THE FLAG OF BRAZIL, DRAWN BY ROTATING CIRCLES (22.4 s).
 //   node build.mjs  ->  index.html (GSAP from cdnjs) + dist/index.html (GSAP vendored, for offline render)
 // The flag is built from its legal geometry (20 x 14 modules), every shape is resampled by arc length, turned into
 // z = x + i y and expanded with a complex DFT. The page draws the circles on a canvas from the time alone.
@@ -19,22 +19,23 @@ const FLAG = {
 };
 const W = 1080,
   H = 1920,
-  DUR = 24.5;
+  DUR = 22.4;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
-  rewind0: 1.2,
-  sweep: [1.9, 2.8, 3.7, 4.6],
-  sweepN: [1, 4, 16, 64],
-  sweepEnd: 5.5,
+  xf0: 1.3, // the equations start turning into the flag
+  xf1: 3.1, // the flag is complete
+  hold: 3.7,
+  down: 4.1, // the filled flag has gone, only the dashed target is left
   roles: ["field", "rhombus", "disc", "band", "star"],
-  a: [5.6, 8.3, 10.8, 12.3, 14.3],
-  b: [8.0, 10.5, 12.0, 14.0, 16.4],
-  lock: 17.0,
-  banF: 17.9,
-  card: 19.6,
-  pulse: 22.8,
+  a: [4.2, 6.9, 9.4, 10.9, 12.9],
+  b: [6.6, 9.1, 10.6, 12.6, 15.0],
+  lock: 15.6,
+  banF: 16.5,
+  card: 18.2,
+  pulse: 20.8,
 };
+const SWEEP_N = [1, 4, 16, 64]; // only used to assert that the error falls as N grows
 const LIVE_N = { field: 80, rhombus: 64, disc: 1, band: 64, star: 40 };
 
 // ------------------------------------------------------------------ geometry (module units, y down) and the DFT
@@ -273,7 +274,7 @@ const contours = shapes.map((s) => {
     report.push(`${nm} N=${c.N} rms ${e.toFixed(2)} px`);
     if (e > 1.6) throw new Error(`${nm} reconstruction rms ${e} px is above 1.6 px`);
   }
-  const sweep = T.sweepN.map((N) => rms(by.rhombus, N));
+  const sweep = SWEEP_N.map((N) => rms(by.rhombus, N));
   if (!sweep.every((v, i) => i === 0 || v < sweep[i - 1]))
     throw new Error("the error must fall at every N step: " + sweep);
   console.log(
@@ -318,6 +319,128 @@ const BOOKMARK = (s) =>
 const HANDLE = (s) =>
   `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="margin-right:14px;flex:none"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg>`;
 
+// ------------------------------------------------------------------ the opening: a wall of real equations that turns into the flag
+const FIXED = [
+  "z(t)=\\sum_{n=-80}^{80}c_{n}\\,e^{int}",
+  "c_{n}=\\frac{1}{2\\pi}\\int_{0}^{2\\pi}z(t)\\,e^{-int}\\,dt",
+  "c_{n}=\\frac{1}{M}\\sum_{k=0}^{M-1}z_{k}\\,e^{-2\\pi i\\,nk/M}",
+  "z_{k}=x(s_{k})+i\\,y(s_{k})",
+  "s_{k}=\\frac{kL}{M},\\quad L=\\oint\\lvert z'(t)\\rvert\\,dt",
+  "e^{i\\theta}=\\cos\\theta+i\\sin\\theta",
+  "r_{n}=\\lvert c_{n}\\rvert,\\quad\\varphi_{n}=\\arg c_{n}",
+  "S_{N}(t)=\\sum_{n=-N}^{N}c_{n}\\,e^{int}",
+  "\\sum_{n}\\lvert c_{n}\\rvert^{2}=\\frac{1}{2\\pi}\\int\\lvert z\\rvert^{2}dt",
+  "z_{disc}(t)=540+760i+157.5\\,e^{i(t+\\pi)}",
+  "z_{k}=x_{k}+i\\,y_{k},\\quad k=0,\\dots,M-1",
+  "\\omega_{n}=n\\,\\omega_{0},\\quad\\omega_{0}=1",
+  "\\lvert z-S_{N}\\rvert\\to0\\;\\;(N\\to\\infty)",
+];
+const coefLines = [];
+const pick = (name, count) => {
+  const c = contours.find((q) => q.name === name);
+  const k = Math.max(1, contours.findIndex((q) => q.name === name) + 1);
+  let shown = 0;
+  for (let i = 0; i < c.terms.length && shown < count; i++) {
+    const [n, re, im] = c.terms[i];
+    if (Math.hypot(re, im) < 0.05) continue; // tiny coefficients would print as 0.000
+    shown++;
+    coefLines.push(
+      `c_{${n}}^{(${k})}=${re < 0 ? "-" : ""}${Math.abs(re).toFixed(3)}${im < 0 ? "-" : "+"}${Math.abs(im).toFixed(3)}\\,i`,
+    );
+  }
+};
+pick("field", 9);
+pick("rhombus", 9);
+pick("band", 8);
+pick("disc", 1);
+pick("star_00", 4);
+pick("star_13", 4);
+pick("star_21", 4);
+const wallTex = [];
+{
+  // interleave: fixed formulas spread through the numeric lines
+  const total = 3 * 18;
+  let fi = 0,
+    ci = 0;
+  for (let i = 0; i < total; i++) {
+    if (i % 4 === 1 && fi < FIXED.length) wallTex.push({ tex: FIXED[fi++], fixed: true });
+    else wallTex.push({ tex: coefLines[ci++ % coefLines.length], fixed: false });
+  }
+}
+const COLX = [200, 540, 880];
+const wallItems = wallTex.map((w, i) => {
+  const col = i % 3,
+    row = Math.floor(i / 3);
+  const cx = COLX[col] + (rnd() - 0.5) * 30,
+    cy = 392 + row * 57 + (rnd() - 0.5) * 8;
+  const id = "w" + i;
+  const base = w.fixed ? 30 : 25;
+  const mw = L[id] ? L[id].w : 0; // measured at the base size on the previous pass
+  const f = mw > 330 ? 330 / mw : 1; // CSS scale that makes a long equation fit its column
+  const d = Math.hypot(cx - CX, cy - CY) / 620; // distance from the flag centre, 0 .. ~1
+  return {
+    id,
+    cx,
+    cy,
+    f,
+    w: Math.min(mw || 260, 330),
+    op: w.fixed ? 0.9 : 0.55,
+    delay: +(0.55 * (1 - Math.min(1, d)) + rnd() * 0.1).toFixed(3),
+    tex: w.tex,
+    base,
+  };
+});
+const wall = `<div id="wall" data-layout-ignore>${wallItems
+  .map((it2) =>
+    box({
+      id: it2.id,
+      cx: it2.cx,
+      cy: it2.cy,
+      w: 340,
+      h: 50,
+      size: it2.base,
+      color: "#FFFFFF",
+      html: `<span class="wi" data-m="${it2.id}" data-mraw style="display:inline-block;transform:scale(${it2.f.toFixed(4)})">${tx(it2.tex)}</span>`,
+      style: `opacity:${it2.op};`,
+    }),
+  )
+  .join("")}</div>`;
+// the dots: each equation sheds dots that fly to a point on the outline of the flag
+const outline = [];
+contours.forEach((c) =>
+  c.ref.forEach((p, k) =>
+    k % (c.role === "star" ? 6 : 5) === 0 ? outline.push({ p, role: c.role }) : null,
+  ),
+);
+const LINEC = {
+  field: FLAG.field,
+  rhombus: FLAG.rhombus,
+  disc: FLAG.discLine,
+  band: FLAG.white,
+  star: FLAG.white,
+};
+const parts = Array.from({ length: 760 }, (_, i) => {
+  const it2 = wallItems[i % wallItems.length];
+  const tgt = outline[Math.floor(rnd() * outline.length)];
+  const sx = it2.cx + (rnd() - 0.5) * it2.w,
+    sy = it2.cy + (rnd() - 0.5) * 26;
+  const mx = (sx + tgt.p[0]) / 2,
+    my = (sy + tgt.p[1]) / 2;
+  const curl = (rnd() - 0.5) * 360;
+  return {
+    sx: +sx.toFixed(1),
+    sy: +sy.toFixed(1),
+    tx: +tgt.p[0].toFixed(1),
+    ty: +tgt.p[1].toFixed(1),
+    cx: +(mx + curl * 0.6).toFixed(1),
+    cy: +(my - curl).toFixed(1),
+    delay: +(it2.delay + rnd() * 0.18).toFixed(3),
+    dur: +(0.95 + rnd() * 0.25).toFixed(3),
+    col: LINEC[tgt.role],
+    r: +(2.4 + rnd() * 2.2).toFixed(2),
+  };
+});
+
 // ------------------------------------------------------------------ counters and formulas (stacked variants, toggled by the timeline)
 const CNT = []; // {id, n}
 const CY_CNT = 1220,
@@ -349,17 +472,8 @@ const mkFormula = (id, n, hidden = true) =>
     m: true,
     style: hidden ? "opacity:0" : "",
   });
-const counters = [
-  mkCounter("c0", 80, false),
-  ...[64, 32, 16, 8, 4, 1].map((n, i) => mkCounter("r" + (i + 1), n)),
-  ...T.sweepN.map((n, i) => mkCounter("s" + (i + 1), n)),
-  ...T.roles.map((r, i) => mkCounter("l" + i, LIVE_N[r])),
-].join("");
-const formulas = [
-  mkFormula("fm0", 80, false),
-  ...T.sweepN.map((n, i) => mkFormula("fs" + (i + 1), n)),
-  ...T.roles.map((r, i) => mkFormula("fl" + i, LIVE_N[r])),
-].join("");
+const counters = [...T.roles.map((r, i) => mkCounter("l" + i, LIVE_N[r]))].join("");
+const formulas = [...T.roles.map((r, i) => mkFormula("fl" + i, LIVE_N[r]))].join("");
 
 // pips: one per shape, lit when the shape is finished
 const PIP_COL = [FLAG.field, FLAG.rhombus, FLAG.disc, FLAG.white, FLAG.white];
@@ -381,8 +495,7 @@ const bn = (id, l1, l2, op) =>
   `<div id="${id}" class="ba" style="opacity:${op}"><div class="l1">${tx(l1)}</div><div class="l2">${tx(l2)}</div></div>`;
 const nv = (r) => 2 * LIVE_N[r] + 1;
 const banners = [
-  bn("bn0", it("CAN ROTATING CIRCLES"), it("DRAW A WHOLE FLAG?"), 1),
-  bn("bnS", it("MORE CIRCLES"), it("SHARPER FLAG"), 0),
+  bn("bn0", it("THESE EQUATIONS DRAW"), it("THE FLAG OF BRAZIL"), 1),
   bn("bnR0", it("THE FIELD: A CLOSED CURVE"), it(`${nv("field")} CIRCLES`), 0),
   bn("bnR1", it("THE RHOMBUS: 4 SHARP CORNERS"), it(`${nv("rhombus")} CIRCLES`), 0),
   bn("bnR2", it("THE DISC"), it("ONE CIRCLE IS ENOUGH"), 0),
@@ -424,8 +537,8 @@ fs.writeFileSync(
   new URL("./assets/sched.json", import.meta.url),
   JSON.stringify({
     dur: DUR,
-    rewind: T.rewind0,
-    sweep: T.sweep,
+    xf0: T.xf0,
+    xf1: T.xf1,
     a: T.a,
     b: T.b,
     lock: T.lock,
@@ -477,7 +590,8 @@ const CFG = {
     d: 160 + rnd() * 300,
     r: 2.5 + rnd() * 3.5,
   })),
-  glitch: Array.from({ length: 200 }, () => rnd()),
+  items: wallItems.map((q) => ({ id: q.id, delay: q.delay, op: q.op })),
+  parts,
 };
 function page(gsapSrc) {
   return `<!doctype html>
@@ -494,7 +608,9 @@ ${header}
 <div id="plate"></div>
 <div id="glow" style="position:absolute;left:140px;top:420px;width:800px;height:700px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(176,38,255,.35),transparent 70%);opacity:0"></div>
 <div id="rw" style="position:absolute;left:90px;top:445px;width:900px;height:630px;border-radius:24px;background:radial-gradient(ellipse at center,rgba(255,0,68,.32),transparent 75%);opacity:0"></div>
+<div id="fc" style="position:absolute;left:140px;top:420px;width:800px;height:700px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,136,255,.35),transparent 70%);opacity:0"></div>
 <canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>
+${wall}
 ${pips}
 ${counters}
 ${formulas}

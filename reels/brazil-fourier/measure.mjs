@@ -18,7 +18,13 @@ await page.waitForTimeout(400);
 const out = await page.evaluate(() => {
   const r = {};
   document.querySelectorAll("[data-m]").forEach((el) => {
-    const b = (el.querySelector(":scope > .katex") || el).getBoundingClientRect();
+    const kx = el.querySelector(":scope > .katex") || el;
+    const b = kx.getBoundingClientRect();
+    // data-mraw: the layout width, which a CSS scale on an ancestor does not change
+    if (el.dataset.mraw !== undefined) {
+      r[el.dataset.m] = { cx: 0, cy: 0, w: kx.offsetWidth, h: kx.offsetHeight };
+      return;
+    }
     r[el.dataset.m] = {
       cx: +(b.left + b.width / 2).toFixed(1),
       cy: +(b.top + b.height / 2).toFixed(1),

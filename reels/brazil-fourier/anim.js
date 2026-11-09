@@ -1,5 +1,5 @@
-// Timeline for "THE FLAG OF BRAZIL, DRAWN BY ROTATING CIRCLES" (24.5 s).
-// The circles, traces and fills are drawn on a canvas from the time alone (hf-seek protocol); text, counters and cards are GSAP.
+// Timeline for "THE FLAG OF BRAZIL, DRAWN BY ROTATING CIRCLES" (22.4 s).
+// The dots, circles, traces and fills are drawn on a canvas from the time alone (hf-seek protocol); text, counters and cards are GSAP.
 // Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
 (function () {
   const CFG = window.__CFG;
@@ -11,26 +11,23 @@
 
   // @CUES-BEGIN
   const CUES = [
-    [0.0, "thump"], // opening impact on the finished flag
-    [1.2, "snap"], // rewind
-    [1.9, "snap"], // N = 1
-    [2.8, "snap"], // N = 4
-    [3.7, "snap"], // N = 16
-    [4.6, "snap"], // N = 64
-    [5.6, "click"], // the field starts
-    [8.0, "snap"], // the field is drawn
-    [8.3, "click"], // the rhombus starts
-    [10.5, "snap"], // the rhombus is drawn
-    [10.8, "click"], // the disc starts
-    [12.0, "snap"], // the disc is drawn
-    [12.3, "click"], // the band starts
-    [14.0, "snap"], // the band is drawn
-    [14.3, "click"], // the stars start
-    [16.4, "snap"], // the stars are drawn
-    [17.0, "thump"], // lock
-    [17.9, "click"], // only rotating circles
-    [19.6, "snap"], // CTA reveal
-    [22.8, "click"], // engagement pulse
+    [0.0, "thump"], // opening impact on the wall of equations
+    [1.3, "snap"], // the equations start turning into dots
+    [3.1, "snap"], // the flag is complete
+    [4.2, "click"], // the field starts
+    [6.6, "snap"], // the field is drawn
+    [6.9, "click"], // the rhombus starts
+    [9.1, "snap"], // the rhombus is drawn
+    [9.4, "click"], // the disc starts
+    [10.6, "snap"], // the disc is drawn
+    [10.9, "click"], // the band starts
+    [12.6, "snap"], // the band is drawn
+    [12.9, "click"], // the stars start
+    [15.0, "snap"], // the stars are drawn
+    [15.6, "thump"], // lock
+    [16.5, "click"], // only rotating circles
+    [18.2, "snap"], // CTA reveal
+    [20.8, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -44,60 +41,63 @@
     return t;
   }
   let curBanner = "#bn0",
-    curCount = "#c0",
-    curForm = "#fm0";
+    curCount = null,
+    curForm = null;
   function bnSwap(n, t) {
     ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, t);
     ft(n, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, t + 0.075);
     curBanner = n;
   }
-  function cswap(n, t, pop) {
-    ft(curCount, { opacity: 1 }, { opacity: 0, duration: pop ? 0.06 : 0.03, ease: "power1.in" }, t);
+  function cswap(n, t) {
+    if (curCount)
+      ft(curCount, { opacity: 1 }, { opacity: 0, duration: 0.06, ease: "power1.in" }, t);
     ft(
       n,
-      { opacity: 0, scale: pop ? 1.3 : 1.08 },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: pop ? 0.28 : 0.1,
-        ease: pop ? "back.out(2)" : "power2.out",
-      },
+      { opacity: 0, scale: 1.3 },
+      { opacity: 1, scale: 1, duration: 0.28, ease: "back.out(2)" },
       t,
     );
     curCount = n;
   }
   function fswap(n, t) {
-    ft(curForm, { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "power1.in" }, t);
+    if (curForm) ft(curForm, { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "power1.in" }, t);
     ft(n, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, t + 0.06);
     curForm = n;
   }
-  // ---------------------------------------------------------------- 0.0 - 1.9  the finished flag, then the rewind
+
+  // ---------------------------------------------------------------- 0.0 - 3.1  the equations turn into the flag
   hit(0.0, "thump", "#flash0");
   ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
-  hit(T.rewind0, "snap", "#rw");
-  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.rewind0);
+  hit(T.xf0, "snap", "#rw");
+  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.xf0);
   tl.fromTo(
     "#rw",
     { opacity: 1 },
-    { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false },
-    T.rewind0 + 0.45,
+    { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
+    T.xf0 + 0.45,
   );
-  [64, 32, 16, 8, 4, 1].forEach((n, i) =>
-    cswap("#r" + (i + 1), Math.round((T.rewind0 + 0.09 * i) * 100) / 100, false),
+  // every equation lets go of its dots and dissolves, the ones nearest the flag first
+  CFG.items.forEach((q) =>
+    ft(
+      "#" + q.id,
+      { opacity: q.op, scale: 1 },
+      { opacity: 0, scale: 0.55, duration: 0.45, ease: "power2.in" },
+      Math.round((T.xf0 + q.delay) * 1000) / 1000,
+    ),
+  );
+  hit(T.xf1, "snap", "#fc");
+  ft("#fc", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.xf1);
+  tl.fromTo(
+    "#fc",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
+    T.xf1 + 0.15,
   );
 
-  // ---------------------------------------------------------------- 1.9 - 5.6  N = 1, 4, 16, 64: more circles, sharper flag
-  T.sweep.forEach((s, i) => {
-    hit(s, "snap", "#s" + (i + 1));
-    cswap("#s" + (i + 1), s, true);
-    fswap("#fs" + (i + 1), s);
-  });
-  bnSwap("#bnS", T.sweep[0]);
-
-  // ---------------------------------------------------------------- 5.6 - 16.4  the shapes, one after the other
+  // ---------------------------------------------------------------- the shapes, one after the other
   T.roles.forEach((role, i) => {
     hit(T.a[i], "click", "#l" + i);
-    cswap("#l" + i, T.a[i], true);
+    cswap("#l" + i, T.a[i]);
     fswap("#fl" + i, T.a[i]);
     bnSwap("#bnR" + i, T.a[i]);
     hit(T.b[i], "snap", "#pf" + i);
@@ -114,14 +114,9 @@
     { opacity: 0, duration: 0.9, ease: "power2.inOut", immediateRender: false },
     LK + 0.15,
   );
-  ft(
-    "#" + curCount.slice(1),
-    { scale: 1 },
-    { scale: 1.12, duration: 0.15, ease: "power2.out" },
-    LK,
-  );
+  ft(curCount, { scale: 1 }, { scale: 1.12, duration: 0.15, ease: "power2.out" }, LK);
   tl.fromTo(
-    "#" + curCount.slice(1),
+    curCount,
     { scale: 1.12 },
     { scale: 1, duration: 0.35, ease: "power2.inOut", immediateRender: false },
     LK + 0.15,
@@ -153,7 +148,7 @@
     T.pulse + 0.3,
   );
 
-  tl.to({}, { duration: 0.0001 }, 24.4999);
+  tl.to({}, { duration: 0.0001 }, 22.3999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
 
@@ -221,8 +216,6 @@
     Array.from({ length: K + 1 }, (_, j) => at(s, (2 * Math.PI * j) / K, N));
   const KFIN = (s) => (s.role === "star" ? 140 : s.role === "disc" ? 180 : 520);
   const FIN = S.map((s) => curve(s, LIVE_N[s.role], KFIN(s)));
-  const KSW = (s) => (s.role === "star" ? 90 : 240);
-  const SWP = S.map((s) => T.sweepN.map((N) => curve(s, Math.min(N, LIVE_N[s.role]), KSW(s))));
 
   function glow(color, blur) {
     ctx.shadowColor = color;
@@ -277,23 +270,22 @@
     }
     return out;
   }
-  function drawRig(s, th, alpha, circlesToo) {
+  function drawRig(s, th, alpha) {
     const tips = tipsAt(s, th);
     ctx.save();
     ctx.beginPath();
     ctx.rect(30, 340, 1020, 800);
     ctx.clip();
     const K = 26;
-    if (circlesToo)
-      for (let i = 0; i < Math.min(K, s.k); i++) {
-        if (s.mag[i] < 1.5) continue;
-        ctx.beginPath();
-        ctx.arc(tips[i][0], tips[i][1], s.mag[i], 0, 2 * Math.PI);
-        ctx.strokeStyle =
-          "rgba(255,255,255," + (alpha * (0.14 + 0.32 * (1 - i / K))).toFixed(3) + ")";
-        ctx.lineWidth = 1.4;
-        ctx.stroke();
-      }
+    for (let i = 0; i < Math.min(K, s.k); i++) {
+      if (s.mag[i] < 1.5) continue;
+      ctx.beginPath();
+      ctx.arc(tips[i][0], tips[i][1], s.mag[i], 0, 2 * Math.PI);
+      ctx.strokeStyle =
+        "rgba(255,255,255," + (alpha * (0.14 + 0.32 * (1 - i / K))).toFixed(3) + ")";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
     for (let i = 0; i < s.k; i++) {
       ctx.beginPath();
       ctx.moveTo(tips[i][0], tips[i][1]);
@@ -328,74 +320,35 @@
     stroke(pts, LINE[s.role], width, alpha, s.role === "star" ? 6 : 14);
   }
 
-  // ---------------------------------------------------------------- phases
-  function drawGlitch(t) {
-    const p = clamp01((t - T.rewind0) / (T.sweep[0] - T.rewind0 - 0.1));
-    const a = 1 - smooth(p);
-    const frame = Math.floor(t * 24);
-    const strips = 10,
-      y0 = CY - 7 * PX,
-      sh = (14 * PX) / strips;
-    for (let sI = 0; sI < strips; sI++) {
-      const g = CFG.glitch[(sI * 7 + frame * 3) % CFG.glitch.length];
-      const dx = (g - 0.5) * 2 * 90 * (0.25 + p);
-      ctx.save();
+  // ---------------------------------------------------------------- the opening: dots leave the equations and form the flag
+  function drawDots(t) {
+    const t0 = T.xf0;
+    if (t < t0 - 0.2 || t > T.hold + 0.1) return;
+    const out = 1 - smooth((t - T.xf1) / (T.hold - T.xf1));
+    ctx.save();
+    for (const p of CFG.parts) {
+      const u = (t - (t0 + p.delay)) / p.dur;
+      const appear = clamp01((t - (t0 + p.delay - 0.2)) / 0.2);
+      if (appear <= 0) continue;
+      const e = smooth(u),
+        k = 1 - e;
+      const x = k * k * p.sx + 2 * k * e * p.cx + e * e * p.tx;
+      const y = k * k * p.sy + 2 * k * e * p.cy + e * e * p.ty;
+      ctx.globalAlpha = appear * out;
+      ctx.fillStyle = p.col;
       ctx.beginPath();
-      ctx.rect(0, y0 + sI * sh, 1080, sh + 1);
-      ctx.clip();
-      ctx.translate(dx, 0);
-      drawFlag(a);
-      ctx.restore();
+      ctx.arc(x, y, p.r, 0, 2 * Math.PI);
+      ctx.fill();
     }
-    // chromatic split: two offset outlines of the whole flag
-    const sp = 4 + 12 * p;
-    for (let i = 0; i < S.length; i += i < 4 ? 1 : 6) {
-      stroke(
-        FIN[i].map(([x, y]) => [x - sp, y]),
-        "#FF0044",
-        3,
-        0.55 * a,
-      );
-      stroke(
-        FIN[i].map(([x, y]) => [x + sp, y]),
-        "#0088FF",
-        3,
-        0.55 * a,
-      );
-    }
+    ctx.restore();
   }
-  function drawSweep(t) {
-    let i = 0;
-    for (let j = 0; j < T.sweep.length; j++) if (t >= T.sweep[j]) i = j;
-    const w = smooth((t - T.sweep[i]) / 0.28);
-    const out = 1 - smooth((t - (T.sweepEnd - 0.2)) / 0.3);
-    for (let ci = 0; ci < S.length; ci++) {
-      const cur = SWP[ci][i];
-      let pts = cur,
-        alpha = out;
-      if (i === 0) alpha *= w;
-      else {
-        const prev = SWP[ci][i - 1];
-        pts = cur.map((p, k) => [
-          prev[k][0] + (p[0] - prev[k][0]) * w,
-          prev[k][1] + (p[1] - prev[k][1]) * w,
-        ]);
-      }
-      stroke(pts, LINE[S[ci].role], S[ci].role === "star" ? 3 : 4.5, alpha, 12);
-    }
-  }
+
+  // ---------------------------------------------------------------- the shapes, one after the other
   function drawLive(t) {
     const fade = 1 - smooth((t - (T.lock - 0.3)) / 0.3); // the dashed target leaves when the flag is complete
     if (fade > 0.01)
       for (let i = 0; i < S.length; i++)
-        stroke(
-          FIN[i],
-          "#FFFFFF",
-          2,
-          0.17 * fade * smooth((t - (T.sweepEnd - 0.2)) / 0.3),
-          0,
-          [10, 12],
-        );
+        stroke(FIN[i], "#FFFFFF", 2, 0.17 * fade * smooth((t - (T.down - 0.2)) / 0.3), 0, [10, 12]);
     const active = [];
     for (let i = 0; i < S.length; i++) {
       const r = RIDX[S[i].role],
@@ -415,7 +368,7 @@
         drawTipOnly(s, th, al);
       } else {
         trace(s, th, done ? al : 1, 4.5);
-        drawRig(s, th, al, true);
+        drawRig(s, th, al);
       }
     }
   }
@@ -424,7 +377,6 @@
     if (u < 0 || u > 1.3) return;
     const cx = CX,
       cy = CY;
-    // glow flash
     if (u < 0.5) {
       const g = ctx.createRadialGradient(cx, cy, 20, cx, cy, 700);
       g.addColorStop(0, "rgba(176,38,255," + (0.38 * (1 - u / 0.5)).toFixed(3) + ")");
@@ -432,7 +384,6 @@
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, 1080, 1920);
     }
-    // the sweep: a line across the picture; it recolours, it never reshapes
     if (u < 0.6) {
       const x = CX - 10 * PX + 20 * PX * easeOut(u / 0.55);
       ctx.save();
@@ -447,7 +398,6 @@
       ctx.stroke();
       ctx.restore();
     }
-    // corner glints
     [
       [-1, -1],
       [1, -1],
@@ -472,7 +422,6 @@
       ctx.stroke();
       ctx.restore();
     });
-    // two shock rings
     [
       ["#B026FF", 620, 0, 0.7],
       ["#FF0044", 480, 0.1, 0.6],
@@ -488,7 +437,6 @@
       ctx.stroke();
       ctx.restore();
     });
-    // sparks (seeded at build time)
     CFG.spark.forEach((sp, i) => {
       const v = clamp01((u - 0.05) / 0.8);
       if (v <= 0 || v >= 1) return;
@@ -511,10 +459,11 @@
   function draw(t) {
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, 1080, 1920);
-    if (t < T.rewind0) drawFlag(1);
-    else if (t < T.sweep[0]) drawGlitch(t);
-    if (t >= T.sweep[0] && t < T.sweepEnd + 0.15) drawSweep(t);
-    if (t >= T.sweepEnd) drawLive(t);
+    // the finished flag fades in under the dots, holds, then gives way to the dashed target
+    if (t >= T.xf1 - 0.3 && t < T.down + 0.1)
+      drawFlag(smooth((t - (T.xf1 - 0.3)) / 0.5) * (1 - smooth((t - T.hold) / (T.down - T.hold))));
+    drawDots(t);
+    if (t >= T.down - 0.2) drawLive(t);
     drawLock(t);
   }
 

@@ -25,8 +25,8 @@ SR = 48000
 root = pathlib.Path(__file__).resolve().parent.parent
 cues = json.loads((root / "assets" / "cues.json").read_text())
 sched = json.loads((root / "assets" / "sched.json").read_text())
-DUR, LOCK, PULSE, REWIND, CARD = float(sched["dur"]), float(sched["lock"]), float(sched["pulse"]), float(sched["rewind"]), float(sched["card"])
-SWEEP, A, B = sched["sweep"], sched["a"], sched["b"]
+DUR, LOCK, PULSE, CARD = float(sched["dur"]), float(sched["lock"]), float(sched["pulse"]), float(sched["card"])
+XF0, XF1, A, B = float(sched["xf0"]), float(sched["xf1"]), sched["a"], sched["b"]
 rng = np.random.default_rng(2026)
 
 n = int(SR * DUR)
@@ -130,8 +130,8 @@ def kick(t0, amp=0.5):
 hum += 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
 
 # brightness (not pitch) opens as the flag sharpens: 0 before the sweep, 1 once N = 64 is reached, then stays
-prog = smooth(env([(0, 0.0), (SWEEP[0], 0.0), (SWEEP[-1] + 0.6, 1.0), (DUR, 1.0)]), 0.1)
-pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (SWEEP[0], 0.6), (B[-1], 0.95), (LOCK, 1.15), (LOCK + 2, 1.2), (DUR - 1.5, 0.95), (DUR, 0.5)]), 0.25)
+prog = smooth(env([(0, 0.0), (XF0, 0.0), (XF1, 1.0), (DUR, 1.0)]), 0.1)
+pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (XF0, 0.6), (B[-1], 0.95), (LOCK, 1.15), (LOCK + 2, 1.2), (DUR - 1.5, 0.95), (DUR, 0.5)]), 0.25)
 pad = np.zeros(n)
 def voice(f0, amp, lfo_hz, ph):
     out = np.zeros(n)
@@ -154,9 +154,21 @@ air_env = smooth(env([(0, 0), (1.0, 0.5), (LOCK, 1.0), (LOCK + 1.6, 0.6), (DUR, 
 dry[0] += 0.010 * air_env * air; dry[1] += 0.010 * air_env * np.roll(air, 977)
 
 # ------------------------------------------------------------------ events
-sweep_notes = [440.0, 554.37, 659.26, 880.0]            # A4 C#5 E5 A5: one note per N step (1, 4, 16, 64)
 done_notes = [659.26, 739.99, 880.0, 987.77, 1108.7]    # E5 F#5 A5 B5 C#6: one note per finished shape
 near = lambda x, ys: any(abs(x - y) < 1e-6 for y in ys)
+
+# computation texture while the wall of equations is on screen: a seeded scatter of tiny soft taps that thickens, then thins out
+k = 0.0
+while k < XF1:
+    dens = 0.10 + 0.55 * min(1.0, k / XF1)                 # mean gap shrinks as the dots take off
+    click(k + 0.05, 0.22)
+    k += rng.uniform(0.6, 1.4) * (0.22 / dens) * 0.5
+# the transformation: a soft rising run of marimba notes while the dots fly (pentatonic A major, never a slide)
+ladder = [440.0, 493.88, 554.37, 659.26, 739.99, 880.0, 987.77, 1108.7, 1318.5, 1480.0, 1760.0]
+steps = len(ladder)
+for i, fz in enumerate(ladder):
+    marimba(XF0 + 0.02 + (XF1 - XF0 - 0.25) * i / (steps - 1), fz, 0.10 + 0.14 * i / (steps - 1), 0.7, pan=-0.35 + 0.7 * i / (steps - 1))
+
 counts = {"click": 0, "snap": 0, "thump": 0}
 for c in cues:
     k, t0 = c["kind"], c["t"]
@@ -168,14 +180,12 @@ for c in cues:
         if abs(t0 - PULSE) < 1e-6:                       # engagement ping
             bell(t0 + 0.01, 1760.0, 0.07, 0.8); bell(t0 + 0.07, 2217.5, 0.05, 0.8)
     elif k == "snap":
-        if abs(t0 - REWIND) < 1e-6:                      # the rewind: a short descending run, soft marimba, not a whoosh
-            for i, fz in enumerate([880.0, 739.99, 659.26, 554.37, 440.0]):
-                marimba(t0 + 0.045 * i, fz, 0.16, 0.5, pan=0.25 - 0.1 * i)
-                click(t0 + 0.045 * i, 0.35)
-        elif near(t0, SWEEP):
-            i = [abs(t0 - x) < 1e-6 for x in SWEEP].index(True)
-            click(t0 - 0.004, 0.7)
-            marimba(t0 + 0.004, sweep_notes[i], 0.30, 1.0, pan=-0.25 + 0.15 * i)
+        if abs(t0 - XF0) < 1e-6:                          # the equations let go of their dots
+            click(t0, 0.9)
+        elif abs(t0 - XF1) < 1e-6:                        # the flag is complete: a soft A-major chord of bells
+            for j, fz in enumerate([440.0, 554.37, 659.26, 880.0]):
+                bell(t0 + 0.012 * j, fz, 0.10, 1.4, pan=-0.3 + 0.2 * j)
+            marimba(t0 + 0.004, 880.0, 0.22, 1.2)
         elif near(t0, B):
             i = [abs(t0 - x) < 1e-6 for x in B].index(True)
             click(t0 - 0.004, 0.7)
