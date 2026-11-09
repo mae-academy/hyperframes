@@ -18,7 +18,7 @@ import numpy as np
 # Harmonics per role: the series uses frequencies -N .. +N (2N + 1 terms). Sharp corners (field, rhombus, band, stars) need
 # more terms than smooth curves; a circle is exactly one harmonic. Raise N for crisper corners, lower it to avoid ringing
 # (Gibbs) and to render faster. A value in `HARMONICS_BY_NAME` overrides the role value for that one contour.
-HARMONICS_BY_ROLE = {"field": 48, "rhombus": 48, "disc": 6, "band": 60, "star": 36}
+HARMONICS_BY_ROLE = {"field": 80, "rhombus": 64, "disc": 6, "band": 64, "star": 56}
 HARMONICS_BY_NAME: dict[str, int] = {}
 SAMPLES_PER_CONTOUR = 2048        # M: arc-length samples fed to the DFT (must be > 2 N + 1)
 DENSE_PER_SEGMENT = 400           # internal oversampling used to measure arc length

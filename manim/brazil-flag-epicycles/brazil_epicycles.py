@@ -59,7 +59,7 @@ CONFIG = {
     "svg": None,                       # path / URL; None = argument -> $BRAZIL_SVG -> assets/ -> Wikimedia -> built-in
     "samples": 2048,                   # arc-length samples per contour fed to the DFT
     # harmonics N per role (series uses -N..N). Override a single contour by name in `harmonics_by_name`.
-    "harmonics_by_role": {"field": 48, "rhombus": 48, "disc": 6, "band": 60, "star": 36},
+    "harmonics_by_role": {"field": 80, "rhombus": 64, "disc": 6, "band": 64, "star": 56},
     "harmonics_by_name": {},
     # seconds for one full revolution t: 0 -> 2 pi, per role
     "run_time": {"field": 7.0, "rhombus": 6.0, "disc": 3.5, "band": 5.0, "star": 4.0},
@@ -91,7 +91,7 @@ def to_pt(z: complex) -> np.ndarray:
 class EpicycleRig(VGroup):
     """base c_0 (static), then c_n e^{i n t} chained head to tail. Circles show |c_n|, vectors show |c_n| and the phase."""
 
-    def __init__(self, series: em.Series, t: ValueTracker, show_circles: bool = True, **kw):
+    def __init__(self, series: em.Series, t: ValueTracker, show_circles: bool = True, show_vectors: bool = True, **kw):
         super().__init__(**kw)
         self.series, self.t = series, t
         k = CONFIG["max_circles"] if show_circles else 0
@@ -102,7 +102,7 @@ class EpicycleRig(VGroup):
         ])
         self.vectors = VGroup(*[
             Line(ORIGIN, RIGHT * 1e-3, stroke_width=sw["vector"], stroke_color=THEME["rig_vector"], stroke_opacity=0.85 if i < 40 else 0.4)
-            for i in range(len(series.terms))
+            for i in range(len(series.terms) if show_vectors else 0)
         ])
         self.tip = Dot(radius=0.06, color=THEME["rig_tip"])
         self.add(self.circles, self.vectors, self.tip)
@@ -176,10 +176,8 @@ class BrazilFlagEpicycles(Scene):
         if not rest:
             return
         t = ValueTracker(0.0)
-        rigs = [EpicycleRig(s.series, t, show_circles=False) for s in rest]
-        # only the tips and the traces are shown for the crowd; the vectors are hidden to keep the frame readable
-        for r in rigs:
-            r.vectors.set_opacity(0)
+        # only the tips and the traces are shown for the crowd (no circles, no vectors): readable and fast
+        rigs = [EpicycleRig(s.series, t, show_circles=False, show_vectors=False) for s in rest]
         traces = [TracedPath(r.tip_center, stroke_color=THEME["roles"]["star"][0], stroke_width=CONFIG["stroke_width"]["trace"] * 0.7) for r in rigs]
         self.add(*traces)
         self.play(*[FadeIn(r.tip) for r in rigs], run_time=0.4)
