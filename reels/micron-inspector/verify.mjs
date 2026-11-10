@@ -13,7 +13,10 @@ const times = process.argv
   .filter((x) => !Number.isNaN(x));
 const T = times.length
   ? times
-  : [0.0, 1.0, 2.0, 2.6, 4.6, 5.5, 6.3, 8.1, 9.2, 9.8, 10.4, 10.7, 12.2, 14.99];
+  : [
+      0.0, 1.4, 2.4, 3.6, 5.0, 6.2, 7.6, 8.2, 9.4, 10.5, 12.0, 13.9, 14.6, 15.8, 17.0, 17.9, 18.8,
+      20.0, 21.5, 21.99,
+    ];
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
 const errs = [];
@@ -40,17 +43,27 @@ const state = (sel, prop) =>
   page.evaluate(([s, p]) => getComputedStyle(document.querySelector(s))[p], [sel, prop]);
 const probe = {
   open: () => ["#flash0", "opacity", (b4, af) => Number(af) > 0.15],
-  ignite: () => ["#ringI", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.3],
-  scan: () => ["#scanline", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.3],
+  rew: () => ["#flashG", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.3],
+  stage: (c) => [
+    "#B" + c.ref.split(":")[1],
+    "opacity",
+    (b4, af) => Number(b4) === 0 && Number(af) > 0.5,
+  ],
+  tick: (c) => [
+    "#pn" + c.ref.split(":")[1],
+    "opacity",
+    (b4, af) => Number(b4) === 0 && Number(af) === 1,
+  ],
+  verd: () => ["#verd", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.5],
   rej: () => ["#ringR", "opacity", (b4, af) => Number(b4) < 0.05 && Number(af) > 0.3],
-  final: () => ["#BD", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.5],
+  final: () => ["#lockb", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.5],
   cta: () => ["#ct1a", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.1],
   pulse: () => ["#ctaglow", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.2],
 };
 for (const c of cues) {
   const key = c.ref.split(":")[0];
   const [sel, prop, ok] = probe[key](c);
-  const dt = key === "final" ? 0.3 : 0.05;
+  const dt = key === "final" || key === "stage" || key === "verd" ? 0.3 : 0.03;
   await seek(Math.max(0, c.t - 0.02));
   const b4 = c.t === 0 ? "0" : await state(sel, prop);
   await seek(c.t + dt);
@@ -62,32 +75,53 @@ for (const c of cues) {
 }
 const n = (k) => cues.filter((c) => c.kind === k).length;
 console.log(
-  `cues: ${n("click")} click / ${n("snap")} snap / ${n("thump")} thump; mismatches: ${bad}`,
+  `cues: ${n("click")} click / ${n("tick")} tick / ${n("snap")} snap / ${n("thump")} thump; mismatches: ${bad}`,
 );
-// geometry: every part is centred under the camera at its scan time; rejected parts end in the bin
-const geo = await page.evaluate(() => window.__CFG);
-for (const p of geo.parts) {
-  await seek(geo.SCANS[p.i]);
-  const b = await page.evaluate((i) => {
-    const r = document.getElementById("p" + i).getBoundingClientRect();
-    return [r.left + r.width / 2, r.top + r.height / 2];
-  }, p.i);
-  const okc = Math.abs(b[0] - geo.XC) < 1.5 && Math.abs(b[1] - geo.BELT_Y) < 1.5;
-  if (!okc) {
+// the pixel grid on screen must show exactly the numbers the build measured: sample a cell corner at the zoomed patch
+const cfg = await page.evaluate(() => window.__CFG);
+await seek(6.0);
+const shot = await page.evaluate(() => {
+  const cv = document.getElementById("cv"),
+    c = cv.getContext("2d"),
+    d = cv.width / 900;
+  const out = [];
+  for (const [i, j] of [
+    [1, 1],
+    [4, 5],
+    [5, 5],
+    [6, 2],
+    [8, 8],
+  ])
+    out.push([
+      i,
+      j,
+      Array.from(
+        c.getImageData(Math.round((20 + 56 * i + 5) * d), Math.round((25 + 56 * j + 5) * d), 1, 1)
+          .data,
+      ),
+    ]);
+  return out;
+});
+for (const [i, j, px] of shot) {
+  const v = cfg.patchI[j][i],
+    want = 10 + v * 0.96;
+  if (Math.abs(px[0] - want) > 3) {
     bad++;
-    console.log("PART NOT UNDER CAMERA", p.i, b);
+    console.log("PIXEL MISMATCH", i, j, px, v, want);
   }
 }
-await seek(12);
-for (const p of geo.parts.filter((p) => p.reject)) {
-  const b = await page.evaluate((i) => {
-    const r = document.getElementById("p" + i).getBoundingClientRect();
-    return [r.left + r.width / 2, r.top + r.height / 2];
-  }, p.i);
-  if (b[1] < 860) {
-    bad++;
-    console.log("REJECT NOT IN BIN", p.i, b);
-  }
+console.log("pixel grid shows the measured values: " + (bad ? "NO" : "yes"));
+// the two edge chips must not overlap
+await seek(15.5);
+const ch = await page.evaluate(() =>
+  ["chM", "chN"].map((id) => {
+    const r = document.getElementById(id).getBoundingClientRect();
+    return [r.left, r.right];
+  }),
+);
+if (ch[0][1] > ch[1][0]) {
+  bad++;
+  console.log("CHIPS OVERLAP", ch);
 }
 console.log(errs.length ? "PAGE ERRORS: " + errs.join(" | ") : "no page errors");
 await browser.close();

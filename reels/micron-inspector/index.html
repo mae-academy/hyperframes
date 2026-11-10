@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1080, height=1920">
-<title>The Micron Inspector: AI Vision on a CNC Line</title>
+<title>How a Camera Measures 31 Microns</title>
 <style>
 @font-face{font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_AMS-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Fraktur-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Fraktur-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Main-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Main-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Main-Italic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Main-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Math-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Math-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_SansSerif-Bold.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Script-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size1-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size2-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size3-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size4-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Typewriter-Regular.woff2) format("woff2")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.16.11"}.katex .katex-mathml{clip:rect(1px,1px,1px,1px);border:0;height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{border:0 solid;display:inline-block;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
 
@@ -13,207 +13,868 @@ html,body{background:#0A0A10;width:1080px;height:1920px;overflow:hidden}
 #root{position:absolute;left:0;top:0;width:1080px;height:1920px;background:#0A0A10;overflow:hidden;
   background-image:linear-gradient(#161622 2px,transparent 2px),linear-gradient(90deg,#161622 2px,transparent 2px);background-size:60px 60px}
 #flash0{position:absolute;left:0;top:0;width:1080px;height:700px;background:radial-gradient(ellipse at 50% 22%,rgba(255,0,68,.5),transparent 65%);opacity:0}
+#flashG{position:absolute;left:0;top:0;width:1080px;height:1920px;background:rgba(255,0,68,.12);opacity:0}
 .t{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1}
 #plate{position:absolute;left:90px;top:340px;width:900px;height:610px;border-radius:32px;overflow:hidden;background:rgba(30,30,46,.52);border:1px solid rgba(255,255,255,.08)}
-#pc{position:absolute;left:-91px;top:-341px;width:1080px;height:1920px}
-#g{position:absolute;left:0;top:0}
-.hbg{position:absolute;left:110px;top:360px;width:340px;height:156px;border-radius:18px;background:rgba(10,10,16,.55);border:1px solid rgba(255,255,255,.08)}
-.rd{position:absolute;left:128px;top:366px;width:310px;height:140px;white-space:nowrap}
+#cv{position:absolute;left:0;top:0;width:900px;height:610px}
+#ov{position:absolute;left:0;top:0;width:900px;height:610px}
 #banner{position:absolute;left:130px;top:980px;width:820px;height:100px;border-radius:24px;background:rgba(255,0,68,.08);border:2px solid rgba(255,0,68,.55)}
 .ba{position:absolute;left:0;top:0;width:816px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;white-space:nowrap}
 .ba .l1{font-size:25px;color:rgba(255,255,255,.88);line-height:1.15}
-.ba .l2{font-size:38px;color:#FF0044;line-height:1.15;margin-top:2px}
-.ba .row{font-size:30px;display:flex;align-items:center;justify-content:center}
-.ba .row.c{font-size:26px}
+.ba .l2{font-size:34px;color:#FF0044;line-height:1.15;margin-top:2px}
 #card{position:absolute;border-radius:36px;background:rgba(30,30,46,.55);border:1px solid rgba(255,255,255,.1);overflow:hidden}
 .pg{position:absolute;left:0;top:0;width:780px;height:460px}
-.lv{position:absolute;left:0;top:0;width:780px;height:460px}
-.mini{position:absolute}
-.xmark{position:absolute;opacity:0;overflow:visible}
+.rb{position:absolute;left:12px;width:756px;height:56px;border-radius:16px;background:rgba(255,0,68,.1);border:2px solid rgba(255,0,68,.55)}
 </style>
 </head>
 <body>
-<div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1080" data-height="1920" data-fps="60">
+<div id="root" data-composition-id="main" data-start="0" data-duration="22" data-width="1080" data-height="1920" data-fps="60">
 
-<div id="flash0"></div>
-<div id="wm" data-layout-ignore class="t "  style="left:40px;top:575px;width:1000px;height:130px;font-size:100px;color:#FF0044;opacity:.12"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">@MAE.Academy</span></span></span></span></span></div>
-<div id="h-title" class="t "  style="left:40px;top:135px;width:1000px;height:90px;font-size:58px;color:#FF0044;text-shadow:0 0 22px rgba(255,0,68,.35)"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord text"><span class="mord text"><span class="mord textbf textit">THE MICRON INSPECTOR</span></span></span></span></span></span></div>
-<div id="h-sub" class="t "  style="left:40px;top:207px;width:1000px;height:50px;font-size:35px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">AI VISION ON A CNC LINE</span></span></span></span></span></div>
+<div id="flash0"></div><div id="flashG"></div>
+<div id="wm" data-layout-ignore class="t " style="left:40px;top:575px;width:1000px;height:130px;font-size:100px;color:#FF0044;opacity:.12"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">@MAE.Academy</span></span></span></span></span></div>
+<div id="h-title" class="t " style="left:40px;top:135px;width:1000px;height:90px;font-size:58px;color:#FF0044;text-shadow:0 0 22px rgba(255,0,68,.35)"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord text"><span class="mord text"><span class="mord textbf textit">HOW A CAMERA MEASURES</span></span></span></span></span></span></div>
+<div id="h-sub" class="t " style="left:40px;top:207px;width:1000px;height:50px;font-size:40px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord">31</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span><span class="mord text"><span class="mord textit"> ON A CNC PART</span></span></span></span></span></div>
 <div id="h-rule" style="position:absolute;left:480px;top:268px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,#FF0044,#B026FF,#0088FF)"></div>
-
-<div id="plate"><div id="pc">
-  <svg id="g" width="1080" height="1920" viewBox="0 0 1080 1920">
-    <defs>
-      <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B026FF" stop-opacity=".55"/><stop offset="1" stop-color="#B026FF" stop-opacity=".05"/></linearGradient>
-    </defs>
-    <g id="arena" style="opacity:.3">
-      <rect x="90" y="530" width="900" height="180" fill="rgba(255,255,255,.04)"/>
-      <line x1="90" y1="530" x2="990" y2="530" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
-      <line x1="90" y1="710" x2="990" y2="710" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
-      <g id="ticks" stroke="rgba(255,255,255,.35)" stroke-width="3"><line x1="-3040" y1="530" x2="-3040" y2="542"/><line x1="-3040" y1="698" x2="-3040" y2="710"/><line x1="-3000" y1="530" x2="-3000" y2="542"/><line x1="-3000" y1="698" x2="-3000" y2="710"/><line x1="-2960" y1="530" x2="-2960" y2="542"/><line x1="-2960" y1="698" x2="-2960" y2="710"/><line x1="-2920" y1="530" x2="-2920" y2="542"/><line x1="-2920" y1="698" x2="-2920" y2="710"/><line x1="-2880" y1="530" x2="-2880" y2="542"/><line x1="-2880" y1="698" x2="-2880" y2="710"/><line x1="-2840" y1="530" x2="-2840" y2="542"/><line x1="-2840" y1="698" x2="-2840" y2="710"/><line x1="-2800" y1="530" x2="-2800" y2="542"/><line x1="-2800" y1="698" x2="-2800" y2="710"/><line x1="-2760" y1="530" x2="-2760" y2="542"/><line x1="-2760" y1="698" x2="-2760" y2="710"/><line x1="-2720" y1="530" x2="-2720" y2="542"/><line x1="-2720" y1="698" x2="-2720" y2="710"/><line x1="-2680" y1="530" x2="-2680" y2="542"/><line x1="-2680" y1="698" x2="-2680" y2="710"/><line x1="-2640" y1="530" x2="-2640" y2="542"/><line x1="-2640" y1="698" x2="-2640" y2="710"/><line x1="-2600" y1="530" x2="-2600" y2="542"/><line x1="-2600" y1="698" x2="-2600" y2="710"/><line x1="-2560" y1="530" x2="-2560" y2="542"/><line x1="-2560" y1="698" x2="-2560" y2="710"/><line x1="-2520" y1="530" x2="-2520" y2="542"/><line x1="-2520" y1="698" x2="-2520" y2="710"/><line x1="-2480" y1="530" x2="-2480" y2="542"/><line x1="-2480" y1="698" x2="-2480" y2="710"/><line x1="-2440" y1="530" x2="-2440" y2="542"/><line x1="-2440" y1="698" x2="-2440" y2="710"/><line x1="-2400" y1="530" x2="-2400" y2="542"/><line x1="-2400" y1="698" x2="-2400" y2="710"/><line x1="-2360" y1="530" x2="-2360" y2="542"/><line x1="-2360" y1="698" x2="-2360" y2="710"/><line x1="-2320" y1="530" x2="-2320" y2="542"/><line x1="-2320" y1="698" x2="-2320" y2="710"/><line x1="-2280" y1="530" x2="-2280" y2="542"/><line x1="-2280" y1="698" x2="-2280" y2="710"/><line x1="-2240" y1="530" x2="-2240" y2="542"/><line x1="-2240" y1="698" x2="-2240" y2="710"/><line x1="-2200" y1="530" x2="-2200" y2="542"/><line x1="-2200" y1="698" x2="-2200" y2="710"/><line x1="-2160" y1="530" x2="-2160" y2="542"/><line x1="-2160" y1="698" x2="-2160" y2="710"/><line x1="-2120" y1="530" x2="-2120" y2="542"/><line x1="-2120" y1="698" x2="-2120" y2="710"/><line x1="-2080" y1="530" x2="-2080" y2="542"/><line x1="-2080" y1="698" x2="-2080" y2="710"/><line x1="-2040" y1="530" x2="-2040" y2="542"/><line x1="-2040" y1="698" x2="-2040" y2="710"/><line x1="-2000" y1="530" x2="-2000" y2="542"/><line x1="-2000" y1="698" x2="-2000" y2="710"/><line x1="-1960" y1="530" x2="-1960" y2="542"/><line x1="-1960" y1="698" x2="-1960" y2="710"/><line x1="-1920" y1="530" x2="-1920" y2="542"/><line x1="-1920" y1="698" x2="-1920" y2="710"/><line x1="-1880" y1="530" x2="-1880" y2="542"/><line x1="-1880" y1="698" x2="-1880" y2="710"/><line x1="-1840" y1="530" x2="-1840" y2="542"/><line x1="-1840" y1="698" x2="-1840" y2="710"/><line x1="-1800" y1="530" x2="-1800" y2="542"/><line x1="-1800" y1="698" x2="-1800" y2="710"/><line x1="-1760" y1="530" x2="-1760" y2="542"/><line x1="-1760" y1="698" x2="-1760" y2="710"/><line x1="-1720" y1="530" x2="-1720" y2="542"/><line x1="-1720" y1="698" x2="-1720" y2="710"/><line x1="-1680" y1="530" x2="-1680" y2="542"/><line x1="-1680" y1="698" x2="-1680" y2="710"/><line x1="-1640" y1="530" x2="-1640" y2="542"/><line x1="-1640" y1="698" x2="-1640" y2="710"/><line x1="-1600" y1="530" x2="-1600" y2="542"/><line x1="-1600" y1="698" x2="-1600" y2="710"/><line x1="-1560" y1="530" x2="-1560" y2="542"/><line x1="-1560" y1="698" x2="-1560" y2="710"/><line x1="-1520" y1="530" x2="-1520" y2="542"/><line x1="-1520" y1="698" x2="-1520" y2="710"/><line x1="-1480" y1="530" x2="-1480" y2="542"/><line x1="-1480" y1="698" x2="-1480" y2="710"/><line x1="-1440" y1="530" x2="-1440" y2="542"/><line x1="-1440" y1="698" x2="-1440" y2="710"/><line x1="-1400" y1="530" x2="-1400" y2="542"/><line x1="-1400" y1="698" x2="-1400" y2="710"/><line x1="-1360" y1="530" x2="-1360" y2="542"/><line x1="-1360" y1="698" x2="-1360" y2="710"/><line x1="-1320" y1="530" x2="-1320" y2="542"/><line x1="-1320" y1="698" x2="-1320" y2="710"/><line x1="-1280" y1="530" x2="-1280" y2="542"/><line x1="-1280" y1="698" x2="-1280" y2="710"/><line x1="-1240" y1="530" x2="-1240" y2="542"/><line x1="-1240" y1="698" x2="-1240" y2="710"/><line x1="-1200" y1="530" x2="-1200" y2="542"/><line x1="-1200" y1="698" x2="-1200" y2="710"/><line x1="-1160" y1="530" x2="-1160" y2="542"/><line x1="-1160" y1="698" x2="-1160" y2="710"/><line x1="-1120" y1="530" x2="-1120" y2="542"/><line x1="-1120" y1="698" x2="-1120" y2="710"/><line x1="-1080" y1="530" x2="-1080" y2="542"/><line x1="-1080" y1="698" x2="-1080" y2="710"/><line x1="-1040" y1="530" x2="-1040" y2="542"/><line x1="-1040" y1="698" x2="-1040" y2="710"/><line x1="-1000" y1="530" x2="-1000" y2="542"/><line x1="-1000" y1="698" x2="-1000" y2="710"/><line x1="-960" y1="530" x2="-960" y2="542"/><line x1="-960" y1="698" x2="-960" y2="710"/><line x1="-920" y1="530" x2="-920" y2="542"/><line x1="-920" y1="698" x2="-920" y2="710"/><line x1="-880" y1="530" x2="-880" y2="542"/><line x1="-880" y1="698" x2="-880" y2="710"/><line x1="-840" y1="530" x2="-840" y2="542"/><line x1="-840" y1="698" x2="-840" y2="710"/><line x1="-800" y1="530" x2="-800" y2="542"/><line x1="-800" y1="698" x2="-800" y2="710"/><line x1="-760" y1="530" x2="-760" y2="542"/><line x1="-760" y1="698" x2="-760" y2="710"/><line x1="-720" y1="530" x2="-720" y2="542"/><line x1="-720" y1="698" x2="-720" y2="710"/><line x1="-680" y1="530" x2="-680" y2="542"/><line x1="-680" y1="698" x2="-680" y2="710"/><line x1="-640" y1="530" x2="-640" y2="542"/><line x1="-640" y1="698" x2="-640" y2="710"/><line x1="-600" y1="530" x2="-600" y2="542"/><line x1="-600" y1="698" x2="-600" y2="710"/><line x1="-560" y1="530" x2="-560" y2="542"/><line x1="-560" y1="698" x2="-560" y2="710"/><line x1="-520" y1="530" x2="-520" y2="542"/><line x1="-520" y1="698" x2="-520" y2="710"/><line x1="-480" y1="530" x2="-480" y2="542"/><line x1="-480" y1="698" x2="-480" y2="710"/><line x1="-440" y1="530" x2="-440" y2="542"/><line x1="-440" y1="698" x2="-440" y2="710"/><line x1="-400" y1="530" x2="-400" y2="542"/><line x1="-400" y1="698" x2="-400" y2="710"/><line x1="-360" y1="530" x2="-360" y2="542"/><line x1="-360" y1="698" x2="-360" y2="710"/><line x1="-320" y1="530" x2="-320" y2="542"/><line x1="-320" y1="698" x2="-320" y2="710"/><line x1="-280" y1="530" x2="-280" y2="542"/><line x1="-280" y1="698" x2="-280" y2="710"/><line x1="-240" y1="530" x2="-240" y2="542"/><line x1="-240" y1="698" x2="-240" y2="710"/><line x1="-200" y1="530" x2="-200" y2="542"/><line x1="-200" y1="698" x2="-200" y2="710"/><line x1="-160" y1="530" x2="-160" y2="542"/><line x1="-160" y1="698" x2="-160" y2="710"/><line x1="-120" y1="530" x2="-120" y2="542"/><line x1="-120" y1="698" x2="-120" y2="710"/><line x1="-80" y1="530" x2="-80" y2="542"/><line x1="-80" y1="698" x2="-80" y2="710"/><line x1="-40" y1="530" x2="-40" y2="542"/><line x1="-40" y1="698" x2="-40" y2="710"/><line x1="0" y1="530" x2="0" y2="542"/><line x1="0" y1="698" x2="0" y2="710"/><line x1="40" y1="530" x2="40" y2="542"/><line x1="40" y1="698" x2="40" y2="710"/><line x1="80" y1="530" x2="80" y2="542"/><line x1="80" y1="698" x2="80" y2="710"/><line x1="120" y1="530" x2="120" y2="542"/><line x1="120" y1="698" x2="120" y2="710"/><line x1="160" y1="530" x2="160" y2="542"/><line x1="160" y1="698" x2="160" y2="710"/><line x1="200" y1="530" x2="200" y2="542"/><line x1="200" y1="698" x2="200" y2="710"/><line x1="240" y1="530" x2="240" y2="542"/><line x1="240" y1="698" x2="240" y2="710"/><line x1="280" y1="530" x2="280" y2="542"/><line x1="280" y1="698" x2="280" y2="710"/><line x1="320" y1="530" x2="320" y2="542"/><line x1="320" y1="698" x2="320" y2="710"/><line x1="360" y1="530" x2="360" y2="542"/><line x1="360" y1="698" x2="360" y2="710"/><line x1="400" y1="530" x2="400" y2="542"/><line x1="400" y1="698" x2="400" y2="710"/><line x1="440" y1="530" x2="440" y2="542"/><line x1="440" y1="698" x2="440" y2="710"/><line x1="480" y1="530" x2="480" y2="542"/><line x1="480" y1="698" x2="480" y2="710"/><line x1="520" y1="530" x2="520" y2="542"/><line x1="520" y1="698" x2="520" y2="710"/><line x1="560" y1="530" x2="560" y2="542"/><line x1="560" y1="698" x2="560" y2="710"/><line x1="600" y1="530" x2="600" y2="542"/><line x1="600" y1="698" x2="600" y2="710"/><line x1="640" y1="530" x2="640" y2="542"/><line x1="640" y1="698" x2="640" y2="710"/><line x1="680" y1="530" x2="680" y2="542"/><line x1="680" y1="698" x2="680" y2="710"/><line x1="720" y1="530" x2="720" y2="542"/><line x1="720" y1="698" x2="720" y2="710"/><line x1="760" y1="530" x2="760" y2="542"/><line x1="760" y1="698" x2="760" y2="710"/><line x1="800" y1="530" x2="800" y2="542"/><line x1="800" y1="698" x2="800" y2="710"/><line x1="840" y1="530" x2="840" y2="542"/><line x1="840" y1="698" x2="840" y2="710"/><line x1="880" y1="530" x2="880" y2="542"/><line x1="880" y1="698" x2="880" y2="710"/><line x1="920" y1="530" x2="920" y2="542"/><line x1="920" y1="698" x2="920" y2="710"/><line x1="960" y1="530" x2="960" y2="542"/><line x1="960" y1="698" x2="960" y2="710"/><line x1="1000" y1="530" x2="1000" y2="542"/><line x1="1000" y1="698" x2="1000" y2="710"/><line x1="1040" y1="530" x2="1040" y2="542"/><line x1="1040" y1="698" x2="1040" y2="710"/></g>
-      <path d="M570,431L515,530M630,431L685,530" stroke="#B026FF" stroke-width="2.5" stroke-dasharray="7 7" opacity=".6"/>
-      <rect x="540" y="375" width="120" height="56" rx="12" fill="rgba(10,10,16,.8)" stroke="rgba(255,255,255,.7)" stroke-width="3"/>
-      <circle cx="600" cy="403" r="14" fill="none" stroke="#FF0044" stroke-width="4"/><circle cx="600" cy="403" r="5" fill="#FF0044"/>
-      <rect x="790" y="494" width="100" height="16" rx="6" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2.5" stroke-dasharray="5 5"/>
-      <rect x="760" y="790" width="160" height="140" rx="18" fill="rgba(255,0,68,.06)" stroke="rgba(255,0,68,.55)" stroke-width="2.5" stroke-dasharray="8 7"/>
-    </g>
-    <circle id="ringI" cx="600" cy="403" r="10" fill="none" stroke="#0088FF" stroke-width="4" style="opacity:0"/>
-    <circle id="ringR" cx="840" cy="620" r="10" fill="none" stroke="#FF0044" stroke-width="4" style="opacity:0"/>
-    <g id="ret" style="opacity:0" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round">
-      <path d="M505,558v-22h22M695,558v-22h-22M505,682v22h22M695,682v22h-22" transform="translate(0,0)"/>
-    </g>
-    <rect id="scanline" x="597.5" y="530" width="5" height="180" fill="#FF0044" style="opacity:0;filter:drop-shadow(0 0 8px #FF0044)"/>
-    <g id="arm" style="opacity:.95"><line x1="840" y1="345" x2="840" y2="494" stroke="rgba(255,255,255,.7)" stroke-width="6" stroke-linecap="round"/><rect x="790" y="494" width="100" height="16" rx="6" fill="#fff"/></g>
-    <g id="p0">
-  <rect x="-80" y="-65" width="160" height="130" fill="none" stroke="none"/>
-  <rect id="pb0" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(0,136,255,.18)" stroke="#0088FF" stroke-width="4"/>
-  <rect id="pr0" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(255,0,68,.14)" stroke="#FF0044" stroke-width="5" style="opacity:0"/>
-  <circle cx="-54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="-54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/>
-  <circle cx="0" cy="0" r="24" fill="#0A0A10" stroke="#fff" stroke-width="3"/>
-  <g id="dm0" style="opacity:0"><line x1="-24" y1="0" x2="24" y2="0" stroke="#B026FF" stroke-width="3.5"/><line x1="-24" y1="-9" x2="-24" y2="9" stroke="#B026FF" stroke-width="3.5"/><line x1="24" y1="-9" x2="24" y2="9" stroke="#B026FF" stroke-width="3.5"/></g>
-  <circle id="ok0" cx="0" cy="0" r="24" fill="none" stroke="#B026FF" stroke-width="4" style="opacity:0"/>
-  
-  <g id="tg0" style="opacity:0"><circle cx="0" cy="42" r="15" fill="#0A0A10" stroke="#fff" stroke-width="3"/><path d="M-7,42l5,5l9,-10" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></g>
-</g><g id="p1">
-  <rect x="-80" y="-65" width="160" height="130" fill="none" stroke="none"/>
-  <rect id="pb1" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(0,136,255,.18)" stroke="#0088FF" stroke-width="4"/>
-  <rect id="pr1" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(255,0,68,.14)" stroke="#FF0044" stroke-width="5" style="opacity:0"/>
-  <circle cx="-54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="-54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/>
-  <circle cx="0" cy="0" r="24" fill="#0A0A10" stroke="#fff" stroke-width="3"/>
-  <g id="dm1" style="opacity:0"><line x1="-24" y1="0" x2="24" y2="0" stroke="#B026FF" stroke-width="3.5"/><line x1="-24" y1="-9" x2="-24" y2="9" stroke="#B026FF" stroke-width="3.5"/><line x1="24" y1="-9" x2="24" y2="9" stroke="#B026FF" stroke-width="3.5"/></g>
-  <circle id="ok1" cx="0" cy="0" r="24" fill="none" stroke="#B026FF" stroke-width="4" style="opacity:0"/>
-  <circle id="df1" cx="0" cy="0" r="28" fill="none" stroke="#FF0044" stroke-width="4" stroke-dasharray="6 5" style="opacity:0"/>
-  <g id="tg1" style="opacity:0"><circle cx="0" cy="42" r="15" fill="#0A0A10" stroke="#FF0044" stroke-width="3"/><path d="M-6,36l12,12M6,36l-12,12" stroke="#FF0044" stroke-width="3.2" stroke-linecap="round"/></g>
-</g><g id="p2">
-  <rect x="-80" y="-65" width="160" height="130" fill="none" stroke="none"/>
-  <rect id="pb2" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(0,136,255,.18)" stroke="#0088FF" stroke-width="4"/>
-  <rect id="pr2" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(255,0,68,.14)" stroke="#FF0044" stroke-width="5" style="opacity:0"/>
-  <circle cx="-54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="-54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/>
-  <circle cx="0" cy="0" r="24" fill="#0A0A10" stroke="#fff" stroke-width="3"/>
-  <g id="dm2" style="opacity:0"><line x1="-24" y1="0" x2="24" y2="0" stroke="#B026FF" stroke-width="3.5"/><line x1="-24" y1="-9" x2="-24" y2="9" stroke="#B026FF" stroke-width="3.5"/><line x1="24" y1="-9" x2="24" y2="9" stroke="#B026FF" stroke-width="3.5"/></g>
-  <circle id="ok2" cx="0" cy="0" r="24" fill="none" stroke="#B026FF" stroke-width="4" style="opacity:0"/>
-  
-  <g id="tg2" style="opacity:0"><circle cx="0" cy="42" r="15" fill="#0A0A10" stroke="#fff" stroke-width="3"/><path d="M-7,42l5,5l9,-10" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></g>
-</g><g id="p3">
-  <rect x="-80" y="-65" width="160" height="130" fill="none" stroke="none"/>
-  <rect id="pb3" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(0,136,255,.18)" stroke="#0088FF" stroke-width="4"/>
-  <rect id="pr3" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(255,0,68,.14)" stroke="#FF0044" stroke-width="5" style="opacity:0"/>
-  <circle cx="-54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="-36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="-54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/><circle cx="54" cy="36" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/>
-  <circle cx="0" cy="0" r="24" fill="#0A0A10" stroke="#fff" stroke-width="3"/>
-  <g id="dm3" style="opacity:0"><line x1="-24" y1="0" x2="24" y2="0" stroke="#B026FF" stroke-width="3.5"/><line x1="-24" y1="-9" x2="-24" y2="9" stroke="#B026FF" stroke-width="3.5"/><line x1="24" y1="-9" x2="24" y2="9" stroke="#B026FF" stroke-width="3.5"/></g>
-  <circle id="ok3" cx="0" cy="0" r="24" fill="none" stroke="#B026FF" stroke-width="4" style="opacity:0"/>
-  <g id="df3" style="opacity:0"><path d="M18.4,15.5l-11,-3l4,-9z" fill="#FF0044"/></g>
-  <g id="tg3" style="opacity:0"><circle cx="0" cy="42" r="15" fill="#0A0A10" stroke="#FF0044" stroke-width="3"/><path d="M-6,36l12,12M6,36l-12,12" stroke="#FF0044" stroke-width="3.2" stroke-linecap="round"/></g>
-</g>
-    <rect id="sweep" x="90" y="340" width="5" height="610" fill="#B026FF" style="opacity:0;filter:drop-shadow(0 0 10px #B026FF)"/>
-    <g id="lockb" transform="translate(725,447)" style="opacity:0;filter:drop-shadow(0 0 8px #B026FF)"><circle id="lockc" r="32" fill="rgba(10,10,16,.8)" stroke="#B026FF" stroke-width="4"/><path id="lockk" d="M-14,2L-4,13L15,-10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50"/></g>
+<div id="plate"><canvas id="cv" width="900" height="610" data-layout-allow-overflow></canvas><div id="ov">
+  <div id="s1a" class="t ov" style="left:610px;top:54.5px;width:260px;height:31px;font-size:24px;color:rgba(255,255,255,.6);opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SENSOR</span></span></span></span></span></div>
+  <div id="s1b" class="t ov" style="left:610px;top:101.5px;width:260px;height:47px;font-size:36px;color:#0088FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">3500</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3500</span></span></span></span></div>
+  <div id="s1c" class="t ov" style="left:610px;top:161px;width:260px;height:42px;font-size:32px;color:#B026FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">8</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
+  <div id="pI" class="t ov" style="left:600px;top:28px;width:100px;height:36px;font-size:28px;color:#0088FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span></span></div>
+  <div id="pG" class="t ov" style="left:600px;top:258px;width:100px;height:36px;font-size:28px;color:#FF0044;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span></span></div>
+  <div id="xeR" class="t ov" style="left:610px;top:506.5px;width:260px;height:47px;font-size:36px;color:#B026FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">4.47</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">x</span></span></span></span></div>
+  <div id="chM" class="t ov" style="left:70.15981338061016px;top:33px;width:190px;height:34px;font-size:24px;color:#B026FF;justify-content:flex-end;opacity:0;background:rgba(10,10,16,.78);border-radius:10px;padding:0 10px;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">MEASURED</span></span></span></span></span></div>
+  <div id="chN" class="t ov" style="left:388.6705342740707px;top:33px;width:150px;height:34px;font-size:24px;color:rgba(255,255,255,.85);justify-content:flex-start;opacity:0;background:rgba(10,10,16,.78);border-radius:10px;padding:0 10px;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">NOMINAL</span></span></span></span></span></div>
+  <div id="chS" class="t ov" style="left:96px;top:529px;width:160px;height:34px;font-size:24px;color:#fff;justify-content:flex-start;opacity:0;background:rgba(10,10,16,.78);border-radius:10px;padding:0 10px;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">8</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
+  <div id="chG" class="t ov" style="left:239.41517382734042px;top:476px;width:170px;height:40px;font-size:28px;color:#B026FF;opacity:0;background:rgba(10,10,16,.78);border-radius:10px;padding:0 10px;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">15.5</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
+  <div id="ep" class="t ov" style="left:610px;top:46.5px;width:260px;height:31px;font-size:24px;color:rgba(255,255,255,.6);opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">EDGE POINTS</span></span></span></span></span></div>
+  <div id="pn0" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></div><div id="pn1" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span></span></span></span></div><div id="pn2" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3</span></span></span></span></div><div id="pn3" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">4</span></span></span></span></div><div id="pn4" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">5</span></span></span></span></div><div id="pn5" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">6</span></span></span></span></div><div id="pn6" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">7</span></span></span></span></div><div id="pn7" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">8</span></span></span></span></div><div id="pn8" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">9</span></span></span></span></div><div id="pn9" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">10</span></span></span></span></div><div id="pn10" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">11</span></span></span></span></div><div id="pn11" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">12</span></span></span></span></div><div id="pn12" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">13</span></span></span></span></div><div id="pn13" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">14</span></span></span></span></div><div id="pn14" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">15</span></span></span></span></div><div id="pn15" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">16</span></span></span></span></div><div id="pn16" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">17</span></span></span></span></div><div id="pn17" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">18</span></span></span></span></div><div id="pn18" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">19</span></span></span></span></div><div id="pn19" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">20</span></span></span></span></div><div id="pn20" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">21</span></span></span></span></div><div id="pn21" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">22</span></span></span></span></div><div id="pn22" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">23</span></span></span></span></div><div id="pn23" data-layout-ignore class="t ov" style="left:610px;top:83px;width:260px;height:70px;font-size:56px;color:#fff;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">24</span></span></span></span></div>
+  <div id="dres" class="t ov" style="left:600px;top:87.5px;width:280px;height:49px;font-size:38px;color:#0088FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">20.031</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">mm</span></span></span></span></div>
+  <div id="dnom" class="t ov" style="left:600px;top:142px;width:280px;height:36px;font-size:28px;color:rgba(255,255,255,.7);opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">NOMINAL </span></span><span class="mord">20.000</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">mm</span></span></span></span></div>
+  <div id="ddel" class="t ov" style="left:600px;top:193.5px;width:280px;height:57px;font-size:44px;color:#B026FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">+</span><span class="mord">31</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
+  <div id="gax" class="t ov" style="left:610px;top:305px;width:260px;height:34px;font-size:26px;color:rgba(255,255,255,.6);opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span><span class="mclose">)</span></span></span></span></div>
+  <div id="gtl" class="t ov" style="left:640px;top:465px;width:200px;height:34px;font-size:26px;color:#B026FF;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">±</span><span class="mord">15</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
+  <div id="verd" class="t ov" style="left:600px;top:515px;width:280px;height:60px;font-size:44px;color:#FF0044;opacity:0"><svg width="40" height="40" viewBox="0 0 24 24" style="flex:none;margin-right:12px"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="#FF0044" stroke-width="3" stroke-linecap="round"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REJECT</span></span></span></span></span></div>
+  <div id="bl1" class="t ov" style="left:220px;top:102.5px;width:160px;height:31px;font-size:24px;color:rgba(255,255,255,.6);opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">CAMERA</span></span></span></span></span></div>
+  <div id="bl2" class="t ov" style="left:566px;top:128px;width:160px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PUSHER</span></span></span></span></span></div>
+  <div id="bl3" class="t ov" style="left:460px;top:462.5px;width:160px;height:31px;font-size:24px;color:#FF0044;opacity:0;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REJECT BIN</span></span></span></span></span></div>
+  <div id="bl4" class="t ov" style="left:690px;top:454px;width:190px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-end;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> PASS</span></span></span></span></span></div>
+  <div id="bl5" class="t ov" style="left:24px;top:454px;width:190px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">FROM CNC </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span></span></span></span></div>
+  <svg id="ovs" width="900" height="610" viewBox="0 0 900 610" style="position:absolute;left:0;top:0">
+    <circle id="ringR" cx="540" cy="340" r="10" fill="none" stroke="#FF0044" stroke-width="4" style="opacity:0"/>
+    <rect id="sweep" x="0" y="0" width="5" height="610" fill="#B026FF" style="opacity:0;filter:drop-shadow(0 0 10px #B026FF)"/>
+    <g id="lockb" transform="translate(430,176)" style="opacity:0;filter:drop-shadow(0 0 8px #B026FF)"><circle r="34" fill="rgba(10,10,16,.8)" stroke="#B026FF" stroke-width="4"/><path id="lockk" d="M-14,2L-4,13L15,-10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50"/></g>
   </svg>
-  <div  class="t axl"  style="left:110px;top:731px;width:190px;height:28px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">FROM CNC </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span></span></span></span></div>
-  <div  class="t axl"  style="left:765px;top:731px;width:140px;height:28px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-end;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> PASS</span></span></span></span></span></div>
-  <div  class="t axl"  style="left:765px;top:792px;width:150px;height:28px;font-size:24px;color:#FF0044;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REJECT BIN</span></span></span></span></span></div>
-  <div id="hud" style="opacity:0">
-    <div class="hbg"></div>
-    <div id="hd0" class="rd" style="opacity:0"><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">1</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">20.004</span><span class="mspace"> </span><span class="mord mathnormal">mm</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord" style="color:#B026FF;">+</span><span class="mord" style="color:#B026FF;">4</span><span class="mspace"> </span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text" style="color:#FFFFFF;"><span class="mord textit" style="color:#FFFFFF;">PASS</span></span></span></span></span></div></div><div id="hd1" class="rd" style="opacity:0"><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">2</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">20.031</span><span class="mspace"> </span><span class="mord mathnormal">mm</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord" style="color:#FF0044;">+</span><span class="mord" style="color:#FF0044;">31</span><span class="mspace"> </span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text" style="color:#FF0044;"><span class="mord textit" style="color:#FF0044;">REJECT</span></span></span></span></span></div></div><div id="hd2" class="rd" style="opacity:0"><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">3</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">19.996</span><span class="mspace"> </span><span class="mord mathnormal">mm</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord" style="color:#B026FF;">−</span><span class="mord" style="color:#B026FF;">4</span><span class="mspace"> </span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text" style="color:#FFFFFF;"><span class="mord textit" style="color:#FFFFFF;">PASS</span></span></span></span></span></div></div><div id="hd3" class="rd" style="opacity:0"><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">4</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">19.962</span><span class="mspace"> </span><span class="mord mathnormal">mm</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord" style="color:#FF0044;">−</span><span class="mord" style="color:#FF0044;">38</span><span class="mspace"> </span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div><div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text" style="color:#FF0044;"><span class="mord textit" style="color:#FF0044;">REJECT</span></span></span></span></span></div></div>
-  </div>
 </div></div>
 <div id="banner">
-<div id="BA" class="ba" style="opacity:1"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE EYE MISSES 30 MICRONS...</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE CAMERA DOES NOT.</span></span></span></span></span></div></div>
-<div id="BB" class="ba" style="opacity:0"><div class="row c"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">SUBPIXEL EDGE FIT: 8 </span></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span><span class="mord text"><span class="mord textit"> PIXELS RESOLVE </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div></div>
-<div id="BC" class="ba" style="opacity:0"><div class="row c"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣Δ∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">15</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⟹</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> REJECTED IN </span></span><span class="mord">1.2</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">s</span></span></span></span></div></div>
-<div id="BD" class="ba" style="opacity:0"><div class="row c"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord text"><span class="mord textit">100 % INSPECTED </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> 2 REJECTED </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> 0 ESCAPED</span></span></span></span></span></div></div>
+<div id="BA" class="ba" style="opacity:1"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">A HUMAN EYE SEES 100 MICRONS AT BEST</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">A CAMERA MEASURES 31.</span></span></span></span></span></div></div>
+<div id="B1" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STEP 1 </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> CAPTURE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">LIGHT BECOMES A MATRIX</span></span></span></span></span></div></div>
+<div id="B2" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STEP 2 </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> ZOOM IN</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">EVERY PIXEL IS A NUMBER</span></span></span></span></span></div></div>
+<div id="B3" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STEP 3 </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> GRADIENT</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">EDGE = FASTEST CHANGE</span></span></span></span></span></div></div>
+<div id="B4" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STEP 4 </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> SUB-PIXEL EDGE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PRECISION </span></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">0.06</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">0.5</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div></div>
+<div id="B5" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STEP 5 </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> CIRCLE FIT</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7073em;vertical-align:-0.024em;"></span><span class="mord text"><span class="mord textit">24 POINTS </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⟹</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span></span></span></span></div></div>
+<div id="B6" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STEP 6 </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit"> COMPARE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">NOMINAL VS MEASURED EDGE</span></span></span></span></span></div></div>
+<div id="B7" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">DECISION</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣Δ∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">15</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⟹</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REJECT</span></span></span></span></span></div></div>
+<div id="B8" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">EVERY PART INSPECTED</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">0 ESCAPES</span></span></span></span></span></div></div>
 </div>
 <div id="card" style="left:150px;top:1140px;width:780px;height:460px">
   <div id="pA" class="pg">
-    <div id="cf0" class="t " data-m="cf0" style="left:40px;top:29px;width:400px;height:62px;font-size:40px;color:rgba(255,255,255,.92);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord textit">HUMAN EYE </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">±</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">100</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
-    <div id="cc0" class="t "  style="left:40px;top:99px;width:400px;height:30px;font-size:24px;color:#FF0044;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">MISSES THE DEFECT</span></span></span></span></span></div>
-    <svg class="mini" style="left:470px;top:22px" width="280" height="116" viewBox="0 0 280 116">
-      <rect x="0" y="0" width="280" height="116" rx="14" fill="rgba(10,10,16,.55)" stroke="rgba(255,255,255,.08)"/>
-      <rect x="14" y="30" width="252" height="16" rx="8" fill="rgba(255,255,255,.22)"/><rect x="14" y="72" width="76" height="16" rx="8" fill="rgba(255,255,255,.12)"/>
-      <defs><clipPath id="mc0"><rect id="mcr0" x="0" y="0" width="0" height="116"/></clipPath></defs>
-      <g clip-path="url(#mc0)"><rect x="14" y="72" width="76" height="16" rx="8" fill="#FF0044"/></g>
-    </svg>
-    <svg class="xmark" id="x0" style="left:23.05000000000001px;top:32px" width="469.5" height="58" viewBox="0 0 469.5 58"><path d="M8,8L461.5,50M461.5,8L8,50" stroke="#FF0044" stroke-width="8" stroke-linecap="round" fill="none"/></svg>
-    <div id="cf1" class="t " data-m="cf1" style="left:40px;top:179px;width:400px;height:62px;font-size:40px;color:rgba(255,255,255,.92);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">CALIPER: 1 IN 50 PARTS</span></span></span></span></span></div>
-    <div id="cc1" class="t "  style="left:40px;top:249px;width:400px;height:30px;font-size:24px;color:#FF0044;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">49 ESCAPE</span></span></span></span></span></div>
-    <svg class="mini" style="left:470px;top:172px" width="280" height="116" viewBox="0 0 280 116">
-      <rect x="0" y="0" width="280" height="116" rx="14" fill="rgba(10,10,16,.55)" stroke="rgba(255,255,255,.08)"/>
-      <rect x="8" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/>
-      <defs><clipPath id="mc1"><rect id="mcr1" x="0" y="0" width="0" height="116"/></clipPath></defs>
-      <g clip-path="url(#mc1)"><rect x="197" y="29" width="22" height="16" rx="4" fill="#0088FF"/></g>
-    </svg>
-    <svg class="xmark" id="x1" style="left:23px;top:182px" width="514.2" height="58" viewBox="0 0 514.2 58"><path d="M8,8L506.20000000000005,50M506.20000000000005,8L8,50" stroke="#FF0044" stroke-width="8" stroke-linecap="round" fill="none"/></svg>
-    <div id="cf2" class="t " data-m="cf2" style="left:40px;top:329px;width:400px;height:62px;font-size:40px;color:rgba(255,255,255,.92);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord textit">AI VISION </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">±</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
-    <div id="cc2" class="t "  style="left:40px;top:399px;width:400px;height:30px;font-size:24px;color:#B026FF;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">EVERY PART, EVERY TIME</span></span></span></span></span></div>
-    <svg class="mini" style="left:470px;top:322px" width="280" height="116" viewBox="0 0 280 116">
-      <rect x="0" y="0" width="280" height="116" rx="14" fill="rgba(10,10,16,.55)" stroke="rgba(255,255,255,.08)"/>
-      <rect x="8" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="8" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="29" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="50" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="71" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="8" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="35" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="62" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="89" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="116" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="143" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="170" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="197" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="224" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/><rect x="251" y="92" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/>
-      <defs><clipPath id="mc2"><rect id="mcr2" x="0" y="0" width="0" height="116"/></clipPath></defs>
-      <g clip-path="url(#mc2)"><rect x="8" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="35" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="62" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="89" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="116" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="143" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="170" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="197" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="224" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="251" y="8" width="22" height="16" rx="4" fill="#0088FF"/><rect x="8" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="35" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="62" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="89" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="116" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="143" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="170" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="197" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="224" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="251" y="29" width="22" height="16" rx="4" fill="#0088FF"/><rect x="8" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="35" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="62" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="89" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="116" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="143" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="170" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="197" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="224" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="251" y="50" width="22" height="16" rx="4" fill="#0088FF"/><rect x="8" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="35" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="62" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="89" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="116" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="143" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="170" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="197" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="224" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="251" y="71" width="22" height="16" rx="4" fill="#0088FF"/><rect x="8" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="35" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="62" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="89" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="116" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="143" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="170" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="197" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="224" y="92" width="22" height="16" rx="4" fill="#0088FF"/><rect x="251" y="92" width="22" height="16" rx="4" fill="#0088FF"/></g>
-    </svg>
-    <svg class="xmark" id="x2" style="left:23px;top:332px" width="379.4" height="58" viewBox="0 0 379.4 58"><rect x="4" y="4" width="371.4" height="50" rx="18" stroke="#B026FF" stroke-width="5" fill="none"/></svg></div>
-  <div id="pB" class="pg" style="opacity:0">
-  <div id="tb0" class="t "  style="left:10px;top:26px;width:760px;height:36px;font-size:28px;color:rgba(255,255,255,.85);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">LIVE LOG </span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.765em;vertical-align:-0.0817em;"></span><span class="mord text"><span class="mord textit"> NOMINAL </span></span><span class="mord amsrm">∅</span><span class="mord">20.000</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">mm</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∙</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">±</span><span class="mord">15</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
-  <div  class="t "  style="left:36px;top:89px;width:160px;height:30px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART</span></span></span></span></span></div>
-  <div  class="t "  style="left:230px;top:89px;width:160px;height:30px;font-size:24px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord mathnormal">mm</span><span class="mclose">)</span></span></span></span></div>
-  <div  class="t "  style="left:390px;top:89px;width:160px;height:30px;font-size:24px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span><span class="mclose">)</span></span></span></span></div>
-  <div  class="t "  style="left:560px;top:89px;width:160px;height:30px;font-size:24px;color:rgba(255,255,255,.85);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">VERDICT</span></span></span></span></span></div>
-  <div id="lg0" class="lv" style="opacity:0">
-    
-    <div  class="t "  style="left:36px;top:148px;width:250px;height:40px;font-size:30px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">1</span></span></span></span></div>
-    <div  class="t "  style="left:235px;top:144px;width:150px;height:48px;font-size:34px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">20.004</span></span></span></span></div>
-    <div  class="t "  style="left:395px;top:144px;width:150px;height:48px;font-size:34px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">4</span></span></span></span></div>
-    <div class="t" style="left:560px;top:144px;width:160px;height:48px;font-size:32px;color:#fff;justify-content:flex-start"><svg width="28" height="28" viewBox="0 0 24 24" style="flex:none;margin-right:10px"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PASS</span></span></span></span></span></div></div><div id="lg1" class="lv" style="opacity:0">
-    <div style="position:absolute;left:18px;top:207px;width:744px;height:62px;border-radius:16px;background:rgba(255,0,68,.1);border:1px solid rgba(255,0,68,.5)"></div>
-    <div  class="t "  style="left:36px;top:218px;width:250px;height:40px;font-size:30px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">2</span></span></span></span></div>
-    <div  class="t "  style="left:235px;top:214px;width:150px;height:48px;font-size:34px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">20.031</span></span></span></span></div>
-    <div  class="t "  style="left:395px;top:214px;width:150px;height:48px;font-size:34px;color:#FF0044;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">31</span></span></span></span></div>
-    <div class="t" style="left:560px;top:214px;width:160px;height:48px;font-size:32px;color:#FF0044;justify-content:flex-start"><svg width="28" height="28" viewBox="0 0 24 24" style="flex:none;margin-right:10px"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="#FF0044" stroke-width="3" stroke-linecap="round"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REJECT</span></span></span></span></span></div></div><div id="lg2" class="lv" style="opacity:0">
-    
-    <div  class="t "  style="left:36px;top:288px;width:250px;height:40px;font-size:30px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">3</span></span></span></span></div>
-    <div  class="t "  style="left:235px;top:284px;width:150px;height:48px;font-size:34px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">19.996</span></span></span></span></div>
-    <div  class="t "  style="left:395px;top:284px;width:150px;height:48px;font-size:34px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">4</span></span></span></span></div>
-    <div class="t" style="left:560px;top:284px;width:160px;height:48px;font-size:32px;color:#fff;justify-content:flex-start"><svg width="28" height="28" viewBox="0 0 24 24" style="flex:none;margin-right:10px"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PASS</span></span></span></span></span></div></div><div id="lg3" class="lv" style="opacity:0">
-    <div style="position:absolute;left:18px;top:347px;width:744px;height:62px;border-radius:16px;background:rgba(255,0,68,.1);border:1px solid rgba(255,0,68,.5)"></div>
-    <div  class="t "  style="left:36px;top:358px;width:250px;height:40px;font-size:30px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PART 0</span></span><span class="mord">4</span></span></span></span></div>
-    <div  class="t "  style="left:235px;top:354px;width:150px;height:48px;font-size:34px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">19.962</span></span></span></span></div>
-    <div  class="t "  style="left:395px;top:354px;width:150px;height:48px;font-size:34px;color:#FF0044;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">38</span></span></span></span></div>
-    <div class="t" style="left:560px;top:354px;width:160px;height:48px;font-size:32px;color:#FF0044;justify-content:flex-start"><svg width="28" height="28" viewBox="0 0 24 24" style="flex:none;margin-right:10px"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="#FF0044" stroke-width="3" stroke-linecap="round"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REJECT</span></span></span></span></span></div></div></div>
+  <div id="tb0" class="t " style="left:10px;top:20px;width:760px;height:36px;font-size:28px;color:rgba(255,255,255,.85);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE COMPUTER VISION PIPELINE</span></span></span></span></span></div>
+  <div id="rb0" class="rb" style="top:72px;opacity:0"></div>
+    <div id="rw0" style="opacity:1">
+      <div  class="t " style="left:76px;top:80px;width:190px;height:40px;font-size:28px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">CAPTURE</span></span></span></span></span></div>
+      <div  class="t " style="left:272px;top:80px;width:280px;height:40px;font-size:26px;color:rgba(255,255,255,.78);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span></span></span></div>
+    </div>
+    <div id="nm0" class="t" style="left:22px;top:82px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></div>
+    <div id="ck0" class="t" style="left:22px;top:82px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid #B026FF;opacity:1"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="rs0" class="t " style="left:504px;top:78px;width:250px;height:44px;font-size:30px;color:#fff;justify-content:flex-end;opacity:1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord" style="color:#0088FF;">3500</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin" style="color:#0088FF;">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">3500</span></span></span></span></div><div id="rb1" class="rb" style="top:134px;opacity:0"></div>
+    <div id="rw1" style="opacity:1">
+      <div  class="t " style="left:76px;top:142px;width:190px;height:40px;font-size:28px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PIXELS</span></span></span></span></span></div>
+      <div  class="t " style="left:272px;top:142px;width:280px;height:40px;font-size:26px;color:rgba(255,255,255,.78);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">255</span><span class="mclose">]</span></span></span></span></div>
+    </div>
+    <div id="nm1" class="t" style="left:22px;top:144px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span></span></span></span></div>
+    <div id="ck1" class="t" style="left:22px;top:144px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid #B026FF;opacity:1"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="rs1" class="t " style="left:504px;top:140px;width:250px;height:44px;font-size:30px;color:#fff;justify-content:flex-end;opacity:1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">20</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↔</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">235</span></span></span></span></div><div id="rb2" class="rb" style="top:196px;opacity:0"></div>
+    <div id="rw2" style="opacity:1">
+      <div  class="t " style="left:76px;top:204px;width:190px;height:40px;font-size:28px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">GRADIENT</span></span></span></span></span></div>
+      <div  class="t " style="left:272px;top:204px;width:280px;height:40px;font-size:26px;color:rgba(255,255,255,.78);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">G</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2083em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2083em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord">/2</span></span></span></span></div>
+    </div>
+    <div id="nm2" class="t" style="left:22px;top:206px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3</span></span></span></span></div>
+    <div id="ck2" class="t" style="left:22px;top:206px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid #B026FF;opacity:1"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="rs2" class="t " style="left:504px;top:202px;width:250px;height:44px;font-size:30px;color:#fff;justify-content:flex-end;opacity:1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mop">max</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">G</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#B026FF;">67</span></span></span></span></div><div id="rb3" class="rb" style="top:258px;opacity:0"></div>
+    <div id="rw3" style="opacity:1">
+      <div  class="t " style="left:76px;top:266px;width:190px;height:40px;font-size:28px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SUBPIXEL</span></span></span></span></span></div>
+      <div  class="t " style="left:272px;top:266px;width:280px;height:40px;font-size:26px;color:rgba(255,255,255,.78);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">G</span><span class="mord mathnormal">x</span><span class="mord">/</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">G</span></span></span></span></div>
+    </div>
+    <div id="nm3" class="t" style="left:22px;top:268px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">4</span></span></span></span></div>
+    <div id="ck3" class="t" style="left:22px;top:268px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid #B026FF;opacity:1"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="rs3" class="t " style="left:504px;top:264px;width:250px;height:44px;font-size:30px;color:#fff;justify-content:flex-end;opacity:1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord" style="color:#B026FF;">4.47</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">p</span><span class="mord mathnormal">x</span></span></span></span></div><div id="rb4" class="rb" style="top:320px;opacity:0"></div>
+    <div id="rw4" style="opacity:1">
+      <div  class="t " style="left:76px;top:328px;width:190px;height:40px;font-size:28px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">FIT</span></span></span></span></span></div>
+      <div  class="t " style="left:272px;top:328px;width:280px;height:40px;font-size:26px;color:rgba(255,255,255,.78);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">min</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="mopen">(</span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">c</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></div>
+    </div>
+    <div id="nm4" class="t" style="left:22px;top:330px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">5</span></span></span></span></div>
+    <div id="ck4" class="t" style="left:22px;top:330px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid #B026FF;opacity:1"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="rs4" class="t " style="left:504px;top:326px;width:250px;height:44px;font-size:30px;color:#fff;justify-content:flex-end;opacity:1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6633em;vertical-align:-0.0817em;"></span><span class="mord amsrm">∅</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord" style="color:#0088FF;">20.031</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">mm</span></span></span></span></div><div id="rb5" class="rb" style="top:382px;opacity:0"></div>
+    <div id="rw5" style="opacity:1">
+      <div  class="t " style="left:76px;top:390px;width:190px;height:40px;font-size:28px;color:#fff;justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">DECIDE</span></span></span></span></span></div>
+      <div  class="t " style="left:272px;top:390px;width:280px;height:40px;font-size:26px;color:rgba(255,255,255,.78);justify-content:flex-start;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣Δ∣</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">15</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div>
+    </div>
+    <div id="nm5" class="t" style="left:22px;top:392px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">6</span></span></span></span></div>
+    <div id="ck5" class="t" style="left:22px;top:392px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid #B026FF;opacity:1"><svg width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="rs5" class="t " style="left:504px;top:388px;width:250px;height:44px;font-size:30px;color:#fff;justify-content:flex-end;opacity:1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord" style="color:#FF0044;">+</span><span class="mord" style="color:#FF0044;">31</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">μ</span><span class="mord mathnormal">m</span></span></span></span></div></div>
   <div id="pC" class="pg">
   <div id="ctaglow" style="position:absolute;left:60px;top:176px;width:660px;height:130px;border-radius:65px;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
-  <div id="ct1a" class="t "  style="left:20px;top:34px;width:740px;height:56px;font-size:40px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SAVE THIS</span></span></span></span></span></div>
-  <div id="ct1b" class="t" style="left:20px;top:92px;width:740px;height:56px;font-size:40px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">AI QUALITY GATE</span></span></span></span></span><svg width="34" height="44" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="#FF0044"/></svg></div>
-  <div id="ct2a" class="t "  style="left:10px;top:192px;width:760px;height:48px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">WHICH DEFECT WOULD YOU</span></span></span></span></span></div>
-  <div id="ct2b" class="t "  style="left:10px;top:244px;width:760px;height:48px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">TEACH IT FIRST? COMMENT </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↓</span></span></span></span></div>
+  <div id="ct1a" class="t " style="left:20px;top:34px;width:740px;height:56px;font-size:40px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SAVE THIS</span></span></span></span></span></div>
+  <div id="ct1b" class="t" style="left:20px;top:92px;width:740px;height:56px;font-size:40px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">COMPUTER VISION IN 6 STEPS</span></span></span></span></span><svg width="34" height="44" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="#FF0044"/></svg></div>
+  <div id="ct2a" class="t " style="left:10px;top:192px;width:760px;height:48px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">WHICH STEP DID YOU</span></span></span></span></span></div>
+  <div id="ct2b" class="t " style="left:10px;top:244px;width:760px;height:48px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">NOT KNOW? COMMENT </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↓</span></span></span></span></div>
   <div id="ct3" class="t" style="left:140px;top:366px;width:500px;height:56px;font-size:30px;color:rgba(255,255,255,.7);gap:14px;opacity:0"><svg width="36" height="36" viewBox="0 0 24 24" style="flex:none"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.2"/><circle cx="12" cy="12" r="4.4" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.3" fill="rgba(255,255,255,.7)"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">@MAE.ACADEMY</span></span></span></span></span></div></div>
 </div>
-<audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="15" data-track-index="2" data-volume="1"></audio>
+<audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="22" data-track-index="2" data-volume="1"></audio>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
-window.__CFG = {"V":200,"XC":600,"XD":840,"BELT_Y":620,"T_DIV":1.2,"SCANS":[2.4,4.2,6,7.8],"BIN":{"x":[800,880],"y":894,"s":0.5},"PW":280,"parts":[{"i":0,"reject":false},{"i":1,"reject":true},{"i":2,"reject":false},{"i":3,"reject":true}]};
-// Timeline for "THE MICRON INSPECTOR: AI VISION ON A CNC LINE" (15.0 s).
-// Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
+window.__CFG = {"S":{"1":1.6,"2":4,"3":6.6,"4":8.8,"5":10.8,"6":14,"7":16.6,"8":19.4},"T_PTS":[11.6,11.68,11.76,11.84,11.92,12,12.08,12.16,12.24,12.32,12.4,12.48,12.56,12.64,12.72,12.8,12.88,12.96,13.04,13.12,13.2,13.28,13.36,13.44],"K":24,"UM":8,"WORLD":0.16,"SENSOR":3500,"HOLE":{"cx":1750.37,"cy":1750.11,"R":1251.9375},"NOM_R":1250,"ix0":494,"iy0":1745,"patchI":[[23,21,31,67,136,195,222,239,230,227],[18,20,39,67,131,197,222,234,241,233],[18,16,31,70,136,197,232,233,235,238],[20,23,32,65,133,193,222,229,228,237],[24,22,31,71,135,190,228,236,234,233],[20,26,30,65,134,192,229,233,238,232],[17,22,26,66,137,196,228,235,240,236],[13,23,33,60,130,194,228,241,237,238],[17,26,26,61,126,191,230,236,236,232],[15,18,35,66,132,196,225,239,228,233]],"patchG":[[0,4,23,52.5,64,43,22,4,-6,5],[0,10.5,23.5,46,65,45.5,18.5,9.5,-0.5,-4],[-2.5,6.5,27,52.5,63.5,48,18,1.5,2.5,-1.5],[0.5,6,21,50.5,64,44.5,18,3,4,4.5],[1.5,3.5,24.5,52,59.5,46.5,23,3,-1.5,-0.5],[3.5,5,19.5,52,63.5,47.5,20.5,4.5,-0.5,-2],[2.5,4.5,22,55.5,65,45.5,19.5,6,0.5,-5.5],[3.5,10,18.5,48.5,67,49,23.5,4.5,-1.5,-1.5],[4,4.5,17.5,50,65,52,22.5,3,-2,-0.5],[0,10,24,48.5,65,46.5,21.5,1.5,-3,3.5]],"rowXc":[4.443765281173594,4.447103274559194,4.392344497607655,4.4393939393939394,4.458637469586375,4.487684729064039,4.427710843373494,4.5508474576271185,4.557971014492754,4.465936739659368],"xe":4.467139524653753,"nomX":6.404830969179834,"peakCol":4,"gMax":67,"pts":[{"x":498.46713952465376,"y":1750},{"x":541.0244358275993,"y":1426.0559739110442},{"x":666.054656930886,"y":1124.1838643922063},{"x":864.9465968594686,"y":864.946596859469},{"x":1124.1237803957333,"y":665.9505883962752},{"x":1426.0049024538434,"y":540.8338345545083},{"x":1749.9999999999998,"y":498.13604862129955},{"x":2074.033418777915,"y":540.6908177705761},{"x":2376.006114161693,"y":665.7256044231831},{"x":2635.352869909985,"y":864.6471300900143},{"x":2834.390653352337,"y":1123.9267643803146},{"x":2959.5466877930276,"y":1425.9029417981192},{"x":3002.1878303288454,"y":1749.9999999999998},{"x":2959.539363054442,"y":2074.0950955440917},{"x":2834.4427205145957,"y":2376.1032966098305},{"x":2635.4228354475495,"y":2635.422835447547},{"x":2376.0657786382108,"y":2834.3777374815495},{"x":2074.0672271538533,"y":2959.4353568061456},{"x":1750.0000000000005,"y":3002.0271416110845},{"x":1425.9677009559234,"y":2959.3050033258487},{"x":1124.0482863161697,"y":2834.1801711851986},{"x":864.8376826315372,"y":2635.1623173684648},{"x":665.9531576813379,"y":2375.874736226843},{"x":540.9121478807051,"y":2073.9741135536483}],"fit":{"cx":1750.2829941120838,"cy":1750.0798296654725,"R":1251.937691444526},"dUm":31,"TOL_UM":15,"xm":270.15981338061016,"xn":378.6705342740707,"rows":{"ROW0":100,"ROWD":62,"n":6}};
+// Shared image model for the Micron Inspector reel. Evaluated by build.mjs (measurements) and embedded in the
+// page (so the numbers on screen and the numbers the build asserts come from the same code).
+// Sensor model: backlit part, dark part 20 / bright hole 235, optical blur sigma 1.2 px, sensor noise sigma 3.
+// eslint-disable-next-line no-unused-vars
+const CV = (function () {
+  const UM = 8,
+    PSF = 1.2,
+    NOISE = 3,
+    BRIGHT = 235,
+    DARK = 20;
+  const imul = Math.imul;
+  function hash(a, b, c) {
+    let h = (imul(a | 0, 374761393) + imul(b | 0, 668265263) + imul(c | 0, 2147483647)) | 0;
+    h = imul(h ^ (h >>> 13), 1274126177);
+    return (h ^ (h >>> 16)) >>> 0;
+  }
+  // deterministic N(0,1) per (a, b, c): sum of four hashed uniforms (Irwin-Hall)
+  function gauss(a, b, c) {
+    let h = hash(a, b, c),
+      s = 0;
+    for (let k = 0; k < 4; k++) {
+      h = (h + 0x6d2b79f5) | 0;
+      let t = imul(h ^ (h >>> 15), 1 | h);
+      t = (t + imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      s += ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    return (s - 2) * 1.7320508;
+  }
+  function erf(x) {
+    const s = Math.sign(x),
+      a = Math.abs(x),
+      t = 1 / (1 + 0.3275911 * a);
+    const y =
+      1 -
+      ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
+        t *
+        Math.exp(-a * a);
+    return s * y;
+  }
+  const Phi = (x) => 0.5 * (1 + erf(x / Math.SQRT2));
+  // clean intensity at signed distance d (px) from the hole edge; d < 0 is inside the (bright) hole
+  const Iclean = (d) => DARK + (BRIGHT - DARK) * Phi(-d / PSF);
+  const clip = (v) => Math.max(0, Math.min(255, Math.round(v)));
+  // pixel (ix, iy) of the sensor: value at the pixel centre, plus noise
+  function pix(ix, iy, H, salt) {
+    const d = Math.hypot(ix + 0.5 - H.cx, iy + 0.5 - H.cy) - H.R;
+    return clip(Iclean(d) + NOISE * gauss(ix, iy, salt));
+  }
+  return { UM, PSF, NOISE, BRIGHT, DARK, hash, gauss, erf, Phi, Iclean, clip, pix };
+})();
+
+// Timeline for "HOW A CAMERA MEASURES 31 MICRONS" (22.0 s).
+// The picture (sensor image, pixel grid, gradient, edge points, circle fit, gauge, belt) is drawn on a canvas from
+// the time alone; the banners, card rows, labels and counters are one GSAP timeline. Nothing depends on the previous frame.
 (function () {
   const CFG = window.__CFG;
-  const { V, XC, XD, BELT_Y, T_DIV, SCANS, BIN, PW, parts } = CFG;
+  const {
+    S,
+    T_PTS,
+    K,
+    WORLD,
+    HOLE,
+    ix0,
+    iy0,
+    patchI,
+    patchG,
+    rowXc,
+    xe,
+    nomX,
+    gMax,
+    pts,
+    fit,
+    dUm,
+    TOL_UM,
+    rows,
+  } = CFG;
+  const COL = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF" };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const ramp = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+  const eio = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2); // power2.inOut
+  const eout = (p) => 1 - Math.pow(1 - p, 3); // power2.out
+  const FIN = 15.9; // the finished result shown on frame 0
+
+  // ------------------------------------------------------------------ canvas
+  const cvs = document.getElementById("cv");
+  const ctx = cvs.getContext("2d");
+  const DPR = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  cvs.width = 900 * DPR;
+  cvs.height = 610 * DPR;
+  const IMG = { x: 20, y: 25, s: 560 };
+  const CX = IMG.x + 280,
+    CY = IMG.y + 280; // screen position of the view centre
+  const ZMAX = 56 / WORLD; // zoom at which one sensor pixel is 56 screen px
+  const s2w = (v) => 280 + (v - 1750) * WORLD; // sensor px -> world px (full view)
+  const PATCH_W = { x: s2w(ix0 + 5), y: s2w(iy0 + 5) };
+
+  // the sensor image, rendered once (deterministic): backlit part, big bore, four mounting holes
+  const prev = document.createElement("canvas");
+  prev.width = prev.height = 560;
+  (function () {
+    const pc = prev.getContext("2d");
+    const im = pc.createImageData(560, 560);
+    const mounts = [
+      [-1, -1],
+      [1, -1],
+      [-1, 1],
+      [1, 1],
+    ].map(([a, b]) => [1750 + a * 1175, 1750 + b * 1175]);
+    for (let y = 0; y < 560; y++)
+      for (let x = 0; x < 560; x++) {
+        const sx = 1750 + (x + 0.5 - 280) / WORLD,
+          sy = 1750 + (y + 0.5 - 280) / WORLD;
+        const cov = (d) => clamp(0.5 - d, 0, 1); // 1 px antialiased edge, d in world px
+        let m = cov((Math.hypot(sx - HOLE.cx, sy - HOLE.cy) - HOLE.R) * WORLD);
+        for (const [mx, my] of mounts)
+          m = Math.max(m, cov((Math.hypot(sx - mx, sy - my) - 150) * WORLD));
+        const qx = Math.abs(sx - 1750) - (1575 - 300),
+          qy = Math.abs(sy - 1750) - (1575 - 300);
+        const db =
+          (Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - 300) *
+          WORLD;
+        m = Math.max(m, cov(-db));
+        const v = CV.clip(CV.DARK + (CV.BRIGHT - CV.DARK) * m + CV.NOISE * CV.gauss(x, y, 3));
+        const o = (y * 560 + x) * 4;
+        im.data[o] = 10 + v * 0.96;
+        im.data[o + 1] = 10 + v * 0.96;
+        im.data[o + 2] = 16 + v * 0.94;
+        im.data[o + 3] = 255;
+      }
+    pc.putImageData(im, 0, 0);
+  })();
+  const gray = (v) =>
+    `rgb(${Math.round(10 + v * 0.96)},${Math.round(10 + v * 0.96)},${Math.round(16 + v * 0.94)})`;
+
+  // ------------------------------------------------------------------ camera: zoom into the patch and back
+  function zoomT(tau) {
+    if (tau < S[2]) return 0;
+    if (tau < 5.4) return eio(ramp(tau, 4.0, 5.4));
+    if (tau < S[5]) return 1;
+    if (tau < 11.6) return 1 - eio(ramp(tau, 10.8, 11.6));
+    if (tau < S[6]) return 0;
+    if (tau < 14.8) return eio(ramp(tau, 14.0, 14.8));
+    return 1;
+  }
+  function view(tau) {
+    const zt = zoomT(tau);
+    const z = Math.exp(Math.log(ZMAX) * zt);
+    const u = (1 - 1 / z) / (1 - 1 / ZMAX); // zoom toward the patch: it stays in view the whole way
+    return { zt, z, cx: 280 + (PATCH_W.x - 280) * u, cy: 280 + (PATCH_W.y - 280) * u };
+  }
+  let V = view(0);
+  const w2s = (wx, wy) => [CX + (wx - V.cx) * V.z, CY + (wy - V.cy) * V.z];
+  const sen2s = (sx, sy) => w2s(s2w(sx), s2w(sy));
+  const p2s = (u, v) => sen2s(ix0 + u, iy0 + v); // patch coordinates (px) -> screen
+
+  function font(px) {
+    ctx.font = `${px}px KaTeX_Main, serif`;
+  }
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // ------------------------------------------------------------------ vision view (steps 1 - 6)
+  function drawVision(tau) {
+    V = view(tau);
+    const { z } = V;
+    ctx.save();
+    roundRect(IMG.x, IMG.y, IMG.s, IMG.s, 18);
+    ctx.fillStyle = "rgba(10,10,16,.85)";
+    ctx.fill();
+    ctx.clip();
+    // step 1: the sensor reads out row by row
+    const rv = ramp(tau, 1.75, 3.3);
+    const rows1 = tau < S[2] ? rv : 1;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(IMG.x, IMG.y, IMG.s, IMG.s * rows1 + (rows1 >= 1 ? 2000 : 0));
+    ctx.clip();
+    const aS = 1 - ramp(z, 8, 40);
+    if (aS > 0) {
+      ctx.globalAlpha = aS;
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(prev, CX - V.cx * z, CY - V.cy * z, 560 * z, 560 * z);
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    // pixel grid (the real sensor pixels) once the zoom is deep enough
+    const aG = ramp(z, 25, 60);
+    if (aG > 0) {
+      const cs = WORLD * z;
+      const sx0 = 1750 + (V.cx - 280 - 280 / z) / WORLD,
+        sx1 = 1750 + (V.cx - 280 + 280 / z) / WORLD;
+      const sy0 = 1750 + (V.cy - 280 - 280 / z) / WORLD,
+        sy1 = 1750 + (V.cy - 280 + 280 / z) / WORLD;
+      const gap = cs >= 20 ? 2 : 0;
+      ctx.globalAlpha = aG;
+      for (let iy = Math.floor(sy0); iy <= Math.ceil(sy1); iy++)
+        for (let ix = Math.floor(sx0); ix <= Math.ceil(sx1); ix++) {
+          const [x, y] = sen2s(ix, iy);
+          ctx.fillStyle = gray(CV.pix(ix, iy, HOLE, 7));
+          ctx.fillRect(x + gap / 2, y + gap / 2, cs - gap, cs - gap);
+        }
+      ctx.globalAlpha = 1;
+    }
+    // step 1 extras: sensor grid hint, read-out line, flash
+    if (tau < 4.4) {
+      const ag = 0.16 * (1 - ramp(tau, 3.6, 4.2));
+      ctx.strokeStyle = `rgba(255,255,255,${ag})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let k = 0; k <= 20; k++) {
+        ctx.moveTo(IMG.x + k * 28, IMG.y);
+        ctx.lineTo(IMG.x + k * 28, IMG.y + IMG.s);
+        ctx.moveTo(IMG.x, IMG.y + k * 28);
+        ctx.lineTo(IMG.x + IMG.s, IMG.y + k * 28);
+      }
+      ctx.stroke();
+    }
+    if (tau >= 1.75 && tau < 3.4) {
+      const y = IMG.y + IMG.s * rv;
+      ctx.fillStyle = COL.red;
+      ctx.shadowColor = COL.red;
+      ctx.shadowBlur = 14;
+      ctx.fillRect(IMG.x, y - 2, IMG.s, 4);
+      ctx.shadowBlur = 0;
+    }
+    if (tau >= S[1] && tau < S[1] + 0.3) {
+      ctx.fillStyle = `rgba(255,255,255,${0.45 * (1 - (tau - S[1]) / 0.3)})`;
+      ctx.fillRect(IMG.x, IMG.y, IMG.s, IMG.s);
+    }
+    // ring on the point we are about to zoom into
+    if (tau >= 3.4 && tau < 5.2) {
+      const [rx, ry] = w2s(PATCH_W.x, PATCH_W.y);
+      const k = ramp(tau, 3.4, 3.6) * (1 - ramp(tau, 4.8, 5.2));
+      ctx.strokeStyle = `rgba(255,0,68,${k})`;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(rx, ry, 18 + 4 * Math.sin((tau - 3.4) * 9) * (1 - V.zt), 0, 6.2832);
+      ctx.stroke();
+    }
+    // step 2: numbers.  step 3: gradient numbers, heat, edge pixels
+    if (V.zt > 0.99) {
+      const cs = 56;
+      const aI = ramp(tau, 5.4, 6.0) * (1 - ramp(tau, 6.6, 7.0));
+      const aGn = ramp(tau, 6.6, 7.0) * (1 - ramp(tau, 10.6, 11.0));
+      const aH = ramp(tau, 6.8, 7.6) * (1 - ramp(tau, 10.4, 10.9));
+      for (let j = 0; j < 10; j++)
+        for (let i = 0; i < 10; i++) {
+          const x = IMG.x + i * cs,
+            y = IMG.y + j * cs;
+          const g = patchG[j][i];
+          if (aH > 0) {
+            ctx.fillStyle = `rgba(0,136,255,${aH * 0.85 * Math.min(1, Math.abs(g) / gMax)})`;
+            ctx.fillRect(x + 1, y + 1, cs - 2, cs - 2);
+          }
+          const v = patchI[j][i];
+          font(22);
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          if (aI > 0) {
+            ctx.globalAlpha = aI;
+            ctx.fillStyle = v > 130 ? "#0A0A10" : "#FFFFFF";
+            ctx.fillText(String(v), x + cs / 2, y + cs / 2);
+          }
+          if (aGn > 0) {
+            ctx.globalAlpha = aGn;
+            const bright = aH > 0.5 && Math.abs(g) > gMax * 0.35;
+            ctx.fillStyle = bright || v <= 130 ? "#FFFFFF" : "#0A0A10";
+            ctx.fillText(String(Math.round(g)).replace("-", "−"), x + cs / 2, y + cs / 2);
+          }
+          ctx.globalAlpha = 1;
+        }
+    }
+    // the working row (profile plot) and the strongest-gradient pixel of every row
+    if (V.zt > 0.99 && tau >= 5.8 && tau < S[5]) {
+      const [x, y] = p2s(0, 5);
+      ctx.strokeStyle = "rgba(255,255,255,.9)";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x + 1.5, y + 1.5, 560 - 3, 56 - 3);
+    }
+    if (V.zt > 0.99 && tau >= 7.8 && tau < 10.8) {
+      const a = ramp(tau, 7.8, 8.1);
+      ctx.strokeStyle = `rgba(255,255,255,${a})`;
+      ctx.lineWidth = 3;
+      for (let j = 0; j < 10; j++) {
+        let am = 0;
+        patchG[j].forEach((g, i) => {
+          if (Math.abs(g) > Math.abs(patchG[j][am])) am = i;
+        });
+        const [x, y] = p2s(am, j);
+        ctx.strokeRect(x + 4, y + 4, 56 - 8, 56 - 8);
+      }
+    }
+    // step 4: per-row centroids, then their mean
+    if (tau >= 8.9) {
+      for (let j = 0; j < 10; j++) {
+        const a = ramp(tau, 8.9 + 0.07 * j, 9.0 + 0.07 * j) * (tau < S[5] ? 1 : 0);
+        if (a <= 0) continue;
+        const [x, y] = p2s(rowXc[j], j + 0.5);
+        ctx.globalAlpha = a;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = COL.purple;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(x, y, 9, 0, 6.2832);
+        ctx.fill();
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+    if (tau >= 9.6) {
+      const p = ramp(tau, 9.6, 10.0);
+      const [x, y0] = p2s(xe, -1),
+        [, y1] = p2s(xe, -1 + 12 * p);
+      ctx.strokeStyle = COL.purple;
+      ctx.lineWidth = 5;
+      ctx.shadowColor = COL.purple;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(x, y0);
+      ctx.lineTo(x, y1);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+    // step 5: edge points on the contour, probe lines, then the fitted circle
+    if (tau >= T_PTS[0]) {
+      for (let k = 0; k < K; k++) {
+        const a = ramp(tau, T_PTS[k], T_PTS[k] + 0.05);
+        if (a <= 0) continue;
+        const [x, y] = sen2s(pts[k].x, pts[k].y);
+        const th = Math.PI + (k * 2 * Math.PI) / K;
+        const pr = 1 - ramp(tau, T_PTS[k], T_PTS[k] + 0.4);
+        if (pr > 0 && V.z < 3) {
+          ctx.strokeStyle = `rgba(255,0,68,${pr})`;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(x - 22 * Math.cos(th), y - 22 * Math.sin(th));
+          ctx.lineTo(x + 22 * Math.cos(th), y + 22 * Math.sin(th));
+          ctx.stroke();
+        }
+        if (V.z < 3 || k === 0) {
+          ctx.fillStyle = "#FFFFFF";
+          ctx.strokeStyle = COL.red;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(x, y, V.z < 3 ? 6 : 8, 0, 6.2832);
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+    }
+    if (tau >= 13.5 && V.z < 3) {
+      const p = ramp(tau, 13.5, 14.0);
+      const [x, y] = sen2s(fit.cx, fit.cy);
+      ctx.strokeStyle = COL.purple;
+      ctx.lineWidth = 4;
+      ctx.shadowColor = COL.purple;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(x, y, fit.R * WORLD * V.z, Math.PI, Math.PI + 2 * Math.PI * eio(p));
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(x - 9, y);
+      ctx.lineTo(x + 9, y);
+      ctx.moveTo(x, y - 9);
+      ctx.lineTo(x, y + 9);
+      ctx.stroke();
+    }
+    // step 6: the nominal edge and the gap
+    if (tau >= 14.0) {
+      const a = ramp(tau, 14.0, 14.4);
+      const [x, y0] = p2s(nomX, -1),
+        [, y1] = p2s(nomX, 11);
+      ctx.strokeStyle = `rgba(255,255,255,${0.9 * a})`;
+      ctx.lineWidth = 4;
+      ctx.setLineDash([12, 9]);
+      ctx.beginPath();
+      ctx.moveTo(x, y0);
+      ctx.lineTo(x, y1);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      if (V.zt > 0.99) {
+        const [xa] = p2s(xe, 0),
+          [xb] = p2s(nomX, 0);
+        const g = ramp(tau, 14.8, 15.1);
+        ctx.strokeStyle = `rgba(176,38,255,${g})`;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(xa, 526);
+        ctx.lineTo(xa + (xb - xa) * g, 526);
+        ctx.moveTo(xa, 514);
+        ctx.lineTo(xa, 538);
+        ctx.moveTo(xa + (xb - xa) * g, 514);
+        ctx.lineTo(xa + (xb - xa) * g, 538);
+        ctx.stroke();
+      }
+    }
+    // step 2 scale bar
+    if (V.zt > 0.99 && tau >= 5.6 && tau < 6.6) {
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(IMG.x, 560);
+      ctx.lineTo(IMG.x + 56, 560);
+      ctx.moveTo(IMG.x, 550);
+      ctx.lineTo(IMG.x, 570);
+      ctx.moveTo(IMG.x + 56, 550);
+      ctx.lineTo(IMG.x + 56, 570);
+      ctx.stroke();
+    }
+    ctx.restore();
+    // frame around the image
+    roundRect(IMG.x, IMG.y, IMG.s, IMG.s, 18);
+    ctx.strokeStyle = "rgba(255,255,255,.28)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // ---- right panel: profile plots (steps 2 - 4) and the tolerance gauge (step 6)
+    const a1 = ramp(tau, 5.8, 6.2) * (1 - ramp(tau, 10.6, 10.9));
+    const a2 = ramp(tau, 7.0, 7.4) * (1 - ramp(tau, 10.6, 10.9));
+    const row = 5;
+    if (a1 > 0) {
+      ctx.globalAlpha = a1;
+      ctx.strokeStyle = "rgba(255,255,255,.4)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(610, 240);
+      ctx.lineTo(870, 240);
+      ctx.moveTo(610, 70);
+      ctx.lineTo(610, 240);
+      ctx.stroke();
+      ctx.strokeStyle = COL.blue;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const x = 610 + (i + 0.5) * 26,
+          y = 240 - (patchI[row][i] / 255) * 170;
+        if (i) ctx.lineTo(x, y);
+        else ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+      for (let i = 0; i < 10; i++) {
+        ctx.globalAlpha = a1 * ramp(tau, 5.8 + 0.04 * i, 5.9 + 0.04 * i);
+        ctx.fillStyle = COL.blue;
+        ctx.beginPath();
+        ctx.arc(610 + (i + 0.5) * 26, 240 - (patchI[row][i] / 255) * 170, 6, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (a2 > 0) {
+      ctx.globalAlpha = a2;
+      ctx.strokeStyle = "rgba(255,255,255,.4)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(610, 470);
+      ctx.lineTo(870, 470);
+      ctx.moveTo(610, 300);
+      ctx.lineTo(610, 470);
+      ctx.stroke();
+      for (let i = 0; i < 10; i++) {
+        const h = (Math.abs(patchG[row][i]) / (gMax * 1.1)) * 170;
+        ctx.fillStyle = COL.red;
+        ctx.fillRect(610 + (i + 0.5) * 26 - 9, 470 - h, 18, h);
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (tau >= 9.6 && tau < 10.9) {
+      const p = ramp(tau, 9.6, 10.0) * (1 - ramp(tau, 10.6, 10.9));
+      const x = 610 + xe * 26;
+      ctx.strokeStyle = `rgba(176,38,255,${p})`;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(x, 66);
+      ctx.lineTo(x, 478);
+      ctx.stroke();
+    }
+    if (tau >= 14.4) {
+      const ag = ramp(tau, 14.4, 14.8);
+      const gx = (v) => 740 + 2.6 * v;
+      ctx.globalAlpha = ag;
+      ctx.strokeStyle = "rgba(255,255,255,.45)";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(gx(-50), 400);
+      ctx.lineTo(gx(50), 400);
+      for (let v = -50; v <= 50; v += 10) {
+        ctx.moveTo(gx(v), 400);
+        ctx.lineTo(gx(v), 400 + (v % 50 === 0 ? 14 : 8));
+      }
+      ctx.stroke();
+      ctx.fillStyle = "rgba(176,38,255,.2)";
+      ctx.strokeStyle = COL.purple;
+      ctx.lineWidth = 3;
+      roundRect(gx(-TOL_UM), 372, gx(TOL_UM) - gx(-TOL_UM), 56, 6);
+      ctx.fill();
+      ctx.stroke();
+      font(24);
+      ctx.fillStyle = "rgba(255,255,255,.7)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (const v of [-50, 0, 50])
+        ctx.fillText((v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v), gx(v), 444);
+      const v = dUm * eout(ramp(tau, 14.9, 15.5));
+      const bad = Math.abs(v) > TOL_UM;
+      ctx.fillStyle = bad ? COL.red : "#FFFFFF";
+      ctx.shadowColor = bad ? COL.red : "#FFFFFF";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(gx(v) - 13, 340);
+      ctx.lineTo(gx(v) + 13, 340);
+      ctx.lineTo(gx(v), 372);
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ------------------------------------------------------------------ line view (sorting)
+  const BELT = { y0: 250, y1: 430, yc: 340 },
+    CAMX = 300,
+    DIVX = 540,
+    VBELT = 200;
+  function part(x, y, s, o) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(s, s);
+    roundRect(-75, -60, 150, 120, 14);
+    ctx.fillStyle = o.bad ? "rgba(255,0,68,.14)" : "rgba(0,136,255,.18)";
+    ctx.fill();
+    ctx.strokeStyle = o.bad ? COL.red : COL.blue;
+    ctx.lineWidth = o.bad ? 5 : 4;
+    ctx.stroke();
+    ctx.fillStyle = "#0A0A10";
+    ctx.strokeStyle = "rgba(255,255,255,.6)";
+    ctx.lineWidth = 2;
+    for (const [a, b] of [
+      [-54, -36],
+      [54, -36],
+      [-54, 36],
+      [54, 36],
+    ]) {
+      ctx.beginPath();
+      ctx.arc(a, b, 5, 0, 6.2832);
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 24, 0, 6.2832);
+    ctx.fill();
+    ctx.stroke();
+    if (o.bad) {
+      ctx.strokeStyle = COL.red;
+      ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      ctx.arc(0, 0, 28, 0, 6.2832);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    if (o.tag) {
+      ctx.globalAlpha = o.tag;
+      ctx.fillStyle = "#0A0A10";
+      ctx.strokeStyle = o.bad ? COL.red : "#FFFFFF";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 42, 15, 0, 6.2832);
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      if (o.bad) {
+        ctx.moveTo(-6, 36);
+        ctx.lineTo(6, 48);
+        ctx.moveTo(6, 36);
+        ctx.lineTo(-6, 48);
+      } else {
+        ctx.moveTo(-7, 42);
+        ctx.lineTo(-2, 47);
+        ctx.lineTo(7, 37);
+      }
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+  }
+  function drawBelt(tau) {
+    const e = tau - 16.6;
+    ctx.fillStyle = "rgba(255,255,255,.04)";
+    ctx.fillRect(0, BELT.y0, 900, BELT.y1 - BELT.y0);
+    ctx.strokeStyle = "rgba(255,255,255,.4)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, BELT.y0);
+    ctx.lineTo(900, BELT.y0);
+    ctx.moveTo(0, BELT.y1);
+    ctx.lineTo(900, BELT.y1);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.35)";
+    ctx.lineWidth = 3;
+    const off = (VBELT * Math.max(0, e)) % 40;
+    ctx.beginPath();
+    for (let x = -40 + off; x < 940; x += 40) {
+      ctx.moveTo(x, BELT.y0);
+      ctx.lineTo(x, BELT.y0 + 12);
+      ctx.moveTo(x, BELT.y1 - 12);
+      ctx.lineTo(x, BELT.y1);
+    }
+    ctx.stroke();
+    // camera
+    ctx.setLineDash([7, 7]);
+    ctx.strokeStyle = "rgba(176,38,255,.6)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(CAMX - 30, 206);
+    ctx.lineTo(CAMX - 85, BELT.y0);
+    ctx.moveTo(CAMX + 30, 206);
+    ctx.lineTo(CAMX + 85, BELT.y0);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    roundRect(CAMX - 60, 150, 120, 56, 12);
+    ctx.fillStyle = "rgba(10,10,16,.8)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.7)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.strokeStyle = COL.red;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(CAMX, 178, 14, 0, 6.2832);
+    ctx.stroke();
+    ctx.fillStyle = COL.red;
+    ctx.beginPath();
+    ctx.arc(CAMX, 178, 5, 0, 6.2832);
+    ctx.fill();
+    // bin
+    ctx.setLineDash([8, 7]);
+    ctx.strokeStyle = "rgba(255,0,68,.55)";
+    ctx.fillStyle = "rgba(255,0,68,.06)";
+    ctx.lineWidth = 2.5;
+    roundRect(460, 455, 160, 140, 18);
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // pusher
+    const dy = 190 * eout(ramp(tau, 17.8, 18.2)) * (1 - eio(ramp(tau, 18.35, 18.85)));
+    ctx.strokeStyle = "rgba(255,255,255,.7)";
+    ctx.lineWidth = 6;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(DIVX, 40);
+    ctx.lineTo(DIVX, 214 + dy);
+    ctx.stroke();
+    ctx.fillStyle = "#FFFFFF";
+    roundRect(DIVX - 50, 214 + dy, 100, 16, 6);
+    ctx.fill();
+    // scan flashes
+    for (const t0 of [16.6, 18.4]) {
+      const a = 1 - ramp(tau, t0, t0 + 0.25);
+      if (tau >= t0 && a > 0) {
+        ctx.fillStyle = `rgba(255,0,68,${a})`;
+        ctx.fillRect(CAMX - 2.5, BELT.y0, 5, BELT.y1 - BELT.y0);
+      }
+    }
+    // part A (the defective one) and part B (a good one right behind it)
+    const k = eout(ramp(tau, 17.8, 18.35));
+    const ax = tau < 17.8 ? CAMX + VBELT * e : DIVX;
+    part(ax, BELT.yc + 195 * k, 1 - 0.5 * k, { bad: tau >= 16.8, tag: ramp(tau, 16.85, 17.0) });
+    const bx = CAMX + VBELT * (tau - 18.4);
+    if (bx > -100 && bx < 1000) part(bx, BELT.yc, 1, { bad: false, tag: ramp(tau, 18.65, 18.8) });
+  }
+
+  // ------------------------------------------------------------------ the frame
+  function draw(t) {
+    // frame 0 shows the finished result, then a quick rewind into step 1
+    const tau = t < 1.2 ? FIN : t < 1.6 ? FIN + (1.6 - FIN) * eio((t - 1.2) / 0.4) : t;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, 900, 610);
+    const f = ramp(tau, 16.45, 16.8);
+    if (f < 1) {
+      ctx.globalAlpha = 1 - f;
+      drawVision(Math.min(tau, 16.6));
+      ctx.globalAlpha = 1;
+    }
+    if (f > 0) {
+      ctx.globalAlpha = f;
+      drawBelt(tau);
+      ctx.globalAlpha = 1;
+    }
+    if (t >= 1.2 && t < 1.6) {
+      // glitch tear while it rewinds: seeded bars, changing every frame
+      const fr = Math.floor(t * 60);
+      for (let b = 0; b < 12; b++) {
+        const h = CV.hash(fr, b, 5);
+        const y = h % 590,
+          hh = 4 + ((h >>> 8) % 20);
+        ctx.fillStyle = b % 2 ? "rgba(255,0,68,.22)" : "rgba(0,136,255,.22)";
+        ctx.fillRect(((h >>> 16) % 60) - 30, y, 900, hh);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ GSAP timeline: text, rows, labels, effects
   const tl = gsap.timeline({ paused: true });
   const ft = (target, from, to, at) =>
     tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
   const r3 = (v) => Math.round(v * 1000) / 1000;
+  const show = (sel, at, dur = 0.2) =>
+    ft(sel, { opacity: 0 }, { opacity: 1, duration: dur, ease: "power2.out" }, at);
+  const hide = (sel, at, dur = 0.2) =>
+    tl.to(sel, { opacity: 0, duration: dur, ease: "power1.in" }, at);
 
   // @CUES-BEGIN
   const CUES = [
-    [0.0, "thump"], // opening impact
-    [1.5, "snap"], // the line wakes up
-    [2.4, "click"], // scan part 1 (PASS)
-    [4.2, "click"], // scan part 2 (REJECT)
-    [5.4, "snap"], // diverter fires on part 2
-    [6.0, "click"], // scan part 3 (PASS)
-    [7.8, "click"], // scan part 4 (REJECT)
-    [9.0, "snap"], // diverter fires on part 4
-    [9.5, "thump"], // 100 % inspected, lock
-    [10.5, "snap"], // CTA reveal
-    [12.0, "click"], // engagement pulse
+    [0.0, "thump"], // opening impact on the finished result
+    [1.2, "snap"], // rewind glitch
+    [1.6, "click"], // step 1 capture
+    [4.0, "click"], // step 2 zoom into the pixels
+    [6.6, "click"], // step 3 gradient
+    [8.8, "click"], // step 4 sub-pixel edge
+    [10.8, "click"], // step 5 circle fit
+    ...T_PTS.map((t) => [t, "tick"]), // one tick per edge point
+    [14.0, "click"], // step 6 compare
+    [15.3, "snap"], // the marker leaves the tolerance band: REJECT
+    [16.6, "click"], // decision, the part moves to the pusher
+    [17.8, "snap"], // pusher fires
+    [18.6, "thump"], // lock: sorted
+    [19.4, "snap"], // CTA reveal
+    [21.0, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -237,111 +898,82 @@ window.__CFG = {"V":200,"XC":600,"XD":840,"BELT_Y":620,"T_DIV":1.2,"SCANS":[2.4,
       at,
     );
 
-  // initial pose: every part rides the belt at constant speed, centred under the camera at its scan time
-  parts.forEach((p) => gsap.set("#p" + p.i, { x: XC - V * SCANS[p.i], y: BELT_Y }));
+  // frame 0 is the finished result: these start visible and leave during the rewind
+  const FINAL_DOM = ["#dres", "#dnom", "#ddel", "#gax", "#gtl", "#verd", "#chM", "#chN", "#chG"];
+  gsap.set(FINAL_DOM, { opacity: 1 });
 
-  // ---------------------------------------------------------------- belt: constant speed (ticks), parts follow the same law
-  ft("#ticks", { x: 0 }, { x: V * 15, duration: 15, ease: "none" }, 0);
-  let nRej = 0;
-  const rejAt = [];
-  parts.forEach((p) => {
-    const i = p.i,
-      S = SCANS[i],
-      X0 = XC - V * S;
-    if (!p.reject) {
-      ft("#p" + i, { x: X0 }, { x: X0 + V * 15, duration: 15, ease: "none" }, 0);
-      return;
-    }
-    const tR = r3(S + T_DIV);
-    rejAt.push(tR);
-    ft("#p" + i, { x: X0 }, { x: XD, duration: tR, ease: "none" }, 0);
-    // the diverter pushes it off the belt into the bin
-    const k = nRej++;
-    ft("#p" + i, { x: XD }, { x: BIN.x[k], duration: 0.55, ease: "power2.out" }, tR);
-    ft("#p" + i, { y: BELT_Y }, { y: BIN.y, duration: 0.55, ease: "power2.out" }, tR);
-    ft("#p" + i, { scale: 1 }, { scale: BIN.s, duration: 0.55, ease: "power2.out" }, tR);
-    ft("#arm", { y: 0 }, { y: 270, duration: 0.4, ease: "power2.out" }, tR);
-    tl.to("#arm", { y: 0, duration: 0.5, ease: "power2.inOut" }, tR + 0.55);
-  });
-
-  // ---------------------------------------------------------------- 0.0 - 1.5  hook: the failures, crossed out
+  // ---------------------------------------------------------------- hook: result, thump, rewind
   hit(0.0, "thump", "open");
   ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
   ft("#card", { scale: 1.035 }, { scale: 1, duration: 0.45, ease: "power3.out" }, 0);
-  [
-    [0, 0.1],
-    [1, 0.3],
-    [2, 0.65],
-  ].forEach(([i, t]) =>
-    ft(
-      "#mcr" + i,
-      { attr: { width: 0 } },
-      { attr: { width: PW }, duration: 0.45, ease: "power1.inOut" },
-      t,
-    ),
-  );
-  ft(
-    "#x0",
-    { opacity: 0, scale: 1.5 },
-    { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out" },
-    0.55,
-  );
-  ft(
-    "#x1",
-    { opacity: 0, scale: 1.5 },
-    { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out" },
-    0.95,
-  );
-  ft(
-    "#x2",
-    { opacity: 0, scale: 1.3 },
-    { opacity: 1, scale: 1, duration: 0.2, ease: "power2.out" },
-    1.25,
-  );
-
-  // ---------------------------------------------------------------- 1.5  the line wakes up
-  hit(1.5, "snap", "ignite");
-  burst("#ringI", 10, 120, 0.5, 1.5);
-  ft("#arena", { opacity: 0.3 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 1.5);
-  ft("#hud", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 2.3);
-
-  // ---------------------------------------------------------------- the four scans
-  parts.forEach((p) => {
-    const i = p.i,
-      S = SCANS[i];
-    hit(S, "click", "scan:" + (p.reject ? "R" : "P"));
-    ft("#scanline", { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power2.out" }, S);
-    ft("#ret", { opacity: 1 }, { opacity: 0, duration: 0.5, ease: "power2.out" }, S);
-    ft("#dm" + i, { opacity: 0 }, { opacity: 1, duration: 0.1 }, S);
-    tl.to("#dm" + i, { opacity: 0, duration: 0.15 }, S + 0.4);
-    if (p.reject) {
-      ft("#df" + i, { opacity: 0 }, { opacity: 1, duration: 0.1 }, S + 0.1);
-      ft("#pr" + i, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, S + 0.2);
-    } else burst("#ok" + i, HOLE_R(), 40, 0.45, S + 0.05);
-    ft("#tg" + i, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, S + 0.35);
-    // readouts: HUD holds the latest part, the log accumulates
-    tl.set("#hd" + i, { opacity: 1 }, r3(S + 0.1));
-    if (i < SCANS.length - 1) tl.set("#hd" + i, { opacity: 0 }, r3(SCANS[i + 1] + 0.1));
-    ft(
-      "#lg" + i,
-      { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" },
-      S + 0.35,
-    );
-  });
-  function HOLE_R() {
-    return 24;
+  hit(1.2, "snap", "rew");
+  ft("#flashG", { opacity: 0.9 }, { opacity: 0, duration: 0.4, ease: "power2.out" }, 1.2);
+  tl.to(FINAL_DOM, { opacity: 0, duration: 0.25, ease: "power1.in" }, 1.2);
+  for (let i = rows.n - 1; i >= 0; i--) {
+    const t0 = r3(1.2 + 0.05 * (rows.n - 1 - i));
+    tl.to(`#rs${i},#ck${i}`, { opacity: 0, duration: 0.1 }, t0);
+    ft(`#nm${i}`, { opacity: 0 }, { opacity: 1, duration: 0.1 }, t0);
+    tl.to(`#rw${i}`, { opacity: 0.55, duration: 0.1 }, t0);
   }
 
-  rejAt.forEach((tR) => {
-    hit(tR, "snap", "rej");
-    burst("#ringR", 20, 120, 0.5, tR);
-  });
+  // ---------------------------------------------------------------- the six steps
+  const RES = [3.5, 6.1, 8.3, 10.3, 13.95, 15.5];
+  for (let n = 1; n <= 6; n++) {
+    const i = n - 1,
+      t0 = S[n],
+      t1 = S[n + 1];
+    hit(t0, "click", "stage:" + n);
+    swap(n === 1 ? "#BA" : "#B" + (n - 1), "#B" + n, t0);
+    ft(`#rb${i}`, { opacity: 0 }, { opacity: 1, duration: 0.15 }, t0);
+    ft(`#rw${i}`, { opacity: 0.55 }, { opacity: 1, duration: 0.15 }, t0);
+    ft(`#rs${i}`, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, RES[i]);
+    tl.to(`#rb${i}`, { opacity: 0, duration: 0.15 }, t1);
+    tl.to(`#nm${i}`, { opacity: 0, duration: 0.1 }, t1);
+    ft(`#ck${i}`, { opacity: 0 }, { opacity: 1, duration: 0.15 }, t1);
+    ft(`#nm${i}`, { opacity: 0 }, { opacity: 1, duration: 0.1 }, t0); // number badge while active
+  }
 
-  // ---------------------------------------------------------------- 9.5  everything inspected: lock
-  const T_FINAL = hit(9.5, "thump", "final");
-  swap("#BC", "#BD", T_FINAL);
-  ft("#BD", { scale: 1.04 }, { scale: 1, duration: 0.3, ease: "power2.out" }, T_FINAL + 0.075);
+  // labels in the arena
+  ["#s1a", "#s1b", "#s1c"].forEach((s, k) => show(s, 2.0 + 0.15 * k));
+  hide("#s1a,#s1b,#s1c", 3.9);
+  show("#pI", 5.8);
+  show("#pG", 7.0);
+  hide("#pI,#pG", 10.6);
+  show("#chS", 5.6);
+  hide("#chS", 6.5);
+  show("#xeR", 9.9);
+  show("#chM", 9.9);
+  hide("#xeR,#chM", 10.7);
+  show("#ep", 11.6);
+  hide("#ep", 13.9);
+  T_PTS.forEach((t, k) => {
+    hit(t, "tick", "tick:" + k);
+    tl.set("#pn" + k, { opacity: 1 }, t);
+    tl.set("#pn" + k, { opacity: 0 }, k < K - 1 ? T_PTS[k + 1] : 14.0);
+  });
+  show("#dres", 13.95);
+  show("#chM", 14.6);
+  show("#chN", 14.8);
+  show("#chG", 15.0);
+  show("#dnom", 14.5);
+  show("#gax,#gtl", 14.5);
+  show("#ddel", 15.1);
+  hit(15.3, "snap", "verd");
+  ft(
+    "#verd",
+    { opacity: 0, scale: 1.2 },
+    { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" },
+    15.3,
+  );
+  hide(FINAL_DOM, 16.4, 0.3);
+
+  // ---------------------------------------------------------------- sorting
+  swap("#B6", "#B7", 16.6);
+  hit(16.6, "click", "stage:7");
+  ["#bl1", "#bl2", "#bl3", "#bl4", "#bl5"].forEach((s, k) => show(s, 16.7 + 0.1 * k));
+  hit(17.8, "snap", "rej");
+  burst("#ringR", 20, 110, 0.5, 17.8);
+  const T_FINAL = hit(18.6, "thump", "final");
   ft("#sweep", { opacity: 0.9, x: 0 }, { x: 895, duration: 0.5, ease: "power2.inOut" }, T_FINAL);
   tl.to("#sweep", { opacity: 0, duration: 0.15 }, T_FINAL + 0.4);
   ft("#lockb", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T_FINAL + 0.1);
@@ -351,39 +983,38 @@ window.__CFG = {"V":200,"XC":600,"XD":840,"BELT_Y":620,"T_DIV":1.2,"SCANS":[2.4,
     { attr: { "stroke-dashoffset": 0 }, duration: 0.3, ease: "power2.out" },
     T_FINAL + 0.15,
   );
-  burst("#ringI", 14, 110, 0.6, T_FINAL);
 
-  // ---------------------------------------------------------------- banner and card pages
-  swap("#BA", "#BB", 2.5);
-  swap("#BB", "#BC", 5.5);
-  tl.to("#pA", { opacity: 0, duration: 0.3, ease: "power1.in" }, 2.5);
-  ft("#pB", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 2.55);
-  tl.to("#pB", { opacity: 0, duration: 0.12, ease: "power1.in" }, 10.5);
-  ft("#card", { scale: 1 }, { scale: 1.1, duration: 0.6, ease: "power2.inOut" }, 10.5);
-  hit(10.5, "snap", "cta");
-  ft("#ct1a,#ct1b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 10.5);
-  ft("#ct2a,#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 10.65);
-  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 10.8);
-  hit(12.0, "click", "pulse");
-  ft("#ctaglow", { opacity: 0 }, { opacity: 0.9, duration: 0.2, ease: "power2.out" }, 12.0);
-  tl.to("#ctaglow", { opacity: 0, duration: 0.5, ease: "power2.in" }, 12.3);
+  // ---------------------------------------------------------------- CTA
+  swap("#B7", "#B8", S[8]);
+  tl.to("#pA", { opacity: 0, duration: 0.1, ease: "power1.in" }, S[8] - 0.1);
+  ft("#card", { scale: 1 }, { scale: 1.1, duration: 0.6, ease: "power2.inOut" }, S[8]);
+  hit(S[8], "snap", "cta");
+  ft("#ct1a,#ct1b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8]);
+  ft("#ct2a,#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8] + 0.15);
+  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8] + 0.3);
+  hit(21.0, "click", "pulse");
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.9, duration: 0.2, ease: "power2.out" }, 21.0);
+  tl.to("#ctaglow", { opacity: 0, duration: 0.5, ease: "power2.in" }, 21.3);
   ft(
     "#ct2a,#ct2b",
     { textShadow: "0 0 0px rgba(0,136,255,0)" },
     { textShadow: "0 0 18px #0088FF", duration: 0.25, ease: "power2.out" },
-    12.0,
+    21.0,
   );
   tl.to(
     "#ct2a,#ct2b",
     { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.4, ease: "power2.in" },
-    12.3,
+    21.3,
   );
 
-  tl.to({}, { duration: 0.0001 }, 14.9999);
+  tl.to({}, { duration: 0.0001 }, 21.9999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t);
   window.__timelines = window.__timelines || {};
   window.__timelines["main"] = tl;
+  tl.eventCallback("onUpdate", () => draw(tl.time()));
+  window.addEventListener("hf-seek", (e) => draw(e.detail.time));
+  draw(0);
 })();
 
 </script>

@@ -1,106 +1,177 @@
-// THE MICRON INSPECTOR: AI VISION ON A CNC LINE (15.0 s).
+// THE MICRON INSPECTOR: HOW A CAMERA MEASURES 31 MICRONS (22.0 s).
+// A computer-vision walk-through on one backlit CNC part: capture, pixels, gradient, sub-pixel edge, circle fit,
+// tolerance decision, sorting. Every number on screen is computed here by the same image model the page uses.
 //   node build.mjs  ->  index.html (GSAP from cdnjs) + dist/index.html (GSAP vendored, for offline render)
 import fs from "node:fs";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const katexMod = require("./vendor/katex/katex.min.cjs");
 const katex = katexMod.renderToString ? katexMod : katexMod.default;
+const cvSrc = fs.readFileSync(new URL("./cvcore.js", import.meta.url), "utf8");
+const CV = new Function(cvSrc + "; return CV;")();
 
 const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF" };
 const W = 1080,
   H = 1920,
-  DUR = 15;
-
-// ------------------------------------------------------------------ line geometry (canvas px) and timing
-const V = 200; // belt speed, px / s
-const XC = 600; // camera axis
-const XD = 840; // diverter axis
-const BELT_Y = 620; // belt centre line
-const T_DIV = (XD - XC) / V; // camera -> diverter travel time
-const SCANS = [2.4, 4.2, 6.0, 7.8]; // part i is centred under the camera at SCANS[i]
-const PITCH = 360; // px between parts
-const BIN = { x: [800, 880], y: 894, s: 0.5 }; // where the two rejected parts come to rest
+  DUR = 22;
+function mulberry32(a) {
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 // ------------------------------------------------------------------ the measurement (real maths, asserted)
-// 1 px = 8 um at the part. A backlit hole of nominal diameter 20 mm is 2500 px wide on the line scan.
-// Each edge is a step blurred by the optics (sigma 1.2 px). Sub-pixel edge = centroid of |gradient|.
-const UM_PX = 8,
-  SIGMA = 1.2,
-  NOM = 20.0,
-  TOL_UM = 15;
-function erf(x) {
-  const s = Math.sign(x),
-    a = Math.abs(x),
-    t = 1 / (1 + 0.3275911 * a);
-  const y =
-    1 -
-    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
-      t *
-      Math.exp(-a * a);
-  return s * y;
-}
-const stepProfile = (u, edge, rising) => {
-  const v = 0.5 * (1 + erf((u - edge) / (SIGMA * Math.SQRT2)));
-  return rising ? v : 1 - v;
-};
-// sample the pixels around an edge (pixel centres at integer u), centroid of the gradient
-function subpixelEdge(trueEdge, rising) {
-  const k0 = Math.round(trueEdge);
+const SENSOR = 3500, // px, square sensor; 1 px = 8 um -> 28 mm field of view
+  D_NOM = 20.0,
+  D_TRUE = 20.031, // what the CNC actually cut (the defect)
+  TOL_UM = 15,
+  K = 24; // edge points on the circle
+const HOLE = { cx: 1750.37, cy: 1750.11, R: (D_TRUE * 1000) / 2 / CV.UM }; // true hole, sensor px
+const NOM_R = (D_NOM * 1000) / 2 / CV.UM; // 1250 px
+const WORLD = 0.16; // screen px (full view) per sensor px: 560 px = 3500 sensor px
+// centroid of |G| in a +-2 px window around the strongest gradient (positions are pixel centres i + 0.5)
+function centroid(g, off) {
+  let am = 0;
+  g.forEach((v, i) => {
+    if (Math.abs(v) > Math.abs(g[am])) am = i;
+  });
   let sw = 0,
-    swu = 0;
-  for (let k = k0 - 5; k <= k0 + 5; k++) {
-    const g = (stepProfile(k + 1, trueEdge, rising) - stepProfile(k - 1, trueEdge, rising)) / 2;
-    sw += Math.abs(g);
-    swu += Math.abs(g) * k;
+    swx = 0;
+  for (let i = Math.max(0, am - 2); i <= Math.min(g.length - 1, am + 2); i++) {
+    sw += Math.abs(g[i]);
+    swx += Math.abs(g[i]) * (i + off);
   }
-  return swu / sw;
+  return swx / sw;
 }
-const TRUE_D = [20.004, 20.031, 19.996, 19.962]; // CNC output, mm (what the camera must recover)
-let worstUm = 0;
-const parts = TRUE_D.map((D, i) => {
-  const dpx = (D * 1000) / UM_PX;
-  const c = 1300 + 0.37 * i; // hole centre on the scan line, deliberately off the pixel grid
-  const uL = subpixelEdge(c - dpx / 2, true),
-    uR = subpixelEdge(c + dpx / 2, false);
-  const meas = ((uR - uL) * UM_PX) / 1000; // mm
-  const err = Math.abs(meas - D) * 1000; // um
-  worstUm = Math.max(worstUm, err);
-  const mm = Math.round(meas * 1000) / 1000;
-  const dUm = Math.round((mm - NOM) * 1000);
-  return { i, mm, dUm, reject: Math.abs(dUm) > TOL_UM, errUm: err };
-});
+// --- the patch: 10 x 10 pixels at the left edge of the hole (what the zoom shows)
+const ix0 = Math.floor(HOLE.cx - HOLE.R) - 4,
+  iy0 = Math.round(HOLE.cy) - 5;
+const patchI = [],
+  patchG = [],
+  rowXc = [];
+for (let j = 0; j < 10; j++) {
+  const row = [];
+  for (let i = -1; i <= 10; i++) row.push(CV.pix(ix0 + i, iy0 + j, HOLE, 7));
+  patchI.push(row.slice(1, 11));
+  const g = [];
+  for (let i = 0; i < 10; i++) g.push((row[i + 2] - row[i]) / 2);
+  patchG.push(g);
+  rowXc.push(centroid(g, 0.5));
+}
+const xe = rowXc.reduce((a, b) => a + b, 0) / 10; // sub-pixel edge, patch coordinates
+const meanAbsG = patchG[0].map((_, i) => patchG.reduce((a, r) => a + Math.abs(r[i]), 0) / 10);
+const peakCol = meanAbsG.indexOf(Math.max(...meanAbsG));
+const gMax = Math.max(...patchG.flat().map(Math.abs));
+// --- precision of that estimator: 600 seeded trials with random sub-pixel edge positions and fresh noise
+const rr = mulberry32(5150);
+let sumE = 0,
+  sumE2 = 0;
+const NT = 600;
+for (let n = 0; n < NT; n++) {
+  const off = rr();
+  const Ht = { cx: HOLE.cx, cy: HOLE.cy, R: HOLE.cx - (Math.floor(HOLE.cx - HOLE.R) + off) };
+  const e0 = Math.floor(Ht.cx - Ht.R) - 4;
+  const xs = [];
+  for (let j = 0; j < 10; j++) {
+    const row = [];
+    for (let i = -1; i <= 10; i++) row.push(CV.pix(e0 + i, iy0 + j, Ht, 100 + n));
+    const g = [];
+    for (let i = 0; i < 10; i++) g.push((row[i + 2] - row[i]) / 2);
+    xs.push(centroid(g, 0.5));
+  }
+  const est = e0 + xs.reduce((a, b) => a + b, 0) / 10;
+  const err = est - (Ht.cx - Ht.R);
+  sumE += err;
+  sumE2 += err * err;
+}
+const biasPx = sumE / NT,
+  sigmaPx = Math.sqrt(sumE2 / NT - biasPx * biasPx);
+// --- K edge points: point 0 is the patch; the others are measured along radial probe lines (5 parallel lines each)
+const pts = [{ x: ix0 + xe, y: iy0 + 5 }];
+for (let k = 1; k < K; k++) {
+  const th = Math.PI + (k * 2 * Math.PI) / K,
+    nx = Math.cos(th),
+    ny = Math.sin(th);
+  let acc = 0;
+  for (let m = -2; m <= 2; m++) {
+    const prof = [];
+    for (let j = 0; j <= 10; j++) {
+      const r = NOM_R + (j - 5);
+      const qx = 1750 + r * nx - m * ny,
+        qy = 1750 + r * ny + m * nx;
+      const d = Math.hypot(qx - HOLE.cx, qy - HOLE.cy) - HOLE.R;
+      prof.push(CV.clip(CV.Iclean(d) + CV.NOISE * CV.gauss(k * 100 + j, m + 2, 11)));
+    }
+    const g = [];
+    for (let j = 1; j < 10; j++) g.push((prof[j + 1] - prof[j - 1]) / 2);
+    acc += centroid(g, 1); // g[0] belongs to sample 1
+  }
+  const rEdge = NOM_R + (acc / 5 - 5);
+  pts.push({ x: 1750 + rEdge * nx, y: 1750 + rEdge * ny });
+}
+// --- least-squares circle (Kasa): x^2 + y^2 + A x + B y + Cc = 0
+function fitCircle(P) {
+  let sx = 0,
+    sy = 0;
+  P.forEach((p) => ((sx += p.x), (sy += p.y)));
+  const mx = sx / P.length,
+    my = sy / P.length;
+  let suu = 0,
+    suv = 0,
+    svv = 0,
+    suuu = 0,
+    svvv = 0,
+    suvv = 0,
+    svuu = 0;
+  P.forEach((p) => {
+    const u = p.x - mx,
+      v = p.y - my;
+    suu += u * u;
+    suv += u * v;
+    svv += v * v;
+    suuu += u * u * u;
+    svvv += v * v * v;
+    suvv += u * v * v;
+    svuu += v * u * u;
+  });
+  const det = suu * svv - suv * suv;
+  const uc = (0.5 * (suuu + suvv) * svv - 0.5 * (svvv + svuu) * suv) / det;
+  const vc = (0.5 * (svvv + svuu) * suu - 0.5 * (suuu + suvv) * suv) / det;
+  return { cx: mx + uc, cy: my + vc, R: Math.sqrt(uc * uc + vc * vc + (suu + svv) / P.length) };
+}
+const fit = fitCircle(pts);
+const dMeas = Math.round(((2 * fit.R * CV.UM) / 1000) * 1000) / 1000; // mm, 3 decimals = 1 um
+const dUm = Math.round((dMeas - D_NOM) * 1000);
+const gapPx = fit.R - NOM_R; // the real edge sits this many px left of where the CAD edge should be (hole too big)
+const nomX = xe + gapPx; // nominal edge, patch coordinates
+const halfUm = gapPx * CV.UM;
 (function assertMath() {
-  if (worstUm >= 1)
-    throw new Error("sub-pixel measurement error " + worstUm.toFixed(3) + " um >= 1 um");
-  const want = [false, true, false, true];
-  parts.forEach((p, i) => {
-    if (p.reject !== want[i]) throw new Error("verdict of part " + (i + 1) + " is wrong");
-  });
-  SCANS.forEach((s, i) => {
-    const x0 = XC - V * s;
-    if (Math.abs(x0 + V * s - XC) > 1e-9) throw new Error("part not under camera at scan");
-    if (i && Math.abs((SCANS[i] - SCANS[i - 1]) * V - PITCH) > 1e-9) throw new Error("pitch");
-  });
-  if (Math.abs(XC + V * T_DIV - XD) > 1e-9) throw new Error("diverter distance");
-  // while a rejected part is under the diverter no other part is within a part width of it
-  parts.forEach((p, i) => {
-    if (!p.reject) return;
-    const tR = SCANS[i] + T_DIV;
-    SCANS.forEach((s, j) => {
-      if (j !== i && Math.abs(XC + V * (tR - s) - XD) < 150)
-        throw new Error("collision at diverter");
-    });
-  });
+  if (Math.abs(biasPx) > 0.05) throw new Error("edge estimator bias " + biasPx.toFixed(3) + " px");
+  if (sigmaPx > 0.1) throw new Error("edge estimator sigma " + sigmaPx.toFixed(3) + " px");
+  const errUm = Math.abs(dMeas - D_TRUE) * 1000;
+  if (errUm > 1) throw new Error("diameter error " + errUm.toFixed(2) + " um");
+  if (Math.abs(Math.abs(dUm) - 2 * halfUm) > 1.01)
+    throw new Error("gap does not match the diameter error");
+  if (!(Math.abs(dUm) > TOL_UM)) throw new Error("this part must be out of tolerance");
+  if (nomX < 0.5 || nomX > 9.5 || xe < 0.5 || xe > 9.5) throw new Error("edge leaves the patch");
+  if (peakCol < 2 || peakCol > 7) throw new Error("gradient peak at the patch border");
   console.log(
-    `maths ok: 1 px = ${UM_PX} um; sub-pixel edge error worst ${worstUm.toFixed(3)} um (< 1 um); ` +
-      parts
-        .map(
-          (p) =>
-            `P${p.i + 1} ${p.mm.toFixed(3)} mm (${p.dUm >= 0 ? "+" : ""}${p.dUm} um) ${p.reject ? "REJECT" : "PASS"}`,
-        )
-        .join("; "),
+    `maths ok: 1 px = ${CV.UM} um; edge estimator bias ${(biasPx * CV.UM).toFixed(2)} um, sigma ${sigmaPx.toFixed(3)} px = ${(sigmaPx * CV.UM).toFixed(2)} um (${NT} trials); ` +
+      `fit of ${K} points: diameter ${dMeas.toFixed(3)} mm (true ${D_TRUE}), delta ${dUm} um > ${TOL_UM} um -> REJECT; ` +
+      `measured edge ${xe.toFixed(2)} px vs nominal ${nomX.toFixed(2)} px (gap ${halfUm.toFixed(1)} um per side)`,
   );
 })();
+
+// ------------------------------------------------------------------ timeline constants (shared with anim.js through CFG)
+const S = { 1: 1.6, 2: 4.0, 3: 6.6, 4: 8.8, 5: 10.8, 6: 14.0, 7: 16.6, 8: 19.4 };
+const T_PT0 = 11.6,
+  T_PT_STEP = 0.08;
+const r3 = (v) => Math.round(v * 1000) / 1000;
+const T_PTS = Array.from({ length: K }, (_, k) => r3(T_PT0 + k * T_PT_STEP));
 
 // ------------------------------------------------------------------ helpers
 const tx = (s) => {
@@ -114,13 +185,6 @@ const tx = (s) => {
 };
 const it = (s) => `\\textit{${s}}`;
 const col = (c, s) => `\\textcolor{${c}}{${s}}`;
-let L = {};
-try {
-  L = JSON.parse(fs.readFileSync(new URL("./layout.json", import.meta.url), "utf8"));
-} catch {
-  L = {};
-}
-const M = (k) => L[k] || { cx: 0, cy: 0, w: 120, h: 50 };
 function box({
   id,
   cx,
@@ -131,232 +195,176 @@ function box({
   color,
   html,
   cls = "",
-  m = false,
   style = "",
   left = false,
   right = false,
 }) {
   const l = left || right ? cx : cx - w / 2;
   const just = left ? "justify-content:flex-start;" : right ? "justify-content:flex-end;" : "";
-  return `<div ${id ? `id="${id}"` : ""} class="t ${cls}" ${m ? `data-m="${id}"` : ""} style="left:${l}px;top:${cy - h / 2}px;width:${w}px;height:${h}px;font-size:${size}px;color:${color};${just}${style}">${html}</div>`;
+  return `<div ${id ? `id="${id}"` : ""} class="t ${cls}" style="left:${l}px;top:${cy - h / 2}px;width:${w}px;height:${h}px;font-size:${size}px;color:${color};${just}${style}">${html}</div>`;
 }
 const BOOKMARK = (s) =>
   `<svg width="${s}" height="${Math.round(s * 1.3)}" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="${C.red}"/></svg>`;
 const GLYPH = (s, c = "#fff") =>
   `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="${c}" stroke-width="2.2"/><circle cx="12" cy="12" r="4.4" fill="none" stroke="${c}" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.3" fill="${c}"/></svg>`;
-const CHECK = (s) =>
-  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none;margin-right:10px"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHECK = (s, c = "#fff") =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CROSS = (s) =>
-  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none;margin-right:10px"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="${C.red}" stroke-width="3" stroke-linecap="round"/></svg>`;
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none;margin-right:12px"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="${C.red}" stroke-width="3" stroke-linecap="round"/></svg>`;
 const sgn = (v) => (v > 0 ? "+" : v < 0 ? "-" : "") + Math.abs(v);
+const f2 = (v) => v.toFixed(2);
+const CHIP = "background:rgba(10,10,16,.78);border-radius:10px;padding:0 10px;";
 
 // ------------------------------------------------------------------ zone 1: header
 const header = `
-<div id="flash0"></div>
+<div id="flash0"></div><div id="flashG"></div>
 ${box({ id: "wm", cx: 540, cy: 640, w: 1000, h: 130, size: 100, color: C.red, html: tx(it("@MAE.Academy")), style: "opacity:.12" }).replace(`id="wm"`, `id="wm" data-layout-ignore`)}
-${box({ id: "h-title", cx: 540, cy: 180, w: 1000, h: 90, size: 58, color: C.red, html: tx("\\textbf{\\textit{THE MICRON INSPECTOR}}"), style: "text-shadow:0 0 22px rgba(255,0,68,.35)" })}
-${box({ id: "h-sub", cx: 540, cy: 232, w: 1000, h: 50, size: 35, color: C.purple, html: tx(it("AI VISION ON A CNC LINE")) })}
+${box({ id: "h-title", cx: 540, cy: 180, w: 1000, h: 90, size: 58, color: C.red, html: tx("\\textbf{\\textit{HOW A CAMERA MEASURES}}"), style: "text-shadow:0 0 22px rgba(255,0,68,.35)" })}
+${box({ id: "h-sub", cx: 540, cy: 232, w: 1000, h: 50, size: 40, color: C.purple, html: tx("31\\,\\mu m" + it(" ON A CNC PART")) })}
 <div id="h-rule" style="position:absolute;left:480px;top:268px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,${C.red},${C.purple},${C.blue})"></div>`;
 
-// ------------------------------------------------------------------ zone 2: arena (plate 90..990 x 340..950, canvas coordinates)
-const BAND = { y0: 530, y1: 710 };
-const ticks = [];
-for (let x = -3040; x <= 1040; x += 40)
-  ticks.push(
-    `<line x1="${x}" y1="${BAND.y0}" x2="${x}" y2="${BAND.y0 + 12}"/><line x1="${x}" y1="${BAND.y1 - 12}" x2="${x}" y2="${BAND.y1}"/>`,
-  );
-
-// one CNC part, local origin at its centre: 150 x 120 plate, 20 mm bore, four mounting holes
-const HOLE_R = 24;
-const partSvg = (p) => {
-  const burr = `<path d="M${(HOLE_R * Math.cos(0.7)).toFixed(1)},${(HOLE_R * Math.sin(0.7)).toFixed(1)}l-11,-3l4,-9z" fill="${C.red}"/>`;
-  return `<g id="p${p.i}">
-  <rect x="-80" y="-65" width="160" height="130" fill="none" stroke="none"/>
-  <rect id="pb${p.i}" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(0,136,255,.18)" stroke="${C.blue}" stroke-width="4"/>
-  <rect id="pr${p.i}" x="-75" y="-60" width="150" height="120" rx="14" fill="rgba(255,0,68,.14)" stroke="${C.red}" stroke-width="5" style="opacity:0"/>
-  ${[
-    [-54, -36],
-    [54, -36],
-    [-54, 36],
-    [54, 36],
-  ]
-    .map(
-      ([x, y]) =>
-        `<circle cx="${x}" cy="${y}" r="5" fill="#0A0A10" stroke="rgba(255,255,255,.6)" stroke-width="2"/>`,
-    )
-    .join("")}
-  <circle cx="0" cy="0" r="${HOLE_R}" fill="#0A0A10" stroke="#fff" stroke-width="3"/>
-  <g id="dm${p.i}" style="opacity:0"><line x1="${-HOLE_R}" y1="0" x2="${HOLE_R}" y2="0" stroke="${C.purple}" stroke-width="3.5"/><line x1="${-HOLE_R}" y1="-9" x2="${-HOLE_R}" y2="9" stroke="${C.purple}" stroke-width="3.5"/><line x1="${HOLE_R}" y1="-9" x2="${HOLE_R}" y2="9" stroke="${C.purple}" stroke-width="3.5"/></g>
-  <circle id="ok${p.i}" cx="0" cy="0" r="${HOLE_R}" fill="none" stroke="${C.purple}" stroke-width="4" style="opacity:0"/>
-  ${p.reject ? (p.dUm > 0 ? `<circle id="df${p.i}" cx="0" cy="0" r="${HOLE_R + 4}" fill="none" stroke="${C.red}" stroke-width="4" stroke-dasharray="6 5" style="opacity:0"/>` : `<g id="df${p.i}" style="opacity:0">${burr}</g>`) : ""}
-  <g id="tg${p.i}" style="opacity:0"><circle cx="0" cy="42" r="15" fill="#0A0A10" stroke="${p.reject ? C.red : "#fff"}" stroke-width="3"/>${p.reject ? `<path d="M-6,36l12,12M6,36l-12,12" stroke="${C.red}" stroke-width="3.2" stroke-linecap="round"/>` : `<path d="M-7,42l5,5l9,-10" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`}</g>
-</g>`;
-};
-
-// HUD (stacked readouts, one per part)
-const hline = (t) =>
-  `<div style="height:34px;display:flex;align-items:center;font-size:26px;color:#fff">${tx(t)}</div>`;
-const hud = parts
-  .map(
-    (p) =>
-      `<div id="hd${p.i}" class="rd" style="opacity:0">${hline(it("PART 0") + (p.i + 1))}${hline("\\varnothing=" + col(C.blue, p.mm.toFixed(3)) + "\\ mm")}${hline("\\Delta=" + col(p.reject ? C.red : C.purple, sgn(p.dUm)) + "\\ \\mu m")}${hline(col(p.reject ? C.red : "#FFFFFF", it(p.reject ? "REJECT" : "PASS")))}</div>`,
-  )
-  .join("");
-
-const plate = `
-<div id="plate"><div id="pc">
-  <svg id="g" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-    <defs>
-      <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.purple}" stop-opacity=".55"/><stop offset="1" stop-color="${C.purple}" stop-opacity=".05"/></linearGradient>
-    </defs>
-    <g id="arena" style="opacity:.3">
-      <rect x="90" y="${BAND.y0}" width="900" height="${BAND.y1 - BAND.y0}" fill="rgba(255,255,255,.04)"/>
-      <line x1="90" y1="${BAND.y0}" x2="990" y2="${BAND.y0}" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
-      <line x1="90" y1="${BAND.y1}" x2="990" y2="${BAND.y1}" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
-      <g id="ticks" stroke="rgba(255,255,255,.35)" stroke-width="3">${ticks.join("")}</g>
-      <path d="M${XC - 30},431L${XC - 85},${BAND.y0}M${XC + 30},431L${XC + 85},${BAND.y0}" stroke="${C.purple}" stroke-width="2.5" stroke-dasharray="7 7" opacity=".6"/>
-      <rect x="${XC - 60}" y="375" width="120" height="56" rx="12" fill="rgba(10,10,16,.8)" stroke="rgba(255,255,255,.7)" stroke-width="3"/>
-      <circle cx="${XC}" cy="403" r="14" fill="none" stroke="${C.red}" stroke-width="4"/><circle cx="${XC}" cy="403" r="5" fill="${C.red}"/>
-      <rect x="${XD - 50}" y="${BAND.y0 - 36}" width="100" height="16" rx="6" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2.5" stroke-dasharray="5 5"/>
-      <rect x="760" y="790" width="160" height="140" rx="18" fill="rgba(255,0,68,.06)" stroke="rgba(255,0,68,.55)" stroke-width="2.5" stroke-dasharray="8 7"/>
-    </g>
-    <circle id="ringI" cx="${XC}" cy="403" r="10" fill="none" stroke="${C.blue}" stroke-width="4" style="opacity:0"/>
-    <circle id="ringR" cx="${XD}" cy="${BELT_Y}" r="10" fill="none" stroke="${C.red}" stroke-width="4" style="opacity:0"/>
-    <g id="ret" style="opacity:0" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round">
-      <path d="M${XC - 95},${BELT_Y - 62}v-22h22M${XC + 95},${BELT_Y - 62}v-22h-22M${XC - 95},${BELT_Y + 62}v22h22M${XC + 95},${BELT_Y + 62}v22h-22" transform="translate(0,0)"/>
-    </g>
-    <rect id="scanline" x="${XC - 2.5}" y="${BAND.y0}" width="5" height="${BAND.y1 - BAND.y0}" fill="${C.red}" style="opacity:0;filter:drop-shadow(0 0 8px ${C.red})"/>
-    <g id="arm" style="opacity:.95"><line x1="${XD}" y1="345" x2="${XD}" y2="${BAND.y0 - 36}" stroke="rgba(255,255,255,.7)" stroke-width="6" stroke-linecap="round"/><rect x="${XD - 50}" y="${BAND.y0 - 36}" width="100" height="16" rx="6" fill="#fff"/></g>
-    ${parts.map(partSvg).join("")}
-    <rect id="sweep" x="90" y="340" width="5" height="610" fill="${C.purple}" style="opacity:0;filter:drop-shadow(0 0 10px ${C.purple})"/>
-    <g id="lockb" transform="translate(725,447)" style="opacity:0;filter:drop-shadow(0 0 8px ${C.purple})"><circle id="lockc" r="32" fill="rgba(10,10,16,.8)" stroke="${C.purple}" stroke-width="4"/><path id="lockk" d="M-14,2L-4,13L15,-10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50"/></g>
+// ------------------------------------------------------------------ zone 2: arena = one canvas (900 x 610) + KaTeX labels on top
+const RX = 740; // centre of the right-hand panel (plate-local)
+const xm = 20 + 56 * xe,
+  xn = 20 + 56 * nomX; // measured / nominal edge in the zoomed patch (plate-local x)
+const L = (id, cx, cy, w, size, color, html, extra = "") =>
+  box({
+    id,
+    cx,
+    cy,
+    w,
+    h: Math.round(size * 1.3),
+    size,
+    color,
+    html: tx(html),
+    cls: "ov",
+    style: "opacity:0;" + extra,
+  });
+const ptCounters = T_PTS.map((_, k) =>
+  box({
+    id: "pn" + k,
+    cx: RX,
+    cy: 118,
+    w: 260,
+    h: 70,
+    size: 56,
+    color: "#fff",
+    html: tx("n=" + (k + 1)),
+    cls: "ov",
+    style: "opacity:0",
+  }).replace(`id="pn${k}"`, `id="pn${k}" data-layout-ignore`),
+).join("");
+const ov = `<div id="ov">
+  ${L("s1a", RX, 70, 260, 24, "rgba(255,255,255,.6)", it("SENSOR"))}
+  ${L("s1b", RX, 125, 260, 36, C.blue, "3500\\times3500")}
+  ${L("s1c", RX, 182, 260, 32, C.purple, "1\\,px=8\\,\\mu m")}
+  ${L("pI", 650, 46, 100, 28, C.blue, "I(x)")}
+  ${L("pG", 650, 276, 100, 28, C.red, "G(x)")}
+  ${L("xeR", RX, 530, 260, 36, C.purple, "x_{e}=" + f2(xe) + "\\,px")}
+  ${box({ id: "chM", cx: xm - 200, cy: 50, w: 190, h: 34, size: 24, color: C.purple, html: tx(it("MEASURED")), cls: "ov", right: true, style: "opacity:0;" + CHIP })}
+  ${box({ id: "chN", cx: xn + 10, cy: 50, w: 150, h: 34, size: 24, color: "rgba(255,255,255,.85)", html: tx(it("NOMINAL")), cls: "ov", left: true, style: "opacity:0;" + CHIP })}
+  ${box({ id: "chS", cx: 96, cy: 546, w: 160, h: 34, size: 24, color: "#fff", html: tx("1\\,px=8\\,\\mu m"), cls: "ov", left: true, style: "opacity:0;" + CHIP })}
+  ${box({ id: "chG", cx: (xm + xn) / 2, cy: 496, w: 170, h: 40, size: 28, color: C.purple, html: tx(halfUm.toFixed(1) + "\\,\\mu m"), cls: "ov", style: "opacity:0;" + CHIP })}
+  ${L("ep", RX, 62, 260, 24, "rgba(255,255,255,.6)", it("EDGE POINTS"))}
+  ${ptCounters}
+  ${L("dres", RX, 112, 280, 38, C.blue, "\\varnothing=" + dMeas.toFixed(3) + "\\,mm")}
+  ${L("dnom", RX, 160, 280, 28, "rgba(255,255,255,.7)", it("NOMINAL ") + "20.000\\,mm")}
+  ${L("ddel", RX, 222, 280, 44, C.purple, "\\Delta=" + sgn(dUm) + "\\,\\mu m")}
+  ${L("gax", RX, 322, 260, 26, "rgba(255,255,255,.6)", "\\Delta\\,(\\mu m)")}
+  ${L("gtl", RX, 482, 200, 26, C.purple, "\\pm" + TOL_UM + "\\,\\mu m")}
+  <div id="verd" class="t ov" style="left:${RX - 140}px;top:${545 - 30}px;width:280px;height:60px;font-size:44px;color:${C.red};opacity:0">${CROSS(40)}${tx(it("REJECT"))}</div>
+  ${L("bl1", 300, 118, 160, 24, "rgba(255,255,255,.6)", it("CAMERA"))}
+  <div id="bl2" class="t ov" style="left:566px;top:128px;width:160px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;opacity:0">${tx(it("PUSHER"))}</div>
+  ${L("bl3", 540, 478, 160, 24, C.red, it("REJECT BIN"))}
+  <div id="bl4" class="t ov" style="left:690px;top:454px;width:190px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-end;opacity:0">${tx("\\rightarrow" + it(" PASS"))}</div>
+  <div id="bl5" class="t ov" style="left:24px;top:454px;width:190px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;opacity:0">${tx(it("FROM CNC ") + "\\rightarrow")}</div>
+  <svg id="ovs" width="900" height="610" viewBox="0 0 900 610" style="position:absolute;left:0;top:0">
+    <circle id="ringR" cx="540" cy="340" r="10" fill="none" stroke="${C.red}" stroke-width="4" style="opacity:0"/>
+    <rect id="sweep" x="0" y="0" width="5" height="610" fill="${C.purple}" style="opacity:0;filter:drop-shadow(0 0 10px ${C.purple})"/>
+    <g id="lockb" transform="translate(430,176)" style="opacity:0;filter:drop-shadow(0 0 8px ${C.purple})"><circle r="34" fill="rgba(10,10,16,.8)" stroke="${C.purple}" stroke-width="4"/><path id="lockk" d="M-14,2L-4,13L15,-10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50"/></g>
   </svg>
-  ${box({ cx: 180, cy: 745, w: 190, h: 28, size: 24, color: "rgba(255,255,255,.6)", html: tx(it("FROM CNC ") + "\\rightarrow"), cls: "axl", left: true }).replace("left:180px", "left:110px")}
-  ${box({ cx: 905, cy: 745, w: 140, h: 28, size: 24, color: "rgba(255,255,255,.6)", html: tx("\\rightarrow" + it(" PASS")), cls: "axl", right: true }).replace("left:905px", "left:765px")}
-  ${box({ cx: 840, cy: 806, w: 150, h: 28, size: 24, color: C.red, html: tx(it("REJECT BIN")), cls: "axl" })}
-  <div id="hud" style="opacity:0">
-    <div class="hbg"></div>
-    ${hud}
-  </div>
-</div></div>`;
+</div>`;
+const plate = `<div id="plate"><canvas id="cv" width="900" height="610" data-layout-allow-overflow></canvas>${ov}</div>`;
 
-// ------------------------------------------------------------------ zone 3: banner (820x100, y 980 - 1080)
+// ------------------------------------------------------------------ zone 3: banner (820 x 100, y 980 - 1080)
 const BN = { x: 130, y: 980, w: 820, h: 100 };
-const ba = (id, html, on = false) =>
-  `<div id="${id}" class="ba" style="opacity:${on ? 1 : 0}">${html}</div>`;
+const bx = (id, l1, l2, on = false) =>
+  `<div id="${id}" class="ba" style="opacity:${on ? 1 : 0}"><div class="l1">${tx(l1)}</div><div class="l2">${tx(l2)}</div></div>`;
 const banner = `<div id="banner">
-${ba("BA", `<div class="l1">${tx(it("THE EYE MISSES 30 MICRONS..."))}</div><div class="l2">${tx(it("THE CAMERA DOES NOT."))}</div>`, true)}
-${ba("BB", `<div class="row c">${tx(it("SUBPIXEL EDGE FIT: 8 ") + "\\mu m" + it(" PIXELS RESOLVE ") + "\\lt 1\\,\\mu m")}</div>`)}
-${ba("BC", `<div class="row c">${tx("|\\Delta|\\gt 15\\,\\mu m" + "\\implies" + it(" REJECTED IN ") + "1.2\\,s")}</div>`)}
-${ba("BD", `<div class="row c">${tx(it("100 \\% INSPECTED ") + "\\bullet" + it(" 2 REJECTED ") + "\\bullet" + it(" 0 ESCAPED"))}</div>`)}
+${bx("BA", it("A HUMAN EYE SEES 100 MICRONS AT BEST"), it("A CAMERA MEASURES 31."), true)}
+${bx("B1", it("STEP 1 ") + "\\bullet" + it(" CAPTURE"), it("LIGHT BECOMES A MATRIX"))}
+${bx("B2", it("STEP 2 ") + "\\bullet" + it(" ZOOM IN"), it("EVERY PIXEL IS A NUMBER"))}
+${bx("B3", it("STEP 3 ") + "\\bullet" + it(" GRADIENT"), it("EDGE = FASTEST CHANGE"))}
+${bx("B4", it("STEP 4 ") + "\\bullet" + it(" SUB-PIXEL EDGE"), it("PRECISION ") + "\\sigma=" + sigmaPx.toFixed(2) + "\\,px=" + (sigmaPx * CV.UM).toFixed(1) + "\\,\\mu m")}
+${bx("B5", it("STEP 5 ") + "\\bullet" + it(" CIRCLE FIT"), it(K + " POINTS ") + "\\implies\\varnothing")}
+${bx("B6", it("STEP 6 ") + "\\bullet" + it(" COMPARE"), it("NOMINAL VS MEASURED EDGE"))}
+${bx("B7", it("DECISION"), "|\\Delta|\\gt" + TOL_UM + "\\,\\mu m\\implies" + it("REJECT"))}
+${bx("B8", it("EVERY PART INSPECTED"), it("0 ESCAPES"))}
 </div>`;
 
-// ------------------------------------------------------------------ zone 4: one persistent glass card, three pages
+// ------------------------------------------------------------------ zone 4: one persistent glass card: the six-step pipeline, then the CTA
 const CARD = { x: 150, y: 1140, w: 780, h: 460 };
-const ROWY = [80, 230, 380];
-const PW = 280,
-  PH = 116;
-const rows = [
-  { tex: it("HUMAN EYE ") + "\\pm 100\\,\\mu m", cap: "MISSES THE DEFECT" },
-  { tex: it("CALIPER: 1 IN 50 PARTS"), cap: "49 ESCAPE" },
-  { tex: it("AI VISION ") + "\\pm 1\\,\\mu m", cap: "EVERY PART, EVERY TIME" },
-];
-const mini = [
-  // eye threshold (100 um) vs the defect (30 um)
+const STEPS = [
+  { name: "CAPTURE", form: "I(x,y)", res: col(C.blue, "3500\\times3500"), rc: C.blue },
   {
-    base: `<rect x="14" y="30" width="252" height="16" rx="8" fill="rgba(255,255,255,.22)"/><rect x="14" y="72" width="76" height="16" rx="8" fill="rgba(255,255,255,.12)"/>`,
-    over: `<rect x="14" y="72" width="76" height="16" rx="8" fill="${C.red}"/>`,
+    name: "PIXELS",
+    form: "I\\in[0,255]",
+    res: col(C.blue, "20") + "\\leftrightarrow" + col(C.blue, "235"),
+    rc: C.blue,
   },
-  // 50 parts, one is measured
-  (() => {
-    let b = "",
-      o = "";
-    for (let k = 0; k < 50; k++) {
-      const x = 8 + (k % 10) * 27,
-        y = 8 + Math.floor(k / 10) * 21;
-      b += `<rect x="${x}" y="${y}" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/>`;
-      if (k === 17) o += `<rect x="${x}" y="${y}" width="22" height="16" rx="4" fill="${C.blue}"/>`;
-    }
-    return { base: b, over: o };
-  })(),
-  // all 50 parts measured
-  (() => {
-    let b = "",
-      o = "";
-    for (let k = 0; k < 50; k++) {
-      const x = 8 + (k % 10) * 27,
-        y = 8 + Math.floor(k / 10) * 21;
-      b += `<rect x="${x}" y="${y}" width="22" height="16" rx="4" fill="rgba(255,255,255,.16)"/>`;
-      o += `<rect x="${x}" y="${y}" width="22" height="16" rx="4" fill="${C.blue}"/>`;
-    }
-    return { base: b, over: o };
-  })(),
+  {
+    name: "GRADIENT",
+    form: "G=(I_{x+1}-I_{x-1})/2",
+    res: "\\max G=" + col(C.purple, String(Math.round(gMax))),
+    rc: C.purple,
+  },
+  {
+    name: "SUBPIXEL",
+    form: "x_{e}=\\sum G x/\\sum G",
+    res: "x_{e}=" + col(C.purple, f2(xe)) + "\\,px",
+    rc: C.purple,
+  },
+  {
+    name: "FIT",
+    form: "\\min\\sum(|P-c|-R)^{2}",
+    res: "\\varnothing=" + col(C.blue, dMeas.toFixed(3)) + "\\,mm",
+    rc: C.blue,
+  },
+  {
+    name: "DECIDE",
+    form: "|\\Delta|\\gt" + TOL_UM + "\\,\\mu m",
+    res: "\\Delta=" + col(C.red, sgn(dUm)) + "\\,\\mu m",
+    rc: C.red,
+  },
 ];
-const pageA = rows
-  .map((r, i) => {
-    const cy = ROWY[i];
-    const m = M("cf" + i);
-    const px = m.cx - CARD.x,
-      py = m.cy - CARD.y;
-    const w = (m.w || 300) + 36,
-      h = (m.h || 60) + 8;
-    const mark =
-      i < 2
-        ? `<svg class="xmark" id="x${i}" style="left:${px - w / 2}px;top:${py - h / 2}px" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><path d="M8,8L${w - 8},${h - 8}M${w - 8},8L8,${h - 8}" stroke="${C.red}" stroke-width="8" stroke-linecap="round" fill="none"/></svg>`
-        : `<svg class="xmark" id="x2" style="left:${px - w / 2}px;top:${py - h / 2}px" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect x="4" y="4" width="${w - 8}" height="${h - 8}" rx="18" stroke="${C.purple}" stroke-width="5" fill="none"/></svg>`;
-    return `
-    ${box({ id: "cf" + i, cx: 40, cy: cy - 20, w: 400, h: 62, size: 40, color: "rgba(255,255,255,.92)", html: tx(r.tex), left: true, m: true })}
-    ${box({ id: "cc" + i, cx: 40, cy: cy + 34, w: 400, h: 30, size: 24, color: i < 2 ? C.red : C.purple, html: tx(it(r.cap)), left: true })}
-    <svg class="mini" style="left:470px;top:${cy - PH / 2}px" width="${PW}" height="${PH}" viewBox="0 0 ${PW} ${PH}">
-      <rect x="0" y="0" width="${PW}" height="${PH}" rx="14" fill="rgba(10,10,16,.55)" stroke="rgba(255,255,255,.08)"/>
-      ${mini[i].base}
-      <defs><clipPath id="mc${i}"><rect id="mcr${i}" x="0" y="0" width="0" height="${PH}"/></clipPath></defs>
-      <g clip-path="url(#mc${i})">${mini[i].over}</g>
-    </svg>
-    ${mark}`;
-  })
-  .join("");
-
-// page B: live inspection log (rows appear when the part is measured)
-const COLX = { id: 36, d: 310, dl: 470, v: 590 };
-const cellC = (cx, cy, tex, color, size = 34) =>
-  box({ cx, cy, w: 150, h: 48, size, color, html: tx(tex) });
-const ROWB = [168, 238, 308, 378];
-const logRows = parts
-  .map((p) => {
-    const cy = ROWB[p.i];
-    const verdict = `<div class="t" style="left:${COLX.v - 30}px;top:${cy - 24}px;width:160px;height:48px;font-size:32px;color:${p.reject ? C.red : "#fff"};justify-content:flex-start">${p.reject ? CROSS(28) : CHECK(28)}${tx(it(p.reject ? "REJECT" : "PASS"))}</div>`;
-    return `<div id="lg${p.i}" class="lv" style="opacity:0">
-    ${p.reject ? `<div style="position:absolute;left:18px;top:${cy - 31}px;width:744px;height:62px;border-radius:16px;background:rgba(255,0,68,.1);border:1px solid rgba(255,0,68,.5)"></div>` : ""}
-    ${box({ cx: COLX.id, cy, w: 250, h: 40, size: 30, color: "#fff", html: tx(it("PART 0") + (p.i + 1)), left: true })}
-    ${cellC(COLX.d, cy, p.mm.toFixed(3), C.blue)}
-    ${cellC(COLX.dl, cy, sgn(p.dUm), p.reject ? C.red : C.purple)}
-    ${verdict}</div>`;
-  })
-  .join("");
-const pageB = `
-  ${box({ id: "tb0", cx: 390, cy: 44, w: 760, h: 36, size: 28, color: "rgba(255,255,255,.85)", html: tx(it("LIVE LOG ") + "\\bullet" + it(" NOMINAL ") + "\\varnothing 20.000\\,mm" + "\\ \\bullet\\ \\pm 15\\,\\mu m") })}
-  ${box({ cx: COLX.id, cy: 104, w: 160, h: 30, size: 24, color: "rgba(255,255,255,.6)", html: tx(it("PART")), left: true })}
-  ${box({ cx: COLX.d, cy: 104, w: 160, h: 30, size: 24, color: C.blue, html: tx("\\varnothing\\,(mm)") })}
-  ${box({ cx: COLX.dl, cy: 104, w: 160, h: 30, size: 24, color: C.purple, html: tx("\\Delta\\,(\\mu m)") })}
-  ${box({ cx: COLX.v + 50, cy: 104, w: 160, h: 30, size: 24, color: "rgba(255,255,255,.85)", html: tx(it("VERDICT")) })}
-  ${logRows}`;
-
-// page C: CTA
+const ROW0 = 100,
+  ROWD = 62;
+const pageA = `
+  ${box({ id: "tb0", cx: 390, cy: 38, w: 760, h: 36, size: 28, color: "rgba(255,255,255,.85)", html: tx(it("THE COMPUTER VISION PIPELINE")) })}
+  ${STEPS.map((s, i) => {
+    const cy = ROW0 + ROWD * i;
+    return `<div id="rb${i}" class="rb" style="top:${cy - 28}px;opacity:0"></div>
+    <div id="rw${i}" style="opacity:1">
+      ${box({ cx: 76, cy, w: 190, h: 40, size: 28, color: "#fff", html: tx(it(s.name)), left: true })}
+      ${box({ cx: 272, cy, w: 280, h: 40, size: 26, color: "rgba(255,255,255,.78)", html: tx(s.form), left: true })}
+    </div>
+    <div id="nm${i}" class="t" style="left:22px;top:${cy - 18}px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,.6);font-size:24px;color:rgba(255,255,255,.85);opacity:0">${tx(String(i + 1))}</div>
+    <div id="ck${i}" class="t" style="left:22px;top:${cy - 18}px;width:36px;height:36px;border-radius:18px;background:rgba(176,38,255,.22);border:2px solid ${C.purple};opacity:1">${CHECK(22)}</div>
+    ${box({ id: "rs" + i, cx: 754, cy, w: 250, h: 44, size: 30, color: "#fff", html: tx(s.res), right: true, style: "opacity:1" }).replace(/left:\d+(\.\d+)?px/, "left:" + (754 - 250) + "px")}`;
+  }).join("")}`;
 const pageC = `
   <div id="ctaglow" style="position:absolute;left:60px;top:176px;width:660px;height:130px;border-radius:65px;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
   ${box({ id: "ct1a", cx: 390, cy: 62, w: 740, h: 56, size: 40, color: C.red, html: tx(it("SAVE THIS")), style: "opacity:0" })}
-  <div id="ct1b" class="t" style="left:20px;top:92px;width:740px;height:56px;font-size:40px;color:${C.red};opacity:0">${tx(it("AI QUALITY GATE"))}${BOOKMARK(34)}</div>
-  ${box({ id: "ct2a", cx: 390, cy: 216, w: 760, h: 48, size: 35, color: C.blue, html: tx(it("WHICH DEFECT WOULD YOU")), style: "opacity:0" })}
-  ${box({ id: "ct2b", cx: 390, cy: 268, w: 760, h: 48, size: 35, color: C.blue, html: tx(it("TEACH IT FIRST? COMMENT ") + "\\downarrow"), style: "opacity:0" })}
+  <div id="ct1b" class="t" style="left:20px;top:92px;width:740px;height:56px;font-size:40px;color:${C.red};opacity:0">${tx(it("COMPUTER VISION IN 6 STEPS"))}${BOOKMARK(34)}</div>
+  ${box({ id: "ct2a", cx: 390, cy: 216, w: 760, h: 48, size: 35, color: C.blue, html: tx(it("WHICH STEP DID YOU")), style: "opacity:0" })}
+  ${box({ id: "ct2b", cx: 390, cy: 268, w: 760, h: 48, size: 35, color: C.blue, html: tx(it("NOT KNOW? COMMENT ") + "\\downarrow"), style: "opacity:0" })}
   <div id="ct3" class="t" style="left:140px;top:366px;width:500px;height:56px;font-size:30px;color:rgba(255,255,255,.7);gap:14px;opacity:0">${GLYPH(36, "rgba(255,255,255,.7)")}${tx(it("@MAE.ACADEMY"))}</div>`;
 const card = `<div id="card" style="left:${CARD.x}px;top:${CARD.y}px;width:${CARD.w}px;height:${CARD.h}px">
   <div id="pA" class="pg">${pageA}</div>
-  <div id="pB" class="pg" style="opacity:0">${pageB}</div>
   <div id="pC" class="pg">${pageC}</div>
 </div>`;
 
-// ------------------------------------------------------------------ typography guard: strict KaTeX math italic
+// ------------------------------------------------------------------ typography guard
 const allHtml = [header, plate, banner, card].join("");
 if (/class="[^"]*\b(mathbf|mathrm|mathbb|mathsf|mathtt|textrm|textsf|texttt)\b/.test(allHtml))
   throw new Error("upright / bold math style found");
@@ -383,36 +391,46 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 #root{position:absolute;left:0;top:0;width:${W}px;height:${H}px;background:#0A0A10;overflow:hidden;
   background-image:linear-gradient(#161622 2px,transparent 2px),linear-gradient(90deg,#161622 2px,transparent 2px);background-size:60px 60px}
 #flash0{position:absolute;left:0;top:0;width:${W}px;height:700px;background:radial-gradient(ellipse at 50% 22%,rgba(255,0,68,.5),transparent 65%);opacity:0}
+#flashG{position:absolute;left:0;top:0;width:${W}px;height:${H}px;background:rgba(255,0,68,.12);opacity:0}
 .t{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1}
 #plate{position:absolute;left:90px;top:340px;width:900px;height:610px;border-radius:32px;overflow:hidden;background:rgba(30,30,46,.52);border:1px solid rgba(255,255,255,.08)}
-#pc{position:absolute;left:-91px;top:-341px;width:${W}px;height:${H}px}
-#g{position:absolute;left:0;top:0}
-.hbg{position:absolute;left:110px;top:360px;width:340px;height:156px;border-radius:18px;background:rgba(10,10,16,.55);border:1px solid rgba(255,255,255,.08)}
-.rd{position:absolute;left:128px;top:366px;width:310px;height:140px;white-space:nowrap}
+#cv{position:absolute;left:0;top:0;width:900px;height:610px}
+#ov{position:absolute;left:0;top:0;width:900px;height:610px}
 #banner{position:absolute;left:${BN.x}px;top:${BN.y}px;width:${BN.w}px;height:${BN.h}px;border-radius:24px;background:rgba(255,0,68,.08);border:2px solid rgba(255,0,68,.55)}
 .ba{position:absolute;left:0;top:0;width:${BN.w - 4}px;height:${BN.h - 4}px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;white-space:nowrap}
 .ba .l1{font-size:25px;color:rgba(255,255,255,.88);line-height:1.15}
-.ba .l2{font-size:38px;color:${C.red};line-height:1.15;margin-top:2px}
-.ba .row{font-size:30px;display:flex;align-items:center;justify-content:center}
-.ba .row.c{font-size:26px}
+.ba .l2{font-size:34px;color:${C.red};line-height:1.15;margin-top:2px}
 #card{position:absolute;border-radius:36px;background:rgba(30,30,46,.55);border:1px solid rgba(255,255,255,.1);overflow:hidden}
 .pg{position:absolute;left:0;top:0;width:780px;height:460px}
-.lv{position:absolute;left:0;top:0;width:780px;height:460px}
-.mini{position:absolute}
-.xmark{position:absolute;opacity:0;overflow:visible}
+.rb{position:absolute;left:12px;width:756px;height:56px;border-radius:16px;background:rgba(255,0,68,.1);border:2px solid rgba(255,0,68,.55)}
 `;
 
 const anim = fs.readFileSync(new URL("./anim.js", import.meta.url), "utf8");
 const CFG = {
-  V,
-  XC,
-  XD,
-  BELT_Y,
-  T_DIV,
-  SCANS,
-  BIN,
-  PW,
-  parts: parts.map((p) => ({ i: p.i, reject: p.reject })),
+  S,
+  T_PTS,
+  K,
+  UM: CV.UM,
+  WORLD,
+  SENSOR,
+  HOLE,
+  NOM_R,
+  ix0,
+  iy0,
+  patchI,
+  patchG,
+  rowXc,
+  xe,
+  nomX,
+  peakCol,
+  gMax,
+  pts,
+  fit,
+  dUm,
+  TOL_UM,
+  xm,
+  xn,
+  rows: { ROW0, ROWD, n: STEPS.length },
 };
 
 function page(gsapSrc) {
@@ -421,7 +439,7 @@ function page(gsapSrc) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=${W}, height=${H}">
-<title>The Micron Inspector: AI Vision on a CNC Line</title>
+<title>How a Camera Measures 31 Microns</title>
 <style>${css}</style>
 </head>
 <body>
@@ -435,6 +453,7 @@ ${card}
 <script src="${gsapSrc}"></script>
 <script>
 window.__CFG = ${JSON.stringify(CFG)};
+${cvSrc}
 ${anim}
 </script>
 </body>
