@@ -160,7 +160,7 @@
       ft(
         "#" + h.id,
         { opacity: 0, scale: 1.08 },
-        { opacity: 1, scale: 1, duration: 0.15, ease: "power2.out" },
+        { opacity: 1, scale: 1, duration: 0.09, ease: "power2.out" },
         a,
       );
     else ft("#" + h.id, { opacity: 0 }, { opacity: 1, duration: 0.001, ease: "none" }, a);
