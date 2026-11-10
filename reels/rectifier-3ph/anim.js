@@ -717,7 +717,7 @@
         ctx.fillStyle = PH[k];
         ctx.fillRect(x0 + 1, 1116, x1 - x0 - 2, 30);
         if (sw > 0.01 && done > 0) {
-          ctx.globalAlpha = sw * 0.85;
+          ctx.globalAlpha = sw * 0.58;
           if (done < 1) {
             ctx.shadowColor = PH[k];
             ctx.shadowBlur = 14;
