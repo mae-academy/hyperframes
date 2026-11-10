@@ -4,7 +4,7 @@
 // Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
 (function () {
   const CFG = window.__CFG;
-  const { T, SEG, COMM, PLOT, CKT, SRC_Y, PH } = CFG;
+  const { T, COMM, PLOT, CKT, SRC_Y, PH } = CFG;
   const tl = gsap.timeline({ paused: true });
   const ft = (target, from, to, at) =>
     tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
@@ -163,6 +163,28 @@
       ft("#" + h.id, { opacity: 1 }, { opacity: 0, duration: 0.001, ease: "none" }, r3(a + 0.1));
   });
 
+  // after the first 720 degrees the picture scrolls on: the fixed degree labels and chart labels leave
+  [
+    "#ax0",
+    "#ax180",
+    "#ax360",
+    "#ax540",
+    "#ax720",
+    "#sg1",
+    "#sg2",
+    "#sg3",
+    "#sg4",
+    "#sg5",
+    "#sg6",
+  ].forEach((s) =>
+    ft(
+      s,
+      { opacity: s.startsWith("#sg") ? 1 : 1 },
+      { opacity: 0, duration: 0.3, ease: "power1.in" },
+      T.sw1 - 0.1,
+    ),
+  );
+
   // ---------------------------------------------------------------- the lock
   const LK = T.lock;
   hit(LK, "thump", "#glow");
@@ -173,9 +195,6 @@
     { opacity: 0, duration: 0.9, ease: "power2.inOut", immediateRender: false },
     LK + 0.15,
   );
-  const lastHud = "#" + CFG.HUD[CFG.HUD.length - 1].id;
-  ft(lastHud, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, LK + 0.2);
-  cswap("#c0", LK + 0.4, true);
   fswap("#f5", LK + 0.5);
   ft(
     "#chkp",
@@ -587,15 +606,21 @@
 
   // ---------------------------------------------------------------- the waves, the output and the conduction chart
   const STEP = 1;
-  const wavePts = (k, upDeg) => {
-    const pts = [];
-    for (let th = 0; th <= upDeg + 1e-9; th += STEP) pts.push([X(th), Y(vk(k, th))]);
-    return pts;
-  };
+  // the conduction chart goes on for as long as the cycle does: D3 until 30, then D1, D2, D3 every 120 degrees
+  const SEGX = [[0, 30, 3]];
+  for (let n = 0; n < 5; n++)
+    SEGX.push(
+      [30 + 360 * n, 150 + 360 * n, 1],
+      [150 + 360 * n, 270 + 360 * n, 2],
+      [270 + 360 * n, 390 + 360 * n, 3],
+    );
+  const PLOTCLIP = [90, 800, 880, 400]; // up to x = 970, the end of the 720 degree window
   function drawPlot(S) {
     const sw = S.sweepW;
+    const ws = S.ws || 0; // the window start: after the first 720 degrees the picture scrolls, the cursor stays at the right edge
+    const Xs = (d) => X(d - ws);
     const thOut = S.outFull ? 720 : S.th;
-    withClip(PANEL, () => {
+    withClip(PLOTCLIP, () => {
       // axes and grid
       line(
         [
@@ -613,13 +638,13 @@
         ],
         WHITE,
         2,
-        0.4,
+        0.4 * (1 - smooth(ws / 40)),
       );
-      for (let d = 180; d <= 720; d += 180)
+      for (let d = Math.ceil(Math.max(ws, 1) / 180) * 180; d <= ws + 720; d += 180)
         line(
           [
-            [X(d), Y(1.1)],
-            [X(d), Y(-1.1)],
+            [Xs(d), Y(1.1)],
+            [Xs(d), Y(-1.1)],
           ],
           WHITE,
           1,
@@ -627,7 +652,7 @@
         );
       // the dashed target: the output in full
       line(
-        Array.from({ length: 721 }, (_, th) => [X(th), Y(vo(th))]),
+        Array.from({ length: 721 }, (_, i) => [X(i), Y(vo(i + ws))]),
         WHITE,
         2,
         0.12 * sw,
@@ -638,7 +663,8 @@
       for (let k = 0; k < 3; k++) {
         const p = S.pw[k];
         if (p <= 0.001) continue;
-        const full = wavePts(k, 720 * p);
+        const full = [];
+        for (let th = ws; th <= ws + 720 * p + 1e-9; th += STEP) full.push([Xs(th), Y(vk(k, th))]);
         line(full, PH[k], 3.5, (1 - sw) * 0.85 + sw * 0.24, (1 - sw) * 8);
         if (sw > 0.01) {
           let seg = [];
@@ -646,9 +672,9 @@
             if (seg.length > 1) line(seg, PH[k], 6, sw, 12);
             seg = [];
           };
-          for (let th = 0; th <= thOut + 1e-9; th += STEP) {
+          for (let th = ws; th <= thOut + 1e-9; th += STEP) {
             if (vk(k, th) >= Math.max(vk((k + 1) % 3, th), vk((k + 2) % 3, th)) - 1e-9)
-              seg.push([X(th), Y(vk(k, th))]);
+              seg.push([Xs(th), Y(vk(k, th))]);
             else flush();
           }
           flush();
@@ -657,11 +683,11 @@
       // the output so far, with its area
       if (sw > 0.01 && thOut > 0) {
         const o = [];
-        for (let th = 0; th <= thOut + 1e-9; th += STEP) o.push([X(th), Y(vo(th))]);
+        for (let th = ws; th <= thOut + 1e-9; th += STEP) o.push([Xs(th), Y(vo(th))]);
         ctx.save();
         ctx.globalAlpha = 0.16 * sw;
         ctx.fillStyle = PURPLE;
-        poly([[X(0), Y(0)], ...o, [X(thOut), Y(0)]]);
+        poly([[Xs(ws), Y(0)], ...o, [Xs(thOut), Y(0)]]);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
@@ -669,8 +695,8 @@
         // the cursor
         line(
           [
-            [X(S.th), Y(1.15)],
-            [X(S.th), Y(-1.1)],
+            [Xs(S.th), Y(1.15)],
+            [Xs(S.th), Y(-1.1)],
           ],
           WHITE,
           1.5,
@@ -686,7 +712,7 @@
           ctx.shadowBlur = 10 + 12 * a[k];
           ctx.fillStyle = a[k] > 0.5 ? WHITE : PH[k];
           ctx.beginPath();
-          ctx.arc(X(S.th), Y(vk(k, S.th)), 5 + 4 * a[k], 0, 2 * Math.PI);
+          ctx.arc(Xs(S.th), Y(vk(k, S.th)), 5 + 4 * a[k], 0, 2 * Math.PI);
           ctx.fill();
           ctx.restore();
         }
@@ -707,9 +733,10 @@
         );
       }
       // the conduction chart: which diode carries the load, lit as the cursor passes
-      for (const [a0, b0, d] of SEG) {
-        const x0 = X(a0),
-          x1 = X(b0),
+      for (const [a0, b0, d] of SEGX) {
+        if (b0 < ws || a0 > ws + 720) continue;
+        const x0 = Xs(a0),
+          x1 = Xs(b0),
           k = d - 1;
         const done = clamp01((thOut - a0) / (b0 - a0));
         ctx.save();
@@ -755,7 +782,8 @@
       pw: T.ph.map((t0) => easeOut((t - t0) / 1.0)),
       sweepW: smooth((t - (T.sw0 - 0.2)) / 0.3),
     };
-    S.th = 720 * clamp01((t - T.sw0) / (T.sw1 - T.sw0));
+    S.th = (720 * Math.max(0, t - T.sw0)) / (T.sw1 - T.sw0); // keeps running after 720: the cycle goes on
+    S.ws = Math.max(0, S.th - 720);
     S.act = S.sweepW > 0.001 ? act(S.th) : [0, 0, 0];
     S.flow = S.sweepW > 0.05;
     S.avg = easeOut((t - (T.lock + 0.2)) / 0.8);

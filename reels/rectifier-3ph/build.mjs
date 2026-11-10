@@ -43,7 +43,7 @@ const SEG = [
   [510, 630, 2],
   [630, 720, 3],
 ];
-const theta = (time) => 720 * Math.max(0, Math.min(1, (time - SW0) / (SW1 - SW0)));
+const theta = (time) => 720 * Math.max(0, (time - SW0) / (SW1 - SW0)); // keeps running past 720: the cycle goes on
 const timeAt = (deg) => SW0 + (deg / 720) * (SW1 - SW0);
 const COMM = SEG.slice(1).map(([a]) => Math.round(timeAt(a) * 100) / 100); // 8.85, 10.65, 12.45, 14.25, 16.05, 17.85
 
@@ -122,8 +122,6 @@ function mulberry32(a) {
   };
 }
 const rnd = mulberry32(20261111);
-const BOOKMARK = (s) =>
-  `<svg width="${s}" height="${Math.round(s * 1.3)}" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="${C.red}"/></svg>`;
 const HANDLE = (s) =>
   `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="margin-right:14px;flex:none"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg>`;
 
@@ -305,7 +303,7 @@ const formulas = [
 ].join("");
 // live read-out while the cursor sweeps: wt and v_o, one element per 0.1 s (same cursor law as the canvas)
 const HUD = [];
-for (let k = 0; k * 0.1 <= SW1 - SW0 + 1e-9; k++) {
+for (let k = 0; k * 0.1 <= DUR - SW0 - 0.1 + 1e-9; k++) {
   const th = Math.round(theta(Math.round((SW0 + 0.1 * k) * 100) / 100) * 10) / 10;
   HUD.push({ id: "hk" + k, th, vo: vo(th) });
 }
@@ -344,9 +342,9 @@ const banner = `<div id="banner">${banners}</div>`;
 const CARD = { x: 90, y: 1430, w: 900, h: 230 };
 const card = `<div id="card" style="left:${CARD.x}px;top:${CARD.y}px;width:${CARD.w}px;height:${CARD.h}px;opacity:0">
   <div id="ctaglow" style="position:absolute;left:100px;top:80px;width:700px;height:110px;border-radius:55px;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
-  <div id="ct1" class="t" style="left:0;top:12px;width:900px;height:60px;font-size:42px;color:${C.red};opacity:0">${tx(it("SAVE THIS"))}${BOOKMARK(34)}</div>
-  ${box({ id: "ct2", cx: 450, cy: 100, w: 880, h: 52, size: 35, color: C.blue, html: tx(it("WHAT IF ONE DIODE FAILS OPEN?")), style: "opacity:0" })}
-  ${box({ id: "ct2b", cx: 450, cy: 150, w: 880, h: 44, size: 32, color: C.blue, html: tx(it("COMMENT BELOW ") + "\\downarrow"), style: "opacity:0" })}
+  <div id="ct1" class="t" style="left:0;top:12px;width:900px;height:60px;font-size:42px;color:${C.red};opacity:0">${tx(it("TRY THE SIMULATOR"))}</div>
+  ${box({ id: "ct2", cx: 450, cy: 100, w: 880, h: 52, size: 35, color: C.blue, html: tx(it("ON THE WEBSITE")), style: "opacity:0" })}
+  ${box({ id: "ct2b", cx: 450, cy: 150, w: 880, h: 44, size: 32, color: C.blue, html: tx(it("LINK IN BIO ") + "\\downarrow"), style: "opacity:0" })}
   <div id="ct3" class="t" style="left:0;top:180px;width:900px;height:44px;font-size:30px;color:rgba(255,255,255,.7);opacity:0">${HANDLE(30)}${tx(it("@MAE.ACADEMY"))}</div>
 </div>`;
 const check = `<svg id="chk" width="${W}" height="${H}" style="position:absolute;left:0;top:0;overflow:visible;pointer-events:none" data-layout-ignore>

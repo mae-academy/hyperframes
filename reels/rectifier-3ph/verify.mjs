@@ -14,8 +14,8 @@ const times = process.argv
 const T = times.length
   ? times
   : [
-      0, 1.0, 1.9, 2.8, 3.8, 5.0, 6.0, 6.9, 7.8, 8.6, 9.8, 11.5, 13.4, 15.2, 17.0, 19.0, 19.8, 21.0,
-      24.0,
+      0, 1.0, 1.9, 2.8, 3.8, 5.0, 6.0, 6.9, 7.8, 8.6, 9.8, 11.5, 13.4, 15.2, 17.0, 19.0, 19.8, 20.8,
+      21.6, 23.0, 24.4, 25.8,
     ];
 const browser = await chromium.launch();
 const page = await browser.newPage({

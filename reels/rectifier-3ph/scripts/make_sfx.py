@@ -133,7 +133,7 @@ hud_t = np.array([h[0] for h in sched["hud"]]); hud_y = np.array([h[1] for h in 
 # the pad's brightness opens as the circuit closes (0 before the diodes, 1 once the sweep runs)
 prog = smooth(env([(0, 0.4), (float(sched["bnC"]), 0.0), (SW0, 1.0), (DUR, 1.0)]), 0.1)
 # while the cursor sweeps, the pad breathes with v_o (always between 0.5 and 1 of the peak): loudness, not pitch
-swell = np.interp(t, hud_t, hud_y, left=0.0, right=0.0) * smooth(env([(0, 0), (SW0, 0), (SW0 + 0.3, 1), (SW1, 1), (SW1 + 0.3, 0), (DUR, 0)]), 0.1)
+swell = np.interp(t, hud_t, hud_y, left=0.0, right=0.0) * smooth(env([(0, 0), (SW0, 0), (SW0 + 0.3, 1), (DUR - 1.0, 1), (DUR, 0)]), 0.1)
 pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (float(sched["ph"][0]), 0.6), (SW0, 0.8), (LOCK, 1.15), (LOCK + 2, 1.2), (DUR - 1.5, 0.95), (DUR, 0.5)]), 0.25) * (1 + 0.5 * swell)
 pad = np.zeros(n)
 def voice(f0, amp, lfo_hz, ph):
@@ -165,6 +165,19 @@ near = lambda x, ys: any(abs(x - y) < 1e-6 for y in ys)
 # the read-out ticks while the cursor sweeps: one soft tap per 0.1 s, louder where v_o is higher
 for tm, yv in sched["hud"]:
     click(tm + 0.01, 0.08 + 0.16 * float(yv))
+
+# the cycle keeps going after the lock: every later takeover (750, 870, 990 ... degrees) still plays its diode's note, a little softer
+ang = 750
+i = 0
+while True:
+    tm = SW0 + ang / 720.0 * (SW1 - SW0)
+    if tm > DUR - 0.5:
+        break
+    d = [1, 2, 3][i % 3]
+    click(tm - 0.004, 0.6)
+    marimba(tm + 0.004, DIODE_NOTE[d], 0.24, 1.0, pan=-0.35 + 0.35 * (d - 1))
+    ang += 120
+    i += 1
 
 counts = {"click": 0, "snap": 0, "thump": 0}
 for c in cues:
