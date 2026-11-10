@@ -157,12 +157,7 @@
   CFG.HUD.forEach((h, k) => {
     const a = r3(T.sw0 + 0.1 * k);
     if (k === 0)
-      ft(
-        "#" + h.id,
-        { opacity: 0, scale: 1.08 },
-        { opacity: 1, scale: 1, duration: 0.09, ease: "power2.out" },
-        a,
-      );
+      ft("#" + h.id, { opacity: 0 }, { opacity: 1, duration: 0.09, ease: "power2.out" }, a);
     else ft("#" + h.id, { opacity: 0 }, { opacity: 1, duration: 0.001, ease: "none" }, a);
     if (k < CFG.HUD.length - 1)
       ft("#" + h.id, { opacity: 1 }, { opacity: 0, duration: 0.001, ease: "none" }, r3(a + 0.1));
