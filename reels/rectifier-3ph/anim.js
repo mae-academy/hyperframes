@@ -147,11 +147,11 @@
   ft("#s3", { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "power1.in" }, T.sw0);
   pop("#lgo", T.sw0, 6);
   ["#sg1", "#sg2", "#sg3", "#sg4", "#sg5", "#sg6"].forEach((s) =>
-    ft(s, { opacity: 0 }, { opacity: 0.25, duration: 0.3, ease: "power1.out" }, T.sw0 - 0.2),
+    ft(s, { opacity: 0 }, { opacity: 0.6, duration: 0.3, ease: "power1.out" }, T.sw0 - 0.2),
   );
   COMM.forEach((tc, i) => {
     hit(tc, "snap", "#sg" + (i + 1));
-    ft("#sg" + (i + 1), { opacity: 0.25 }, { opacity: 1, duration: 0.12, ease: "power2.out" }, tc);
+    ft("#sg" + (i + 1), { opacity: 0.6 }, { opacity: 1, duration: 0.12, ease: "power2.out" }, tc);
   });
   bnSwap("#bnS2", T.bnS2);
   CFG.HUD.forEach((h, k) => {
