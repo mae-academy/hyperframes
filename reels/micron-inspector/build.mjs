@@ -146,6 +146,36 @@ function fitCircle(P) {
 const fit = fitCircle(pts);
 const dMeas = Math.round(((2 * fit.R * CV.UM) / 1000) * 1000) / 1000; // mm, 3 decimals = 1 um
 const dUm = Math.round((dMeas - D_NOM) * 1000);
+// the good part right behind it goes through exactly the same pipeline
+const HOLE_B = { cx: 1749.83, cy: 1750.42, R: (19.996 * 1000) / 2 / CV.UM };
+const ptsB = [];
+for (let k = 0; k < K; k++) {
+  const th = Math.PI + (k * 2 * Math.PI) / K,
+    nx = Math.cos(th),
+    ny = Math.sin(th);
+  let acc = 0;
+  for (let m = -2; m <= 2; m++) {
+    const prof = [];
+    for (let j = 0; j <= 10; j++) {
+      const r = NOM_R + (j - 5);
+      const qx = 1750 + r * nx - m * ny,
+        qy = 1750 + r * ny + m * nx;
+      const d = Math.hypot(qx - HOLE_B.cx, qy - HOLE_B.cy) - HOLE_B.R;
+      prof.push(CV.clip(CV.Iclean(d) + CV.NOISE * CV.gauss(k * 100 + j, m + 2, 12)));
+    }
+    const g = [];
+    for (let j = 1; j < 10; j++) g.push((prof[j + 1] - prof[j - 1]) / 2);
+    acc += centroid(g, 1);
+  }
+  const rEdge = NOM_R + (acc / 5 - 5);
+  ptsB.push({ x: 1750 + rEdge * nx, y: 1750 + rEdge * ny });
+}
+const fitB = fitCircle(ptsB);
+const dMeasB = Math.round(((2 * fitB.R * CV.UM) / 1000) * 1000) / 1000;
+const dUmB = Math.round((dMeasB - D_NOM) * 1000);
+if (Math.abs(dUmB) > TOL_UM || Math.abs(dMeasB - 19.996) * 1000 > 1)
+  throw new Error("part B must measure 19.996 mm and pass, got " + dMeasB);
+console.log(`part B: diameter ${dMeasB.toFixed(3)} mm, delta ${dUmB} um -> PASS`);
 const gapPx = fit.R - NOM_R; // the real edge sits this many px left of where the CAD edge should be (hole too big)
 const nomX = xe + gapPx; // nominal edge, patch coordinates
 const halfUm = gapPx * CV.UM;
@@ -167,7 +197,7 @@ const halfUm = gapPx * CV.UM;
 })();
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js through CFG)
-const S = { 1: 1.6, 2: 4.0, 3: 6.6, 4: 8.8, 5: 10.8, 6: 14.0, 7: 16.6, 8: 19.4 };
+const S = { 1: 1.6, 2: 4.0, 3: 6.6, 4: 8.8, 5: 10.8, 6: 14.0, 7: 16.0, 8: 19.6 };
 const T_PT0 = 11.6,
   T_PT_STEP = 0.08;
 const r3 = (v) => Math.round(v * 1000) / 1000;
@@ -213,7 +243,7 @@ const CROSS = (s) =>
   `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="flex:none;margin-right:12px"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="${C.red}" stroke-width="3" stroke-linecap="round"/></svg>`;
 const sgn = (v) => (v > 0 ? "+" : v < 0 ? "-" : "") + Math.abs(v);
 const f2 = (v) => v.toFixed(2);
-const CHIP = "background:rgba(10,10,16,.78);border-radius:10px;padding:0 10px;";
+const CHIP = "background:rgba(10,10,16,.97);border-radius:10px;padding:0 10px;";
 
 // ------------------------------------------------------------------ zone 1: header
 const header = `
@@ -273,15 +303,40 @@ const ov = `<div id="ov">
   ${L("gax", RX, 322, 260, 26, "rgba(255,255,255,.6)", "\\Delta\\,(\\mu m)")}
   ${L("gtl", RX, 482, 200, 26, C.purple, "\\pm" + TOL_UM + "\\,\\mu m")}
   <div id="verd" class="t ov" style="left:${RX - 140}px;top:${545 - 30}px;width:280px;height:60px;font-size:44px;color:${C.red};opacity:0">${CROSS(40)}${tx(it("REJECT"))}</div>
-  ${L("bl1", 300, 118, 160, 24, "rgba(255,255,255,.6)", it("CAMERA"))}
+  ${L("bl1", 300, 66, 160, 24, "rgba(255,255,255,.6)", it("CAMERA"))}
   <div id="bl2" class="t ov" style="left:566px;top:128px;width:160px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;opacity:0">${tx(it("PUSHER"))}</div>
   ${L("bl3", 540, 478, 160, 24, C.red, it("REJECT BIN"))}
   <div id="bl4" class="t ov" style="left:690px;top:454px;width:190px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-end;opacity:0">${tx("\\rightarrow" + it(" PASS"))}</div>
   <div id="bl5" class="t ov" style="left:24px;top:454px;width:190px;height:32px;font-size:24px;color:rgba(255,255,255,.6);justify-content:flex-start;opacity:0">${tx(it("FROM CNC ") + "\\rightarrow")}</div>
+  ${[
+    ["rc0", 127, C.blue, "I(x)"],
+    ["rc1", 347, C.red, "G=dI/dx"],
+    ["rc2", 567, C.blue, "\\varnothing=" + dMeas.toFixed(3) + "\\,mm"],
+    ["rc3", 787, C.red, "\\Delta=" + sgn(dUm) + "\\,\\mu m"],
+  ]
+    .map(([id, cx, c, h]) =>
+      box({
+        id,
+        cx,
+        cy: 396,
+        w: 200,
+        h: 40,
+        size: 28,
+        color: c,
+        html: tx(h),
+        cls: "ov",
+        style: "opacity:0",
+      }),
+    )
+    .join("")}
+  <div id="bxA" class="bx" style="border-color:${C.red};background:rgba(255,0,68,.1);opacity:0"></div>
+  <div id="bxB" class="bx" style="border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);opacity:0"></div>
+  <div id="lblA" class="lbl" style="border-color:${C.red};opacity:0"><div style="font-size:28px;color:${C.red}">${tx("\\textbf{\\textit{REJECT}}".replace("\\textbf{\\textit{REJECT}}", it("REJECT")))}</div><div style="font-size:26px;color:#fff">${tx("\\Delta=" + sgn(dUm) + "\\,\\mu m")}</div></div>
+  <div id="lblB" class="lbl" style="border-color:rgba(255,255,255,.85);opacity:0"><div style="font-size:28px;color:#fff">${tx(it("PASS"))}</div><div style="font-size:26px;color:#fff">${tx("\\Delta=" + sgn(dUmB) + "\\,\\mu m")}</div></div>
   <svg id="ovs" width="900" height="610" viewBox="0 0 900 610" style="position:absolute;left:0;top:0">
     <circle id="ringR" cx="540" cy="340" r="10" fill="none" stroke="${C.red}" stroke-width="4" style="opacity:0"/>
     <rect id="sweep" x="0" y="0" width="5" height="610" fill="${C.purple}" style="opacity:0;filter:drop-shadow(0 0 10px ${C.purple})"/>
-    <g id="lockb" transform="translate(430,176)" style="opacity:0;filter:drop-shadow(0 0 8px ${C.purple})"><circle r="34" fill="rgba(10,10,16,.8)" stroke="${C.purple}" stroke-width="4"/><path id="lockk" d="M-14,2L-4,13L15,-10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50"/></g>
+    <g id="lockb" transform="translate(440,98)" style="opacity:0;filter:drop-shadow(0 0 8px ${C.purple})"><circle r="34" fill="rgba(10,10,16,.8)" stroke="${C.purple}" stroke-width="4"/><path id="lockk" d="M-14,2L-4,13L15,-10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50"/></g>
   </svg>
 </div>`;
 const plate = `<div id="plate"><canvas id="cv" width="900" height="610" data-layout-allow-overflow></canvas>${ov}</div>`;
@@ -402,6 +457,8 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 .ba .l2{font-size:34px;color:${C.red};line-height:1.15;margin-top:2px}
 #card{position:absolute;border-radius:36px;background:rgba(30,30,46,.55);border:1px solid rgba(255,255,255,.1);overflow:hidden}
 .pg{position:absolute;left:0;top:0;width:780px;height:460px}
+.bx{position:absolute;left:0;top:0;width:190px;height:160px;border-radius:14px;border:4px solid}
+.lbl{position:absolute;left:0;top:0;width:200px;height:64px;border-radius:12px;background:rgba(10,10,16,.88);border:3px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:nowrap;line-height:1.1}
 .rb{position:absolute;left:12px;width:756px;height:56px;border-radius:16px;background:rgba(255,0,68,.1);border:2px solid rgba(255,0,68,.55)}
 `;
 
@@ -427,6 +484,7 @@ const CFG = {
   pts,
   fit,
   dUm,
+  dUmB,
   TOL_UM,
   xm,
   xn,

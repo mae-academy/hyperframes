@@ -44,12 +44,12 @@ def lowpass(x, fc):
 mix += 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
 
 # pad: third (C#) arrives at the lock (18.6 s)
-pad_gain = smooth(env([(0, 0.0), (0.4, 0.35), (1.6, 0.55), (4.0, 0.8), (14.0, 1.0), (18.6, 1.15), (20.5, 1.0), (21.4, 0.7), (22.0, 0.5)]), 0.2)
+pad_gain = smooth(env([(0, 0.0), (0.4, 0.35), (1.6, 0.55), (4.0, 0.8), (14.0, 1.0), (19.1, 1.15), (20.8, 1.0), (21.4, 0.7), (22.0, 0.5)]), 0.2)
 pad = np.zeros(n)
 for f0, amp, lfo_hz, ph in [(110.0, 0.030, 0.11, 0.0), (164.81, 0.026, 0.17, 1.3), (220.0, 0.022, 0.23, 2.1), (329.63, 0.014, 0.29, 3.4)]:
     trem = 0.8 + 0.2 * np.sin(2 * np.pi * lfo_hz * t + ph)
     pad += amp * trem * (np.sin(2 * np.pi * f0 * t) + 0.25 * np.sin(2 * np.pi * 2 * f0 * t))
-third = smooth(env([(0, 0), (18.55, 0), (18.95, 1.0), (21.4, 1.0), (22.0, 0.6)]), 0.1)
+third = smooth(env([(0, 0), (19.05, 0), (19.45, 1.0), (21.4, 1.0), (22.0, 0.6)]), 0.1)
 pad += third * 0.020 * (0.85 + 0.15 * np.sin(2 * np.pi * 0.19 * t + 0.7)) * (np.sin(2 * np.pi * 277.18 * t) + 0.25 * np.sin(2 * np.pi * 554.36 * t))
 mix += pad * pad_gain
 
@@ -65,7 +65,7 @@ zt = np.where((t >= 14.0) & (t < 14.8), eio(ramp(14.0, 14.8)), zt)
 zt = np.where(t >= 14.8, 1.0, zt)
 zt = np.where(t < 4.0, 0.0, zt)
 freq = 220.0 * 1.5 ** (2.0 * zt)  # two fifths over the full zoom
-voice_env = smooth(env([(0, 0), (1.5, 0), (1.8, 0.7), (16.5, 0.9), (17.2, 0.35), (19.2, 0.35), (20.0, 0.0), (22.0, 0.0)]), 0.05) * (0.6 + 0.4 * zt)
+voice_env = smooth(env([(0, 0), (1.5, 0), (1.8, 0.7), (16.0, 0.9), (16.9, 0.35), (19.6, 0.35), (20.4, 0.0), (22.0, 0.0)]), 0.05) * (0.6 + 0.4 * zt)
 voice = np.zeros(n)
 for det, a in [(-1.2, 0.5), (+1.2, 0.5)]:
     ph = 2 * np.pi * np.cumsum(freq + det) / SR
@@ -74,7 +74,7 @@ mix += 0.075 * voice_env * voice
 
 # air
 air = lowpass(rng.uniform(-1, 1, n), 1800.0)
-air_env = smooth(env([(0, 0), (1.6, 0), (1.9, 0.5), (16.5, 0.7), (17.5, 0.2), (19.5, 0), (22, 0)]), 0.08)
+air_env = smooth(env([(0, 0), (1.6, 0), (1.9, 0.5), (16.0, 0.7), (17.0, 0.2), (19.8, 0), (22, 0)]), 0.08)
 mix += 0.018 * air_env * (0.4 + 0.6 * zt) * air
 
 def add(t0, sig):
@@ -96,7 +96,7 @@ for c in cues:
         if ref.startswith("stage"):  # one soft bell per step, A-major pentatonic climbing with the step
             n_st = int(ref.split(":")[1])
             add(t0 + 0.02, tone([440.0, 493.88, 554.37, 659.26, 739.99, 880.0, 987.77][n_st - 1], 1.4, 0.4, 0.045))
-        if abs(t0 - 21.0) < 1e-6:
+        if abs(t0 - 21.3) < 1e-6:
             add(t0, tone(1760, 0.5, 0.18, 0.035)); add(t0 + 0.05, tone(2217.5, 0.5, 0.15, 0.022))
     elif kd == "tick":  # an edge point is found: tiny tick on the pentatonic ladder
         k_i = int(ref.split(":")[1])
@@ -108,11 +108,11 @@ for c in cues:
         hit = 0.30 * rng.uniform(-1, 1, len(tt)) * np.exp(-tt / 0.003)
         add(t0, body + ring + hit)
         if ref == "rej": add(t0, tone(110, 0.3, 0.07, 0.30))  # the pusher's thud
-        if abs(t0 - 19.4) < 1e-6:
+        if abs(t0 - 19.6) < 1e-6:
             add(t0 + 0.02, tone(659.26, 1.4, 0.45, 0.05)); add(t0 + 0.09, tone(880.0, 1.4, 0.40, 0.04))
     elif kd == "thump":
         add(t0, tone(55, 0.25, 0.045, 0.55))
-        if abs(t0 - 18.6) < 1e-6:
+        if abs(t0 - 19.1) < 1e-6:
             for i, fz in enumerate([220.0, 277.18, 329.63, 440.0, 554.36, 659.26]):
                 add(t0 + 0.03 + 0.045 * i, tone(fz, 2.2, 0.9, 0.040))
 

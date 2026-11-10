@@ -476,6 +476,12 @@
   }
 
   // ------------------------------------------------------------------ line view (sorting)
+  const T_SCAN_A = 17.0, // part A under the camera
+    T_PUSH = 18.2, // the pusher fires
+    T_SCAN_B = 18.8; // part B under the camera
+  const CAMX_ = 300,
+    DIVX_ = 540,
+    BELT_YC = 340;
   const BELT = { y0: 250, y1: 430, yc: 340 },
     CAMX = 300,
     DIVX = 540,
@@ -545,7 +551,7 @@
     ctx.restore();
   }
   function drawBelt(tau) {
-    const e = tau - 16.6;
+    const e = tau - T_SCAN_A;
     ctx.fillStyle = "rgba(255,255,255,.04)";
     ctx.fillRect(0, BELT.y0, 900, BELT.y1 - BELT.y0);
     ctx.strokeStyle = "rgba(255,255,255,.4)";
@@ -558,7 +564,7 @@
     ctx.stroke();
     ctx.strokeStyle = "rgba(255,255,255,.35)";
     ctx.lineWidth = 3;
-    const off = (VBELT * Math.max(0, e)) % 40;
+    const off = (((VBELT * e) % 40) + 40) % 40;
     ctx.beginPath();
     for (let x = -40 + off; x < 940; x += 40) {
       ctx.moveTo(x, BELT.y0);
@@ -572,13 +578,13 @@
     ctx.strokeStyle = "rgba(176,38,255,.6)";
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(CAMX - 30, 206);
+    ctx.moveTo(CAMX - 30, 152);
     ctx.lineTo(CAMX - 85, BELT.y0);
-    ctx.moveTo(CAMX + 30, 206);
+    ctx.moveTo(CAMX + 30, 152);
     ctx.lineTo(CAMX + 85, BELT.y0);
     ctx.stroke();
     ctx.setLineDash([]);
-    roundRect(CAMX - 60, 150, 120, 56, 12);
+    roundRect(CAMX - 60, 96, 120, 56, 12);
     ctx.fillStyle = "rgba(10,10,16,.8)";
     ctx.fill();
     ctx.strokeStyle = "rgba(255,255,255,.7)";
@@ -587,11 +593,11 @@
     ctx.strokeStyle = COL.red;
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(CAMX, 178, 14, 0, 6.2832);
+    ctx.arc(CAMX, 124, 14, 0, 6.2832);
     ctx.stroke();
     ctx.fillStyle = COL.red;
     ctx.beginPath();
-    ctx.arc(CAMX, 178, 5, 0, 6.2832);
+    ctx.arc(CAMX, 124, 5, 0, 6.2832);
     ctx.fill();
     // bin
     ctx.setLineDash([8, 7]);
@@ -603,7 +609,10 @@
     ctx.stroke();
     ctx.setLineDash([]);
     // pusher
-    const dy = 190 * eout(ramp(tau, 17.8, 18.2)) * (1 - eio(ramp(tau, 18.35, 18.85)));
+    const dy =
+      190 *
+      eout(ramp(tau, T_PUSH, T_PUSH + 0.4)) *
+      (1 - eio(ramp(tau, T_PUSH + 0.55, T_PUSH + 1.05)));
     ctx.strokeStyle = "rgba(255,255,255,.7)";
     ctx.lineWidth = 6;
     ctx.lineCap = "round";
@@ -615,7 +624,7 @@
     roundRect(DIVX - 50, 214 + dy, 100, 16, 6);
     ctx.fill();
     // scan flashes
-    for (const t0 of [16.6, 18.4]) {
+    for (const t0 of [T_SCAN_A, T_SCAN_B]) {
       const a = 1 - ramp(tau, t0, t0 + 0.25);
       if (tau >= t0 && a > 0) {
         ctx.fillStyle = `rgba(255,0,68,${a})`;
@@ -623,11 +632,109 @@
       }
     }
     // part A (the defective one) and part B (a good one right behind it)
-    const k = eout(ramp(tau, 17.8, 18.35));
-    const ax = tau < 17.8 ? CAMX + VBELT * e : DIVX;
-    part(ax, BELT.yc + 195 * k, 1 - 0.5 * k, { bad: tau >= 16.8, tag: ramp(tau, 16.85, 17.0) });
-    const bx = CAMX + VBELT * (tau - 18.4);
-    if (bx > -100 && bx < 1000) part(bx, BELT.yc, 1, { bad: false, tag: ramp(tau, 18.65, 18.8) });
+    const k = eout(ramp(tau, T_PUSH, T_PUSH + 0.55));
+    const ax = tau < T_PUSH ? CAMX + VBELT * e : DIVX;
+    part(ax, BELT.yc + 195 * k, 1 - 0.5 * k, {
+      bad: tau >= T_SCAN_A + 0.1,
+      tag: ramp(tau, T_SCAN_A + 0.15, T_SCAN_A + 0.3),
+    });
+    const bx = CAMX + VBELT * (tau - T_SCAN_B);
+    if (bx > -100 && bx < 1000)
+      part(bx, BELT.yc, 1, { bad: false, tag: ramp(tau, T_SCAN_B + 0.25, T_SCAN_B + 0.4) });
+  }
+
+  // ------------------------------------------------------------------ recap strip: the whole pipeline, flying past
+  function drawRecap(tau) {
+    const out = 1 - ramp(tau, 16.6, 16.8);
+    const card = (k) => {
+      const a = ramp(tau, 16.1 + 0.1 * k, 16.25 + 0.1 * k) * out;
+      return {
+        a,
+        x0: 32 + 220 * k + (1 - ramp(tau, 16.1 + 0.1 * k, 16.3 + 0.1 * k)) * 60,
+        y0: 170,
+      };
+    };
+    for (let k = 0; k < 4; k++) {
+      const { a, x0, y0 } = card(k);
+      if (a <= 0) continue;
+      ctx.globalAlpha = a;
+      roundRect(x0, y0, 190, 200, 16);
+      ctx.fillStyle = "rgba(10,10,16,.75)";
+      ctx.fill();
+      ctx.strokeStyle = k === 3 ? "rgba(255,0,68,.7)" : "rgba(255,255,255,.22)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      const tx0 = x0 + 15,
+        ty0 = y0 + 18;
+      ctx.lineWidth = 4;
+      ctx.lineJoin = "round";
+      if (k === 0) {
+        ctx.strokeStyle = COL.blue;
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const x = tx0 + 8 + i * 16,
+            y = ty0 + 150 - (patchI[5][i] / 255) * 130;
+          if (i) ctx.lineTo(x, y);
+          else ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      } else if (k === 1) {
+        ctx.fillStyle = COL.red;
+        for (let i = 0; i < 10; i++) {
+          const h = (Math.abs(patchG[5][i]) / (gMax * 1.1)) * 130;
+          ctx.fillRect(tx0 + 4 + i * 16, ty0 + 150 - h, 11, h);
+        }
+      } else if (k === 2) {
+        const cx = tx0 + 80,
+          cy = ty0 + 78;
+        ctx.strokeStyle = COL.purple;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 62, 0, 6.2832);
+        ctx.stroke();
+        ctx.fillStyle = "#FFFFFF";
+        for (let i = 0; i < K; i++) {
+          const th = Math.PI + (i * 2 * Math.PI) / K;
+          ctx.beginPath();
+          ctx.arc(cx + 62 * Math.cos(th), cy + 62 * Math.sin(th), 4, 0, 6.2832);
+          ctx.fill();
+        }
+      } else {
+        const gx = (v) => tx0 + 80 + (v * 70) / 50;
+        ctx.strokeStyle = "rgba(255,255,255,.45)";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(gx(-50), ty0 + 100);
+        ctx.lineTo(gx(50), ty0 + 100);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(176,38,255,.22)";
+        ctx.strokeStyle = COL.purple;
+        ctx.lineWidth = 3;
+        roundRect(gx(-TOL_UM), ty0 + 78, gx(TOL_UM) - gx(-TOL_UM), 44, 5);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = COL.red;
+        ctx.beginPath();
+        ctx.moveTo(gx(dUm) - 11, ty0 + 44);
+        ctx.lineTo(gx(dUm) + 11, ty0 + 44);
+        ctx.lineTo(gx(dUm), ty0 + 76);
+        ctx.closePath();
+        ctx.fill();
+      }
+      // chevron to the next card
+      if (k < 3) {
+        const b = card(k + 1);
+        ctx.globalAlpha = Math.min(a, b.a);
+        ctx.strokeStyle = "rgba(255,255,255,.7)";
+        ctx.lineWidth = 4;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(x0 + 197, y0 + 90);
+        ctx.lineTo(x0 + 209, y0 + 100);
+        ctx.lineTo(x0 + 197, y0 + 110);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
   }
 
   // ------------------------------------------------------------------ the frame
@@ -636,12 +743,14 @@
     const tau = t < 1.2 ? FIN : t < 1.6 ? FIN + (1.6 - FIN) * eio((t - 1.2) / 0.4) : t;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, 900, 610);
-    const f = ramp(tau, 16.45, 16.8);
-    if (f < 1) {
-      ctx.globalAlpha = 1 - f;
-      drawVision(Math.min(tau, 16.6));
+    const f = ramp(tau, 16.78, 17.0);
+    const fv = 1 - ramp(tau, 15.95, 16.15);
+    if (fv > 0) {
+      ctx.globalAlpha = fv;
+      drawVision(Math.min(tau, 16.0));
       ctx.globalAlpha = 1;
     }
+    if (tau >= 16.0 && f < 1) drawRecap(tau);
     if (f > 0) {
       ctx.globalAlpha = f;
       drawBelt(tau);
@@ -682,11 +791,15 @@
     ...T_PTS.map((t) => [t, "tick"]), // one tick per edge point
     [14.0, "click"], // step 6 compare
     [15.3, "snap"], // the marker leaves the tolerance band: REJECT
-    [16.6, "click"], // decision, the part moves to the pusher
-    [17.8, "snap"], // pusher fires
-    [18.6, "thump"], // lock: sorted
-    [19.4, "snap"], // CTA reveal
-    [21.0, "click"], // engagement pulse
+    [16.0, "click"], // decision: the pipeline flies past
+    ...[16.1, 16.2, 16.3, 16.4].map((t) => [t, "tick"]), // recap cards: profile, gradient, fit, gauge
+    [16.7, "click"], // the verdict leaves the card and flies to the line
+    [17.0, "click"], // part A is boxed under the camera
+    [18.2, "snap"], // pusher fires
+    [18.8, "click"], // part B is boxed under the camera
+    [19.1, "thump"], // lock: sorted
+    [19.6, "snap"], // CTA reveal
+    [21.3, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -720,7 +833,7 @@
   ft("#card", { scale: 1.035 }, { scale: 1, duration: 0.45, ease: "power3.out" }, 0);
   hit(1.2, "snap", "rew");
   ft("#flashG", { opacity: 0.9 }, { opacity: 0, duration: 0.4, ease: "power2.out" }, 1.2);
-  tl.to(FINAL_DOM, { opacity: 0, duration: 0.25, ease: "power1.in" }, 1.2);
+  tl.set(FINAL_DOM, { opacity: 0 }, 1.2); // the red flash covers the cut
   for (let i = rows.n - 1; i >= 0; i--) {
     const t0 = r3(1.2 + 0.05 * (rows.n - 1 - i));
     tl.to(`#rs${i},#ck${i}`, { opacity: 0, duration: 0.1 }, t0);
@@ -777,15 +890,77 @@
     { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" },
     15.3,
   );
-  hide(FINAL_DOM, 16.4, 0.3);
+  hide(FINAL_DOM, 15.95, 0.2);
 
-  // ---------------------------------------------------------------- sorting
-  swap("#B6", "#B7", 16.6);
-  hit(16.6, "click", "stage:7");
-  ["#bl1", "#bl2", "#bl3", "#bl4", "#bl5"].forEach((s, k) => show(s, 16.7 + 0.1 * k));
-  hit(17.8, "snap", "rej");
-  burst("#ringR", 20, 110, 0.5, 17.8);
-  const T_FINAL = hit(18.6, "thump", "final");
+  // ---------------------------------------------------------------- decision: the pipeline flies past, the verdict goes to the line
+  swap("#B6", "#B7", S[7]);
+  hit(S[7], "click", "stage:7");
+  [0, 1, 2, 3].forEach((k) => {
+    const t = r3(16.1 + 0.1 * k);
+    hit(t, "tick", "card:" + k);
+    tl.set("#rc" + k, { opacity: 1 }, t);
+    ft("#rc" + k, { y: 14 }, { y: 0, duration: 0.2, ease: "power2.out" }, t);
+    if (k < 3) tl.to("#rc" + k, { opacity: 0, duration: 0.15 }, 16.6);
+  });
+  tl.set("#rc3", { opacity: 0 }, 16.7);
+  const BXW = 190,
+    BXH = 160,
+    LBW = 200;
+  gsap.set("#bxA", { x: CAMX_ - BXW / 2, y: BELT_YC - BXH / 2 });
+  gsap.set("#bxB", { x: CAMX_ - BXW / 2, y: BELT_YC - BXH / 2 });
+  // the verdict chip leaves the last card and lands on part A, which is now boxed
+  hit(16.7, "click", "pkt");
+  tl.set("#lblA", { opacity: 1 }, 16.7);
+  ft(
+    "#lblA",
+    { x: 787 - LBW / 2, y: 305 - 32 },
+    { x: CAMX_ - LBW / 2, y: BELT_YC - BXH / 2 - 76, duration: 0.3, ease: "power2.inOut" },
+    16.7,
+  );
+  hit(17.0, "click", "scan:A");
+  ft(
+    "#bxA",
+    { opacity: 0, scale: 1.4 },
+    { opacity: 1, scale: 1, duration: 0.2, ease: "power2.out" },
+    17.0,
+  );
+  ft("#bxA", { x: CAMX_ - BXW / 2 }, { x: DIVX_ - BXW / 2, duration: 1.2, ease: "none" }, 17.0);
+  ft("#lblA", { x: CAMX_ - LBW / 2 }, { x: DIVX_ - LBW / 2, duration: 1.2, ease: "none" }, 17.0);
+  // pushed into the bin: the red box goes with it and stays around the rejected part
+  ft(
+    "#bxA",
+    { y: BELT_YC - BXH / 2 },
+    { y: 535 - BXH / 2, duration: 0.55, ease: "power3.out" },
+    18.2,
+  );
+  ft("#bxA", { scale: 1 }, { scale: 0.5, duration: 0.55, ease: "power3.out" }, 18.2);
+  tl.to("#lblA", { opacity: 0, duration: 0.15 }, 18.2);
+  // part B: boxed, measured, PASS, and it rolls on
+  hit(18.8, "click", "scan:B");
+  tl.set("#lblB", { opacity: 1 }, 18.8);
+  ft(
+    "#bxB",
+    { opacity: 0, scale: 1.4 },
+    { opacity: 1, scale: 1, duration: 0.2, ease: "power2.out" },
+    18.8,
+  );
+  ft(
+    "#lblB",
+    { x: CAMX_ - LBW / 2, y: BELT_YC - BXH / 2 - 76 },
+    { x: CAMX_ - LBW / 2 + 200 * 1.6, y: BELT_YC - BXH / 2 - 76, duration: 1.6, ease: "none" },
+    18.8,
+  );
+  ft(
+    "#bxB",
+    { x: CAMX_ - BXW / 2 },
+    { x: CAMX_ - BXW / 2 + 200 * 1.6, duration: 1.6, ease: "none" },
+    18.8,
+  );
+  tl.to("#bxB,#lblB", { opacity: 0, duration: 0.2 }, 20.2);
+  ["#bl1", "#bl2", "#bl3", "#bl4", "#bl5"].forEach((s2, k) => show(s2, 16.75 + 0.08 * k));
+  hit(T_PUSH, "snap", "rej");
+  burst("#ringR", 20, 110, 0.5, T_PUSH);
+  const T_FINAL = hit(19.1, "thump", "final");
   ft("#sweep", { opacity: 0.9, x: 0 }, { x: 895, duration: 0.5, ease: "power2.inOut" }, T_FINAL);
   tl.to("#sweep", { opacity: 0, duration: 0.15 }, T_FINAL + 0.4);
   ft("#lockb", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T_FINAL + 0.1);
@@ -803,20 +978,20 @@
   hit(S[8], "snap", "cta");
   ft("#ct1a,#ct1b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8]);
   ft("#ct2a,#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8] + 0.15);
-  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8] + 0.3);
-  hit(21.0, "click", "pulse");
-  ft("#ctaglow", { opacity: 0 }, { opacity: 0.9, duration: 0.2, ease: "power2.out" }, 21.0);
-  tl.to("#ctaglow", { opacity: 0, duration: 0.5, ease: "power2.in" }, 21.3);
+  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, S[8] + 0.15);
+  hit(21.3, "click", "pulse");
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.9, duration: 0.2, ease: "power2.out" }, 21.3);
+  tl.to("#ctaglow", { opacity: 0, duration: 0.5, ease: "power2.in" }, 21.6);
   ft(
     "#ct2a,#ct2b",
     { textShadow: "0 0 0px rgba(0,136,255,0)" },
     { textShadow: "0 0 18px #0088FF", duration: 0.25, ease: "power2.out" },
-    21.0,
+    21.3,
   );
   tl.to(
     "#ct2a,#ct2b",
     { textShadow: "0 0 0px rgba(0,136,255,0)", duration: 0.4, ease: "power2.in" },
-    21.3,
+    21.6,
   );
 
   tl.to({}, { duration: 0.0001 }, 21.9999);

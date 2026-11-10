@@ -54,6 +54,17 @@ const probe = {
     "opacity",
     (b4, af) => Number(b4) === 0 && Number(af) === 1,
   ],
+  card: (c) => [
+    "#rc" + c.ref.split(":")[1],
+    "opacity",
+    (b4, af) => Number(b4) === 0 && Number(af) === 1,
+  ],
+  pkt: () => ["#lblA", "opacity", (b4, af) => Number(b4) === 0 && Number(af) === 1],
+  scan: (c) => [
+    "#bx" + c.ref.split(":")[1],
+    "opacity",
+    (b4, af) => Number(b4) === 0 && Number(af) > 0.05,
+  ],
   verd: () => ["#verd", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.5],
   rej: () => ["#ringR", "opacity", (b4, af) => Number(b4) < 0.05 && Number(af) > 0.3],
   final: () => ["#lockb", "opacity", (b4, af) => Number(b4) === 0 && Number(af) > 0.5],
