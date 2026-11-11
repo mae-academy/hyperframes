@@ -11,23 +11,24 @@
 
   // @CUES-BEGIN
   const CUES = [
-    [0.0, "thump"], // opening impact on the wall of equations
-    [1.3, "snap"], // the equations start turning into dots
-    [3.1, "snap"], // the flag is complete
-    [4.2, "click"], // the field starts
-    [6.6, "snap"], // the field is drawn
-    [6.9, "click"], // the rhombus starts
-    [9.1, "snap"], // the rhombus is drawn
-    [9.4, "click"], // the disc starts
-    [10.6, "snap"], // the disc is drawn
-    [10.9, "click"], // the band starts
-    [12.6, "snap"], // the band is drawn
-    [12.9, "click"], // the stars start
-    [15.0, "snap"], // the stars are drawn
-    [15.6, "thump"], // lock
-    [16.5, "click"], // only rotating circles
-    [18.2, "snap"], // CTA reveal
-    [20.8, "click"], // engagement pulse
+    [0.0, "thump"], // opening impact on the finished flag
+    [1.4, "snap"], // the flag lets go of its colour
+    [2.0, "click"], // the field starts
+    [4.4, "snap"], // the field is drawn
+    [4.7, "click"], // the rhombus starts
+    [6.9, "snap"], // the rhombus is drawn
+    [7.2, "click"], // the disc starts
+    [8.4, "snap"], // the disc is drawn
+    [8.7, "click"], // the band starts
+    [10.4, "snap"], // the band is drawn
+    [10.7, "click"], // the stars start
+    [12.8, "snap"], // the stars are drawn
+    [13.4, "thump"], // lock
+    [14.2, "click"], // only rotating circles
+    [14.8, "snap"], // the flag turns back into dots
+    [17.1, "snap"], // the equations are all there
+    [17.6, "snap"], // CTA reveal
+    [20.2, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -41,8 +42,8 @@
     return t;
   }
   let curBanner = "#bn0",
-    curCount = null,
-    curForm = null;
+    curCount = "#ch",
+    curForm = "#fh";
   function bnSwap(n, t) {
     ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, t);
     ft(n, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, t + 0.075);
@@ -65,33 +66,16 @@
     curForm = n;
   }
 
-  // ---------------------------------------------------------------- 0.0 - 3.1  the equations turn into the flag
+  // ---------------------------------------------------------------- 0.0 - 1.8  the finished flag, then it lets go of its colour
   hit(0.0, "thump", "#flash0");
   ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
-  hit(T.xf0, "snap", "#rw");
-  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.xf0);
-  tl.fromTo(
-    "#rw",
-    { opacity: 1 },
-    { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
-    T.xf0 + 0.45,
-  );
-  // every equation lets go of its dots and dissolves, the ones nearest the flag first
-  CFG.items.forEach((q) =>
-    ft(
-      "#" + q.id,
-      { opacity: q.op, scale: 1 },
-      { opacity: 0, scale: 0.55, duration: 0.45, ease: "power2.in" },
-      Math.round((T.xf0 + q.delay) * 1000) / 1000,
-    ),
-  );
-  hit(T.xf1, "snap", "#fc");
-  ft("#fc", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.xf1);
+  hit(T.hold, "snap", "#fc");
+  ft("#fc", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.hold);
   tl.fromTo(
     "#fc",
     { opacity: 1 },
     { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
-    T.xf1 + 0.15,
+    T.hold + 0.15,
   );
 
   // ---------------------------------------------------------------- the shapes, one after the other
@@ -130,6 +114,39 @@
   hit(T.banF, "click", "#bnF2");
   bnSwap("#bnF2", T.banF);
 
+  // ---------------------------------------------------------------- the ending: the flag turns back into the equations (the opening, played backwards)
+  hit(T.xr0, "snap", "#rw");
+  bnSwap("#bnE", T.xr0);
+  // the counter, the formula, the progress squares and the check mark make room for the equations
+  ft(curCount, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T.xr0);
+  ft(curForm, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T.xr0);
+  ft(".pip", { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T.xr0);
+  ft("#chkp", { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T.xr0);
+  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.xr0);
+  tl.fromTo(
+    "#rw",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
+    T.xr0 + 0.45,
+  );
+  // each equation comes back as its dots land (the same delays as before, mirrored in time)
+  CFG.items.forEach((q) =>
+    ft(
+      "#" + q.id,
+      { opacity: 0, scale: 0.55 },
+      { opacity: q.op, scale: 1, duration: 0.45, ease: "power2.out" },
+      Math.round((T.xr0 + (T.xf1 - T.xf0) + 0.05 - q.delay) * 1000) / 1000,
+    ),
+  );
+  hit(T.xr1, "snap", "#fe");
+  ft("#fe", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.xr1);
+  tl.fromTo(
+    "#fe",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.7, ease: "power2.in", immediateRender: false },
+    T.xr1 + 0.15,
+  );
+
   // ---------------------------------------------------------------- CTA
   hit(T.card, "snap", "#card");
   ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, T.card - 0.1);
@@ -148,7 +165,7 @@
     T.pulse + 0.3,
   );
 
-  tl.to({}, { duration: 0.0001 }, 22.3999);
+  tl.to({}, { duration: 0.0001 }, 21.7999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
 
@@ -323,8 +340,8 @@
   // ---------------------------------------------------------------- the opening: dots leave the equations and form the flag
   function drawDots(t) {
     const t0 = T.xf0;
-    if (t < t0 - 0.2 || t > T.hold + 0.1) return;
-    const out = 1 - smooth((t - T.xf1) / (T.hold - T.xf1));
+    if (t < t0 - 0.2 || t > T.xf1 + 0.7) return;
+    const out = 1 - smooth((t - T.xf1) / 0.6);
     ctx.save();
     for (const p of CFG.parts) {
       const u = (t - (t0 + p.delay)) / p.dur;
@@ -345,6 +362,8 @@
 
   // ---------------------------------------------------------------- the shapes, one after the other
   function drawLive(t) {
+    // in the ending the colour leaves the flag while its outline turns into dots
+    const flagMul = t >= T.xr0 ? smooth((T.xf1 + 0.5 - (t - T.xr0) - (T.xf1 - 0.3)) / 0.5) : 1;
     const fade = 1 - smooth((t - (T.lock - 0.3)) / 0.3); // the dashed target leaves when the flag is complete
     if (fade > 0.01)
       for (let i = 0; i < S.length; i++)
@@ -355,8 +374,8 @@
         a = T.a[r],
         b = T.b[r];
       if (t >= b) {
-        fillShape(i, smooth((t - b) / 0.35));
-        stroke(FIN[i], LINE[S[i].role], 2, 0.8 * smooth((t - b) / 0.35));
+        fillShape(i, smooth((t - b) / 0.35) * flagMul);
+        stroke(FIN[i], LINE[S[i].role], 2, 0.8 * smooth((t - b) / 0.35) * flagMul);
         if (t < b + 0.3) active.push([i, 2 * Math.PI, 1 - (t - b) / 0.3, true]);
       } else if (t >= a)
         active.push([i, (2 * Math.PI * (t - a)) / (b - a), clamp01((t - a) / 0.25), false]);
@@ -459,11 +478,11 @@
   function draw(t) {
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, 1080, 1920);
-    // the finished flag fades in under the dots, holds, then gives way to the dashed target
-    if (t >= T.xf1 - 0.3 && t < T.down + 0.1)
-      drawFlag(smooth((t - (T.xf1 - 0.3)) / 0.5) * (1 - smooth((t - T.hold) / (T.down - T.hold))));
-    drawDots(t);
+    // frame 0 is the finished flag; it lets go of its colour and leaves the dashed target behind
+    if (t < T.down + 0.1) drawFlag(1 - smooth((t - T.hold) / (T.down - T.hold)));
     if (t >= T.down - 0.2) drawLive(t);
+    // the ending: the dots fly back from the outline to the equations (the opening, in mirrored time)
+    if (t >= T.xr0 && t <= T.xr0 + T.rv) drawDots(T.xf1 + 0.5 - (t - T.xr0));
     drawLock(t);
   }
 

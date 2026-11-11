@@ -1,4 +1,4 @@
-// THE FLAG OF BRAZIL, DRAWN BY ROTATING CIRCLES (22.4 s).
+// THE FLAG OF BRAZIL, DRAWN BY ROTATING CIRCLES (21.8 s).
 //   node build.mjs  ->  index.html (GSAP from cdnjs) + dist/index.html (GSAP vendored, for offline render)
 // The flag is built from its legal geometry (20 x 14 modules), every shape is resampled by arc length, turned into
 // z = x + i y and expanded with a complex DFT. The page draws the circles on a canvas from the time alone.
@@ -19,21 +19,26 @@ const FLAG = {
 };
 const W = 1080,
   H = 1920,
-  DUR = 22.4;
+  DUR = 21.8;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
-  xf0: 1.3, // the equations start turning into the flag
-  xf1: 3.1, // the flag is complete
-  hold: 3.7,
-  down: 4.1, // the filled flag has gone, only the dashed target is left
+  hold: 1.4, // the finished flag stays on screen at the start
+  down: 1.8, // the filled flag has gone, only the dashed target is left
   roles: ["field", "rhombus", "disc", "band", "star"],
-  a: [4.2, 6.9, 9.4, 10.9, 12.9],
-  b: [6.6, 9.1, 10.6, 12.6, 15.0],
-  lock: 15.6,
-  banF: 16.5,
-  card: 18.2,
-  pulse: 20.8,
+  a: [2.0, 4.7, 7.2, 8.7, 10.7],
+  b: [4.4, 6.9, 8.4, 10.4, 12.8],
+  lock: 13.4,
+  banF: 14.2,
+  // the ending: the flag lets go of its dots, which fly back to the equations they came from.
+  // It plays the old opening backwards: the dot law below (xf0 .. xf1) is the same, read in reverse time.
+  xf0: 1.3,
+  xf1: 3.1,
+  xr0: 14.8,
+  rv: 2.3,
+  xr1: 17.1,
+  card: 17.6,
+  pulse: 20.2,
 };
 const SWEEP_N = [1, 4, 16, 64]; // only used to assert that the error falls as N grows
 const LIVE_N = { field: 80, rhombus: 64, disc: 1, band: 64, star: 40 };
@@ -401,7 +406,7 @@ const wall = `<div id="wall" data-layout-ignore>${wallItems
       size: it2.base,
       color: "#FFFFFF",
       html: `<span class="wi" data-m="${it2.id}" data-mraw style="display:inline-block;transform:scale(${it2.f.toFixed(4)})">${tx(it2.tex)}</span>`,
-      style: `opacity:${it2.op};`,
+      style: "opacity:0;",
     }),
   )
   .join("")}</div>`;
@@ -472,8 +477,14 @@ const mkFormula = (id, n, hidden = true) =>
     m: true,
     style: hidden ? "opacity:0" : "",
   });
-const counters = [...T.roles.map((r, i) => mkCounter("l" + i, LIVE_N[r]))].join("");
-const formulas = [...T.roles.map((r, i) => mkFormula("fl" + i, LIVE_N[r]))].join("");
+const counters = [
+  mkCounter("ch", 80, false),
+  ...T.roles.map((r, i) => mkCounter("l" + i, LIVE_N[r])),
+].join("");
+const formulas = [
+  mkFormula("fh", 80, false),
+  ...T.roles.map((r, i) => mkFormula("fl" + i, LIVE_N[r])),
+].join("");
 
 // pips: one per shape, lit when the shape is finished
 const PIP_COL = [FLAG.field, FLAG.rhombus, FLAG.disc, FLAG.white, FLAG.white];
@@ -495,12 +506,13 @@ const bn = (id, l1, l2, op) =>
   `<div id="${id}" class="ba" style="opacity:${op}"><div class="l1">${tx(l1)}</div><div class="l2">${tx(l2)}</div></div>`;
 const nv = (r) => 2 * LIVE_N[r] + 1;
 const banners = [
-  bn("bn0", it("THESE EQUATIONS DRAW"), it("THE FLAG OF BRAZIL"), 1),
+  bn("bn0", it("CAN ROTATING CIRCLES"), it("DRAW A WHOLE FLAG?"), 1),
   bn("bnR0", it("THE FIELD: A CLOSED CURVE"), it(`${nv("field")} CIRCLES`), 0),
   bn("bnR1", it("THE RHOMBUS: 4 SHARP CORNERS"), it(`${nv("rhombus")} CIRCLES`), 0),
   bn("bnR2", it("THE DISC"), it("ONE CIRCLE IS ENOUGH"), 0),
   bn("bnR3", it("THE BAND: A CURVED SLICE"), it(`${nv("band")} CIRCLES`), 0),
   bn("bnR4", it("27 STARS, ALL AT ONCE"), it(`${nv("star")} CIRCLES EACH`), 0),
+  bn("bnE", it("THE FLAG IS JUST NUMBERS"), it("EVERY CIRCLE IS A COEFFICIENT"), 0),
   bn("bnF2", it("ONLY ROTATING CIRCLES"), it("ZERO PIXELS, ZERO PAINT"), 0),
 ].join("\n");
 const banner = `<div id="banner">${banners}</div>`;
@@ -537,11 +549,14 @@ fs.writeFileSync(
   new URL("./assets/sched.json", import.meta.url),
   JSON.stringify({
     dur: DUR,
-    xf0: T.xf0,
-    xf1: T.xf1,
+    hold: T.hold,
     a: T.a,
     b: T.b,
     lock: T.lock,
+    banF: T.banF,
+    xr0: T.xr0,
+    xr1: T.xr1,
+    rv: T.rv,
     pulse: T.pulse,
     card: T.card,
   }),
@@ -608,6 +623,7 @@ ${header}
 <div id="plate"></div>
 <div id="glow" style="position:absolute;left:140px;top:420px;width:800px;height:700px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(176,38,255,.35),transparent 70%);opacity:0"></div>
 <div id="rw" style="position:absolute;left:90px;top:445px;width:900px;height:630px;border-radius:24px;background:radial-gradient(ellipse at center,rgba(255,0,68,.32),transparent 75%);opacity:0"></div>
+<div id="fe" style="position:absolute;left:90px;top:340px;width:900px;height:1040px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(176,38,255,.30),transparent 72%);opacity:0"></div>
 <div id="fc" style="position:absolute;left:140px;top:420px;width:800px;height:700px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,136,255,.35),transparent 70%);opacity:0"></div>
 <canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>
 ${wall}
