@@ -167,8 +167,8 @@ const labels = [
   }),
   box({
     id: "lg",
-    cx: 905,
-    cy: 790,
+    cx: 640,
+    cy: 792,
     w: 120,
     h: 40,
     size: 36,
