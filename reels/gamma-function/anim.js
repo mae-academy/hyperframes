@@ -186,7 +186,7 @@
     { opacity: 0, duration: 0.9, ease: "power2.inOut", immediateRender: false },
     LK + 0.15,
   );
-  cswap("#c35", LK + 0.3, true);
+  cswap("#cfin", LK + 0.3, true);
   fswap("#f5", LK + 0.5);
   ft(
     "#chkp",

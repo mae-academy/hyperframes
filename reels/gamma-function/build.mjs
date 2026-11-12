@@ -287,7 +287,7 @@ const counters = [
   ...["2.7", "1.9", "1.1", "0.4", "0"].map((v, i) => mkC("r" + (i + 1), `\\Gamma(x)=${v}`)),
   ...[1, 2, 3, 4].map((n) => mkC("n" + n, `${n - 1}!=${fact(n - 1)}`, C.blue, 84)),
   mkC("cp", "\\Gamma\\to\\pm\\infty", C.purple, 76),
-  mkC("c35", "2.5!=3.323", C.blue, 84),
+  mkC("cfin", "2.5!=3.323", C.blue, 84),
 ].join("");
 const mkF = (id, tex, color = C.blue, size = 46, hidden = true) =>
   box({
