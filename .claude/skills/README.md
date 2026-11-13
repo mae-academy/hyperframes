@@ -55,3 +55,11 @@ normal `npx skills add` discovery and from `npx skills add ... --all`. A named
 `metadata.internal`; no environment variable is needed. `INSTALL_INTERNAL_SKILLS=1`
 opts internal skills into normal discovery and bulk installation. This does not
 change local agent discovery.
+
+## MAE paper explainer
+
+`mae-paper-explainer` builds a full 1920×1080 educational video from a
+narration audio file in the MAE Academy paper cut-out style (spec v2.0 in
+`mae-paper-explainer/references/style-spec.md`). It layers on top of the
+`/hyperframes` render contract; see its `SKILL.md` for the pipeline and the
+resolved spec-vs-framework collisions.

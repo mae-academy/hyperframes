@@ -1,25 +1,25 @@
-# Project-local Codex CLI skills
+# Project-local Claude Code skills
 
-Skills in this directory are auto-discovered by Codex CLI (verified against
-Codex 0.144.3) when the `hyperframes` repo is opened as the working
-directory. They are NOT part of the marketplace-distributed plugin (that
-set lives under `skills/` and is manifested by `.codex-plugin/`). Two
-separate namespaces, on purpose:
+Skills in this directory are auto-discovered by Claude Code when the
+`hyperframes` repo is opened as the working directory. They are NOT part of
+the marketplace-distributed plugin (that set lives under `skills/` and is
+manifested by `.claude-plugin/`). Two separate namespaces, on purpose:
 
-- `.agents/skills/` — **repo-native**, run only against this repo
-  (weekly changelog videos, doctrine-heavy authoring flows). Codex CLI's
+- `.claude/skills/` — **repo-native**, run only against this repo (weekly
+  changelog videos, doctrine-heavy authoring flows). Claude Code's
   project-local skill dir.
-- `skills/` — **marketplace-distributable**, installed into other
-  projects via `npx hyperframes skills` or `npx skills add
-heygen-com/hyperframes`.
+- `skills/` — **marketplace-distributable**, installed into other projects
+  via `npx hyperframes skills` or `npx skills add heygen-com/hyperframes`.
+
+> **Warning:** Never run `npx skills add ... --all` from inside a HyperFrames checkout: it selects the OpenClaw target, whose `skills/` directory is the repo's own `skills/`, and removes each existing `skills/<name>` destination before linking. A fresh clone restores tracked source, but uncommitted work under `skills/` does not recover. Run it from an empty directory or from your own project root. This happens regardless of `metadata.internal`.
 
 ## Weekly changelog video
 
 The `changelog-video` skill turns a weekly changelog markdown into a
 ~45–60s branded 1080×1080 MP4 (motion-doctrine layout, Annie VO,
 seam-gated cuts, caption rail). It ships pre-configured — fonts,
-background pattern, house BGM, lexicon, and the align-captions script
-all live inside `changelog-video/`. Its five dependency skills
+background pattern, house BGM, lexicon, and the align-captions script all
+live inside `changelog-video/`. Its five dependency skills
 (`motion-doctrine`, `cut-the-curve`, `captions-overlay`, `seam-craft`,
 `oversized-cursor`) sit alongside so the router graph is complete on
 clone.
@@ -29,11 +29,11 @@ Weekly usage:
 1. Regenerate the digest markdown for the target range:
    `bun run changelog:weekly --from YYYY-MM-DD --to YYYY-MM-DD` (this
    only reads git; the `--write` variant is what the docs cron uses).
-2. In Codex CLI at the repo root, invoke `/changelog-video` with the
-   generated markdown. The agent will present its script +
-   visualization plan for review before rendering.
-3. Accept, and the agent produces `weekly-changelog-<range>.mp4` gated
-   by `hyperframes check` (0 errors) + `seam-gate verify` (0 fail/warn).
+2. In Claude Code at the repo root, invoke `/changelog-video` with the
+   generated markdown. The agent will present its script + visualization
+   plan for review before rendering.
+3. Accept, and the agent produces `weekly-changelog-<range>.mp4` gated by
+   `hyperframes check` (0 errors) + `seam-gate verify` (0 fail/warn).
 
 TTS uses the tracked `skills/hyperframes-media/scripts/heygen-tts.mjs`
 (no extra install needed). Runtime dependencies you need on PATH:
@@ -41,13 +41,13 @@ TTS uses the tracked `skills/hyperframes-media/scripts/heygen-tts.mjs`
 - Node ≥ 22
 - HeyGen CLI ≥ 0.3.0, authenticated via `heygen auth login --oauth`
 - `ffmpeg` (for VO wav conversion + frame QA)
-- A headless Chrome for HyperFrames rendering (`hyperframes doctor`
-  will point out the exact ask if it's missing)
+- A headless Chrome for HyperFrames rendering (`hyperframes doctor` will
+  point out the exact ask if it's missing)
 
-The parallel set at `.claude/skills/` is a byte-identical copy so
-Claude Code users get the same auto-discover behaviour — keep the two
-in sync when editing. A `scripts/check-skill-mirror.mjs` check enforces
-this at CI time.
+The parallel set at `.agents/skills/` is a byte-identical copy so Codex
+CLI users get the same auto-discover behaviour — keep the two in sync
+when editing. A `scripts/check-skill-mirror.mjs` check enforces this at
+CI time.
 
 Each repo-native skill declares `metadata.internal: true`. That excludes it from
 normal `npx skills add` discovery and from `npx skills add ... --all`. A named
@@ -55,3 +55,11 @@ normal `npx skills add` discovery and from `npx skills add ... --all`. A named
 `metadata.internal`; no environment variable is needed. `INSTALL_INTERNAL_SKILLS=1`
 opts internal skills into normal discovery and bulk installation. This does not
 change local agent discovery.
+
+## MAE paper explainer
+
+`mae-paper-explainer` builds a full 1920×1080 educational video from a
+narration audio file in the MAE Academy paper cut-out style (spec v2.0 in
+`mae-paper-explainer/references/style-spec.md`). It layers on top of the
+`/hyperframes` render contract; see its `SKILL.md` for the pipeline and the
+resolved spec-vs-framework collisions.
