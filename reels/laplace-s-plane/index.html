@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>The Laplace Transform</title>
+<style>
+@font-face{font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_AMS-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Fraktur-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Fraktur-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Main-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Main-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Main-Italic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Main-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Math-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Math-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_SansSerif-Bold.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Script-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size1-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size2-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size3-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size4-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Typewriter-Regular.woff2) format("woff2")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.16.11"}.katex .katex-mathml{clip:rect(1px,1px,1px,1px);border:0;height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{border:0 solid;display:inline-block;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+
+.katex{font-size:1em !important;text-rendering:geometricPrecision}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0A0A10;width:1080px;height:1920px;overflow:hidden}
+#root{position:absolute;left:0;top:0;width:1080px;height:1920px;background:#0A0A10;overflow:hidden;
+  background-image:linear-gradient(#161622 2px,transparent 2px),linear-gradient(90deg,#161622 2px,transparent 2px);background-size:60px 60px}
+#flash0{position:absolute;left:0;top:0;width:1080px;height:700px;background:radial-gradient(ellipse at 50% 22%,rgba(255,0,68,.5),transparent 65%);opacity:0}
+.t{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1}
+.panel{position:absolute;border-radius:28px;background:rgba(30,30,46,.55);border:1px solid rgba(255,255,255,.1)}
+#cv{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#banner{position:absolute;left:130px;top:1450px;width:820px;height:96px;border-radius:24px;background:rgba(255,0,68,.08);border:2px solid rgba(255,0,68,.55)}
+.ba{position:absolute;left:0;top:0;width:816px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;white-space:nowrap}
+.ba .l1{font-size:26px;color:rgba(255,255,255,.88);line-height:1.15}
+.ba .l2{font-size:38px;color:#FF0044;line-height:1.15;margin-top:2px}
+#card{position:absolute;border-radius:36px;background:rgba(30,30,46,.55);border:2px solid rgba(255,0,68,.5);overflow:hidden}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="24.2" data-width="1080" data-height="1920" data-fps="60">
+
+<div id="flash0"></div>
+<div id="h-title" class="t "  style="left:30px;top:135px;width:1020px;height:90px;font-size:58px;color:#FF0044;text-shadow:0 0 22px rgba(255,0,68,.35)"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord text"><span class="mord text"><span class="mord textbf textit">THE LAPLACE TRANSFORM</span></span></span></span></span></span></div>
+<div id="h-sub" class="t "  style="left:40px;top:211px;width:1000px;height:50px;font-size:35px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE s-PLANE AS A LANDSCAPE</span></span></span></span></span></div>
+<div id="h-rule" style="position:absolute;left:480px;top:274px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,#FF0044,#B026FF,#0088FF)"></div>
+<div id="wm" class="t wm" data-layout-ignore  style="left:40px;top:720px;width:1000px;height:160px;font-size:130px;color:rgba(255,0,68,.12);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">@MAE.Academy</span></span></span></span></span></div>
+<div class="panel" style="left:90px;top:340px;width:900px;height:650px"></div>
+<div class="panel" style="left:90px;top:1010px;width:440px;height:220px"></div>
+<div class="panel" style="left:550px;top:1010px;width:440px;height:220px"></div>
+<div id="glow" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(37,99,235,.40),transparent 70%);opacity:0"></div>
+<div id="rw" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(255,0,68,.30),transparent 75%);opacity:0"></div>
+<div id="sw" style="position:absolute;left:90px;top:340px;width:900px;height:650px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(6,182,212,.45),transparent 70%);opacity:0"></div>
+<canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>
+<div id="ax1" class="t "  style="left:768.7946662292627px;top:676.4157337925476px;width:60px;height:40px;font-size:34px;color:rgba(255,255,255,.6);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span></span></span></span></div><div id="ax2" class="t "  style="left:264.88008880344205px;top:647.3200929814104px;width:70px;height:40px;font-size:34px;color:rgba(255,255,255,.6);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span></span></span></span></div><div id="lh" class="t "  style="left:105px;top:373px;width:200px;height:44px;font-size:36px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mord">∣</span></span></span></span></div><div id="lgp" class="t "  style="left:870px;top:374px;width:110px;height:36px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">poles</span></span></span></span></span></div><div id="lgz" class="t "  style="left:870px;top:418px;width:110px;height:36px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord text"><span class="mord textit">zeros</span></span></span></span></span></div><div id="ls" class="t "  style="left:95px;top:1034px;width:150px;height:36px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span></span></span></span></div><div id="mx1" class="t "  style="left:453px;top:1131px;width:40px;height:32px;font-size:28px;color:rgba(255,255,255,.6);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span></span></span></span></div><div id="mx2" class="t "  style="left:353px;top:1027px;width:60px;height:32px;font-size:28px;color:rgba(255,255,255,.6);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span></span></span></span></div><div id="lt" class="t "  style="left:870px;top:1187px;width:110px;height:36px;font-size:32px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span></span></span></span></div><div id="lw" class="t "  style="left:830px;top:1187px;width:150px;height:36px;font-size:30px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mclose">)</span><span class="mord">∣</span></span></span></span></div>
+<div id="c0" class="t " data-m="c0" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.4271em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4911em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">5</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="c1" class="t " data-m="c1" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0908em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="c2" class="t " data-m="c2" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0908em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">5</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="c3" class="t " data-m="c3" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0908em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">5</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="c4" class="t " data-m="c4" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0908em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">4</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="c5" class="t " data-m="c5" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.4271em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4911em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">5</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="c6" class="t " data-m="c6" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord text"><span class="mord textit">AT </span></span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></div><div id="cfin" class="t " data-m="cfin" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">STABLE: POLES ON THE LEFT</span></span></span></span></span></div>
+<div id="fm0" class="t " data-m="fm0" style="left:100px;top:1338px;width:880px;height:100px;font-size:50px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2151em;vertical-align:-0.3558em;"></span><span class="mop"><span class="mop op-symbol small-op" style="margin-right:0.19445em;position:relative;top:-0.0006em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8593em;"><span style="top:-2.3442em;margin-left:-0.1945em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span><span style="top:-3.2579em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∞</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3558em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7936em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">t</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span></span></span></span></div><div id="f1" class="t " data-m="f1" style="left:100px;top:1338px;width:880px;height:100px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7936em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7936em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">t</span></span></span></span></span></span></span></span></span></span></span></span></div><div id="f2" class="t " data-m="f2" style="left:100px;top:1338px;width:880px;height:100px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7936em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">t</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">sin</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">2</span><span class="mord mathnormal">t</span></span></span></span></div><div id="f3" class="t " data-m="f3" style="left:100px;top:1338px;width:880px;height:100px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7936em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">sin</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">2</span><span class="mord mathnormal">t</span></span></span></span></div><div id="f4" class="t " data-m="f4" style="left:100px;top:1338px;width:880px;height:100px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.1901em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">sin</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">2</span><span class="mord mathnormal">t</span></span></span></span></div><div id="f5" class="t " data-m="f5" style="left:100px;top:1338px;width:880px;height:100px;font-size:40px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2em;vertical-align:-0.35em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7936em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">t</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8451em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">cos</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">2</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop">sin</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">2</span><span class="mord mathnormal">t</span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span></span></span></span></div><div id="f6" class="t " data-m="f6" style="left:100px;top:1338px;width:880px;height:100px;font-size:36px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.4271em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4911em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord">5</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7401em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="f7" class="t " data-m="f7" style="left:100px;top:1338px;width:880px;height:100px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span></span></span></span></div>
+<div id="banner"><div id="bn0" class="ba" style="opacity:1"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">WHAT DOES THE s-PLANE LOOK LIKE?</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">∣</span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)∣</span><span class="mord text"><span class="mord textit"> IS A LANDSCAPE</span></span></span></span></span></div></div>
+<div id="bn1" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">A POLE IS A MOUNTAIN</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PEAK AT </span></span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">1</span></span></span></span></div></div>
+<div id="bn2" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SWAP THE FUNCTION</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE LANDSCAPE SNAPS</span></span></span></span></span></div></div>
+<div id="bn3" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">PUSH THE POLES RIGHT</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">h</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mord text"><span class="mord textit"> GROWS: UNSTABLE</span></span></span></span></span></div></div>
+<div id="bn4" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">PUT THEM ON THE </span></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mord text"><span class="mord textit"> AXIS</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">NO DECAY: A PURE SINE</span></span></span></span></span></div></div>
+<div id="bn5" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">ADD ZEROS: DIG HOLES</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">A NOTCH AT </span></span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></div></div>
+<div id="bn6" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">CUT ALONG THE </span></span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mord text"><span class="mord textit"> AXIS</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord textit">THE SLICE IS </span></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">jω</span><span class="mclose">)</span></span></span></span></div></div>
+<div id="bnF" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">POLES MAKE PEAKS, ZEROS MAKE HOLES</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE SHAPE IS THE SYSTEM</span></span></span></span></span></div></div></div>
+<div id="card" style="left:90px;top:1430px;width:900px;height:230px;opacity:0">
+  <div id="ctaglow" style="position:absolute;left:100px;top:80px;width:700px;height:110px;border-radius:55px;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
+  <div id="ct1" class="t" style="left:0;top:12px;width:900px;height:60px;font-size:42px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SAVE THIS</span></span></span></span></span><svg width="34" height="44" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="#FF0044"/></svg></div>
+  <div id="ct2" class="t "  style="left:10px;top:74px;width:880px;height:52px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">TRY THE s-PLANE SIMULATOR</span></span></span></span></span></div>
+  <div id="ct2b" class="t "  style="left:10px;top:128px;width:880px;height:44px;font-size:32px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">LINK IN BIO </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↓</span></span></span></span></div>
+  <div id="ct3" class="t" style="left:0;top:180px;width:900px;height:44px;font-size:30px;color:rgba(255,255,255,.7);opacity:0"><svg width="30" height="30" viewBox="0 0 24 24" style="margin-right:14px;flex:none"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">@MAE.ACADEMY</span></span></span></span></span></div>
+</div>
+<audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="24.2" data-track-index="2" data-volume="1"></audio>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+window.__CFG = {"T":{"rewind0":1.6,"s1":2.2,"st":[2.2,4.9,7.6,10.3,13],"sw":[2.4,5.1,7.8,10.5,13.2],"cutBan":15.7,"cut":15.9,"lock":17.9,"banF":18.9,"card":20.2,"pulse":22.6},"MORPH":[0.5,0.22,0.22,0.22,0.22],"CAM":{"S":275,"CX":540,"CY":790,"HM":0.5},"PS":[90,340,900,650],"PM":[90,1010,440,220],"PR":[550,1010,440,220],"MAP":{"cx":345,"cy":1125,"half":100},"RP":{"x0":585,"x1":970,"y0":1130,"amp":78},"spark":[{"a":0.8137178728555913,"d":282.28269807994366,"r":5.1502158641815186},{"a":1.2356398125807928,"d":236.48554645478725,"r":3.2414051219820976},{"a":4.632593377903269,"d":292.20895022153854,"r":5.124912387691438},{"a":0.9630597596474776,"d":165.1195578277111,"r":2.822338315891102},{"a":0.34308764412035625,"d":307.8343614190817,"r":4.536405361141078},{"a":5.215214334861854,"d":356.9752252846956,"r":5.18205526843667},{"a":1.3729322078401343,"d":232.97345481812954,"r":5.01537409494631},{"a":3.2988215150315456,"d":360.43163903057575,"r":4.274459536536597},{"a":2.0676569341649738,"d":305.28295800089836,"r":2.9599046900402755},{"a":1.1642453668069843,"d":422.2421834617853,"r":3.6461239400086924},{"a":1.1991046331439206,"d":416.67524814605713,"r":5.473523962893523},{"a":0.49644583352165295,"d":247.58678555488586,"r":5.585378082701936},{"a":6.0392474713095785,"d":441.0943202674389,"r":5.377416534698568},{"a":0.07280262584730371,"d":244.62902329862118,"r":2.5309056419646367},{"a":0.650318662874055,"d":384.70697827637196,"r":4.325705986353569},{"a":1.2643837448752342,"d":358.09780918061733,"r":3.6098025703104213},{"a":5.691003586628249,"d":353.3752007782459,"r":3.8589919451624155},{"a":5.932549819152664,"d":245.42451076209545,"r":5.029134937445633},{"a":0.5497947546897858,"d":434.21289689838886,"r":4.0938948061084375},{"a":3.2591787962331855,"d":199.60978493094444,"r":4.748302815016359},{"a":2.8605466893430047,"d":206.94688364863396,"r":4.0398634938756},{"a":5.175395872788796,"d":366.21484868228436,"r":3.990836111479439},{"a":4.301800839020539,"d":162.8124614059925,"r":4.484841882251203},{"a":0.5953833021386322,"d":335.71567341685295,"r":5.696611693827435},{"a":5.019750204699116,"d":468.2719311863184,"r":2.597455592826009},{"a":3.5975485529545943,"d":272.7324217557907,"r":3.370800139149651},{"a":3.7147170310234374,"d":289.041218906641,"r":3.047196171246469},{"a":1.862900330807713,"d":336.3548707216978,"r":4.404695091419853}],"glitch":[0.8660100717097521,0.03734940243884921,0.8766151263844222,0.15542422467842698,0.8756627165712416,0.6791677048895508,0.6057666579727083,0.7014002217911184,0.5910371844656765,0.3694166196510196,0.7768915826454759,0.029943044064566493,0.6696216494310647,0.25114645017310977,0.636768190888688,0.24591268063522875,0.9112564146053046,0.5845867425668985,0.8983250397723168,0.7540890746749938,0.2772693333681673,0.2939923764206469,0.6925967938732356,0.17683902033604681,0.9589545577764511,0.5956141939386725,0.639750883448869,0.4774825097993016,0.5792771792039275,0.15713664097711444,0.13813836756162345,0.9755711946636438,0.4818323119543493,0.05709271621890366,0.4959207712672651,0.04488127329386771,0.11765024089254439,0.7895323119591922,0.04917729273438454,0.4318875460885465,0.5002956476528198,0.794642973691225,0.9736820997204632,0.5955825499258935,0.5692696061450988,0.7470907140523195,0.061377472477033734,0.5720295247156173,0.8557516627479345,0.8047756357118487,0.9215560622978956,0.3250034882221371,0.6210518539883196,0.63088035187684,0.06094118230976164,0.2868549379054457,0.40534884948283434,0.1314748607110232,0.44584104092791677,0.0003433369565755129,0.08522771345451474,0.02655680268071592,0.9981194094289094,0.9810144181828946,0.2421391666866839,0.9491454816889018,0.7950510960072279,0.3060965104959905,0.8227352446410805,0.650533604901284,0.6183831715025008,0.7900448418222368,0.26353363785892725,0.42835767660290003,0.9204575843177736,0.49463551002554595,0.7386431961786002,0.7369041689671576,0.642596217803657,0.00909786717966199,0.38639653264544904,0.3003994766622782,0.6228541044984013,0.2638456386048347,0.48273718543350697,0.31193531467579305,0.5057396192569286,0.018312416272237897,0.3808491884265095,0.9974891585297883,0.07148467306979,0.9756572586484253,0.07512091076932847,0.08486817427910864,0.03422462986782193,0.9758844366297126,0.9590281420387328,0.8556760805658996,0.43636174965649843,0.6671908195130527,0.13453809032216668,0.017285848269239068,0.6837537540122867,0.682161366334185,0.8891906302887946,0.023935060016810894,0.938217036658898,0.3563430570065975,0.14229532238096,0.9328159547876567,0.8243896143976599,0.8987883082590997,0.1827481931541115,0.26464969804510474,0.9362118018325418,0.26792863034643233,0.9227929045446217,0.9010364802088588,0.09835974150337279,0.4457643423229456,0.6606336992699653,0.3605992067605257,0.4092392569873482,0.4413381216581911,0.34245062712579966,0.6593822776339948,0.20879763644188643,0.0993078330066055,0.4397872108966112,0.1802138746716082,0.6454127114266157,0.5993130567949265,0.2059720519464463,0.9612859638873488,0.9626172992866486,0.612160436809063,0.5551712966989726,0.8614892028272152,0.2639541276730597,0.9898013323545456,0.25099739991128445,0.5337786802556366,0.3380592167377472,0.018268143758177757,0.941886211046949,0.6169979386031628,0.12702609552070498,0.6133095831610262,0.5294781613629311,0.9446069833356887,0.5468993077520281,0.3584728338755667,0.1852280201856047,0.8377147398423404,0.002768035279586911,0.6290913200937212,0.30753907817415893,0.45701290969736874,0.1911750389263034,0.17371109267696738,0.780726405326277,0.16722602467052639,0.10003976337611675,0.9960045248735696,0.621101388707757,0.28965216712094843,0.5160474795848131,0.3341942373663187,0.37166411080397666,0.488821612438187,0.6368170341011137,0.3837570305913687,0.47986114700324833,0.6260924108792096,0.4142054789699614,0.35025752359069884,0.5942311177495867,0.42072573653422296,0.9265356108080596,0.8017368293367326,0.6623493616934866,0.9774283079896122,0.7250745703931898,0.9274285794235766,0.08487613894976676,0.4914085266645998,0.8800497625488788,0.06096989940851927,0.9087070794776082,0.10531758889555931,0.6742693921551108,0.565052636899054,0.011852079536765814,0.08952020341530442,0.9960422154981643,0.9408694668672979,0.3929860673379153,0.10415469785220921,0.2743657846003771,0.9979603013489395]};
+// The maths of the s-plane landscape. Plain JS: build.mjs runs it for the assertions, the page inlines the same text.
+// The surface follows the MAE Academy simulator: adaptive grid (denser near poles and zeros), compressive height law
+// (floor + spire), log colour law through the site's heat colormap, isometric camera 40 deg / 28 deg.
+globalThis.LAP = (function () {
+  const EXT = 3.5,
+    N = 80,
+    HA = 2.7,
+    XD = 0.35;
+  // the five systems of the reel (poles p, zeros z as [re, im], gain K)
+  const SYS = {
+    A: { K: 1, z: [], p: [[-1, 0]] },
+    B: {
+      K: 1,
+      z: [],
+      p: [
+        [-1, 2],
+        [-1, -2],
+      ],
+    },
+    C: {
+      K: 1,
+      z: [],
+      p: [
+        [1, 2],
+        [1, -2],
+      ],
+    },
+    D: {
+      K: 1,
+      z: [],
+      p: [
+        [0, 2],
+        [0, -2],
+      ],
+    },
+    E: {
+      K: 1,
+      z: [
+        [0, 1],
+        [0, -1],
+      ],
+      p: [
+        [-1, 0],
+        [-1, 2],
+        [-1, -2],
+      ],
+    },
+  };
+  const ORDER = ["A", "B", "C", "D", "E"];
+  const hyp = Math.hypot;
+  const cmul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+  const cdiv = (a, b) => {
+    const d = b[0] * b[0] + b[1] * b[1];
+    return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d];
+  };
+  /** |H(s)| at s = re + j im; Infinity exactly on a pole */
+  function mag(S, re, im) {
+    let num = Math.abs(S.K),
+      den = 1;
+    for (const z of S.z) num *= hyp(re - z[0], im - z[1]);
+    for (const p of S.p) den *= hyp(re - p[0], im - p[1]);
+    return den === 0 ? Infinity : num / den;
+  }
+  /** H(s) as a complex number */
+  function Hc(S, re, im) {
+    let num = [S.K, 0],
+      den = [1, 0];
+    for (const z of S.z) num = cmul(num, [re - z[0], im - z[1]]);
+    for (const p of S.p) den = cmul(den, [re - p[0], im - p[1]]);
+    return cdiv(num, den);
+  }
+  /** residues at the (simple) poles: h(t) = sum Re(r e^{pt}) */
+  function residues(S) {
+    return S.p.map((p, k) => {
+      let num = [S.K, 0],
+        den = [1, 0];
+      for (const z of S.z) num = cmul(num, [p[0] - z[0], p[1] - z[1]]);
+      S.p.forEach((q, j) => {
+        if (j !== k) den = cmul(den, [p[0] - q[0], p[1] - q[1]]);
+      });
+      return { p, r: cdiv(num, den) };
+    });
+  }
+  function h(S, t) {
+    let s = 0;
+    for (const { p, r } of residues(S))
+      s += Math.exp(p[0] * t) * (r[0] * Math.cos(p[1] * t) - r[1] * Math.sin(p[1] * t));
+    return s;
+  }
+
+  // ---- the adaptive grid of the simulator (denser around the poles and zeros), snapped onto them
+  function adapt(n, lo, hi, centers, width, strength) {
+    const cum = new Float64Array(4097);
+    for (let k = 1; k <= 4096; k++) {
+      const p = lo + ((hi - lo) * (k - 0.5)) / 4096;
+      let f = 1;
+      for (const c of centers) f += strength * Math.exp(-((Math.abs(p - c) / width) ** 2));
+      cum[k] = cum[k - 1] + f;
+    }
+    const out = new Float64Array(n + 1);
+    let m = 0;
+    for (let k = 0; k <= n; k++) {
+      const p = (cum[4096] * k) / n;
+      while (m < 4096 && cum[m + 1] < p) m++;
+      const f = cum[m + 1] - cum[m] || 1;
+      out[k] = lo + ((hi - lo) * (m + (p - cum[m]) / f)) / 4096;
+    }
+    out[0] = lo;
+    out[n] = hi;
+    for (const c of centers) {
+      if (c <= lo || c >= hi) continue;
+      let q = 1;
+      for (let k = 1; k < n; k++) if (Math.abs(out[k] - c) < Math.abs(out[q] - c)) q = k;
+      if (c > out[q - 1] && c < out[q + 1]) out[q] = c;
+    }
+    return out;
+  }
+  const reC = [-1, 1, 0];
+  const imC = [0, 2, -2, 1, -1];
+  const gx = adapt(N, -EXT, EXT, reC, 0.06 * EXT, 5);
+  const gy = adapt(N, -EXT, EXT, imC, 0.06 * EXT, 5);
+  const NV = (N + 1) * (N + 1);
+
+  // ---- the site's height and colour laws
+  const k8 = (e, t) => {
+    if (!(e >= 0)) return 0;
+    const a = 0.75 * t;
+    if (e <= a) return e;
+    if (!Number.isFinite(e)) return t;
+    const n = t - a,
+      i = e - a;
+    return a + i / (1 + i / n);
+  };
+  const w8 = (e) => {
+    if (!(e > 0)) return 0;
+    if (!Number.isFinite(e)) return 1;
+    const a = Math.pow(e, 2.4);
+    return a / (1 + a);
+  };
+  const fb = (e, t, a) => {
+    if (!(e > 0)) return 0;
+    const n = k8(e / t, 1);
+    return XD * n + (HA - XD) * w8(e / a);
+  };
+  const m8 = (e, t, a) => {
+    if (!(e > 0)) return 0;
+    if (!Number.isFinite(e)) return 1;
+    const n = t / 6;
+    return Math.min(1, Math.log1p(e / n) / Math.log1p(a / n));
+  };
+  const KL = [-0.45, 0.8, 0.4],
+    KN = hyp(KL[0], KL[1], KL[2]);
+  function shadeOf(y) {
+    const B = new Float32Array(NV),
+      Wz = new Float32Array(NV);
+    for (let i = 0; i <= N; i++)
+      for (let j = 0; j <= N; j++) {
+        B[i * (N + 1) + j] = gx[j] / EXT;
+        Wz[i * (N + 1) + j] = -gy[i] / EXT;
+      }
+    const out = new Float32Array(NV),
+      n1 = N + 1;
+    for (let i = 0; i <= N; i++)
+      for (let j = 0; j <= N; j++) {
+        const A = i * n1 + j,
+          jm = Math.max(0, j - 1),
+          jp = Math.min(N, j + 1),
+          im = Math.max(0, i - 1),
+          ip = Math.min(N, i + 1);
+        const a = i * n1 + jm,
+          b = i * n1 + jp,
+          c = im * n1 + j,
+          d = ip * n1 + j;
+        const ne = B[b] - B[a],
+          te = y[b] - y[a],
+          ge = Wz[b] - Wz[a],
+          le = B[d] - B[c],
+          ee = y[d] - y[c],
+          Me = Wz[d] - Wz[c];
+        let fe = te * Me - ge * ee,
+          be = ge * le - ne * Me,
+          Se = ne * ee - te * le;
+        if (be < 0) {
+          fe = -fe;
+          be = -be;
+          Se = -Se;
+        }
+        const E = hyp(fe, be, Se);
+        out[A] = E < 1e-12 ? 1 : Math.max(0, (fe * KL[0] + be * KL[1] + Se * KL[2]) / (E * KN));
+      }
+    return out;
+  }
+  /** heights (hgt), colour parameter (col) and shading (shade) of one system on the common grid */
+  function surface(S) {
+    const m = new Float64Array(NV);
+    for (let i = 0; i <= N; i++)
+      for (let j = 0; j <= N; j++) m[i * (N + 1) + j] = mag(S, gx[j], gy[i]);
+    const samp = [],
+      F = 96;
+    for (let a = 0; a <= F; a++)
+      for (let b = 0; b <= F; b++) {
+        const v = mag(S, -EXT + (2 * EXT * a) / F, -EXT + (2 * EXT * b) / F);
+        if (Number.isFinite(v) && v > 0) samp.push(v);
+      }
+    samp.sort((u, v) => u - v);
+    const g = (q) =>
+      samp.length ? samp[Math.min(samp.length - 1, Math.floor(q * samp.length))] : 1;
+    const med = g(0.5);
+    let b = 0;
+    for (let k = 0; k <= 360; k++) {
+      const v = mag(S, 0, -EXT + (2 * EXT * k) / 360);
+      if (Number.isFinite(v)) b = Math.max(b, v);
+    }
+    const floorScale = Math.max(4 * med, 1.15 * Math.min(b, 12 * med), 1e-9);
+    const spire = Math.max(g(0.996), 1.5 * floorScale);
+    const ceil = 4 * spire;
+    const hgt = new Float32Array(NV),
+      col = new Float32Array(NV);
+    for (let v = 0; v < NV; v++) {
+      hgt[v] = fb(m[v], floorScale, spire);
+      col[v] = m8(m[v], floorScale, ceil);
+    }
+    return { hgt, col, shade: shadeOf(hgt), mag: m };
+  }
+  const SURF = {
+    FLAT: {
+      hgt: new Float32Array(NV),
+      col: new Float32Array(NV),
+      shade: shadeOf(new Float32Array(NV)),
+    },
+  };
+  for (const k of ORDER) SURF[k] = surface(SYS[k]);
+
+  // ---- the camera (isometric, as in the simulator): theta = 40 deg yaw, phi = 28 deg pitch
+  const TH = (40 * Math.PI) / 180,
+    PH = (28 * Math.PI) / 180;
+  const CT = Math.cos(TH),
+    ST = Math.sin(TH),
+    CP = Math.cos(PH),
+    SP = Math.sin(PH);
+  /** world (x = sigma/EXT, y = height, z = -omega/EXT) -> [screen right, screen up, depth (bigger = nearer)] */
+  function proj(x, y, z) {
+    const xp = x * CT + z * ST,
+      zp = -x * ST + z * CT;
+    return [xp, y * CP - zp * SP, zp];
+  }
+  // heat colormap of the site (MathNumberInput chunk): indigo, blue, cyan, green, amber, orange, rose
+  const HEAT = ["#1E1B4B", "#2563EB", "#06B6D4", "#10B981", "#F59E0B", "#EA580C", "#E11D48"];
+  const hx = (s) => [
+    parseInt(s.slice(1, 3), 16),
+    parseInt(s.slice(3, 5), 16),
+    parseInt(s.slice(5, 7), 16),
+  ];
+  const LUT = [];
+  for (let k = 0; k < 256; k++) {
+    const l = (k / 255) * (HEAT.length - 1),
+      n = Math.min(HEAT.length - 2, Math.floor(l)),
+      c = l - n,
+      a = hx(HEAT[n]),
+      b = hx(HEAT[n + 1]);
+    LUT.push([a[0] + (b[0] - a[0]) * c, a[1] + (b[1] - a[1]) * c, a[2] + (b[2] - a[2]) * c]);
+  }
+  return {
+    EXT,
+    N,
+    NV,
+    HA,
+    SYS,
+    ORDER,
+    gx,
+    gy,
+    SURF,
+    mag,
+    Hc,
+    h,
+    residues,
+    proj,
+    HEAT,
+    LUT,
+    fb,
+    TH,
+    PH,
+  };
+})();
+
+// Timeline for "THE LAPLACE TRANSFORM: THE s-PLANE AS A LANDSCAPE" (24.2 s).
+// |H(s)| over the s-plane is drawn on a canvas from the time alone (hf-seek protocol): the 3D surface with the simulator's
+// grid, height law, heat colormap and isometric camera; poles (rose x) and zeros (blue o) on the floor and on the map; h(t) and |H(jw)|.
+// Text, counters and cards are GSAP. Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
+(function () {
+  const CFG = window.__CFG;
+  const { T, MORPH, CAM, PS, PR, MAP, RP } = CFG;
+  const tl = gsap.timeline({ paused: true });
+  const ft = (target, from, to, at) =>
+    tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
+
+  // @CUES-BEGIN
+  const CUES = [
+    [0.0, "thump"], // opening impact on the finished landscape
+    [1.6, "snap"], // rewind
+    [2.2, "click"], // a pole is a mountain
+    [2.4, "snap"], // the first landscape rises: 1/(s+1)
+    [4.9, "click"], // swap the function
+    [5.1, "snap"], // complex poles
+    [7.6, "click"], // push the poles right
+    [7.8, "snap"], // unstable
+    [10.3, "click"], // on the jw axis
+    [10.5, "snap"], // a pure sine
+    [13.0, "click"], // add zeros
+    [13.2, "snap"], // the notch
+    [15.7, "click"], // cut along the jw axis
+    [15.9, "snap"], // the slice
+    [17.9, "thump"], // lock
+    [18.9, "click"], // poles make peaks, zeros make holes
+    [20.2, "snap"], // CTA reveal
+    [22.6, "click"], // engagement pulse
+  ];
+  // @CUES-END
+  const EXPORT = [];
+  const used = new Set();
+  /** every cue is tied to the element that visibly appears at that instant (probed by verify.mjs) */
+  function hit(t, kind, sel) {
+    const i = CUES.findIndex((c) => c[0] === t && c[1] === kind);
+    if (i < 0) throw new Error(`visual event at ${t}s (${kind}) has no CUES entry`);
+    used.add(i);
+    EXPORT.push({ t, kind, sel });
+    return t;
+  }
+  let curBanner = "#bn0",
+    curCount = "#c0",
+    curForm = "#fm0";
+  function bnSwap(n, t) {
+    ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, t);
+    ft(n, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, t + 0.075);
+    curBanner = n;
+  }
+  function cswap(n, t, pop) {
+    if (curCount)
+      ft(
+        curCount,
+        { opacity: 1 },
+        { opacity: 0, duration: pop ? 0.06 : 0.03, ease: "power1.in" },
+        t,
+      );
+    ft(
+      n,
+      { opacity: 0, scale: pop ? 1.3 : 1.08 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: pop ? 0.28 : 0.1,
+        ease: pop ? "back.out(2)" : "power2.out",
+      },
+      t,
+    );
+    curCount = n;
+  }
+  function fswap(n, t) {
+    if (curForm) ft(curForm, { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "power1.in" }, t);
+    ft(n, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, t + 0.06);
+    curForm = n;
+  }
+  const pop = (sel, at, y) =>
+    ft(
+      sel,
+      { opacity: 0, y: y === undefined ? 10 : y },
+      { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" },
+      at,
+    );
+  const fade = (sel, at, d) =>
+    ft(sel, { opacity: 1 }, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, at);
+
+  // ---------------------------------------------------------------- 0.0 - 2.2  the finished landscape, then the rewind
+  hit(0.0, "thump", "#flash0");
+  ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
+  hit(T.rewind0, "snap", "#rw");
+  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, T.rewind0);
+  tl.fromTo(
+    "#rw",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false },
+    T.rewind0 + 0.4,
+  );
+  fade("#c0", T.rewind0, 0.2);
+  fade("#fm0", T.rewind0, 0.2);
+  curCount = null;
+  curForm = null;
+
+  // ---------------------------------------------------------------- the five functions: the landscape snaps from one to the next
+  for (let k = 0; k < 5; k++) {
+    const st = T.st[k],
+      sw = T.sw[k];
+    hit(st, "click", "#bn" + (k + 1));
+    bnSwap("#bn" + (k + 1), st);
+    hit(sw, "snap", "#c" + (k + 1));
+    cswap("#c" + (k + 1), sw, true);
+    fswap("#f" + (k + 1), sw + 0.1);
+    ft("#sw", { opacity: 0 }, { opacity: 0.5, duration: 0.08, ease: "power2.out" }, sw);
+    tl.fromTo(
+      "#sw",
+      { opacity: 0.5 },
+      { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false },
+      sw + 0.08,
+    );
+  }
+
+  // ---------------------------------------------------------------- the cut along the jw axis: the frequency response
+  hit(T.cutBan, "click", "#bn6");
+  bnSwap("#bn6", T.cutBan);
+  hit(T.cut, "snap", "#c6");
+  cswap("#c6", T.cut, true);
+  fswap("#f6", T.cut + 0.1);
+  fade("#lt", T.cut, 0.15);
+  pop("#lw", T.cut, 6);
+
+  // ---------------------------------------------------------------- the lock
+  const LK = T.lock;
+  hit(LK, "thump", "#glow");
+  ft("#glow", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, LK);
+  tl.fromTo(
+    "#glow",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.9, ease: "power2.inOut", immediateRender: false },
+    LK + 0.15,
+  );
+  cswap("#cfin", LK + 0.3, true);
+  fswap("#f7", LK + 0.5);
+  hit(T.banF, "click", "#bnF");
+  bnSwap("#bnF", T.banF);
+
+  // ---------------------------------------------------------------- CTA
+  hit(T.card, "snap", "#card");
+  ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, T.card - 0.1);
+  ft("#banner", { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.in" }, T.card - 0.1);
+  ft("#card", { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power1.out" }, T.card);
+  ft("#ct1", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, T.card + 0.1);
+  ft("#ct2", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, T.card + 0.4);
+  ft("#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, T.card + 0.7);
+  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, T.card + 1.1);
+  hit(T.pulse, "click", "#ctaglow");
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.45, duration: 0.2, ease: "power2.out" }, T.pulse);
+  tl.fromTo(
+    "#ctaglow",
+    { opacity: 0.45 },
+    { opacity: 0, duration: 0.5, ease: "power2.in", immediateRender: false },
+    T.pulse + 0.3,
+  );
+
+  tl.to({}, { duration: 0.0001 }, 24.1999);
+  if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
+  window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
+
+  // ================================================================ canvas
+  const cvs = document.getElementById("cv");
+  const mainCtx = cvs.getContext("2d");
+  let ctx = mainCtx;
+  const DPR = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  cvs.width = Math.round(1080 * DPR);
+  cvs.height = Math.round(1920 * DPR);
+  const oc = document.createElement("canvas"); // off-screen copy of the hook scene (the rewind glitch cuts it into strips)
+  oc.width = cvs.width;
+  oc.height = cvs.height;
+  const octx = oc.getContext("2d");
+
+  const ROSE = "#E11D48",
+    SBLUE = "#3B82F6",
+    VIOLET = "#8B5CF6",
+    CYAN = "#06B6D4",
+    SLATE = "#94A3B8",
+    WHITE = "#FFFFFF";
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const smooth = (v) => {
+    v = clamp01(v);
+    return v * v * (3 - 2 * v);
+  };
+  const easeOut = (v) => 1 - Math.pow(1 - clamp01(v), 3);
+
+  function withClip(r, fn) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(r[0], r[1], r[2], r[3]);
+    ctx.clip();
+    fn();
+    ctx.restore();
+  }
+  function poly(pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  }
+  function line(pts, color, width, alpha, blur, dash) {
+    if (pts.length < 2 || alpha <= 0.001) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    if (dash) ctx.setLineDash(dash);
+    if (blur) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = blur;
+    }
+    poly(pts);
+    ctx.stroke();
+    ctx.restore();
+  }
+  function dot(x, y, r, color, alpha, blur) {
+    if (alpha <= 0.001 || r <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur === undefined ? 14 : blur;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.restore();
+  }
+  function cross(x, y, r, color, alpha, width) {
+    if (alpha <= 0.001 || r <= 0) return;
+    line(
+      [
+        [x - r, y - r],
+        [x + r, y + r],
+      ],
+      color,
+      width,
+      alpha,
+      10,
+    );
+    line(
+      [
+        [x - r, y + r],
+        [x + r, y - r],
+      ],
+      color,
+      width,
+      alpha,
+      10,
+    );
+  }
+  function ring(x, y, r, color, alpha, width) {
+    if (alpha <= 0.001 || r <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ---------------------------------------------------------------- the landscape
+  const { N, EXT, NV, HA, SYS, ORDER, SURF, LUT, gx, gy, proj } = LAP;
+  const N1 = N + 1;
+  const CPH = Math.cos(LAP.PH),
+    SPH = Math.sin(LAP.PH);
+  const XP = new Float32Array(NV),
+    ZP = new Float32Array(NV);
+  for (let i = 0; i <= N; i++)
+    for (let j = 0; j <= N; j++) {
+      const r = proj(gx[j] / EXT, 0, -gy[i] / EXT);
+      XP[i * N1 + j] = r[0];
+      ZP[i * N1 + j] = r[2];
+    }
+  // quads painted far to near (depth of the centre on the floor)
+  const QORD = (() => {
+    const ids = [],
+      d = [];
+    for (let i = 0; i < N; i++)
+      for (let j = 0; j < N; j++) {
+        const a = i * N1 + j;
+        ids.push(a);
+        d.push(ZP[a] + ZP[a + 1] + ZP[a + N1] + ZP[a + N1 + 1]);
+      }
+    const o = ids.map((_, k) => k).sort((p, q) => d[p] - d[q]);
+    return Uint32Array.from(o.map((k) => ids[k]));
+  })();
+  const HG = new Float32Array(NV),
+    CO = new Float32Array(NV),
+    SH = new Float32Array(NV),
+    PX = new Float32Array(NV),
+    PY = new Float32Array(NV);
+  const STY = [];
+  const quadStyle = (ci, fi) => {
+    const key = ci * 16 + fi;
+    let s = STY[key];
+    if (!s) {
+      const f = 0.6 + 0.4 * (fi / 15),
+        c = LUT[ci];
+      s = STY[key] = `rgb(${(c[0] * f) | 0},${(c[1] * f) | 0},${(c[2] * f) | 0})`;
+    }
+    return s;
+  };
+  /** screen position of the s-plane point (sigma, omega) lifted to the surface height hh (0 = on the floor) */
+  const P3 = (sig, om, hh) => {
+    const r = proj(sig / EXT, hh * CAM.HM, -om / EXT);
+    return [CAM.CX + CAM.S * r[0], CAM.CY - CAM.S * r[1]];
+  };
+  function floorGrid(alpha) {
+    // the floor: a slate plate, one-unit grid, the two axes (the jw axis is sigma = 0)
+    const c = [P3(-EXT, -EXT, 0), P3(EXT, -EXT, 0), P3(EXT, EXT, 0), P3(-EXT, EXT, 0)];
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = "rgba(15,23,42,.9)";
+    poly(c);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    for (let v = -3; v <= 3; v++) {
+      const ax = v === 0;
+      line([P3(v, -EXT, 0), P3(v, EXT, 0)], SLATE, ax ? 2.4 : 1.2, alpha * (ax ? 0.6 : 0.16));
+      line([P3(-EXT, v, 0), P3(EXT, v, 0)], SLATE, ax ? 2.4 : 1.2, alpha * (ax ? 0.6 : 0.16));
+    }
+    line([...c, c[0]], SLATE, 2, alpha * 0.45);
+  }
+  function drawSurface(a, b, m, alpha) {
+    if (alpha <= 0.001) return;
+    const S = CAM.S;
+    for (let v = 0; v < NV; v++) {
+      const hh = a.hgt[v] + (b.hgt[v] - a.hgt[v]) * m;
+      HG[v] = hh;
+      CO[v] = a.col[v] + (b.col[v] - a.col[v]) * m;
+      SH[v] = a.shade[v] + (b.shade[v] - a.shade[v]) * m;
+      PX[v] = CAM.CX + S * XP[v];
+      PY[v] = CAM.CY - S * (hh * CAM.HM * CPH - ZP[v] * SPH);
+    }
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = 0.8;
+    ctx.lineJoin = "round";
+    for (let q = 0; q < QORD.length; q++) {
+      const v0 = QORD[q],
+        v1 = v0 + 1,
+        v2 = v0 + N1 + 1,
+        v3 = v0 + N1;
+      const ci = Math.max(
+        0,
+        Math.min(255, Math.round(((CO[v0] + CO[v1] + CO[v2] + CO[v3]) / 4) * 255)),
+      );
+      const fi = Math.max(
+        0,
+        Math.min(15, Math.round(((SH[v0] + SH[v1] + SH[v2] + SH[v3]) / 4) * 15)),
+      );
+      const st = quadStyle(ci, fi);
+      ctx.fillStyle = st;
+      ctx.strokeStyle = st;
+      ctx.beginPath();
+      ctx.moveTo(PX[v0], PY[v0]);
+      ctx.lineTo(PX[v1], PY[v1]);
+      ctx.lineTo(PX[v2], PY[v2]);
+      ctx.lineTo(PX[v3], PY[v3]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  /** poles (rose x with a stem up to the peak) and zeros (blue o) of a system, standing on the floor of the landscape */
+  function drawMarks3D(key, alpha) {
+    if (alpha <= 0.001) return;
+    const S = SYS[key];
+    for (const p of S.p) {
+      const f = P3(p[0], p[1], 0),
+        tp = P3(p[0], p[1], HA);
+      line([f, tp], ROSE, 3, 0.85 * alpha, 8, [6, 6]);
+      cross(f[0], f[1], 9 * (0.6 + 0.4 * alpha), ROSE, alpha, 4);
+      dot(tp[0], tp[1], 6 * (0.6 + 0.4 * alpha), WHITE, alpha, 16);
+    }
+    for (const z of S.z) {
+      const f = P3(z[0], z[1], 0);
+      ring(f[0], f[1], 10 * (0.6 + 0.4 * alpha), SBLUE, alpha, 4);
+    }
+  }
+  function ripple(u) {
+    // a ring runs over the floor from the origin when the landscape snaps
+    if (u < 0 || u > 0.6) return;
+    const v = u / 0.6,
+      r = EXT * 1.5 * easeOut(v);
+    const pts = [];
+    for (let a = 0; a <= 64; a++) {
+      const ph = (a / 64) * 2 * Math.PI;
+      pts.push(P3(r * Math.cos(ph), r * Math.sin(ph), 0));
+    }
+    withClip(PS, () => line(pts, CYAN, 4, 0.8 * (1 - v), 12));
+  }
+  function legend() {
+    cross(815, 392, 9, ROSE, 1, 4);
+    ring(815, 436, 10, SBLUE, 1, 4);
+  }
+
+  // ---------------------------------------------------------------- the pole-zero map (bottom left)
+  const mp = (sig, om) => [MAP.cx + (sig / EXT) * MAP.half, MAP.cy - (om / EXT) * MAP.half];
+  function drawMapFrame(alpha, rhp, jwp) {
+    const c = [mp(-EXT, -EXT), mp(EXT, -EXT), mp(EXT, EXT), mp(-EXT, EXT)];
+    if (rhp > 0.001) {
+      ctx.save();
+      ctx.globalAlpha = 0.22 * rhp;
+      ctx.fillStyle = ROSE;
+      ctx.fillRect(mp(0, EXT)[0], mp(0, EXT)[1], MAP.half, 2 * MAP.half);
+      ctx.restore();
+    }
+    for (let v = -3; v <= 3; v++) {
+      const ax = v === 0;
+      line([mp(v, -EXT), mp(v, EXT)], SLATE, ax ? 2 : 1, alpha * (ax ? 0.6 : 0.14));
+      line([mp(-EXT, v), mp(EXT, v)], SLATE, ax ? 2 : 1, alpha * (ax ? 0.6 : 0.14));
+    }
+    line([...c, c[0]], SLATE, 1.6, alpha * 0.4);
+    if (jwp > 0.001) line([mp(0, -EXT), mp(0, -EXT + 2 * EXT * jwp)], CYAN, 4, 0.95, 10);
+  }
+  function drawMapMarks(key, alpha) {
+    if (alpha <= 0.001) return;
+    const S = SYS[key];
+    for (const p of S.p) {
+      const q = mp(p[0], p[1]);
+      cross(q[0], q[1], 8 * (0.6 + 0.4 * alpha), ROSE, alpha, 3.5);
+    }
+    for (const z of S.z) {
+      const q = mp(z[0], z[1]);
+      ring(q[0], q[1], 8 * (0.6 + 0.4 * alpha), SBLUE, alpha, 3.5);
+    }
+  }
+
+  // ---------------------------------------------------------------- h(t) and |H(jw)| (bottom right)
+  const TMAX = 6;
+  const hScale = {};
+  for (const k of ORDER) {
+    let m = 0;
+    for (let i = 0; i <= 300; i++) m = Math.max(m, Math.abs(LAP.h(SYS[k], (i / 300) * TMAX)));
+    hScale[k] = RP.amp / m;
+  }
+  let fScale = 0;
+  for (let i = 0; i <= 400; i++)
+    fScale = Math.max(fScale, LAP.mag(SYS.E, 0, -EXT + (2 * EXT * i) / 400));
+  fScale = RP.amp / fScale;
+  const rx = (u) => RP.x0 + u * (RP.x1 - RP.x0);
+  function rightAxes(alpha, ticks) {
+    line(
+      [
+        [RP.x0, RP.y0],
+        [RP.x1, RP.y0],
+      ],
+      WHITE,
+      2,
+      0.4 * alpha,
+    );
+    if (ticks === "t")
+      for (let v = 1; v <= TMAX; v++)
+        line(
+          [
+            [rx(v / TMAX), RP.y0 - 6],
+            [rx(v / TMAX), RP.y0 + 6],
+          ],
+          WHITE,
+          1.5,
+          0.35 * alpha,
+        );
+    else
+      for (let v = -3; v <= 3; v++)
+        line(
+          [
+            [rx((v + EXT) / (2 * EXT)), RP.y0 - 6],
+            [rx((v + EXT) / (2 * EXT)), RP.y0 + 6],
+          ],
+          WHITE,
+          1.5,
+          v === 0 ? 0.5 * alpha : 0.3 * alpha,
+        );
+  }
+  function drawH(key, p, alpha) {
+    rightAxes(alpha, "t");
+    const pts = [];
+    const n = Math.round(300 * clamp01(p));
+    for (let i = 0; i <= n; i++) {
+      const t = (i / 300) * TMAX;
+      pts.push([rx(t / TMAX), RP.y0 - LAP.h(SYS[key], t) * hScale[key]]);
+    }
+    withClip(PR, () => {
+      line(pts, VIOLET, 5, alpha, 12);
+      if (pts.length > 1 && p < 1)
+        dot(pts[pts.length - 1][0], pts[pts.length - 1][1], 6, WHITE, alpha, 14);
+    });
+  }
+  function freqAt(om) {
+    return LAP.mag(SYS.E, 0, om);
+  }
+  function drawFreq(p, alpha) {
+    rightAxes(alpha, "w");
+    const pts = [];
+    const n = Math.round(400 * clamp01(p));
+    for (let i = 0; i <= n; i++) {
+      const om = -EXT + (2 * EXT * i) / 400;
+      pts.push([rx((om + EXT) / (2 * EXT)), RP.y0 - freqAt(om) * fScale]);
+    }
+    withClip(PR, () => {
+      line(pts, SBLUE, 5, alpha, 12);
+      for (const om of [-1, 1])
+        if (p * 2 * EXT - EXT >= om) ring(rx((om + EXT) / (2 * EXT)), RP.y0, 8, SBLUE, alpha, 3.5);
+      if (pts.length > 1) dot(pts[pts.length - 1][0], pts[pts.length - 1][1], 6, WHITE, alpha, 14);
+    });
+  }
+
+  // ---------------------------------------------------------------- the jw cut on the landscape
+  const JC = (() => {
+    let j = 0;
+    for (let k = 0; k < gx.length; k++) if (Math.abs(gx[k]) < 1e-12) j = k;
+    return j;
+  })();
+  function drawCut(p, alpha) {
+    // the sigma = 0 section of the landscape, a curtain down to the floor, and a point that travels along it
+    const top = [],
+      bot = [];
+    const n = Math.round(N * clamp01(p));
+    const surfE = SURF.E;
+    for (let i = 0; i <= n; i++) {
+      const hh = surfE.hgt[i * N1 + JC];
+      top.push(P3(0, gy[i], hh + 0.02));
+      bot.push(P3(0, gy[i], 0));
+    }
+    if (top.length > 1) {
+      ctx.save();
+      ctx.globalAlpha = 0.2 * alpha;
+      ctx.fillStyle = CYAN;
+      poly([...top, ...bot.slice().reverse()]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      line(top, CYAN, 5, alpha, 14);
+      const e = top[top.length - 1];
+      dot(e[0], e[1], 7, WHITE, alpha, 18);
+    }
+  }
+
+  // ---------------------------------------------------------------- the scenes
+  function flatSet() {
+    return SURF.FLAT;
+  }
+  function hookScene(a) {
+    ctx.save();
+    ctx.globalAlpha = a;
+    floorGrid(1);
+    drawSurface(SURF.E, SURF.E, 0, 1);
+    drawMarks3D("E", 1);
+    drawMapFrame(1, 0, 0);
+    drawMapMarks("E", 1);
+    drawH("E", 1, 1);
+    legend();
+    ctx.restore();
+  }
+  function drawGlitch(t) {
+    const p = clamp01((t - T.rewind0) / (T.s1 - T.rewind0));
+    const a = 1 - smooth(p);
+    const frame = Math.floor(t * 24);
+    // the hook scene is drawn once off-screen, then cut into shifted strips
+    ctx = octx;
+    octx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    octx.clearRect(0, 0, 1080, 1920);
+    hookScene(1);
+    ctx = mainCtx;
+    floorGrid(1);
+    const strips = 16,
+      y0 = 340,
+      sh = 890 / strips;
+    for (let s = 0; s < strips; s++) {
+      const g = CFG.glitch[(s * 7 + frame * 3) % CFG.glitch.length];
+      const dx = (g - 0.5) * 2 * 110 * (0.25 + p);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.drawImage(
+        oc,
+        0,
+        (y0 + s * sh) * DPR,
+        oc.width,
+        (sh + 1) * DPR,
+        dx,
+        y0 + s * sh,
+        1080,
+        sh + 1,
+      );
+      ctx.restore();
+    }
+    legend();
+  }
+  function stagedScene(t) {
+    floorGrid(1);
+    legend();
+    let k = -1;
+    for (let i = 0; i < T.sw.length; i++) if (t >= T.sw[i]) k = i;
+    if (k < 0) {
+      drawMapFrame(1, 0, 0);
+      rightAxes(1, "t");
+      return;
+    }
+    const to = SURF[ORDER[k]],
+      from = k === 0 ? flatSet() : SURF[ORDER[k - 1]];
+    const u = t - T.sw[k],
+      m = easeOut(u / MORPH[k]);
+    drawSurface(from, to, m, 1);
+    // markers: the new ones come up, the old ones go
+    if (k > 0) {
+      drawMarks3D(ORDER[k - 1], 1 - m);
+    }
+    drawMarks3D(ORDER[k], k === 0 ? easeOut(u / 0.35) : m);
+    if (t >= T.cut) drawCut(clamp01((t - T.cut) / 1.6), 1);
+    // the cut is a section of the surface: its travelling dot keeps running after the lock
+    if (t >= T.cut + 1.6) {
+      const ph = ((((t - T.cut - 1.6) / 2.6) % 1) + 1) % 1;
+      const om = -EXT + 2 * EXT * smooth(ph);
+      const i = Math.max(
+        0,
+        Math.min(
+          N,
+          gy.findIndex((v) => v >= om - 1e-9),
+        ),
+      );
+      const q = P3(0, gy[i], SURF.E.hgt[i * N1 + JC] + 0.02);
+      dot(q[0], q[1], 8, WHITE, 1, 20);
+      cutDot = [q, gy[i]];
+    } else cutDot = null;
+    ripple(u);
+    // the map
+    const rhp = k === 2 ? m : k === 3 ? 1 - m : 0; // the right half-plane is shaded while the poles are in it
+    const jwp = t >= T.cut ? clamp01((t - T.cut) / 1.6) : 0;
+    drawMapFrame(1, rhp, jwp);
+    if (k > 0) drawMapMarks(ORDER[k - 1], 1 - m);
+    drawMapMarks(ORDER[k], k === 0 ? easeOut(u / 0.35) : m);
+    // right panel: h(t) of the current function, then |H(jw)| after the cut
+    if (t < T.cut) drawH(ORDER[k], (t - T.sw[k] - 0.1) / 1.0, 1);
+    else {
+      const pf = clamp01((t - T.cut) / 1.6);
+      drawFreq(pf, 1);
+      if (cutDot) {
+        const om = cutDot[1];
+        withClip(PR, () =>
+          dot(rx((om + EXT) / (2 * EXT)), RP.y0 - freqAt(om) * fScale, 8, WHITE, 1, 18),
+        );
+      }
+    }
+  }
+  let cutDot = null;
+  function drawLock(t) {
+    const u = t - T.lock;
+    if (u < 0 || u > 1.3) return;
+    const cx = 540,
+      cy = 790;
+    if (u < 0.5) {
+      const g = ctx.createRadialGradient(cx, cy, 20, cx, cy, 700);
+      g.addColorStop(0, "rgba(37,99,235," + (0.3 * (1 - u / 0.5)).toFixed(3) + ")");
+      g.addColorStop(1, "rgba(37,99,235,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 1080, 1920);
+    }
+    if (u < 0.6) {
+      const x = 90 + 900 * easeOut(u / 0.55);
+      ctx.save();
+      ctx.globalAlpha = 1 - smooth((u - 0.45) / 0.15);
+      ctx.shadowColor = CYAN;
+      ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.moveTo(x, 340);
+      ctx.lineTo(x, 1230);
+      ctx.strokeStyle = CYAN;
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.restore();
+    }
+    [
+      [90, 340],
+      [990, 340],
+      [90, 1230],
+      [990, 1230],
+    ].forEach(([x, y], i) => {
+      const v = clamp01((u - 0.1 - i * 0.05) / 0.5);
+      if (v <= 0 || v >= 1) return;
+      const r = 20 * Math.sin(Math.PI * v) + 4;
+      ctx.save();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+      ctx.shadowColor = "#fff";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(x - r, y);
+      ctx.lineTo(x + r, y);
+      ctx.moveTo(x, y - r);
+      ctx.lineTo(x, y + r);
+      ctx.stroke();
+      ctx.restore();
+    });
+    [
+      [CYAN, 660, 0, 0.7],
+      [ROSE, 520, 0.1, 0.6],
+    ].forEach(([c, R, d0, dur]) => {
+      const v = clamp01((u - d0) / dur);
+      if (v <= 0 || v >= 1) return;
+      ctx.save();
+      ctx.globalAlpha = 1 - v;
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10 + R * easeOut(v), 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.restore();
+    });
+    CFG.spark.forEach((sp, i) => {
+      const v = clamp01((u - 0.05) / 0.8);
+      if (v <= 0 || v >= 1) return;
+      ctx.save();
+      ctx.globalAlpha = 1 - v;
+      ctx.fillStyle = i % 3 === 0 ? ROSE : i % 3 === 1 ? CYAN : "#fff";
+      ctx.beginPath();
+      ctx.arc(
+        cx + Math.cos(sp.a) * sp.d * easeOut(v),
+        cy + Math.sin(sp.a) * sp.d * easeOut(v),
+        sp.r,
+        0,
+        2 * Math.PI,
+      );
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function draw(t) {
+    ctx = mainCtx;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, 1080, 1920);
+    if (t < T.rewind0) hookScene(1);
+    else if (t < T.s1) drawGlitch(t);
+    else stagedScene(t);
+    drawLock(t);
+  }
+
+  window.__SCHED = T;
+  window.__draw = draw;
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+  window.addEventListener("hf-seek", (ev) => draw(ev.detail.time));
+  draw(0);
+})();
+
+</script>
+</body>
+</html>
