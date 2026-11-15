@@ -128,6 +128,8 @@ def kick(t0, amp=0.5):
 # ------------------------------------------------------------------ continuous layers
 hum += 10 ** (-22 / 20) * np.sin(2 * np.pi * 50 * t)
 SWAPS = [float(x) for x in sched["sw"]]; CUT = float(sched["cut"])
+PA = sched["probeA"]; PZ = sched["probeZ"]
+PAT = [float(x) for x in PA["t"]]; PZT = [float(x) for x in PZ["t"]]
 
 # the pad opens (more harmonics) as the landscape gets richer: it brightens from the first function to the frequency cut
 prog = smooth(env([(0, 0.3), (SWAPS[0], 0.4), (CUT, 1.0), (DUR, 1.0)]), 0.1)
@@ -171,7 +173,13 @@ for c in cues:
     if k not in counts:
         raise SystemExit(f"unknown cue kind {k}")
     counts[k] += 1
-    if k == "click":
+    if k == "click" and near(t0, PAT):                   # walking into the pole: a rising note per halving of the distance
+        i = [abs(t0 - x) < 1e-6 for x in PAT].index(True)
+        click(t0 - 0.004, 0.5); marimba(t0 + 0.004, [440.0, 554.37, 659.26, 880.0, 1108.7, 1318.5][i], 0.22, 0.8, pan=-0.3 + 0.12 * i)
+    elif k == "click" and near(t0, PZT):                 # walking into the zero: falling notes
+        i = [abs(t0 - x) < 1e-6 for x in PZT].index(True)
+        click(t0 - 0.004, 0.5); marimba(t0 + 0.004, [880.0, 739.99, 659.26, 554.37, 440.0, 329.63][i], 0.22, 0.8, pan=0.3 - 0.12 * i)
+    elif k == "click":
         click(t0, 1.0)
         if abs(t0 - PULSE) < 1e-6:                       # engagement ping
             bell(t0 + 0.01, 1760.0, 0.07, 0.8); bell(t0 + 0.07, 2217.5, 0.05, 0.8)
@@ -180,6 +188,16 @@ for c in cues:
             for i, fz in enumerate([880.0, 739.99, 659.26, 554.37, 440.0]):
                 marimba(t0 + 0.045 * i, fz, 0.16, 0.5, pan=0.25 - 0.1 * i)
                 click(t0 + 0.045 * i, 0.35)
+        elif abs(t0 - PAT[0]) < 1e-6 or abs(t0 - PZT[0]) < 1e-6:   # the probe starts
+            click(t0 - 0.004, 0.8); snapair(t0 - 0.01, 0.04)
+            marimba(t0 + 0.004, 440.0 if abs(t0 - PAT[0]) < 1e-6 else 880.0, 0.26, 0.9, pan=0.0)
+        elif abs(t0 - float(PA["inf"])) < 1e-6:          # the pole flies to infinity: a rising bell chord
+            click(t0 - 0.004, 0.8)
+            for j, fz in enumerate([1318.5, 1760.0, 2217.5, 2637.0]):
+                bell(t0 + 0.035 * j, fz, 0.10 - 0.012 * j, 1.4, pan=-0.3 + 0.2 * j)
+            kick(t0, 0.22)
+        elif abs(t0 - float(PZ["zero"])) < 1e-6:         # the zero: everything falls to nothing, a soft low thud
+            click(t0 - 0.004, 0.7); kick(t0 + 0.004, 0.3); marimba(t0 + 0.01, 220.0, 0.2, 1.4)
         elif near(t0, SWAPS):                            # the landscape snaps to the next function
             i = [abs(t0 - x) < 1e-6 for x in SWAPS].index(True)
             click(t0 - 0.004, 0.8); snapair(t0 - 0.01)

@@ -1,12 +1,16 @@
 // The maths of the s-plane landscape. Plain JS: build.mjs runs it for the assertions, the page inlines the same text.
 // The surface follows the MAE Academy simulator: adaptive grid (denser near poles and zeros), compressive height law
-// (floor + spire), log colour law through the site's heat colormap, isometric camera 40 deg / 28 deg.
+// (floor + spire), log colour law through the site's heat colormap.
+// A configuration is a list of poles and zeros [re, im, weight]; weight 1 is a true pole / zero, a weight between 0 and 1
+// is one growing out of the floor (|s-p|^-w). That lets poles appear, split and slide continuously.
 globalThis.LAP = (function () {
   const EXT = 3.5,
     N = 80,
+    N1 = N + 1,
+    NV = N1 * N1,
     HA = 2.7,
     XD = 0.35;
-  // the five systems of the reel (poles p, zeros z as [re, im], gain K)
+  // the five systems of the reel (poles p, zeros z as [re, im], gain K = 1)
   const SYS = {
     A: { K: 1, z: [], p: [[-1, 0]] },
     B: {
@@ -53,7 +57,7 @@ globalThis.LAP = (function () {
     const d = b[0] * b[0] + b[1] * b[1];
     return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d];
   };
-  /** |H(s)| at s = re + j im; Infinity exactly on a pole */
+  /** |H(s)| of a system at s = re + j im; Infinity exactly on a pole */
   function mag(S, re, im) {
     let num = Math.abs(S.K),
       den = 1;
@@ -115,11 +119,6 @@ globalThis.LAP = (function () {
     }
     return out;
   }
-  const reC = [-1, 1, 0];
-  const imC = [0, 2, -2, 1, -1];
-  const gx = adapt(N, -EXT, EXT, reC, 0.06 * EXT, 5);
-  const gy = adapt(N, -EXT, EXT, imC, 0.06 * EXT, 5);
-  const NV = (N + 1) * (N + 1);
 
   // ---- the site's height and colour laws
   const k8 = (e, t) => {
@@ -150,33 +149,56 @@ globalThis.LAP = (function () {
   };
   const KL = [-0.45, 0.8, 0.4],
     KN = hyp(KL[0], KL[1], KL[2]);
-  function shadeOf(y) {
-    const B = new Float32Array(NV),
-      Wz = new Float32Array(NV);
+
+  // ---- a configuration: [re, im, weight] poles and zeros
+  const DMIN = 1e-3;
+  function magC(cfg, re, im) {
+    let v = 1;
+    for (const z of cfg.zeros)
+      if (z[2] > 1e-4) v *= Math.pow(Math.max(hyp(re - z[0], im - z[1]), DMIN), z[2]);
+    for (const p of cfg.poles)
+      if (p[2] > 1e-4) v /= Math.pow(Math.max(hyp(re - p[0], im - p[1]), DMIN), p[2]);
+    return v;
+  }
+  const cfgOf = (S) => ({
+    poles: S.p.map((p) => [p[0], p[1], 1]),
+    zeros: S.z.map((z) => [z[0], z[1], 1]),
+  });
+  function uniq(list) {
+    const out = [];
+    for (const v of list) if (!out.some((o) => Math.abs(o - v) < 1e-6)) out.push(v);
+    return out;
+  }
+  const NS = 96,
+    bm = new Float64Array(NV),
+    bh = new Float32Array(NV),
+    bc = new Float32Array(NV),
+    bs = new Float32Array(NV),
+    bsamp = new Float64Array((NS + 1) * (NS + 1)),
+    bB = new Float32Array(NV),
+    bW = new Float32Array(NV);
+  function shadeInto(y, gx, gy, out) {
     for (let i = 0; i <= N; i++)
       for (let j = 0; j <= N; j++) {
-        B[i * (N + 1) + j] = gx[j] / EXT;
-        Wz[i * (N + 1) + j] = -gy[i] / EXT;
+        bB[i * N1 + j] = gx[j] / EXT;
+        bW[i * N1 + j] = -gy[i] / EXT;
       }
-    const out = new Float32Array(NV),
-      n1 = N + 1;
     for (let i = 0; i <= N; i++)
       for (let j = 0; j <= N; j++) {
-        const A = i * n1 + j,
-          jm = Math.max(0, j - 1),
+        const jm = Math.max(0, j - 1),
           jp = Math.min(N, j + 1),
           im = Math.max(0, i - 1),
           ip = Math.min(N, i + 1);
-        const a = i * n1 + jm,
-          b = i * n1 + jp,
-          c = im * n1 + j,
-          d = ip * n1 + j;
-        const ne = B[b] - B[a],
+        const a = i * N1 + jm,
+          b = i * N1 + jp,
+          c = im * N1 + j,
+          d = ip * N1 + j;
+        const ne = bB[b] - bB[a],
           te = y[b] - y[a],
-          ge = Wz[b] - Wz[a],
-          le = B[d] - B[c],
+          ge = bW[b] - bW[a],
+          le = bB[d] - bB[c],
           ee = y[d] - y[c],
-          Me = Wz[d] - Wz[c];
+          Me = bW[d] - bW[c];
         let fe = te * Me - ge * ee,
           be = ge * le - ne * Me,
           Se = ne * ee - te * le;
@@ -186,64 +208,46 @@ globalThis.LAP = (function () {
           Se = -Se;
         }
         const E = hyp(fe, be, Se);
-        out[A] = E < 1e-12 ? 1 : Math.max(0, (fe * KL[0] + be * KL[1] + Se * KL[2]) / (E * KN));
+        out[i * N1 + j] =
+          E < 1e-12 ? 1 : Math.max(0, (fe * KL[0] + be * KL[1] + Se * KL[2]) / (E * KN));
       }
-    return out;
   }
-  /** heights (hgt), colour parameter (col) and shading (shade) of one system on the common grid */
-  function surface(S) {
-    const m = new Float64Array(NV);
+  /** the surface of a configuration on its own adaptive grid (denser, and snapped, onto every pole and zero in it).
+   *  The arrays are shared buffers: read them before the next call. */
+  function surfaceFor(cfg) {
+    const all = [...cfg.poles, ...cfg.zeros].filter((q) => q[2] > 0.02);
+    const gx = adapt(N, -EXT, EXT, uniq([0, ...all.map((q) => q[0])]), 0.06 * EXT, 5);
+    const gy = adapt(N, -EXT, EXT, uniq([0, ...all.map((q) => q[1])]), 0.06 * EXT, 5);
     for (let i = 0; i <= N; i++)
-      for (let j = 0; j <= N; j++) m[i * (N + 1) + j] = mag(S, gx[j], gy[i]);
-    const samp = [],
-      F = 96;
-    for (let a = 0; a <= F; a++)
-      for (let b = 0; b <= F; b++) {
-        const v = mag(S, -EXT + (2 * EXT * a) / F, -EXT + (2 * EXT * b) / F);
-        if (Number.isFinite(v) && v > 0) samp.push(v);
+      for (let j = 0; j <= N; j++) bm[i * N1 + j] = magC(cfg, gx[j], gy[i]);
+    let ns = 0;
+    for (let a = 0; a <= NS; a++)
+      for (let b = 0; b <= NS; b++) {
+        const v = magC(cfg, -EXT + (2 * EXT * a) / NS, -EXT + (2 * EXT * b) / NS);
+        if (Number.isFinite(v) && v > 0) bsamp[ns++] = v;
       }
-    samp.sort((u, v) => u - v);
-    const g = (q) =>
-      samp.length ? samp[Math.min(samp.length - 1, Math.floor(q * samp.length))] : 1;
+    const samp = bsamp.subarray(0, ns);
+    samp.sort();
+    const g = (q) => (ns ? samp[Math.min(ns - 1, Math.floor(q * ns))] : 1);
     const med = g(0.5);
-    let b = 0;
+    let bmax = 0;
     for (let k = 0; k <= 360; k++) {
-      const v = mag(S, 0, -EXT + (2 * EXT * k) / 360);
-      if (Number.isFinite(v)) b = Math.max(b, v);
+      const v = magC(cfg, 0, -EXT + (2 * EXT * k) / 360);
+      if (Number.isFinite(v)) bmax = Math.max(bmax, v);
     }
-    const floorScale = Math.max(4 * med, 1.15 * Math.min(b, 12 * med), 1e-9);
+    const floorScale = Math.max(4 * med, 1.15 * Math.min(bmax, 12 * med), 1e-9);
     const spire = Math.max(g(0.996), 1.5 * floorScale);
     const ceil = 4 * spire;
-    const hgt = new Float32Array(NV),
-      col = new Float32Array(NV);
     for (let v = 0; v < NV; v++) {
-      hgt[v] = fb(m[v], floorScale, spire);
-      col[v] = m8(m[v], floorScale, ceil);
+      bh[v] = fb(bm[v], floorScale, spire);
+      bc[v] = m8(bm[v], floorScale, ceil);
     }
-    return { hgt, col, shade: shadeOf(hgt), mag: m };
+    shadeInto(bh, gx, gy, bs);
+    return { gx, gy, hgt: bh, col: bc, shade: bs, floorScale, spire };
   }
-  const SURF = {
-    FLAT: {
-      hgt: new Float32Array(NV),
-      col: new Float32Array(NV),
-      shade: shadeOf(new Float32Array(NV)),
-    },
-  };
-  for (const k of ORDER) SURF[k] = surface(SYS[k]);
+  /** surface height of a magnitude m under a surface's own scales (for a point travelling over the landscape) */
+  const heightOf = (S, m) => fb(m, S.floorScale, S.spire);
 
-  // ---- the camera (isometric, as in the simulator): theta = 40 deg yaw, phi = 28 deg pitch
-  const TH = (40 * Math.PI) / 180,
-    PH = (28 * Math.PI) / 180;
-  const CT = Math.cos(TH),
-    ST = Math.sin(TH),
-    CP = Math.cos(PH),
-    SP = Math.sin(PH);
-  /** world (x = sigma/EXT, y = height, z = -omega/EXT) -> [screen right, screen up, depth (bigger = nearer)] */
-  function proj(x, y, z) {
-    const xp = x * CT + z * ST,
-      zp = -x * ST + z * CT;
-    return [xp, y * CP - zp * SP, zp];
-  }
   // heat colormap of the site (MathNumberInput chunk): indigo, blue, cyan, green, amber, orange, rose
   const HEAT = ["#1E1B4B", "#2563EB", "#06B6D4", "#10B981", "#F59E0B", "#EA580C", "#E11D48"];
   const hx = (s) => [
@@ -267,18 +271,16 @@ globalThis.LAP = (function () {
     HA,
     SYS,
     ORDER,
-    gx,
-    gy,
-    SURF,
     mag,
+    magC,
+    cfgOf,
+    surfaceFor,
+    heightOf,
     Hc,
     h,
     residues,
-    proj,
     HEAT,
     LUT,
     fb,
-    TH,
-    PH,
   };
 })();

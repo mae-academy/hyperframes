@@ -15,22 +15,25 @@ const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF"
 const DIM = "rgba(255,255,255,.6)";
 const W = 1080,
   H = 1920,
-  DUR = 24.2;
+  DUR = 26.6;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
   rewind0: 1.6,
   s1: 2.2, // banner of the stage
-  st: [2.2, 4.9, 7.6, 10.3, 13.0],
-  sw: [2.4, 5.1, 7.8, 10.5, 13.2], // the landscape snaps to the new function (the counter pops here)
-  cutBan: 15.7,
-  cut: 15.9,
-  lock: 17.9,
-  banF: 18.9,
-  card: 20.2,
-  pulse: 22.6,
+  st: [2.2, 6.4, 8.6, 11.0, 13.2],
+  sw: [2.4, 6.6, 8.8, 11.2, 13.4], // the move to the next function starts here (the counter pops here)
+  hs: [3.4, 7.7, 10.1, 12.3, 14.7], // h(t) of the new function starts to draw
+  probeA: { ban: 3.6, t: [3.8, 4.2, 4.55, 4.9, 5.25, 5.55], inf: 5.8 }, // walking into the pole: d = 1 ... 0.01, then infinity
+  probeZ: { ban: 15.2, t: [15.4, 15.75, 16.05, 16.35, 16.65, 16.9], zero: 17.1 }, // walking into a zero
+  cutBan: 17.9,
+  cut: 18.1,
+  lock: 20.3,
+  banF: 21.3,
+  card: 22.6,
+  pulse: 25.0,
 };
-const MORPH = [0.5, 0.22, 0.22, 0.22, 0.22];
+const PD = [1, 0.5, 0.2, 0.1, 0.05, 0.01]; // distances of the read-outs
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
 (function assertMath() {
@@ -95,33 +98,38 @@ const MORPH = [0.5, 0.22, 0.22, 0.22, 0.22];
   const q = [(num * dd[0]) / (dd[0] ** 2 + dd[1] ** 2), (-num * dd[1]) / (dd[0] ** 2 + dd[1] ** 2)];
   near(Hj[0], q[0], 1e-13, "H(jw) closed form (re)");
   near(Hj[1], q[1], 1e-13, "H(jw) closed form (im)");
-  // the landscape: the grid contains every pole and zero exactly, a pole is the top of the height law, a zero the floor
-  const idx = (arr, v) => arr.findIndex((a) => Math.abs(a - v) < 1e-12);
+  // the landscape of a configuration: its grid contains every pole and zero exactly; a pole reaches the top of the height
+  // law, a zero the floor; the jw axis (sigma = 0) is always a grid column
+  const idx = (arr, v) => arr.findIndex((a) => Math.abs(a - v) < 1e-9);
   for (const k of LAP.ORDER) {
     const S = LAP.SYS[k];
-    for (const p of S.p) {
-      const j = idx(LAP.gx, p[0]),
-        i = idx(LAP.gy, p[1]);
-      if (j < 0 || i < 0) throw new Error(`pole ${p} of ${k} is not a grid vertex`);
-      near(
-        LAP.SURF[k].hgt[i * (LAP.N + 1) + j],
-        LAP.HA,
-        1e-6,
-        `pole of ${k} reaches the spire height`,
-      );
-    }
-    for (const z of S.z) {
-      const j = idx(LAP.gx, z[0]),
-        i = idx(LAP.gy, z[1]);
-      if (j < 0 || i < 0) throw new Error(`zero ${z} of ${k} is not a grid vertex`);
-      near(LAP.SURF[k].hgt[i * (LAP.N + 1) + j], 0, 1e-9, `zero of ${k} sits on the floor`);
-    }
+    const sf = LAP.surfaceFor(LAP.cfgOf(S));
+    const at = (q) => {
+      const j = idx(sf.gx, q[0]),
+        i = idx(sf.gy, q[1]);
+      if (j < 0 || i < 0) throw new Error(`${q} of ${k} is not a grid vertex`);
+      return sf.hgt[i * (LAP.N + 1) + j];
+    };
+    for (const p of S.p)
+      if (at(p) < 0.97 * LAP.HA) throw new Error(`pole of ${k} does not reach the spire`);
+    for (const z of S.z)
+      if (at(z) > 0.02) throw new Error(`zero of ${k} does not sit on the floor`);
+    if (idx(sf.gx, 0) < 0) throw new Error("sigma = 0 must be a grid column");
   }
-  if (idx(LAP.gx, 0) < 0) throw new Error("the jw axis (sigma = 0) must be a grid column");
+  // the probes: walking into a pole, |H| = 1/d; walking into a zero, |H| shrinks to 0
+  for (const d of PD)
+    near(LAP.mag(LAP.SYS.A, -1 + d, 0), 1 / d, 1e-12, "|H| = 1/d near the pole of A");
+  let prev = Infinity;
+  for (const d of PD) {
+    const v = LAP.mag(LAP.SYS.E, d, 1);
+    if (!(v < prev)) throw new Error("|H| must fall while walking into the zero");
+    prev = v;
+  }
+  if (!(LAP.mag(LAP.SYS.E, 1e-6, 1) < 1e-5)) throw new Error("|H| must reach 0 at the zero");
   console.log(
     "maths ok: h(t) closed forms match the residues; the Laplace integral of h(t) reproduces H(s) for A..E; " +
       "A, B, E decay, C grows, D rings at amplitude 1/2; |H(jw)| = the sigma = 0 cut; E has a zero at w = 1; " +
-      "every pole and zero is a grid vertex (poles reach the spire height, zeros touch the floor)",
+      "every pole and zero is a grid vertex (poles reach the spire height, zeros touch the floor); |H| = 1/d into a pole, -> 0 into a zero",
   );
 })();
 
@@ -162,11 +170,6 @@ const HANDLE = (s) =>
 const PS = [90, 340, 900, 650]; // the landscape panel
 const PM = [90, 1010, 440, 220]; // the pole-zero map
 const PR = [550, 1010, 440, 220]; // h(t), then |H(jw)|
-const CAM = { S: 275, CX: 540, CY: 790, HM: 0.5 };
-const scr = (x, y, z) => {
-  const [xp, up] = LAP.proj(x, y, z);
-  return [CAM.CX + CAM.S * xp, CAM.CY - CAM.S * up];
-};
 const MAP = { cx: 345, cy: 1125, half: 100 };
 const RP = { x0: 585, x1: 970, y0: 1130, amp: 78 }; // right plot: baseline and half-height
 
@@ -177,13 +180,11 @@ ${box({ id: "h-title", cx: 540, cy: 180, w: 1020, h: 90, size: 58, color: C.red,
 ${box({ id: "h-sub", cx: 540, cy: 236, w: 1000, h: 50, size: 35, color: C.purple, html: tx(it("THE s-PLANE AS A LANDSCAPE")) })}
 <div id="h-rule" style="position:absolute;left:480px;top:274px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,${C.red},${C.purple},${C.blue})"></div>
 ${box({ id: "wm", cx: 540, cy: 800, w: 1000, h: 160, size: 130, color: "rgba(255,0,68,.12)", html: tx(it("@MAE.Academy")), cls: "wm" }).replace('class="t wm"', 'class="t wm" data-layout-ignore')}`;
-const aS = scr(1.2, 0, 0),
-  aW = scr(0, 0, -1.2);
 const labels = [
   box({
     id: "ax1",
-    cx: aS[0] + 6,
-    cy: aS[1] + 6,
+    cx: 540,
+    cy: 790,
     w: 60,
     h: 40,
     size: 34,
@@ -192,13 +193,24 @@ const labels = [
   }),
   box({
     id: "ax2",
-    cx: aW[0] - 28,
-    cy: aW[1] - 4,
+    cx: 540,
+    cy: 790,
     w: 70,
     h: 40,
     size: 34,
     color: DIM,
     html: tx("j\\omega"),
+  }),
+  box({
+    id: "inf",
+    cx: 540,
+    cy: 790,
+    w: 80,
+    h: 60,
+    size: 56,
+    color: C.white,
+    html: tx("\\infty"),
+    style: "opacity:0",
   }),
   box({ id: "lh", cx: 205, cy: 395, w: 200, h: 44, size: 36, color: C.white, html: tx("|H(s)|") }),
   box({
@@ -288,7 +300,23 @@ const CNT = [
   "H(s)=\\dfrac{1}{s^{2}+4}",
   "H(s)=\\dfrac{s^{2}+1}{(s+1)(s^{2}+2s+5)}",
 ];
+const hpa = PD.map((d) =>
+  mkC("hpa" + PD.indexOf(d), `d=${d}\\;\\Rightarrow\\;\\lvert H\\rvert=${1 / d}`, C.blue, 56),
+);
+const hzv = PD.map((d) => {
+  const v = LAP.mag(LAP.SYS.E, d, 1);
+  return mkC(
+    "hpz" + PD.indexOf(d),
+    `d=${d}\\;\\Rightarrow\\;\\lvert H\\rvert=${v.toFixed(3)}`,
+    C.blue,
+    56,
+  );
+});
 const counters = [
+  ...hpa,
+  ...hzv,
+  mkC("hpainf", "d\\to0\\;\\Rightarrow\\;\\lvert H\\rvert\\to\\infty", C.blue, 60),
+  mkC("hpzero", "d\\to0\\;\\Rightarrow\\;\\lvert H\\rvert\\to0", C.blue, 60),
   mkC("c0", CNT[4], C.blue, 52, false),
   ...CNT.map((t, i) => mkC("c" + (i + 1), t)),
   mkC("c6", "H(j\\omega)=0\\;" + it("AT ") + "\\omega=1", C.blue, 56),
@@ -332,10 +360,12 @@ const banners = [
     1,
   ),
   bn("bn1", it("A POLE IS A MOUNTAIN"), it("PEAK AT ") + "s=-1", 0),
-  bn("bn2", it("SWAP THE FUNCTION"), it("THE LANDSCAPE SNAPS"), 0),
-  bn("bn3", it("PUSH THE POLES RIGHT"), "h(t)" + it(" GROWS: UNSTABLE"), 0),
-  bn("bn4", it("PUT THEM ON THE ") + "j\\omega" + it(" AXIS"), it("NO DECAY: A PURE SINE"), 0),
-  bn("bn5", it("ADD ZEROS: DIG HOLES"), it("A NOTCH AT ") + "\\omega=1", 0),
+  bn("bnP1", it("GET CLOSER TO THE POLE"), "\\lvert H\\rvert=1/d" + it(" EXPLODES"), 0),
+  bn("bn2", it("SPLIT IT: A COMPLEX PAIR"), it("THE PEAKS FLY APART"), 0),
+  bn("bn3", it("SLIDE THE POLES RIGHT"), "h(t)" + it(" GROWS: UNSTABLE"), 0),
+  bn("bn4", it("BACK ONTO THE ") + "j\\omega" + it(" AXIS"), it("NO DECAY: A PURE SINE"), 0),
+  bn("bn5", it("ADD A POLE AND TWO ZEROS"), it("ZEROS DIG HOLES"), 0),
+  bn("bnP2", it("NOW WALK INTO A ZERO"), "\\lvert H\\rvert" + it(" SINKS TO ZERO"), 0),
   bn(
     "bn6",
     it("CUT ALONG THE ") + "j\\omega" + it(" AXIS"),
@@ -402,8 +432,7 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 const anim = fs.readFileSync(new URL("./anim.js", import.meta.url), "utf8");
 const CFG = {
   T,
-  MORPH,
-  CAM,
+  PD,
   PS,
   PM,
   PR,
