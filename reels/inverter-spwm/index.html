@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>Three-Phase Inverter</title>
+<style>
+@font-face{font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_AMS-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Fraktur-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Fraktur-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Main-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Main-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Main-Italic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Main-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Math-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Math-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_SansSerif-Bold.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Script-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size1-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size2-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size3-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size4-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Typewriter-Regular.woff2) format("woff2")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.16.11"}.katex .katex-mathml{clip:rect(1px,1px,1px,1px);border:0;height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{border:0 solid;display:inline-block;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+
+.katex{font-size:1em !important;text-rendering:geometricPrecision}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0A0A10;width:1080px;height:1920px;overflow:hidden}
+#root{position:absolute;left:0;top:0;width:1080px;height:1920px;background:#0A0A10;overflow:hidden;
+  background-image:linear-gradient(#161622 2px,transparent 2px),linear-gradient(90deg,#161622 2px,transparent 2px);background-size:60px 60px}
+#flash0{position:absolute;left:0;top:0;width:1080px;height:700px;background:radial-gradient(ellipse at 50% 22%,rgba(255,0,68,.5),transparent 65%);opacity:0}
+.t{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1}
+.panel{position:absolute;border-radius:28px;background:rgba(30,30,46,.55);border:1px solid rgba(255,255,255,.1)}
+#cv{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#banner{position:absolute;left:130px;top:1450px;width:820px;height:96px;border-radius:24px;background:rgba(255,0,68,.08);border:2px solid rgba(255,0,68,.55)}
+.ba{position:absolute;left:0;top:0;width:816px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;white-space:nowrap}
+.ba .l1{font-size:26px;color:rgba(255,255,255,.88);line-height:1.15}
+.ba .l2{font-size:38px;color:#FF0044;line-height:1.15;margin-top:2px}
+#card{position:absolute;border-radius:36px;background:rgba(30,30,46,.55);border:2px solid rgba(255,0,68,.5);overflow:hidden}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1080" data-height="1920" data-fps="60">
+
+<div id="flash0"></div>
+<div id="h-title" class="t "  style="left:30px;top:135px;width:1020px;height:90px;font-size:58px;color:#FF0044;text-shadow:0 0 22px rgba(255,0,68,.35)"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord text"><span class="mord text"><span class="mord textbf textit">THREE-PHASE INVERTER</span></span></span></span></span></span></div>
+<div id="h-sub" class="t "  style="left:40px;top:211px;width:1000px;height:50px;font-size:35px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SINE PWM: SLICE DC INTO A SINE</span></span></span></span></span></div>
+<div id="h-rule" style="position:absolute;left:480px;top:274px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,#FF0044,#B026FF,#0088FF)"></div>
+<div id="wm" class="t wm" data-layout-ignore  style="left:40px;top:720px;width:1000px;height:160px;font-size:130px;color:rgba(255,0,68,.12);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">@MAE.Academy</span></span></span></span></span></div>
+<div class="panel" style="left:90px;top:340px;width:900px;height:430px"></div>
+<div class="panel" style="left:90px;top:790px;width:900px;height:230px"></div>
+<div class="panel" style="left:90px;top:1040px;width:900px;height:190px"></div>
+<div id="glow" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(176,38,255,.35),transparent 70%);opacity:0"></div>
+<div id="rw" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(255,0,68,.30),transparent 75%);opacity:0"></div>
+<canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>
+<div id="lva" class="t "  style="left:183px;top:353px;width:70px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lvb" class="t "  style="left:313px;top:353px;width:70px;height:38px;font-size:30px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lvc" class="t "  style="left:443px;top:353px;width:70px;height:38px;font-size:30px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lvt" class="t "  style="left:580px;top:353px;width:120px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lbp" class="t "  style="left:170px;top:796px;width:90px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lbl" class="t "  style="left:300px;top:796px;width:90px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lbi" class="t "  style="left:430px;top:796px;width:70px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lba" class="t "  style="left:510px;top:796px;width:150px;height:38px;font-size:30px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">average</span></span></span></span></span></div><div id="lrp" class="t "  style="left:420px;top:1047px;width:100px;height:38px;font-size:26px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lrn" class="t "  style="left:432px;top:1191px;width:40px;height:38px;font-size:26px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span></div><div id="lla" class="t "  style="left:213px;top:1119px;width:30px;height:38px;font-size:24px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span></div><div id="llb" class="t "  style="left:303px;top:1119px;width:30px;height:38px;font-size:24px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span></div><div id="llc" class="t "  style="left:393px;top:1119px;width:30px;height:38px;font-size:24px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span></div><div id="lsp" class="t "  style="left:590px;top:1045px;width:220px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">∣</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">h</span><span class="mclose">)∣</span></span></span></span></div><div id="lsh" class="t "  style="left:947px;top:1193px;width:30px;height:38px;font-size:26px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">h</span></span></span></span></div><div id="lmf" class="t "  style="left:670px;top:1198px;width:60px;height:32px;font-size:26px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span></div>
+<div id="c0" class="t " data-m="c0" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">LL</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">0.612</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="c1" class="t " data-m="c1" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8252em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">re</span><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span></div><div id="c2" class="t " data-m="c2" style="left:110px;top:1245px;width:860px;height:90px;font-size:50px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7178em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.5678em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.2222em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">sin</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="mclose">)</span></span></span></span></div><div id="c3" class="t " data-m="c3" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="c4" class="t " data-m="c4" style="left:110px;top:1245px;width:860px;height:90px;font-size:54px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">9</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord text"><span class="mord textit">THD</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord">6.5%</span></span></span></span></div><div id="c5" class="t " data-m="c5" style="left:110px;top:1245px;width:860px;height:90px;font-size:54px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">21</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord text"><span class="mord textit">THD</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord">2.7%</span></span></span></span></div><div id="c6" class="t " data-m="c6" style="left:110px;top:1245px;width:860px;height:90px;font-size:54px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">45</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord text"><span class="mord textit">THD</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8056em;vertical-align:-0.0556em;"></span><span class="mord">1.3%</span></span></span></span></div><div id="cfin" class="t " data-m="cfin" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">LL</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">0.612</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div>
+<div id="fm0" class="t " data-m="fm0" style="left:100px;top:1338px;width:880px;height:100px;font-size:44px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2329em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9468em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span><span style="top:-3.2523em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span><span class="mpunct mtight">,</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9072em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord">3</span></span></span><span style="top:-2.8672em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice"><path d="M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1328em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="f1" class="t " data-m="f1" style="left:100px;top:1338px;width:880px;height:100px;font-size:44px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.6105em;vertical-align:-0.9868em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6238em;"><span style="top:-2.1632em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9468em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span><span style="top:-3.2523em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9468em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span><span style="top:-3.2523em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">re</span><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9868em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.8</span></span></span></span></div><div id="f2" class="t " data-m="f2" style="left:100px;top:1338px;width:880px;height:100px;font-size:46px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9805em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">9</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">450</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord text"><span class="mord textit">Hz</span></span></span></span></span></div><div id="f3" class="t " data-m="f3" style="left:100px;top:1338px;width:880px;height:100px;font-size:50px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6891em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord">−</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">}</span></span></span></span></div><div id="f4" class="t " data-m="f4" style="left:100px;top:1338px;width:880px;height:100px;font-size:44px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2329em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9468em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span><span style="top:-3.2523em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span><span class="mpunct mtight">,</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9072em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord">3</span></span></span><span style="top:-2.8672em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice"><path d="M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1328em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="f5" class="t " data-m="f5" style="left:100px;top:1338px;width:880px;height:100px;font-size:50px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">21</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">1050</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord text"><span class="mord textit">Hz</span></span></span></span></span></div><div id="f6" class="t " data-m="f6" style="left:100px;top:1338px;width:880px;height:100px;font-size:50px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">45</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">2250</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord text"><span class="mord textit">Hz</span></span></span></span></span></div><div id="f7" class="t " data-m="f7" style="left:100px;top:1338px;width:880px;height:100px;font-size:54px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord text"><span class="mord textit">THD</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∝</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord">1/</span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span></div>
+<div id="banner"><div id="bn0" class="ba" style="opacity:1"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">HOW DOES DC BECOME A SINE?</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SLICE IT WITH A TRIANGLE</span></span></span></span></span></div></div>
+<div id="bn1" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">COMPARE A SINE TO A TRIANGLE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8252em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">re</span><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord text"><span class="mord textit">: SWITCH ON</span></span></span></span></span></div></div>
+<div id="bn2" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">AVERAGE THE PULSES</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE SINE COMES BACK</span></span></span></span></span></div></div>
+<div id="bn3" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9418em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord text"><span class="mord textit">THREE LEGS, 120</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7473em;"><span style="top:-3.1362em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∘</span></span></span></span></span></span></span></span></span><span class="mord text"><span class="mord textit"> APART</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ab</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">b</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div></div>
+<div id="bn4" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE LOAD FILTERS THE RIPPLE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord text"><span class="mord textit"> IS ALMOST A SINE</span></span></span></span></span></div></div>
+<div id="bn5" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">RAISE THE CARRIER</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE RIPPLE FADES: THD DROPS</span></span></span></span></span></div></div>
+<div id="bnF" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">A FASTER CARRIER, A CLEANER SINE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">LL</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord">0.612</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">c</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div></div></div>
+<div id="card" style="left:90px;top:1430px;width:900px;height:230px;opacity:0">
+  <div id="ctaglow" style="position:absolute;left:100px;top:80px;width:700px;height:110px;border-radius:55px;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
+  <div id="ct1" class="t" style="left:0;top:12px;width:900px;height:60px;font-size:42px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SAVE THIS</span></span></span></span></span><svg width="34" height="44" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="#FF0044"/></svg></div>
+  <div id="ct2" class="t "  style="left:10px;top:74px;width:880px;height:52px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord text"><span class="mord textit">WHAT HAPPENS WHEN </span></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">1</span><span class="mord text"><span class="mord textit">?</span></span></span></span></span></div>
+  <div id="ct2b" class="t "  style="left:10px;top:128px;width:880px;height:44px;font-size:32px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">COMMENT BELOW </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↓</span></span></span></span></div>
+  <div id="ct3" class="t" style="left:0;top:180px;width:900px;height:44px;font-size:30px;color:rgba(255,255,255,.7);opacity:0"><svg width="30" height="30" viewBox="0 0 24 24" style="margin-right:14px;flex:none"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">@MAE.ACADEMY</span></span></span></span></span></div>
+</div>
+<audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="23" data-track-index="2" data-volume="1"></audio>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+window.__CFG = {"T":{"rewind0":1.6,"s1":2.2,"cyc0":2.4,"CYC":2.2,"st":[2.2,4.4,6.6,8.8,11.2],"sw":[2.4,4.6,6.8,9,11.4,13.9],"m1":[11.4,12.4],"m2":[13.9,15.1],"lock":16.6,"banF":17.6,"card":19,"pulse":21.4},"MFS":[9,21,45],"PA":[90,340,900,430],"PB":[90,790,900,230],"PC":[90,1040,900,190],"PLOT":{"x0":130,"w":830,"yA":560,"kA":150,"yB":915,"kB":80},"BR":{"xs":[200,290,380],"top":1066,"bot":1210},"SP":{"x0":590,"kh":3.7,"base":1190,"kv":118},"PH":{"cx":770,"cy":1140,"r":72},"SPEC":{"9":[1,0,0.0012,0,0.0069,0,0.2755,0,0.0019,0,0.2744,0,0.0187,0,0.0014,0,0.3949,0,0.394,0,0.0029,0,0.1309,0,0.2222,0,0.002,0,0.2216,0,0.1671,0,0.0025,0,0.1305,0,0.1324,0,0.0011,0,0.1466,0,0.0953,0,0.0027,0,0.1188,0,0.1262,0,0.0011,0,0.0373,0,0.0731,0,0.0004,0,0.0978,0,0.1031,0,0.0035,0,0.0506,0,0.0793,0,0.0005,0,0.0168,0,0.0102,0,0.0021,0,0.0264,0,0.0905,0,0.0015,0,0.014,0,0.0206,0,0.0017,0,0.0307,0,0.0853,0,0.0032,0,0.0434,0,0.0391,0,0.0026,0],"15":[1,0,0.0034,0,0.0011,0,0.0003,0,0.0027,0,0.0106,0,0.2751,0,0.0007,0,0.2728,0,0.0103,0,0.0018,0,0.0022,0,0.0172,0,0.0008,0,0.3953,0,0.3942,0,0.0035,0,0.016,0,0.0028,0,0.0016,0,0.1302,0,0.2189,0,0.0033,0,0.2196,0,0.1315,0,0.0039,0,0.022,0,0.1055,0,0.0009,0,0.1325,0,0.1287,0,0.0006,0,0.1047,0,0.0332,0,0.0016,0,0.1009,0,0.093,0,0.0026,0,0.0945,0,0.1006,0,0.0011,0,0.0808,0,0.0714,0,0.0007,0,0.0381,0,0.0368,0,0.0034,0,0.0766,0,0.1001,0,0.0017,0],"21":[1,0,0.001,0,0.0051,0,0.0028,0,0.0023,0,0.0034,0,0.0019,0,0.0005,0,0.0106,0,0.2719,0,0.0019,0,0.2753,0,0.0115,0,0.005,0,0.003,0,0.0022,0,0.0016,0,0.003,0,0.0144,0,0.003,0,0.3943,0,0.3916,0,0.0036,0,0.0166,0,0.0024,0,0.0036,0,0.0019,0,0.002,0,0.0039,0,0.1313,0,0.2223,0,0.0016,0,0.2217,0,0.1329,0,0.0027,0,0.0015,0,0.0024,0,0.003,0,0.0234,0,0.1048,0,0.0036,0,0.1315,0,0.1334,0,0.0041,0,0.1066,0,0.0213,0,0.0026,0,0.0059,0,0.0239,0,0.0037,0],"45":[1,0,0.0065,0,0.0021,0,0.0037,0,0.0032,0,0.0015,0,0.0077,0,0.0076,0,0.003,0,0.0028,0,0.0028,0,0.0025,0,0.0038,0,0.0002,0,0.0047,0,0.0032,0,0.0064,0,0.0028,0,0.0037,0,0.0044,0,0.0134,0,0.2815,0,0.0044,0,0.2769,0,0.0073,0,0.0031,0,0.0045,0,0.0032,0,0.0027,0,0.0041,0,0.0055,0,0.0082,0,0.0045,0,0.001,0,0.0026,0,0.0029,0,0.004,0,0.0024,0,0.0043,0,0.0028,0,0.0029,0,0.0024,0,0.0142,0,0.0062,0,0.3905,0,0.3976,0,0.0043,0,0.0155,0,0.0034,0,0.0063,0]},"spark":[{"a":1.5647676194464655,"d":193.0051852762699,"r":4.204357897979207},{"a":2.3966992246914045,"d":325.4130844771862,"r":5.521235852735117},{"a":0.6094374376297874,"d":330.4530107229948,"r":5.565058593638241},{"a":6.063499630675077,"d":345.1286243647337,"r":3.7386665042722598},{"a":1.4857804313473197,"d":369.8176635056734,"r":2.8557014981051907},{"a":0.34717038222850044,"d":433.1193645298481,"r":4.871159899746999},{"a":0.8394021558747876,"d":360.3703533858061,"r":2.770365633768961},{"a":5.6458295833496885,"d":296.24946013092995,"r":3.7861600446049124},{"a":4.0107214759967045,"d":295.6008243560791,"r":3.5507396075408906},{"a":1.9161001484393707,"d":298.53189662098885,"r":5.960567332338542},{"a":1.1050388250968728,"d":220.4647996276617,"r":4.85139868571423},{"a":1.292369389675386,"d":358.501937687397,"r":4.865520396037027},{"a":1.9037056437699296,"d":179.79709386825562,"r":3.319960182183422},{"a":2.4914925682317977,"d":453.40166330337524,"r":3.1188058364205062},{"a":4.046233885516819,"d":256.69677317142487,"r":2.5072775178123266},{"a":2.032833686334067,"d":308.69628734886646,"r":4.835534198442474},{"a":1.2564408223863446,"d":276.75884515047073,"r":4.2536007622256875},{"a":4.0037242963989454,"d":268.83114360272884,"r":5.896799627225846},{"a":0.14027884596557197,"d":402.47128643095493,"r":4.211320704314858},{"a":5.071094457039031,"d":461.7265623807907,"r":4.885385386063717},{"a":3.1097518158853825,"d":456.7382897436619,"r":4.869347418891266},{"a":2.3534063277913324,"d":218.62975135445595,"r":4.757863069768064},{"a":1.4741695270436932,"d":360.4974462836981,"r":5.643054176820442},{"a":2.1027361282913564,"d":475.49034908413887,"r":3.8249924858100712},{"a":6.264568597913205,"d":185.07721439003944,"r":5.955367596587166},{"a":2.759711992990303,"d":285.0180383771658,"r":4.557882139924914},{"a":3.996643632455157,"d":314.1284217685461,"r":2.908775028656237},{"a":3.196944275961327,"d":426.84306517243385,"r":4.774916003108956}]};
+// The maths of sine-triangle PWM for a three-phase two-level inverter. Plain JS: build.mjs runs it for the assertions, the page
+// inlines the same text. Time is the fundamental angle theta (omega = 1), Vdc = 1.
+globalThis.PWM = (function () {
+  const M = 0.8, // modulation index: peak of the sine reference / peak of the triangle
+    NS = 1680, // samples per fundamental period
+    R = 1,
+    L = 2; // load per phase: R = 1, omega L = 2 (series R-L, star connected)
+  const TWO = 2 * Math.PI;
+  // triangle carrier of period 1 in u: +1 at u = 0, -1 at u = 1/2
+  const tri = (u) => 4 * Math.abs(u - Math.floor(u) - 0.5) - 1;
+  /** one fundamental period of everything, with carrier ratio mf (may be fractional while the carrier is being stretched) */
+  function wave(mf, ns = NS) {
+    const c = new Float32Array(ns),
+      va = new Float32Array(ns),
+      vb = new Float32Array(ns),
+      vc = new Float32Array(ns),
+      Sa = new Uint8Array(ns),
+      Sb = new Uint8Array(ns),
+      Sc = new Uint8Array(ns),
+      vab = new Float32Array(ns),
+      van = new Float32Array(ns),
+      ia = new Float32Array(ns);
+    for (let k = 0; k < ns; k++) {
+      const th = (TWO * k) / ns;
+      c[k] = tri((mf * k) / ns);
+      va[k] = M * Math.sin(th);
+      vb[k] = M * Math.sin(th - TWO / 3);
+      vc[k] = M * Math.sin(th + TWO / 3);
+      Sa[k] = va[k] > c[k] ? 1 : 0;
+      Sb[k] = vb[k] > c[k] ? 1 : 0;
+      Sc[k] = vc[k] > c[k] ? 1 : 0;
+      vab[k] = Sa[k] - Sb[k];
+      van[k] = Sa[k] - (Sa[k] + Sb[k] + Sc[k]) / 3; // phase voltage across the star load
+    }
+    // series R-L load, exact step response per sample (the voltage is constant inside a sample); four periods, keep the last
+    const e = Math.exp((-R / L) * (TWO / ns));
+    let i = 0;
+    for (let p = 0; p < 4; p++)
+      for (let k = 0; k < ns; k++) {
+        i = i * e + (van[k] / R) * (1 - e);
+        if (p === 3) ia[k] = i;
+      }
+    return { c, va, vb, vc, Sa, Sb, Sc, vab, van, ia };
+  }
+  /** amplitude of harmonic h of a one-period signal x */
+  function harm(x, h) {
+    let re = 0,
+      im = 0;
+    const n = x.length;
+    for (let k = 0; k < n; k++) {
+      const a = (TWO * h * k) / n;
+      re += x[k] * Math.cos(a);
+      im -= x[k] * Math.sin(a);
+    }
+    return (2 / n) * Math.hypot(re, im);
+  }
+  /** total harmonic distortion of a one-period signal, harmonics 2 .. n/2 - 1 */
+  function thd(x) {
+    const f = harm(x, 1);
+    let s = 0;
+    for (let h = 2; h < x.length / 2; h++) s += harm(x, h) ** 2;
+    return Math.sqrt(s) / f;
+  }
+  /** circular moving average of a 0/1 signal over one carrier period (what an LC filter does to the pulses) */
+  function average(S, mf) {
+    const n = S.length,
+      w = Math.max(1, Math.round(n / mf));
+    const out = new Float32Array(n);
+    let s = 0;
+    for (let k = -Math.floor(w / 2); k < w - Math.floor(w / 2); k++) s += S[(k + n) % n];
+    for (let k = 0; k < n; k++) {
+      out[k] = s / w;
+      s += S[(k + w - Math.floor(w / 2)) % n] - S[(k - Math.floor(w / 2) + n) % n];
+    }
+    return out;
+  }
+  const I1 = M / 2 / Math.hypot(R, L); // peak of the fundamental of the phase current
+  return { M, NS, R, L, TWO, tri, wave, harm, thd, average, I1 };
+})();
+
+// Timeline for "THREE-PHASE INVERTER: SINE PWM" (23.0 s).
+// The references, the carrier, the pulses, their average, the line voltage, the load current, the bridge, the phasors and the
+// harmonic spectrum are drawn on a canvas from the time alone (hf-seek protocol); text, counters and cards are GSAP.
+// Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
+(function () {
+  const CFG = window.__CFG;
+  const { T, PA, PB, PLOT, BR, SP, PH, SPEC } = CFG;
+  const tl = gsap.timeline({ paused: true });
+  const ft = (target, from, to, at) =>
+    tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
+
+  // @CUES-BEGIN
+  const CUES = [
+    [0.0, "thump"], // opening impact on the finished picture
+    [1.6, "snap"], // rewind
+    [2.2, "click"], // compare a sine to a triangle
+    [2.4, "snap"], // the first cycle: pulses appear
+    [4.4, "click"], // average the pulses
+    [4.6, "snap"], // the average is the sine
+    [6.6, "click"], // three legs
+    [6.8, "snap"], // line voltage
+    [8.8, "click"], // the load filters the ripple
+    [9.0, "snap"], // current, THD at mf = 9
+    [11.2, "click"], // raise the carrier
+    [11.4, "snap"], // mf = 21
+    [13.9, "snap"], // mf = 45
+    [16.6, "thump"], // lock
+    [17.6, "click"], // a faster carrier, a cleaner sine
+    [19.0, "snap"], // CTA reveal
+    [21.4, "click"], // engagement pulse
+  ];
+  // @CUES-END
+  const EXPORT = [];
+  const used = new Set();
+  /** every cue is tied to the element that visibly appears at that instant (probed by verify.mjs) */
+  function hit(t, kind, sel) {
+    const i = CUES.findIndex((c) => c[0] === t && c[1] === kind);
+    if (i < 0) throw new Error(`visual event at ${t}s (${kind}) has no CUES entry`);
+    used.add(i);
+    EXPORT.push({ t, kind, sel });
+    return t;
+  }
+  let curBanner = "#bn0",
+    curCount = "#c0",
+    curForm = "#fm0";
+  function bnSwap(n, t) {
+    ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, t);
+    ft(n, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, t + 0.08);
+    curBanner = n;
+  }
+  function cswap(n, t, pop) {
+    if (curCount)
+      ft(
+        curCount,
+        { opacity: 1 },
+        { opacity: 0, duration: pop ? 0.12 : 0.05, ease: "power1.in" },
+        t,
+      );
+    ft(
+      n,
+      { opacity: 0, scale: pop ? 1.18 : 1.05 },
+      { opacity: 1, scale: 1, duration: pop ? 0.4 : 0.12, ease: pop ? "power3.out" : "power2.out" },
+      t,
+    );
+    curCount = n;
+  }
+  function fswap(n, t) {
+    if (curForm) ft(curForm, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: "power1.in" }, t);
+    ft(n, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, t + 0.08);
+    curForm = n;
+  }
+  const pop = (sel, at, y) =>
+    ft(
+      sel,
+      { opacity: 0, y: y === undefined ? 10 : y },
+      { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+      at,
+    );
+  const fade = (sel, at, d) =>
+    ft(sel, { opacity: 1 }, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, at);
+
+  // the legends of the finished picture are on screen at frame 0; they leave with the rewind and come back stage by stage
+  gsap.set("#lvb,#lvc", { opacity: 1 });
+  gsap.set("#lbp", { opacity: 0 });
+  const HOOKED = ["#lva", "#lvb", "#lvc", "#lvt", "#lbp", "#lbl", "#lbi", "#lsp", "#lsh", "#lmf"];
+
+  // ---------------------------------------------------------------- 0.0 - 2.2  the finished picture, then the rewind
+  hit(0.0, "thump", "#flash0");
+  ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
+  hit(T.rewind0, "snap", "#rw");
+  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.rewind0);
+  tl.fromTo(
+    "#rw",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.7, ease: "power2.in", immediateRender: false },
+    T.rewind0 + 0.4,
+  );
+  fade("#c0", T.rewind0, 0.3);
+  fade("#fm0", T.rewind0, 0.3);
+  HOOKED.forEach((s) => fade(s, T.rewind0, 0.3));
+  curCount = null;
+  curForm = null;
+
+  /** one stage: the banner, the counter and the formula; the waveforms are drawn in the canvas */
+  function stage(k, ci, fi) {
+    const st = T.st[k],
+      sw = T.sw[k];
+    hit(st, "click", "#bn" + (k + 1));
+    bnSwap("#bn" + (k + 1), st);
+    hit(sw, "snap", "#c" + ci);
+    cswap("#c" + ci, sw, true);
+    fswap("#f" + fi, sw + 0.3);
+  }
+  stage(0, 1, 1);
+  pop("#lva", 2.3, 6);
+  pop("#lvt", 2.3, 6);
+  pop("#lbp", 2.5, 6);
+  stage(1, 2, 2);
+  pop("#lba", 4.7, 6);
+  stage(2, 3, 3);
+  pop("#lvb", 6.9, 6);
+  pop("#lvc", 6.9, 6);
+  pop("#lbl", 6.9, 6);
+  stage(3, 4, 4);
+  pop("#lbi", 9.1, 6);
+  pop("#lsp", 9.1, 6);
+  pop("#lsh", 9.1, 6);
+  pop("#lmf", 9.1, 6);
+  fade("#lbp", 6.8, 0.3);
+  fade("#lba", 6.8, 0.3);
+  stage(4, 5, 5);
+  hit(T.sw[5], "snap", "#c6");
+  cswap("#c6", T.sw[5], true);
+  fswap("#f6", T.sw[5] + 0.3);
+
+  // ---------------------------------------------------------------- the lock
+  const LK = T.lock;
+  hit(LK, "thump", "#glow");
+  ft("#glow", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, LK);
+  tl.fromTo(
+    "#glow",
+    { opacity: 1 },
+    { opacity: 0, duration: 1.0, ease: "power2.inOut", immediateRender: false },
+    LK + 0.2,
+  );
+  cswap("#cfin", LK + 0.3, true);
+  fswap("#f7", LK + 0.6);
+  hit(T.banF, "click", "#bnF");
+  bnSwap("#bnF", T.banF);
+
+  // ---------------------------------------------------------------- CTA
+  hit(T.card, "snap", "#card");
+  ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, T.card - 0.1);
+  ft("#banner", { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, T.card - 0.1);
+  ft("#card", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, T.card);
+  ft("#ct1", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 0.1);
+  ft("#ct2", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 0.4);
+  ft("#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 0.7);
+  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 1.1);
+  hit(T.pulse, "click", "#ctaglow");
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.45, duration: 0.25, ease: "power2.out" }, T.pulse);
+  tl.fromTo(
+    "#ctaglow",
+    { opacity: 0.45 },
+    { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
+    T.pulse + 0.35,
+  );
+
+  tl.to({}, { duration: 0.0001 }, 22.9999);
+  if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
+  window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
+
+  // ================================================================ canvas
+  const cvs = document.getElementById("cv");
+  const ctx = cvs.getContext("2d");
+  const DPR = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  cvs.width = Math.round(1080 * DPR);
+  cvs.height = Math.round(1920 * DPR);
+
+  const BLUE = "#0088FF",
+    RED = "#FF0044",
+    PURPLE = "#B026FF",
+    WHITE = "#FFFFFF";
+  const PHC = [RED, BLUE, PURPLE];
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const smooth = (v) => {
+    v = clamp01(v);
+    return v * v * (3 - 2 * v);
+  };
+  const easeOut = (v) => 1 - Math.pow(1 - clamp01(v), 3);
+  const { NS, TWO, M } = PWM;
+  const xP = (k) => PLOT.x0 + (PLOT.w * k) / NS;
+  const yA = (u) => PLOT.yA - PLOT.kA * u;
+  const yB = (u) => PLOT.yB - PLOT.kB * u;
+  const IS = 0.7 / PWM.I1; // the load current is drawn in units of its fundamental
+
+  // monotone cubic keyframes (no overshoot, zero velocity at holds): the carrier ratio stretches smoothly
+  function monoEval(keys, t) {
+    const n = keys.length;
+    if (t <= keys[0][0]) return keys[0][1];
+    if (t >= keys[n - 1][0]) return keys[n - 1][1];
+    let i = 0;
+    while (keys[i + 1][0] <= t) i++;
+    const t0 = keys[i][0],
+      t1 = keys[i + 1][0],
+      dt = t1 - t0,
+      u = (t - t0) / dt;
+    const sl = (a, b) => (keys[b][1] - keys[a][1]) / (keys[b][0] - keys[a][0]);
+    const tang = (k) => {
+      if (k === 0 || k === n - 1) return 0;
+      const s0 = sl(k - 1, k),
+        s1 = sl(k, k + 1);
+      return s0 * s1 <= 0 ? 0 : (2 * s0 * s1) / (s0 + s1);
+    };
+    const h00 = (1 + 2 * u) * (1 - u) * (1 - u),
+      h10 = u * (1 - u) * (1 - u),
+      h01 = u * u * (3 - 2 * u),
+      h11 = u * u * (u - 1);
+    return h00 * keys[i][1] + h10 * dt * tang(i) + h01 * keys[i + 1][1] + h11 * dt * tang(i + 1);
+  }
+  const MFK = [
+    [0, 21],
+    [T.rewind0, 21],
+    [T.cyc0, 9],
+    [T.m1[0], 9],
+    [T.m1[1], 21],
+    [T.m2[0], 21],
+    [T.m2[1], 45],
+    [40, 45],
+  ];
+
+  function poly(pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  }
+  function line(pts, color, width, alpha, blur, dash) {
+    if (pts.length < 2 || alpha <= 0.001) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    if (dash) ctx.setLineDash(dash);
+    if (blur) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = blur;
+    }
+    poly(pts);
+    ctx.stroke();
+    ctx.restore();
+  }
+  function dot(x, y, r, color, alpha, blur) {
+    if (alpha <= 0.001 || r <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur === undefined ? 14 : blur;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.restore();
+  }
+  const seg = (x1, y1, x2, y2, color, w, a, blur) =>
+    line(
+      [
+        [x1, y1],
+        [x2, y2],
+      ],
+      color,
+      w,
+      a,
+      blur,
+    );
+
+  // ---------------------------------------------------------------- the state at time t
+  const hookA = (t) => (t < T.rewind0 ? 1 : 1 - smooth((t - T.rewind0) / 0.5));
+  const cyc = (t) => (t - T.cyc0) / T.CYC;
+  /** alpha and reveal progress of a trace that is drawn during cycle `start` (full during the hook) */
+  const tr = (t, start) => (t < 2.1 ? { a: hookA(t), p: 1 } : { a: 1, p: clamp01(cyc(t) - start) });
+  const thetaC = (t) => {
+    if (t < T.cyc0) return 0.9;
+    const c = cyc(t);
+    return TWO * (c - Math.floor(c));
+  };
+
+  function drawTop(t, W, kC) {
+    const aB = t < 2.1 ? hookA(t) : smooth((t - 2.2) / 0.3);
+    const aBC = t < 2.1 ? hookA(t) : smooth((t - 6.8) / 0.4);
+    const x0 = PLOT.x0,
+      x1 = PLOT.x0 + PLOT.w;
+    if (aB > 0.001) {
+      seg(x0, yA(0), x1, yA(0), WHITE, 2, 0.3 * aB);
+      seg(x0, yA(1), x1, yA(1), WHITE, 1, 0.1 * aB);
+      seg(x0, yA(-1), x1, yA(-1), WHITE, 1, 0.1 * aB);
+    }
+    // the switch is ON wherever the reference is above the carrier: shade the gap, up to the first cycle's reveal
+    const s0 = tr(t, 0);
+    if (s0.a > 0.001) {
+      const n = Math.round(NS * s0.p);
+      ctx.save();
+      ctx.globalAlpha = 0.3 * s0.a * aB;
+      ctx.strokeStyle = RED;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      for (let k = 0; k < n; k++)
+        if (W.Sa[k]) {
+          ctx.moveTo(xP(k), yA(W.c[k]));
+          ctx.lineTo(xP(k), yA(W.va[k]));
+        }
+      ctx.stroke();
+      ctx.restore();
+    }
+    const curve = (arr, color, a, wd, blur) => {
+      const pts = [];
+      for (let k = 0; k < NS; k++) pts.push([xP(k), yA(arr[k])]);
+      line(pts, color, wd, a, blur);
+    };
+    curve(W.c, WHITE, 0.85 * aB, 3);
+    curve(W.va, RED, aB, 5, 10);
+    if (aBC > 0.001) {
+      curve(W.vb, BLUE, aBC, 5, 10);
+      curve(W.vc, PURPLE, aBC, 5, 10);
+    }
+    // legend swatches (the labels are HTML)
+    seg(170, 372, 198, 372, RED, 5, aB);
+    seg(300, 372, 328, 372, BLUE, 5, aBC);
+    seg(430, 372, 458, 372, PURPLE, 5, aBC);
+    seg(582, 372, 610, 372, WHITE, 4, 0.85 * aB);
+    // the cursor
+    const aC = t < 2.1 ? hookA(t) : smooth((t - 2.3) / 0.2);
+    if (aC > 0.001) {
+      seg(xP(kC), PA[1] + 56, xP(kC), PB[1] + PB[3] - 14, WHITE, 2, 0.4 * aC);
+      dot(xP(kC), yA(W.va[kC]), 8, RED, aC, 16);
+      dot(xP(kC), yA(W.c[kC]), 6, WHITE, aC, 10);
+    }
+  }
+
+  function drawMid(t, W, mf, kC) {
+    const x0 = PLOT.x0,
+      x1 = PLOT.x0 + PLOT.w;
+    seg(x0, yB(0), x1, yB(0), WHITE, 2, 0.3);
+    seg(x0, yB(1), x1, yB(1), WHITE, 1, 0.1);
+    seg(x0, yB(-1), x1, yB(-1), WHITE, 1, 0.1);
+    const path = (arr, scale, p) => {
+      const n = Math.max(2, Math.round(NS * p));
+      const pts = [];
+      for (let k = 0; k < Math.min(n, NS); k++) pts.push([xP(k), yB(arr[k] * scale)]);
+      return pts;
+    };
+    // pulses of leg a, then their average (the filter output), then the line voltage, then the load current
+    const pole = t < 2.1 ? { a: 0, p: 1 } : tr(t, 0);
+    const aPole = pole.a * (t < 2.1 ? 0 : 1 - smooth((t - 6.8) / 0.3));
+    if (aPole > 0.001 && pole.p > 0) line(path(W.Sa, 1, pole.p), RED, 4, aPole, 8);
+    seg(165, 815, 193, 815, RED, 5, aPole * (pole.p > 0 ? 1 : 0));
+    const av = tr(t, 1);
+    const aAvg = t < 2.1 ? 0 : av.a * (1 - smooth((t - 6.8) / 0.3));
+    if (aAvg > 0.001 && av.p > 0) line(path(PWM.average(W.Sa, mf), 1, av.p), WHITE, 5, aAvg, 10);
+    seg(515, 815, 543, 815, WHITE, 5, aAvg * (av.p > 0 ? 1 : 0));
+    const ln = tr(t, 2);
+    const aLine = ln.a * (t < 9.0 || t < 2.1 ? 1 : 1 - 0.55 * smooth((t - 9.0) / 0.4));
+    if (aLine > 0.001 && ln.p > 0) line(path(W.vab, 1, ln.p), BLUE, 4, aLine, 8);
+    seg(295, 815, 323, 815, BLUE, 5, aLine * (ln.p > 0 ? 1 : 0));
+    const cu = tr(t, 3);
+    if (cu.a > 0.001 && cu.p > 0) line(path(W.ia, IS, cu.p), PURPLE, 6, cu.a, 14);
+    seg(425, 815, 453, 815, PURPLE, 5, cu.a * (cu.p > 0 ? 1 : 0));
+    // the cursor in the second panel
+    const aC = t < 2.1 ? hookA(t) : smooth((t - 2.3) / 0.2);
+    if (aC > 0.001) {
+      if (aPole > 0.001) dot(xP(kC), yB(W.Sa[kC]), 7, RED, aC * aPole, 14);
+      if (cu.a > 0.001 && cu.p >= 1) dot(xP(kC), yB(W.ia[kC] * IS), 8, PURPLE, aC * cu.a, 16);
+    }
+  }
+
+  // the bridge: the conducting switch of each leg lights up in the colour of its phase
+  function drawBridge(t, W, kC) {
+    const a0 = t < 2.1 ? hookA(t) : 1;
+    const aBC = t < 2.1 ? hookA(t) : smooth((t - 6.8) / 0.4);
+    const S = [W.Sa[kC], W.Sb[kC], W.Sc[kC]];
+    // the two DC rails, drawn as T-shaped terminals
+    seg(135, BR.top, 415, BR.top, WHITE, 3, 0.7 * a0);
+    seg(150, BR.top - 14, 150, BR.top, WHITE, 3, 0.7 * a0);
+    seg(130, BR.top - 14, 170, BR.top - 14, WHITE, 3, 0.7 * a0);
+    seg(135, BR.bot, 415, BR.bot, WHITE, 3, 0.7 * a0);
+    seg(150, BR.bot, 150, BR.bot + 14, WHITE, 3, 0.7 * a0);
+    seg(130, BR.bot + 14, 170, BR.bot + 14, WHITE, 3, 0.7 * a0);
+    BR.xs.forEach((x, n) => {
+      const a = n === 0 ? a0 : aBC;
+      if (a <= 0.001) return;
+      const up = S[n] === 1;
+      const sw = (cy, on) => {
+        ctx.save();
+        ctx.globalAlpha = a;
+        if (on) {
+          ctx.fillStyle = PHC[n];
+          ctx.shadowColor = PHC[n];
+          ctx.shadowBlur = 16;
+          ctx.fillRect(x - 15, cy - 18, 30, 36);
+        } else {
+          ctx.strokeStyle = "rgba(255,255,255,.35)";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x - 15, cy - 18, 30, 36);
+        }
+        ctx.restore();
+      };
+      const on = (v) => (v ? PHC[n] : "rgba(255,255,255,.35)");
+      seg(x, BR.top, x, 1084, on(up), 3, a);
+      sw(1102, up);
+      seg(x, 1120, x, 1138, on(up), 3, a);
+      seg(x, 1138, x, 1156, on(!up), 3, a);
+      sw(1174, !up);
+      seg(x, 1192, x, BR.bot, on(!up), 3, a);
+      dot(x, 1138, 6, PHC[n], a, 12);
+    });
+  }
+
+  // the three phase references as rotating vectors (the circle is the carrier amplitude)
+  function drawPhasors(t, th, a) {
+    if (a <= 0.001) return;
+    const aBC = smooth((t - 6.8) / 0.4);
+    ctx.save();
+    ctx.globalAlpha = 0.5 * a;
+    ctx.strokeStyle = WHITE;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(PH.cx, PH.cy, PH.r, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.restore();
+    seg(PH.cx - PH.r - 8, PH.cy, PH.cx + PH.r + 8, PH.cy, WHITE, 1.5, 0.3 * a);
+    seg(PH.cx, PH.cy - PH.r - 8, PH.cx, PH.cy + PH.r + 8, WHITE, 1.5, 0.3 * a);
+    [0, 1, 2].forEach((n) => {
+      const al = n === 0 ? a : a * aBC;
+      if (al <= 0.001) return;
+      const ang = th - (n * TWO) / 3,
+        x = PH.cx + PH.r * M * Math.cos(ang),
+        y = PH.cy - PH.r * M * Math.sin(ang);
+      seg(PH.cx, PH.cy, x, y, PHC[n], 5, al, 10);
+      dot(x, y, 7, PHC[n], al, 14);
+    });
+  }
+
+  // the spectrum of the line voltage: the carrier sidebands move away as the carrier ratio rises
+  function drawSpectrum(mf, a) {
+    if (a <= 0.001) return;
+    seg(SP.x0 - 8, SP.base, 975, SP.base, WHITE, 2, 0.4 * a);
+    const wt = {
+      9: mf <= 21 ? clamp01((21 - mf) / 12) : 0,
+      21: mf <= 21 ? clamp01((mf - 9) / 12) : clamp01((45 - mf) / 24),
+      45: mf >= 21 ? clamp01((mf - 21) / 24) : 0,
+    };
+    for (const k of [9, 21, 45]) {
+      const w = wt[k] * a;
+      if (w <= 0.001) continue;
+      const tab = SPEC[k];
+      ctx.save();
+      ctx.globalAlpha = w;
+      for (let h = 1; h <= 100; h++) {
+        const v = tab[h - 1];
+        if (v < 0.006) continue;
+        ctx.fillStyle = h === 1 ? RED : BLUE;
+        if (h === 1) {
+          ctx.shadowColor = RED;
+          ctx.shadowBlur = 12;
+        } else ctx.shadowBlur = 0;
+        const bh = Math.min(1, v) * SP.kv;
+        ctx.fillRect(SP.x0 + h * SP.kh - 1.5, SP.base - bh, 3, bh);
+      }
+      ctx.restore();
+    }
+    const xm = SP.x0 + mf * SP.kh;
+    seg(xm, SP.base + 2, xm, SP.base - SP.kv - 4, WHITE, 1.5, 0.35 * a);
+  }
+
+  const mfLab = document.getElementById("lmf");
+  function drawLock(t) {
+    const u = t - T.lock;
+    if (u < 0 || u > 1.3) return;
+    const cx = 540,
+      cy = 790;
+    if (u < 0.5) {
+      const g = ctx.createRadialGradient(cx, cy, 20, cx, cy, 700);
+      g.addColorStop(0, "rgba(176,38,255," + (0.3 * (1 - u / 0.5)).toFixed(3) + ")");
+      g.addColorStop(1, "rgba(176,38,255,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 1080, 1920);
+    }
+    if (u < 0.6) {
+      const x = 90 + 900 * easeOut(u / 0.55);
+      ctx.save();
+      ctx.globalAlpha = 1 - smooth((u - 0.45) / 0.15);
+      ctx.shadowColor = PURPLE;
+      ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.moveTo(x, 340);
+      ctx.lineTo(x, 1230);
+      ctx.strokeStyle = PURPLE;
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.restore();
+    }
+    [
+      [90, 340],
+      [990, 340],
+      [90, 1230],
+      [990, 1230],
+    ].forEach(([x, y], i) => {
+      const v = clamp01((u - 0.1 - i * 0.05) / 0.5);
+      if (v <= 0 || v >= 1) return;
+      const r = 20 * Math.sin(Math.PI * v) + 4;
+      ctx.save();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+      ctx.shadowColor = "#fff";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(x - r, y);
+      ctx.lineTo(x + r, y);
+      ctx.moveTo(x, y - r);
+      ctx.lineTo(x, y + r);
+      ctx.stroke();
+      ctx.restore();
+    });
+    [
+      [PURPLE, 660, 0, 0.7],
+      [RED, 520, 0.1, 0.6],
+    ].forEach(([c, R, d0, dur]) => {
+      const v = clamp01((u - d0) / dur);
+      if (v <= 0 || v >= 1) return;
+      ctx.save();
+      ctx.globalAlpha = 1 - v;
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10 + R * easeOut(v), 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.restore();
+    });
+    CFG.spark.forEach((sp, i) => {
+      const v = clamp01((u - 0.05) / 0.8);
+      if (v <= 0 || v >= 1) return;
+      ctx.save();
+      ctx.globalAlpha = 1 - v;
+      ctx.fillStyle = i % 3 === 0 ? RED : i % 3 === 1 ? PURPLE : "#fff";
+      ctx.beginPath();
+      ctx.arc(
+        cx + Math.cos(sp.a) * sp.d * easeOut(v),
+        cy + Math.sin(sp.a) * sp.d * easeOut(v),
+        sp.r,
+        0,
+        2 * Math.PI,
+      );
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function draw(t) {
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, 1080, 1920);
+    const mf = monoEval(MFK, t);
+    const W = PWM.wave(mf);
+    const th = thetaC(t);
+    const kC = Math.min(NS - 1, Math.floor((NS * th) / TWO));
+    drawTop(t, W, kC);
+    drawMid(t, W, mf, kC);
+    drawBridge(t, W, kC);
+    const aPh = t < 2.1 ? 0 : smooth((t - 2.4) / 0.3) * (1 - smooth((t - 9.0) / 0.4));
+    const aSp = t < 2.1 ? hookA(t) : smooth((t - 9.0) / 0.4);
+    drawPhasors(t, th, aPh);
+    drawSpectrum(mf, aSp);
+    if (mfLab) mfLab.style.transform = `translate(${(SP.x0 + mf * SP.kh - 700).toFixed(1)}px,0px)`;
+    drawLock(t);
+  }
+
+  window.__SCHED = T;
+  window.__draw = draw;
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+  window.addEventListener("hf-seek", (ev) => draw(ev.detail.time));
+  draw(0);
+})();
+
+</script>
+</body>
+</html>
