@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>The Boost Converter</title>
+<style>
+@font-face{font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_AMS-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Fraktur-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Fraktur-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_Main-Bold.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Main-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Main-Italic.woff2) format("woff2")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Main-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(assets/fonts/KaTeX_Math-BoldItalic.woff2) format("woff2")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_Math-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(assets/fonts/KaTeX_SansSerif-Bold.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Italic.woff2) format("woff2")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_SansSerif-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Script-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size1-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size2-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size3-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Size4-Regular.woff2) format("woff2")}@font-face{font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(assets/fonts/KaTeX_Typewriter-Regular.woff2) format("woff2")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.16.11"}.katex .katex-mathml{clip:rect(1px,1px,1px,1px);border:0;height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{border:0 solid;display:inline-block;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+
+.katex{font-size:1em !important;text-rendering:geometricPrecision}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0A0A10;width:1080px;height:1920px;overflow:hidden}
+#root{position:absolute;left:0;top:0;width:1080px;height:1920px;background:#0A0A10;overflow:hidden;
+  background-image:linear-gradient(#161622 2px,transparent 2px),linear-gradient(90deg,#161622 2px,transparent 2px);background-size:60px 60px}
+#flash0{position:absolute;left:0;top:0;width:1080px;height:700px;background:radial-gradient(ellipse at 50% 22%,rgba(255,0,68,.5),transparent 65%);opacity:0}
+.t{position:absolute;display:flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1}
+.panel{position:absolute;border-radius:28px;background:rgba(30,30,46,.55);border:1px solid rgba(255,255,255,.1)}
+#cv{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#banner{position:absolute;left:130px;top:1450px;width:820px;height:96px;border-radius:24px;background:rgba(255,0,68,.08);border:2px solid rgba(255,0,68,.55)}
+.ba{position:absolute;left:0;top:0;width:816px;height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;white-space:nowrap}
+.ba .l1{font-size:26px;color:rgba(255,255,255,.88);line-height:1.15}
+.ba .l2{font-size:38px;color:#FF0044;line-height:1.15;margin-top:2px}
+#card{position:absolute;border-radius:36px;background:rgba(30,30,46,.55);border:2px solid rgba(255,0,68,.5);overflow:hidden}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="22.8" data-width="1080" data-height="1920" data-fps="60">
+
+<div id="flash0"></div>
+<div id="h-title" class="t "  style="left:30px;top:135px;width:1020px;height:90px;font-size:58px;color:#FF0044;text-shadow:0 0 22px rgba(255,0,68,.35)"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6861em;"></span><span class="mord text"><span class="mord text"><span class="mord textbf textit">THE BOOST CONVERTER</span></span></span></span></span></span></div>
+<div id="h-sub" class="t "  style="left:40px;top:211px;width:1000px;height:50px;font-size:35px;color:#B026FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">VOLT-SECOND BALANCE</span></span></span></span></span></div>
+<div id="h-rule" style="position:absolute;left:480px;top:274px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,#FF0044,#B026FF,#0088FF)"></div>
+<div id="wm" class="t wm" data-layout-ignore  style="left:40px;top:720px;width:1000px;height:160px;font-size:130px;color:rgba(255,0,68,.12);"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">@MAE.Academy</span></span></span></span></span></div>
+<div class="panel" style="left:90px;top:340px;width:900px;height:470px"></div>
+<div class="panel" style="left:90px;top:830px;width:900px;height:200px"></div>
+<div class="panel" style="left:90px;top:1050px;width:900px;height:180px"></div>
+<div id="glow" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(176,38,255,.35),transparent 70%);opacity:0"></div>
+<div id="rw" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(255,0,68,.30),transparent 75%);opacity:0"></div>
+<canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>
+<div id="lvin" class="t "  style="left:105px;top:405px;width:90px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lL" class="t "  style="left:260px;top:413px;width:40px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">L</span></span></span></span></div><div id="lS" class="t "  style="left:448px;top:546px;width:40px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span></span></span></span></div><div id="lD" class="t "  style="left:472px;top:411px;width:40px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span></div><div id="lC" class="t "  style="left:512px;top:621px;width:40px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span></div><div id="lR" class="t "  style="left:652px;top:571px;width:40px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span></span></span></div><div id="lVo" class="t "  style="left:582px;top:411px;width:60px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lbi" class="t "  style="left:705px;top:716px;width:90px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lbo" class="t "  style="left:810px;top:716px;width:70px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="liL" class="t "  style="left:135px;top:839px;width:60px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lon" class="t "  style="left:265px;top:839px;width:70px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">ON</span></span></span></span></span></div><div id="loff" class="t "  style="left:355px;top:839px;width:70px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">OFF</span></span></span></span></span></div><div id="lil1" class="t "  style="left:815px;top:839px;width:170px;height:38px;font-size:30px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">A</span></span></span></span></span></div><div id="lil2" class="t "  style="left:815px;top:839px;width:170px;height:38px;font-size:30px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">8</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">A</span></span></span></span></span></div><div id="lil3" class="t "  style="left:805px;top:839px;width:190px;height:38px;font-size:30px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">50</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">A</span></span></span></span></span></div><div id="lvL" class="t "  style="left:130px;top:1051px;width:60px;height:38px;font-size:28px;color:#FFFFFF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div><div id="lMD" class="t "  style="left:590px;top:1053px;width:100px;height:38px;font-size:28px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span></span></span></span></div><div id="lDx" class="t "  style="left:960px;top:1197px;width:30px;height:38px;font-size:26px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span></div><div id="lreal" class="t "  style="left:720px;top:1081px;width:110px;height:38px;font-size:26px;color:#FFFFFF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">real</span></span></span></span></span></div>
+<div id="c0" class="t " data-m="c0" style="left:110px;top:1245px;width:860px;height:90px;font-size:52px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">12</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">V</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">48</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">V</span></span></span></span></span></div><div id="c1" class="t " data-m="c1" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↑</span></span></span></span></div><div id="c2" class="t " data-m="c2" style="left:110px;top:1245px;width:860px;height:90px;font-size:54px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↓</span></span></span></span></div><div id="c3" class="t " data-m="c3" style="left:110px;top:1245px;width:860px;height:90px;font-size:46px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span></span></span></div><div id="c4" class="t " data-m="c4" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.75</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">48</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">V</span></span></span></span></span></div><div id="c5" class="t " data-m="c5" style="left:110px;top:1245px;width:860px;height:90px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.9</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">120</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">V</span></span></span></span></span></div><div id="c6" class="t " data-m="c6" style="left:110px;top:1245px;width:860px;height:90px;font-size:40px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0077em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">THE GAIN PEAKS, THEN FALLS</span></span></span></span></span></div><div id="cfin" class="t " data-m="cfin" style="left:110px;top:1245px;width:860px;height:90px;font-size:44px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">OUTPUT ABOVE INPUT: A BOOST</span></span></span></span></span></div>
+<div id="fm0" class="t " data-m="fm0" style="left:100px;top:1338px;width:880px;height:100px;font-size:44px;color:#0088FF;"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1297em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="f1" class="t " data-m="f1" style="left:100px;top:1338px;width:880px;height:100px;font-size:42px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">0</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">L</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">t</span></span></span></span></div><div id="f2" class="t " data-m="f2" style="left:100px;top:1338px;width:880px;height:100px;font-size:38px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ma</span><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">L</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mclose">)</span></span></span></span></div><div id="f3" class="t " data-m="f3" style="left:100px;top:1338px;width:880px;height:100px;font-size:44px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1297em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></div><div id="f4" class="t " data-m="f4" style="left:100px;top:1338px;width:880px;height:100px;font-size:40px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2963em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">8</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">A</span></span></span></span></span></div><div id="f5" class="t " data-m="f5" style="left:100px;top:1338px;width:880px;height:100px;font-size:40px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2963em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">50</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">A</span></span></span></span></span></div><div id="f6" class="t " data-m="f6" style="left:100px;top:1338px;width:880px;height:100px;font-size:44px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0908em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord">∞</span></span></span></span></div><div id="f7" class="t " data-m="f7" style="left:100px;top:1338px;width:880px;height:100px;font-size:56px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></div>
+<div id="banner"><div id="bn0" class="ba" style="opacity:1"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">HOW CAN 12 V BECOME 48 V?</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">ONE SWITCH, ONE COIL, ONE DIODE</span></span></span></span></span></div></div>
+<div id="bn1" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SWITCH ON: THE COIL CHARGES</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord text"><span class="mord textit">: i</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord text"><span class="mord textit"> RAMPS UP</span></span></span></span></span></div></div>
+<div id="bn2" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SWITCH OFF: THE CURRENT MUST GO ON</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">IT PUSHES THROUGH THE DIODE</span></span></span></span></span></div></div>
+<div id="bn3" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">VOLT-SECONDS MUST BALANCE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">AREA UP = AREA DOWN</span></span></span></span></span></div></div>
+<div id="bn4" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">TURN THE DUTY UP</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">THE SPIKE GROWS, THE AREA STAYS</span></span></span></span></span></div></div>
+<div id="bn5" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">KEEP GOING: </span></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.9</span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">120</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord textit">V</span></span><span class="mord text"><span class="mord textit"> (IDEAL)</span></span></span></span></span></div></div>
+<div id="bn6" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">THE IDEAL GAIN GOES TO INFINITY</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">REAL LOSSES BEND THE CURVE</span></span></span></span></span></div></div>
+<div id="bnF" class="ba" style="opacity:0"><div class="l1"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">A SWITCH, A COIL, A DIODE</span></span></span></span></span></div><div class="l2"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">in</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">/</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span></span></span></span></div></div></div>
+<div id="card" style="left:90px;top:1430px;width:900px;height:230px;opacity:0">
+  <div id="ctaglow" style="position:absolute;left:100px;top:80px;width:700px;height:110px;border-radius:55px;background:radial-gradient(ellipse at center,rgba(0,136,255,.45),transparent 70%);opacity:0"></div>
+  <div id="ct1" class="t" style="left:0;top:12px;width:900px;height:60px;font-size:42px;color:#FF0044;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord textit">SAVE THIS</span></span></span></span></span><svg width="34" height="44" viewBox="0 0 24 32" style="margin-left:14px;flex:none"><path d="M3 2h18v28l-9-7-9 7z" fill="#FF0044"/></svg></div>
+  <div id="ct2" class="t "  style="left:10px;top:74px;width:880px;height:52px;font-size:35px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">WHAT LIMITS </span></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord text"><span class="mord textit"> IN A REAL BOOST?</span></span></span></span></span></div>
+  <div id="ct2b" class="t "  style="left:10px;top:128px;width:880px;height:44px;font-size:32px;color:#0088FF;opacity:0"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textit">COMMENT BELOW </span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↓</span></span></span></span></div>
+  <div id="ct3" class="t" style="left:0;top:180px;width:900px;height:44px;font-size:30px;color:rgba(255,255,255,.7);opacity:0"><svg width="30" height="30" viewBox="0 0 24 24" style="margin-right:14px;flex:none"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord textit">@MAE.ACADEMY</span></span></span></span></span></div>
+</div>
+<audio id="sfx" class="clip" src="assets/sfx.wav" data-start="0" data-duration="22.8" data-track-index="2" data-volume="1"></audio>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+window.__CFG = {"T":{"rewind0":1.6,"s1":2.2,"t0":2.4,"WIN":1.8,"st":[2.2,4.4,6.6,9,11.6,14],"sw":[2.4,4.6,6.8,9.2,11.8,14.2],"lock":16.4,"banF":17.4,"card":18.8,"pulse":21.2},"PA":[90,340,900,470],"PB":[90,830,900,200],"PC":[90,1050,900,180],"X":{"x0":130,"w":830},"CK":{"xl0":130,"xlw":390,"yl0":1082,"kl":15},"GC":{"x0":590,"w":360,"y0":1210,"k":12.5,"dmax":0.9},"BARS":{"y0":700,"k":2.5,"xi":715,"xo":810,"bw":70},"spark":[{"a":5.5041677648520455,"d":187.72528797388077,"r":5.992485376773402},{"a":0.04094213822725219,"d":222.78597548604012,"r":3.0446001880336553},{"a":4.135577711457215,"d":360.6731144338846,"r":3.0177970483200625},{"a":3.7682877554419947,"d":292.95473009347916,"r":2.7236467907205224},{"a":0.2867446738494891,"d":202.06053018569946,"r":3.912090183701366},{"a":5.077168481200803,"d":166.13799951970577,"r":4.5274303735932335},{"a":1.7600237665458747,"d":162.01272957026958,"r":5.266004110104404},{"a":3.2169856874979903,"d":418.93856287002563,"r":2.7073607413331047},{"a":1.4992269803872031,"d":306.586088091135,"r":5.151588342385367},{"a":0.23704317318248916,"d":340.85626795887947,"r":5.218540380708873},{"a":2.3832624815914065,"d":205.7252649962902,"r":2.663697877083905},{"a":3.432751652022191,"d":348.52747067809105,"r":3.692979425890371},{"a":5.744647477431623,"d":271.2160687148571,"r":5.720137345837429},{"a":2.8001652283842184,"d":230.5104684829712,"r":3.3804592951200902},{"a":4.287833836393104,"d":201.61000713706017,"r":4.015740443137474},{"a":6.270122722933378,"d":318.90132933855057,"r":3.358593113720417},{"a":4.565972597668933,"d":410.3361398726702,"r":2.8034658225951716},{"a":0.7426198581721847,"d":211.83884277939796,"r":5.741166363237426},{"a":2.058721135027358,"d":380.4681194573641,"r":3.3319062694208696},{"a":1.6034426413420795,"d":363.4883692115545,"r":4.249508847249672},{"a":6.266854119217198,"d":322.42860943078995,"r":2.7430426150094718},{"a":1.9132128426172081,"d":223.34553308784962,"r":5.326932326308452},{"a":3.045576572397469,"d":474.42038886249065,"r":4.759380510193296},{"a":0.74888638626109,"d":319.9934370815754,"r":3.3103002585703507},{"a":4.432334697582557,"d":408.93718987703323,"r":3.297239102772437},{"a":1.407756236869295,"d":440.1828710734844,"r":4.444082172354683},{"a":0.7238064229970943,"d":458.4109854698181,"r":4.684791028266773},{"a":4.967270417791056,"d":428.4602563083172,"r":3.3314463512506336}]};
+// The maths of an ideal boost converter in continuous conduction (CCM). Plain JS: build.mjs runs it for the assertions, the page
+// inlines the same text. Vin = 12 V, switching period T = 20 us (50 kHz), L = 100 uH, C = 100 uF, load R = 24 ohm.
+globalThis.BOOST = (function () {
+  const VIN = 12,
+    T = 20e-6,
+    L = 100e-6,
+    C = 100e-6,
+    R = 24,
+    RL = 0.1; // series resistance of the inductor (the "real" curve)
+  /** monotone cubic through [t, value] keys: no overshoot, zero velocity at holds */
+  function mono(keys, t) {
+    const n = keys.length;
+    if (t <= keys[0][0]) return keys[0][1];
+    if (t >= keys[n - 1][0]) return keys[n - 1][1];
+    let i = 0;
+    while (keys[i + 1][0] <= t) i++;
+    const t0 = keys[i][0],
+      t1 = keys[i + 1][0],
+      dt = t1 - t0,
+      u = (t - t0) / dt;
+    const sl = (a, b) => (keys[b][1] - keys[a][1]) / (keys[b][0] - keys[a][0]);
+    const tang = (k) => {
+      if (k === 0 || k === n - 1) return 0;
+      const s0 = sl(k - 1, k),
+        s1 = sl(k, k + 1);
+      return s0 * s1 <= 0 ? 0 : (2 * s0 * s1) / (s0 + s1);
+    };
+    const h00 = (1 + 2 * u) * (1 - u) * (1 - u),
+      h10 = u * (1 - u) * (1 - u),
+      h01 = u * u * (3 - 2 * u),
+      h11 = u * u * (u - 1);
+    return h00 * keys[i][1] + h10 * dt * tang(i) + h01 * keys[i + 1][1] + h11 * dt * tang(i + 1);
+  }
+  // the duty cycle through the reel: 0.75 for the hook, 0.5, then up to 0.75 and 0.9
+  const DK = [
+    [0, 0.75],
+    [1.6, 0.75],
+    [2.4, 0.5],
+    [9.2, 0.5],
+    [10.4, 0.75],
+    [11.8, 0.75],
+    [13.0, 0.9],
+    [40, 0.9],
+  ];
+  const Dat = (t) => mono(DK, t);
+  /** ideal and real voltage gain */
+  const gain = (D) => 1 / (1 - D);
+  const gainReal = (D) => 1 / ((1 - D) * (1 + RL / (R * (1 - D) * (1 - D))));
+  /** steady state of the ideal converter at duty D */
+  function steady(D) {
+    const Vo = VIN * gain(D),
+      Io = Vo / R,
+      IL = Io / (1 - D),
+      dI = (VIN * D * T) / L;
+    return { Vo, Io, IL, dI, Imin: IL - dI / 2, Imax: IL + dI / 2 };
+  }
+  /** n samples over `nper` switching periods: switch state, inductor current, inductor voltage */
+  function wave(D, n = 1500, nper = 3) {
+    const s = steady(D),
+      on = new Uint8Array(n),
+      il = new Float32Array(n),
+      vl = new Float32Array(n);
+    for (let k = 0; k < n; k++) {
+      const x = (nper * k) / n,
+        tau = x - Math.floor(x);
+      if (tau < D) {
+        on[k] = 1;
+        il[k] = s.Imin + (s.dI * tau) / D;
+        vl[k] = VIN;
+      } else {
+        il[k] = s.Imax - (s.dI * (tau - D)) / (1 - D);
+        vl[k] = VIN - s.Vo;
+      }
+    }
+    return { on, il, vl, s };
+  }
+  /** the switched circuit itself (ideal switch and diode), integrated from the ideal operating point: independent check */
+  function simulate(D, rl, periods, n = 1000) {
+    const s = steady(D);
+    let i = s.IL,
+      v = s.Vo;
+    const dt = T / n;
+    let sumV = 0,
+      sumI = 0,
+      cnt = 0,
+      imin = 1e9,
+      imax = -1e9;
+    for (let p = 0; p < periods; p++)
+      for (let k = 0; k < n; k++) {
+        if (k < D * n) {
+          i += (dt * (VIN - rl * i)) / L;
+          v += (dt * (-v / R)) / C;
+        } else {
+          v += (dt * (i - v / R)) / C;
+          i += (dt * (VIN - rl * i - v)) / L;
+        }
+        if (p >= periods - 5) {
+          sumV += v;
+          sumI += i;
+          cnt++;
+          imin = Math.min(imin, i);
+          imax = Math.max(imax, i);
+        }
+      }
+    return { Vo: sumV / cnt, IL: sumI / cnt, dI: imax - imin };
+  }
+  return { VIN, T, L, C, R, RL, mono, DK, Dat, gain, gainReal, steady, wave, simulate };
+})();
+
+// Timeline for "THE BOOST CONVERTER: VOLT-SECOND BALANCE" (22.8 s).
+// The circuit with its live current path, the voltage bars, the inductor current with the switch state behind it, the inductor voltage
+// with its equal areas, and the gain curve are drawn on a canvas from the time alone (hf-seek protocol); text, counters and cards are GSAP.
+// Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
+(function () {
+  const CFG = window.__CFG;
+  const { T, PB, X, CK, GC, BARS } = CFG;
+  const tl = gsap.timeline({ paused: true });
+  const ft = (target, from, to, at) =>
+    tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
+
+  // @CUES-BEGIN
+  const CUES = [
+    [0.0, "thump"], // opening impact on the finished picture
+    [1.6, "snap"], // rewind
+    [2.2, "click"], // switch on: the coil charges
+    [2.4, "snap"], // the converter starts to run
+    [4.4, "click"], // switch off: the current must go on
+    [4.6, "snap"], // through the diode
+    [6.6, "click"], // volt-seconds must balance
+    [6.8, "snap"], // area up = area down
+    [9.0, "click"], // turn the duty up
+    [9.2, "snap"], // D = 0.75, 48 V
+    [11.6, "click"], // keep going
+    [11.8, "snap"], // D = 0.9, 120 V
+    [14.0, "click"], // the ideal gain goes to infinity
+    [14.2, "snap"], // real losses bend the curve
+    [16.4, "thump"], // lock
+    [17.4, "click"], // a switch, a coil, a diode
+    [18.8, "snap"], // CTA reveal
+    [21.2, "click"], // engagement pulse
+  ];
+  // @CUES-END
+  const EXPORT = [];
+  const used = new Set();
+  /** every cue is tied to the element that visibly appears at that instant (probed by verify.mjs) */
+  function hit(t, kind, sel) {
+    const i = CUES.findIndex((c) => c[0] === t && c[1] === kind);
+    if (i < 0) throw new Error(`visual event at ${t}s (${kind}) has no CUES entry`);
+    used.add(i);
+    EXPORT.push({ t, kind, sel });
+    return t;
+  }
+  let curBanner = "#bn0",
+    curCount = "#c0",
+    curForm = "#fm0";
+  function bnSwap(n, t) {
+    ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, t);
+    ft(n, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, t + 0.08);
+    curBanner = n;
+  }
+  function cswap(n, t, pop) {
+    if (curCount)
+      ft(
+        curCount,
+        { opacity: 1 },
+        { opacity: 0, duration: pop ? 0.12 : 0.05, ease: "power1.in" },
+        t,
+      );
+    ft(
+      n,
+      { opacity: 0, scale: pop ? 1.18 : 1.05 },
+      { opacity: 1, scale: 1, duration: pop ? 0.4 : 0.12, ease: pop ? "power3.out" : "power2.out" },
+      t,
+    );
+    curCount = n;
+  }
+  function fswap(n, t) {
+    if (curForm) ft(curForm, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: "power1.in" }, t);
+    ft(n, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, t + 0.08);
+    curForm = n;
+  }
+  const pop = (sel, at, y) =>
+    ft(
+      sel,
+      { opacity: 0, y: y === undefined ? 10 : y },
+      { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+      at,
+    );
+  const fade = (sel, at, d) =>
+    ft(sel, { opacity: 1 }, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, at);
+
+  // the labels of the finished picture are on screen at frame 0; they leave with the rewind and come back stage by stage
+  gsap.set("#lMD,#lDx", { opacity: 1 });
+  const HOOKED = ["#liL", "#lon", "#loff", "#lil2", "#lvL", "#lMD", "#lDx"];
+
+  // ---------------------------------------------------------------- 0.0 - 2.2  the finished picture, then the rewind
+  hit(0.0, "thump", "#flash0");
+  ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
+  hit(T.rewind0, "snap", "#rw");
+  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.rewind0);
+  tl.fromTo(
+    "#rw",
+    { opacity: 1 },
+    { opacity: 0, duration: 0.7, ease: "power2.in", immediateRender: false },
+    T.rewind0 + 0.4,
+  );
+  fade("#c0", T.rewind0, 0.3);
+  fade("#fm0", T.rewind0, 0.3);
+  HOOKED.forEach((s) => fade(s, T.rewind0, 0.3));
+  curCount = null;
+  curForm = null;
+
+  /** one stage: the banner, the counter and the formula; everything else is drawn in the canvas */
+  function stage(k) {
+    const st = T.st[k],
+      sw = T.sw[k];
+    hit(st, "click", "#bn" + (k + 1));
+    bnSwap("#bn" + (k + 1), st);
+    hit(sw, "snap", "#c" + (k + 1));
+    cswap("#c" + (k + 1), sw, true);
+    fswap("#f" + (k + 1), sw + 0.3);
+  }
+  stage(0);
+  ["#liL", "#lon", "#loff", "#lil1", "#lvL"].forEach((s) => pop(s, 2.5, 6));
+  stage(1);
+  stage(2);
+  stage(3);
+  fade("#lil1", 9.2, 0.25);
+  pop("#lil2", 9.35, 6);
+  pop("#lMD", 6.9, 6);
+  pop("#lDx", 6.9, 6);
+  stage(4);
+  fade("#lil2", 11.8, 0.25);
+  pop("#lil3", 11.95, 6);
+  stage(5);
+  pop("#lreal", 14.4, 6);
+
+  // ---------------------------------------------------------------- the lock
+  const LK = T.lock;
+  hit(LK, "thump", "#glow");
+  ft("#glow", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, LK);
+  tl.fromTo(
+    "#glow",
+    { opacity: 1 },
+    { opacity: 0, duration: 1.0, ease: "power2.inOut", immediateRender: false },
+    LK + 0.2,
+  );
+  cswap("#cfin", LK + 0.3, true);
+  fswap("#f7", LK + 0.6);
+  hit(T.banF, "click", "#bnF");
+  bnSwap("#bnF", T.banF);
+
+  // ---------------------------------------------------------------- CTA
+  hit(T.card, "snap", "#card");
+  ft(curBanner, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, T.card - 0.1);
+  ft("#banner", { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "power1.in" }, T.card - 0.1);
+  ft("#card", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, T.card);
+  ft("#ct1", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 0.1);
+  ft("#ct2", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 0.4);
+  ft("#ct2b", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 0.7);
+  ft("#ct3", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.card + 1.1);
+  hit(T.pulse, "click", "#ctaglow");
+  ft("#ctaglow", { opacity: 0 }, { opacity: 0.45, duration: 0.25, ease: "power2.out" }, T.pulse);
+  tl.fromTo(
+    "#ctaglow",
+    { opacity: 0.45 },
+    { opacity: 0, duration: 0.6, ease: "power2.in", immediateRender: false },
+    T.pulse + 0.35,
+  );
+
+  tl.to({}, { duration: 0.0001 }, 22.7999);
+  if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
+  window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
+
+  // ================================================================ canvas
+  const cvs = document.getElementById("cv");
+  const ctx = cvs.getContext("2d");
+  const DPR = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  cvs.width = Math.round(1080 * DPR);
+  cvs.height = Math.round(1920 * DPR);
+
+  const BLUE = "#0088FF",
+    RED = "#FF0044",
+    PURPLE = "#B026FF",
+    WHITE = "#FFFFFF",
+    DIMW = "rgba(255,255,255,.35)";
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const smooth = (v) => {
+    v = clamp01(v);
+    return v * v * (3 - 2 * v);
+  };
+  const easeOut = (v) => 1 - Math.pow(1 - clamp01(v), 3);
+  const NS = 1500;
+  const xP = (k) => X.x0 + (X.w * k) / NS;
+
+  function poly(pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  }
+  function line(pts, color, width, alpha, blur, dash) {
+    if (pts.length < 2 || alpha <= 0.001) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    if (dash) ctx.setLineDash(dash);
+    if (blur) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = blur;
+    }
+    poly(pts);
+    ctx.stroke();
+    ctx.restore();
+  }
+  function dot(x, y, r, color, alpha, blur) {
+    if (alpha <= 0.001 || r <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur === undefined ? 14 : blur;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.restore();
+  }
+  const seg = (x1, y1, x2, y2, color, w, a, blur) =>
+    line(
+      [
+        [x1, y1],
+        [x2, y2],
+      ],
+      color,
+      w,
+      a,
+      blur,
+    );
+  const rect = (x, y, w, h, color, a) => {
+    if (a <= 0.001 || w <= 0 || h <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
+    ctx.restore();
+  };
+  /** runs of equal switch state: [from, to, on] */
+  function runs(on) {
+    const out = [];
+    let a = 0;
+    for (let k = 1; k <= NS; k++)
+      if (k === NS || on[k] !== on[a]) {
+        out.push([a, k, on[a]]);
+        a = k;
+      }
+    return out;
+  }
+
+  // ---------------------------------------------------------------- the state at time t
+  const hookA = (t) => (t < T.rewind0 ? 1 : 1 - smooth((t - T.rewind0) / 0.5));
+  const phase = (t) => {
+    if (t < T.t0) return 0.35;
+    const c = (t - T.t0) / T.WIN;
+    return c - Math.floor(c);
+  };
+
+  // ---------------------------------------------------------------- the circuit
+  const G = { top: 470, bot: 700, xL0: 210, xL1: 350, xX: 410, xY: 570, xR: 630 };
+  const PATH_ON = [
+    [150, G.top],
+    [G.xX, G.top],
+    [G.xX, 520],
+    [G.xX, 600],
+    [G.xX, G.bot],
+  ];
+  const PATH_OFF = [
+    [150, G.top],
+    [G.xX, G.top],
+    [G.xY, G.top],
+  ];
+  const PATH_R = [
+    [G.xY, G.top],
+    [G.xR, G.top],
+    [G.xR, G.bot],
+  ];
+  const PATH_C = [
+    [G.xY, G.top],
+    [G.xY, G.bot],
+  ];
+  function along(path, u) {
+    let tot = 0;
+    const lens = [];
+    for (let i = 1; i < path.length; i++) {
+      const l = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]);
+      lens.push(l);
+      tot += l;
+    }
+    let d = u * tot;
+    for (let i = 0; i < lens.length; i++) {
+      if (d <= lens[i] || i === lens.length - 1) {
+        const f = clamp01(d / lens[i]);
+        return [
+          path[i][0] + (path[i + 1][0] - path[i][0]) * f,
+          path[i][1] + (path[i + 1][1] - path[i][1]) * f,
+        ];
+      }
+      d -= lens[i];
+    }
+    return path[path.length - 1];
+  }
+  function flow(path, color, n, speed, t, alpha) {
+    if (alpha <= 0.001) return;
+    for (let i = 0; i < n; i++) {
+      const u = (i / n + t * speed) % 1;
+      const p = along(path, u);
+      dot(p[0], p[1], 5, color, alpha, 10);
+    }
+  }
+  function coil(x0, x1, y, color, alpha, blur) {
+    const n = 5,
+      w = (x1 - x0) / n;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    if (blur) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = blur;
+    }
+    ctx.beginPath();
+    for (let k = 0; k < n; k++) {
+      ctx.moveTo(x0 + k * w, y);
+      ctx.arc(x0 + k * w + w / 2, y, w / 2, Math.PI, 0, false);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+  function drawCircuit(t, on, il) {
+    const run = t >= T.t0 ? 1 : 1; // the circuit is always alive
+    // wires (dim) with the T-shaped rails
+    const dim = DIMW;
+    seg(150, G.top - 20, 150, G.top, WHITE, 4, 0.8);
+    seg(128, G.top - 20, 172, G.top - 20, WHITE, 4, 0.8);
+    seg(150, G.top, G.xL0, G.top, dim, 3, 1);
+    seg(G.xL1, G.top, G.xX, G.top, dim, 3, 1);
+    seg(G.xX, G.top, 470, G.top, dim, 3, 1);
+    seg(514, G.top, G.xY, G.top, dim, 3, 1);
+    seg(G.xY, G.top, G.xR, G.top, dim, 3, 1);
+    seg(G.xX, G.top, G.xX, 520, dim, 3, 1);
+    seg(G.xX, 600, G.xX, G.bot, dim, 3, 1);
+    seg(G.xY, G.top, G.xY, 565, dim, 3, 1);
+    seg(G.xY, 585, G.xY, G.bot, dim, 3, 1);
+    seg(G.xR, G.top, G.xR, 545, dim, 3, 1);
+    seg(G.xR, 625, G.xR, G.bot, dim, 3, 1);
+    seg(150, G.bot, G.xR + 10, G.bot, dim, 3, 1);
+    seg(150, G.bot, 150, G.bot + 20, WHITE, 4, 0.8);
+    seg(128, G.bot + 20, 172, G.bot + 20, WHITE, 4, 0.8);
+    // the capacitor and the load
+    seg(G.xY - 22, 565, G.xY + 22, 565, WHITE, 4, 0.7);
+    seg(G.xY - 22, 585, G.xY + 22, 585, WHITE, 4, 0.7);
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,.7)";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(G.xR - 13, 545, 26, 80);
+    ctx.restore();
+    // the active path takes the colour of the state: red while the switch is closed, blue while it is open
+    const col = on ? RED : BLUE;
+    if (on) {
+      line(PATH_ON, RED, 5, 1, 12);
+    } else {
+      line(PATH_OFF, BLUE, 5, 1, 12);
+      line(PATH_C, BLUE, 4, 0.9, 10);
+    }
+    line(PATH_R, BLUE, 4, on ? 0.35 : 0.95, on ? 0 : 10);
+    // the inductor glows with the energy it holds
+    coil(G.xL0, G.xL1, G.top, col, 0.5 + 0.5 * il, 14);
+    // the switch: closed (a straight link) or open (the lever swung away)
+    seg(G.xX, 520, G.xX, 535, WHITE, 4, 0.9);
+    seg(G.xX, 585, G.xX, 600, WHITE, 4, 0.9);
+    dot(G.xX, 520, 5, WHITE, 0.9, 0);
+    dot(G.xX, 600, 5, WHITE, 0.9, 0);
+    if (on) seg(G.xX, 520, G.xX, 600, RED, 6, 1, 14);
+    else seg(G.xX, 600, G.xX + 34, 538, "rgba(255,255,255,.55)", 5, 1);
+    // the diode: it conducts only while the switch is open
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = on ? "rgba(255,255,255,.18)" : BLUE;
+    ctx.strokeStyle = on ? DIMW : BLUE;
+    ctx.lineWidth = 3;
+    if (!on) {
+      ctx.shadowColor = BLUE;
+      ctx.shadowBlur = 14;
+    }
+    ctx.beginPath();
+    ctx.moveTo(470, G.top - 16);
+    ctx.lineTo(470, G.top + 16);
+    ctx.lineTo(508, G.top);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(512, G.top - 16);
+    ctx.lineTo(512, G.top + 16);
+    ctx.stroke();
+    ctx.restore();
+    dot(G.xX, G.top, 6, WHITE, 1, 0);
+    dot(G.xY, G.top, 6, WHITE, 1, 0);
+    // charge flowing along the active path
+    const ts = t < T.t0 ? 1.0 : t;
+    if (on) flow(PATH_ON, RED, 8, 0.9, ts, 1);
+    else {
+      flow(PATH_OFF, BLUE, 6, 0.9, ts, 1);
+      flow(PATH_C, BLUE, 4, 0.7, ts, 0.8);
+    }
+    flow(PATH_R, BLUE, 5, 0.6, ts, on ? 0.45 : 1);
+    return run;
+  }
+
+  // ---------------------------------------------------------------- the bars: Vin and Vo
+  function drawBars(t, D) {
+    const ramp = t < T.t0 ? 1 : smooth((t - T.t0) / 0.8);
+    const M = t < T.t0 ? BOOST.gain(D) : 1 + (BOOST.gain(D) - 1) * ramp;
+    const vin = BOOST.VIN,
+      vo = vin * M;
+    seg(BARS.xi - 14, BARS.y0, BARS.xo + BARS.bw + 14, BARS.y0, WHITE, 2, 0.4);
+    rect(BARS.xi, BARS.y0 - vin * BARS.k, BARS.bw, vin * BARS.k, WHITE, 0.9);
+    ctx.save();
+    ctx.shadowColor = RED;
+    ctx.shadowBlur = 18;
+    rect(BARS.xo, BARS.y0 - vo * BARS.k, BARS.bw, vo * BARS.k, RED, 0.95);
+    ctx.restore();
+    // the real converter loses some of it (the coil has resistance)
+    if (t >= T.sw[5]) {
+      const vr = vin * BOOST.gainReal(D),
+        a = smooth((t - T.sw[5] - 0.2) / 0.4);
+      seg(
+        BARS.xo - 10,
+        BARS.y0 - vr * BARS.k,
+        BARS.xo + BARS.bw + 10,
+        BARS.y0 - vr * BARS.k,
+        WHITE,
+        4,
+        a,
+        8,
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------- the inductor current, the switch state behind it
+  function drawCurrent(t, W, kC) {
+    const a = t < 2.1 ? hookA(t) : t < T.t0 ? 0 : 1;
+    if (a <= 0.001) return;
+    const p = t < 2.1 ? 1 : clamp01((t - T.t0) / 1.2);
+    const nEnd = Math.round(NS * p);
+    // the switch state: red band while it is closed, blue while it is open
+    for (const [from, to, on] of runs(W.on)) {
+      const e = Math.min(to, nEnd);
+      if (e <= from) continue;
+      rect(
+        xP(from),
+        PB[1] + 14,
+        xP(e) - xP(from),
+        PB[3] - 28,
+        on ? RED : BLUE,
+        (on ? 0.16 : 0.1) * a,
+      );
+    }
+    seg(X.x0, 935, X.x0 + X.w, 935, WHITE, 2, 0.3 * a);
+    const pts = [];
+    for (let k = 0; k < nEnd; k++) pts.push([xP(k), 935 - ((W.il[k] - W.s.IL) / W.s.dI) * 60]);
+    line(pts, PURPLE, 6, a, 14);
+    // legend swatches
+    rect(262, 850, 22, 16, RED, a * 0.9);
+    rect(352, 850, 22, 16, BLUE, a * 0.9);
+    seg(X.x0 + 6, 858, X.x0 + 30, 858, PURPLE, 5, 0);
+    if (a > 0.001 && p >= 1) {
+      seg(xP(kC), PB[1] + 14, xP(kC), PB[1] + PB[3] - 14, WHITE, 2, 0.4 * a);
+      dot(xP(kC), 935 - ((W.il[kC] - W.s.IL) / W.s.dI) * 60, 8, PURPLE, a, 16);
+    }
+  }
+
+  // ---------------------------------------------------------------- the inductor voltage with its equal areas, and the gain curve
+  const yV = (v) => CK.yl0 - (v / BOOST.VIN) * CK.kl;
+  const xV = (k) => CK.xl0 + (CK.xlw * k) / NS;
+  function drawVoltage(t, W) {
+    const a = t < 2.1 ? hookA(t) : t < T.t0 ? 0 : 1;
+    if (a <= 0.001) return;
+    const p = t < 2.1 ? 1 : clamp01((t - T.t0) / 1.2);
+    const nEnd = Math.round(NS * p);
+    seg(CK.xl0, CK.yl0, CK.xl0 + CK.xlw, CK.yl0, WHITE, 2, 0.35 * a);
+    const sh = t < 2.1 ? hookA(t) : smooth((t - T.sw[2]) / 0.5); // the areas appear when volt-seconds are discussed
+    for (const [from, to, on] of runs(W.on)) {
+      const e = Math.min(to, nEnd);
+      if (e <= from) continue;
+      const y = yV(on ? BOOST.VIN : BOOST.VIN - W.s.Vo);
+      rect(
+        xV(from),
+        Math.min(CK.yl0, y),
+        xV(e) - xV(from),
+        Math.abs(y - CK.yl0),
+        on ? RED : BLUE,
+        0.45 * sh * a,
+      );
+    }
+    const pts = [];
+    for (let k = 0; k < nEnd; k++) pts.push([xV(k), yV(W.vl[k])]);
+    line(pts, WHITE, 3, 0.9 * a);
+  }
+  const gx = (D) => GC.x0 + (GC.w * D) / GC.dmax;
+  const gy = (M) => GC.y0 - GC.k * Math.min(M, 10.4);
+  function drawGain(t, D) {
+    const a = t < 2.1 ? hookA(t) : smooth((t - 6.7) / 0.4);
+    if (a <= 0.001) return;
+    seg(GC.x0 - 4, GC.y0, GC.x0 + GC.w + 8, GC.y0, WHITE, 2, 0.4 * a);
+    seg(GC.x0, GC.y0 + 4, GC.x0, gy(10.4), WHITE, 2, 0.4 * a);
+    seg(GC.x0, gy(1), GC.x0 + GC.w, gy(1), WHITE, 1, 0.15 * a);
+    const ideal = [];
+    for (let d = 0; d <= GC.dmax + 1e-9; d += 0.01) ideal.push([gx(d), gy(BOOST.gain(d))]);
+    line(ideal, RED, 5, a, 10);
+    // the real curve (a coil with 0.1 ohm): it peaks and then falls
+    if (t >= T.sw[5]) {
+      const p = clamp01((t - T.sw[5]) / 1.2),
+        real = [];
+      for (let d = 0; d <= GC.dmax * p + 1e-9; d += 0.01) real.push([gx(d), gy(BOOST.gainReal(d))]);
+      line(real, WHITE, 4, a, 8, [10, 8]);
+      if (p >= 1) dot(gx(D), gy(BOOST.gainReal(D)), 7, WHITE, a, 14);
+    }
+    dot(gx(D), gy(BOOST.gain(D)), 9, RED, a, 18);
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = WHITE;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(gx(D), gy(BOOST.gain(D)), 15, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.restore();
+    // legend swatch of the real curve
+    if (t >= T.sw[5]) seg(703, 1100, 731, 1100, WHITE, 4, smooth((t - T.sw[5] - 0.2) / 0.3), 0);
+  }
+
+  function drawLock(t) {
+    const u = t - T.lock;
+    if (u < 0 || u > 1.3) return;
+    const cx = 540,
+      cy = 790;
+    if (u < 0.5) {
+      const g = ctx.createRadialGradient(cx, cy, 20, cx, cy, 700);
+      g.addColorStop(0, "rgba(176,38,255," + (0.3 * (1 - u / 0.5)).toFixed(3) + ")");
+      g.addColorStop(1, "rgba(176,38,255,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 1080, 1920);
+    }
+    if (u < 0.6) {
+      const x = 90 + 900 * easeOut(u / 0.55);
+      ctx.save();
+      ctx.globalAlpha = 1 - smooth((u - 0.45) / 0.15);
+      ctx.shadowColor = PURPLE;
+      ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.moveTo(x, 340);
+      ctx.lineTo(x, 1230);
+      ctx.strokeStyle = PURPLE;
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      ctx.restore();
+    }
+    [
+      [90, 340],
+      [990, 340],
+      [90, 1230],
+      [990, 1230],
+    ].forEach(([x, y], i) => {
+      const v = clamp01((u - 0.1 - i * 0.05) / 0.5);
+      if (v <= 0 || v >= 1) return;
+      const r = 20 * Math.sin(Math.PI * v) + 4;
+      ctx.save();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+      ctx.shadowColor = "#fff";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(x - r, y);
+      ctx.lineTo(x + r, y);
+      ctx.moveTo(x, y - r);
+      ctx.lineTo(x, y + r);
+      ctx.stroke();
+      ctx.restore();
+    });
+    [
+      [PURPLE, 660, 0, 0.7],
+      [RED, 520, 0.1, 0.6],
+    ].forEach(([c, R, d0, dur]) => {
+      const v = clamp01((u - d0) / dur);
+      if (v <= 0 || v >= 1) return;
+      ctx.save();
+      ctx.globalAlpha = 1 - v;
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10 + R * easeOut(v), 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.restore();
+    });
+    CFG.spark.forEach((sp, i) => {
+      const v = clamp01((u - 0.05) / 0.8);
+      if (v <= 0 || v >= 1) return;
+      ctx.save();
+      ctx.globalAlpha = 1 - v;
+      ctx.fillStyle = i % 3 === 0 ? RED : i % 3 === 1 ? PURPLE : "#fff";
+      ctx.beginPath();
+      ctx.arc(
+        cx + Math.cos(sp.a) * sp.d * easeOut(v),
+        cy + Math.sin(sp.a) * sp.d * easeOut(v),
+        sp.r,
+        0,
+        2 * Math.PI,
+      );
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function draw(t) {
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, 1080, 1920);
+    const D = BOOST.Dat(t);
+    const W = BOOST.wave(D, NS, 3);
+    const ph = phase(t);
+    const kC = Math.min(NS - 1, Math.floor(NS * ph));
+    const on = 3 * ph - Math.floor(3 * ph) < D;
+    const il = clamp01((W.il[kC] - W.s.Imin) / W.s.dI);
+    drawCircuit(t, on, il);
+    drawBars(t, D);
+    drawCurrent(t, W, kC);
+    drawVoltage(t, W);
+    drawGain(t, D);
+    drawLock(t);
+  }
+
+  window.__SCHED = T;
+  window.__draw = draw;
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+  window.addEventListener("hf-seek", (ev) => draw(ev.detail.time));
+  draw(0);
+})();
+
+</script>
+</body>
+</html>
