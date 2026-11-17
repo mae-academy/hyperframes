@@ -54,7 +54,9 @@ def fband(x, lo, hi):
     if hi: g *= 1 / (1 + (f / hi) ** 4)
     return np.fft.irfft(X * g)[:m]
 
+FX = 0.42   # every effect (clicks, notes, bells, kicks) is quieter: the coil's voice is the star
 def place(t0, sig, gain=1.0, pan=0.0, wet=0.2):
+    gain = gain * FX
     i = int(round(t0 * SR))
     if i >= n: return
     j = min(n, i + len(sig))
@@ -147,7 +149,7 @@ for f0, amp, lfo_hz, ph in [(110.0, 0.034, 0.09, 0.0), (164.81, 0.028, 0.14, 1.3
     pad += voice(f0, amp, lfo_hz, ph)
 third = smooth(env([(0, 0), (LOCK - 0.05, 0), (LOCK + 0.5, 1.0), (DUR - 1.5, 1.0), (DUR, 0.6)]), 0.12)
 pad += third * voice(277.18, 0.022, 0.17, 0.7)
-padL = pad * pad_gain * 1.9
+padL = pad * pad_gain * 1.2
 dry[0] += padL * 0.95; dry[1] += padL * 1.05
 send += padL * 0.25
 air = fband(rng.uniform(-1, 1, n), 120, 2600)
@@ -157,7 +159,7 @@ dry[0] += 0.010 * air_env * air; dry[1] += 0.010 * air_env * np.roll(air, 977)
 # ------------------------------------------------------------------ the coil's voice: its pitch is the inductor current
 # While the switch is closed the coil charges and the current ramps UP, so the voice glides up a fifth; while it is open the coil
 # discharges into the load and the voice glides DOWN. The same law as the picture (duty, window, ripple shape), sample by sample.
-DK = [(0, .75), (1.6, .75), (2.4, .5), (9.2, .5), (10.4, .75), (11.8, .75), (13.0, .9), (40, .9)]
+DK = [(0, .75), (1.6, .75), (2.4, .5), (8.2, .5), (9.6, .75), (11.4, .75), (12.8, .9), (40, .9)]
 def mono(keys, x):
     ts = np.array([k[0] for k in keys], float); ys = np.array([k[1] for k in keys], float); nk = len(ts)
     sl = np.diff(ys) / np.diff(ts); m = np.zeros(nk)
@@ -179,26 +181,23 @@ tau = (3 * ph) % 1.0
 on = tau < Dt
 xn = np.where(on, tau / np.maximum(Dt, 1e-6), 1 - (tau - Dt) / np.maximum(1 - Dt, 1e-6))   # 0 .. 1 .. 0 : the normalised current
 IL = 12 / (24 * (1 - Dt) ** 2)                                                              # its average: 2 A, 8 A, 50 A
-f_base = 196.0 * (IL / 2.0) ** 0.12                                                        # a higher current lifts the whole voice a little
-f_inst = f_base * 2 ** (xn * 7 / 12)
-onS = smooth(on.astype(float), 0.015)
+f_base = 165.0 * (IL / 2.0) ** 0.10                                                         # a higher current lifts the whole voice a little
+f_inst = f_base * 2 ** xn                                                                   # an octave up while charging, an octave down while discharging
+onS = smooth(on.astype(float), 0.02)
 phv = 2 * np.pi * np.cumsum(f_inst) / SR
-v_coil = np.sin(phv) + (0.10 + 0.22 * onS) * np.sin(2 * phv) + (0.04 + 0.10 * onS) * np.sin(3 * phv)   # brighter while charging
-v_coil = fband(v_coil, 80, 2400) * (0.72 + 0.28 * onS)
-coil_env = smooth(env([(0, 0.0), (T0, 0.0), (T0 + 0.5, 1.0), (LOCK, 1.0), (LOCK + 1.2, 0.0), (DUR, 0.0)]), 0.05)
-coil = 0.060 * coil_env * v_coil
+bright = 0.08 + 0.30 * xn + 0.10 * onS                                                      # brighter as the coil fills, darker as it empties
+v_coil = np.sin(phv) + bright * np.sin(2 * phv) + 0.45 * bright * np.sin(3 * phv)
+v_coil = fband(v_coil, 70, 2600)
+swell = 0.45 + 0.55 * xn                                                                    # louder as the current rises, softer as it falls: "wooo-ooo"
+coil_env = smooth(env([(0, 0.0), (T0 - 0.05, 0.0), (T0 + 0.35, 1.0), (LOCK, 1.0), (LOCK + 1.2, 0.0), (DUR, 0.0)]), 0.05)
+coil = 0.20 * coil_env * v_coil * swell * (0.85 + 0.15 * onS)
 dry[0] += coil * 0.95; dry[1] += coil * 1.05
-send += coil * 0.30
+send += coil * 0.16
 
 # ------------------------------------------------------------------ events
 # one note per stage (A-major pentatonic); the duty raises climb
 STAGE = [440.0, 554.37, 659.26, 880.0, 1108.7, 1318.5]
 near = lambda x, ys: any(abs(x - y) < 1e-6 for y in ys)
-
-# the switching itself: every edge of the switch is a soft tick (closing slightly brighter than opening)
-for te, rise in EDGES:
-    if float(te) < SWAPS[3]:                              # only while the switching is being explained
-        click(float(te), 0.16 if rise else 0.11)
 
 counts = {"click": 0, "snap": 0, "thump": 0}
 for c in cues:

@@ -14,20 +14,20 @@ const BOOST = new Function(boostSrc + "\nreturn globalThis.BOOST;")();
 const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF" };
 const W = 1080,
   H = 1920,
-  DUR = 22.8;
+  DUR = 23.6;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
   rewind0: 1.6,
   s1: 2.2,
   t0: 2.4, // the switch starts to run: one window of three switching periods every WIN seconds
-  WIN: 1.8,
-  st: [2.2, 4.4, 6.6, 9.0, 11.6, 14.0], // banners
-  sw: [2.4, 4.6, 6.8, 9.2, 11.8, 14.2], // counters (the snap)
-  lock: 16.4,
-  banF: 17.4,
-  card: 18.8,
-  pulse: 21.2,
+  WIN: 4.5, // three switching periods of 1.5 s: 0.75 s of charging, 0.75 s of discharging at D = 0.5
+  st: [2.2, 3.05, 5.3, 8.0, 11.2, 14.0], // banners
+  sw: [2.4, 3.15, 5.4, 8.2, 11.4, 14.2], // counters (the snap)
+  lock: 17.0,
+  banF: 18.0,
+  card: 19.4,
+  pulse: 21.8,
 };
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
@@ -163,14 +163,14 @@ const lab = (id, cx, cy, w, size, tex, op = 1, color = C.white) =>
 const labels = [
   // circuit
   lab("lvin", ...cm(150, 424), 90, 30, "V_{in}"),
-  lab("lL", ...cm(280, 428), 40, 30, "L"),
+  lab("lL", ...cm(226, 512), 40, 30, "L"),
   lab("lS", ...cm(462, 560), 40, 30, "S"),
   lab("lD", ...cm(492, 430), 40, 30, "D"),
   lab("lC", ...cm(528, 575), 40, 30, "C"),
   lab("lR", ...cm(668, 585), 40, 30, "R"),
   lab("lVo", ...cm(600, 428), 60, 30, "V_{o}"),
   // the currents
-  lab("liLc", ...cm(280, 512), 60, 28, "i_{L}", 0),
+  lab("liLc", ...cm(330, 512), 60, 28, "i_{L}", 0),
   lab("liD", ...cm(492, 512), 60, 28, "i_{D}", 0),
   lab("lio", ...cm(670, 640), 60, 28, "i_{o}", 0),
   // the live state of the switch, the coil and the capacitor (shown or hidden every frame by the page)

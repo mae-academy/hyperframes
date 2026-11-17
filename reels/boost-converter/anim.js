@@ -15,20 +15,20 @@
     [1.6, "snap"], // rewind
     [2.2, "click"], // switch on: the coil charges
     [2.4, "snap"], // the converter starts to run
-    [4.4, "click"], // switch off: the current must go on
-    [4.6, "snap"], // through the diode
-    [6.6, "click"], // volt-seconds must balance
-    [6.8, "snap"], // area up = area down
-    [9.0, "click"], // turn the duty up
-    [9.2, "snap"], // D = 0.75, 48 V
-    [11.6, "click"], // keep going
-    [11.8, "snap"], // D = 0.9, 120 V
+    [3.05, "click"], // switch off: the current must go on
+    [3.15, "snap"], // through the diode
+    [5.3, "click"], // volt-seconds must balance
+    [5.4, "snap"], // area up = area down
+    [8.0, "click"], // turn the duty up
+    [8.2, "snap"], // D = 0.75, 48 V
+    [11.2, "click"], // keep going
+    [11.4, "snap"], // D = 0.9, 120 V
     [14.0, "click"], // the ideal gain goes to infinity
     [14.2, "snap"], // real losses bend the curve
-    [16.4, "thump"], // lock
-    [17.4, "click"], // a switch, a coil, a diode
-    [18.8, "snap"], // CTA reveal
-    [21.2, "click"], // engagement pulse
+    [17.0, "thump"], // lock
+    [18.0, "click"], // a switch, a coil, a diode
+    [19.4, "snap"], // CTA reveal
+    [21.8, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -116,13 +116,13 @@
   stage(1);
   stage(2);
   stage(3);
-  fade("#lil1", 9.2, 0.25);
-  pop("#lil2", 9.35, 6);
-  pop("#lMD", 6.9, 6);
-  pop("#lDx", 6.9, 6);
+  fade("#lil1", T.sw[3], 0.25);
+  pop("#lil2", T.sw[3] + 0.15, 6);
+  pop("#lMD", T.sw[2] + 0.1, 6);
+  pop("#lDx", T.sw[2] + 0.1, 6);
   stage(4);
-  fade("#lil2", 11.8, 0.25);
-  pop("#lil3", 11.95, 6);
+  fade("#lil2", T.sw[4], 0.25);
+  pop("#lil3", T.sw[4] + 0.15, 6);
   stage(5);
   pop("#lreal", 14.4, 6);
 
@@ -159,7 +159,7 @@
     T.pulse + 0.35,
   );
 
-  tl.to({}, { duration: 0.0001 }, 22.7999);
+  tl.to({}, { duration: 0.0001 }, 23.5999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
 
@@ -417,7 +417,38 @@
     }
     line(PATH_R, BLUE, 4, on ? 0.35 : 0.95, on ? 0 : 10);
     // the inductor glows with the energy it holds
+    // the magnetic field around the coil grows while it charges and collapses while it discharges (it is the coil that holds the energy)
+    for (let k = 0; k < 3; k++) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, il * (0.75 - 0.2 * k));
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = col;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.ellipse(
+        (G.xL0 + G.xL1) / 2,
+        G.top,
+        78 + 14 * k + 16 * il,
+        14 + 7 * k + 5 * il,
+        0,
+        0,
+        2 * Math.PI,
+      );
+      ctx.stroke();
+      ctx.restore();
+    }
     coil(G.xL0, G.xL1, G.top, col, 0.5 + 0.5 * il, 14);
+    // the energy meter: it fills while the coil charges and drains while it discharges
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,.55)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(G.xL0, 536, G.xL1 - G.xL0, 14);
+    ctx.fillStyle = col;
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 10;
+    ctx.fillRect(G.xL0 + 2, 538, (G.xL1 - G.xL0 - 4) * il, 10);
+    ctx.restore();
     // the switch: closed (a straight link) or open (the lever swung away)
     seg(G.xX, 520, G.xX, 535, WHITE, 4, 0.9);
     seg(G.xX, 585, G.xX, 600, WHITE, 4, 0.9);
@@ -572,7 +603,7 @@
   const gx = (D) => GC.x0 + (GC.w * D) / GC.dmax;
   const gy = (M) => GC.y0 - GC.k * Math.min(M, 10.4);
   function drawGain(t, D) {
-    const a = t < 2.1 ? hookA(t) : smooth((t - 6.7) / 0.4);
+    const a = t < 2.1 ? hookA(t) : smooth((t - (T.sw[2] - 0.1)) / 0.4);
     if (a <= 0.001) return;
     seg(GC.x0 - 4, GC.y0, GC.x0 + GC.w + 8, GC.y0, WHITE, 2, 0.4 * a);
     seg(GC.x0, GC.y0 + 4, GC.x0, gy(10.4), WHITE, 2, 0.4 * a);
