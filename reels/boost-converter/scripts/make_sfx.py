@@ -154,6 +154,42 @@ air = fband(rng.uniform(-1, 1, n), 120, 2600)
 air_env = smooth(env([(0, 0), (1.0, 0.5), (LOCK, 1.0), (LOCK + 1.6, 0.6), (DUR, 0.3)]), 0.4)
 dry[0] += 0.010 * air_env * air; dry[1] += 0.010 * air_env * np.roll(air, 977)
 
+# ------------------------------------------------------------------ the coil's voice: its pitch is the inductor current
+# While the switch is closed the coil charges and the current ramps UP, so the voice glides up a fifth; while it is open the coil
+# discharges into the load and the voice glides DOWN. The same law as the picture (duty, window, ripple shape), sample by sample.
+DK = [(0, .75), (1.6, .75), (2.4, .5), (9.2, .5), (10.4, .75), (11.8, .75), (13.0, .9), (40, .9)]
+def mono(keys, x):
+    ts = np.array([k[0] for k in keys], float); ys = np.array([k[1] for k in keys], float); nk = len(ts)
+    sl = np.diff(ys) / np.diff(ts); m = np.zeros(nk)
+    for k in range(1, nk - 1):
+        s0, s1 = sl[k - 1], sl[k]
+        m[k] = 0.0 if s0 * s1 <= 0 else 2 * s0 * s1 / (s0 + s1)
+    out = np.empty_like(x)
+    out[x < ts[0]] = ys[0]; out[x >= ts[-1]] = ys[-1]
+    for i in range(nk - 1):
+        sel = (x >= ts[i]) & (x < ts[i + 1])
+        dt = ts[i + 1] - ts[i]; u = (x[sel] - ts[i]) / dt
+        out[sel] = ((1 + 2 * u) * (1 - u) ** 2 * ys[i] + u * (1 - u) ** 2 * dt * m[i]
+                    + u * u * (3 - 2 * u) * ys[i + 1] + u * u * (u - 1) * dt * m[i + 1])
+    return out
+T0 = float(sched["t0"]); WIN = float(sched["WIN"])
+Dt = mono(DK, t)
+ph = ((t - T0) / WIN) % 1.0
+tau = (3 * ph) % 1.0
+on = tau < Dt
+xn = np.where(on, tau / np.maximum(Dt, 1e-6), 1 - (tau - Dt) / np.maximum(1 - Dt, 1e-6))   # 0 .. 1 .. 0 : the normalised current
+IL = 12 / (24 * (1 - Dt) ** 2)                                                              # its average: 2 A, 8 A, 50 A
+f_base = 196.0 * (IL / 2.0) ** 0.12                                                        # a higher current lifts the whole voice a little
+f_inst = f_base * 2 ** (xn * 7 / 12)
+onS = smooth(on.astype(float), 0.015)
+phv = 2 * np.pi * np.cumsum(f_inst) / SR
+v_coil = np.sin(phv) + (0.10 + 0.22 * onS) * np.sin(2 * phv) + (0.04 + 0.10 * onS) * np.sin(3 * phv)   # brighter while charging
+v_coil = fband(v_coil, 80, 2400) * (0.72 + 0.28 * onS)
+coil_env = smooth(env([(0, 0.0), (T0, 0.0), (T0 + 0.5, 1.0), (LOCK, 1.0), (LOCK + 1.2, 0.0), (DUR, 0.0)]), 0.05)
+coil = 0.060 * coil_env * v_coil
+dry[0] += coil * 0.95; dry[1] += coil * 1.05
+send += coil * 0.30
+
 # ------------------------------------------------------------------ events
 # one note per stage (A-major pentatonic); the duty raises climb
 STAGE = [440.0, 554.37, 659.26, 880.0, 1108.7, 1318.5]

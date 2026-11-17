@@ -4,7 +4,7 @@
 // Everything is a pure function of timeline time: no callbacks, no clocks, no unseeded randomness.
 (function () {
   const CFG = window.__CFG;
-  const { T, PB, X, CK, GC, BARS } = CFG;
+  const { T, PB, X, CK, GC, BARS, CIR, TAGS } = CFG;
   const tl = gsap.timeline({ paused: true });
   const ft = (target, from, to, at) =>
     tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
@@ -329,8 +329,58 @@
     ctx.stroke();
     ctx.restore();
   }
+  const dom = (id) => document.getElementById(id);
+  const DOMS = {};
+  ["liLc", "liD", "lio", "lsw1", "lsw0", "lcl1", "lcl0", "lcp1", "lcp0"].forEach(
+    (id) => (DOMS[id] = dom(id)),
+  );
+  const setOp = (id, v) => {
+    if (DOMS[id]) DOMS[id].style.opacity = String(v);
+  };
+  function arrow(x, y, ang, color, alpha) {
+    if (alpha <= 0.001) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+    ctx.translate(x, y);
+    ctx.rotate(ang);
+    ctx.beginPath();
+    ctx.moveTo(11, 0);
+    ctx.lineTo(-9, -8);
+    ctx.lineTo(-9, 8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+  function pill(cx, w, color, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    const x = cx - w / 2,
+      y = TAGS.row - 19,
+      h = 38,
+      r = 19;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.globalAlpha = 0.28 * alpha;
+    ctx.fill();
+    ctx.globalAlpha = alpha;
+    ctx.stroke();
+    ctx.restore();
+  }
   function drawCircuit(t, on, il) {
-    const run = t >= T.t0 ? 1 : 1; // the circuit is always alive
+    ctx.save();
+    ctx.translate(CIR.ox - CIR.s * 150, CIR.oy - CIR.s * 470);
+    ctx.scale(CIR.s, CIR.s);
     // wires (dim) with the T-shaped rails
     const dim = DIMW;
     seg(150, G.top - 20, 150, G.top, WHITE, 4, 0.8);
@@ -407,7 +457,26 @@
       flow(PATH_C, BLUE, 4, 0.7, ts, 0.8);
     }
     flow(PATH_R, BLUE, 5, 0.6, ts, on ? 0.45 : 1);
-    return run;
+    // the current arrows: i_L through the coil (and the switch while it is closed, the diode while it is open), i_o in the load
+    arrow(182, G.top, 0, col, 1);
+    arrow(380, G.top, 0, col, 1);
+    if (on) arrow(G.xX, 650, Math.PI / 2, RED, 1);
+    else arrow(490, G.top + 0.001, 0, BLUE, 0);
+    arrow(G.xR, 660, Math.PI / 2, BLUE, on ? 0.5 : 1);
+    ctx.restore();
+    // the tags under the circuit follow the state: the switch, the coil and the capacitor
+    pill(TAGS.sw[0], TAGS.sw[1], on ? RED : BLUE, 1);
+    pill(TAGS.coil[0], TAGS.coil[1], on ? RED : BLUE, 1);
+    pill(TAGS.cap[0], TAGS.cap[1], WHITE, 0.6);
+    setOp("lsw1", on ? 1 : 0);
+    setOp("lsw0", on ? 0 : 1);
+    setOp("lcl1", on ? 1 : 0);
+    setOp("lcl0", on ? 0 : 1);
+    setOp("lcp1", on ? 1 : 0);
+    setOp("lcp0", on ? 0 : 1);
+    setOp("liLc", 1);
+    setOp("liD", on ? 0.25 : 1);
+    setOp("lio", 1);
   }
 
   // ---------------------------------------------------------------- the bars: Vin and Vo

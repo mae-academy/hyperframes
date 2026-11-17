@@ -146,7 +146,10 @@ const PC = [90, 1050, 900, 180]; // inductor voltage (left), gain curve (right)
 const X = { x0: 130, w: 830 }; // plot x range of panel B
 const CK = { xl0: 130, xlw: 390, yl0: 1082, kl: 15 }; // panel C left: vL plot (zero line and px per Vin)
 const GC = { x0: 590, w: 360, y0: 1210, k: 12.5, dmax: 0.9 }; // gain curve: D in [0, 0.9], M in [0, 10]
-const BARS = { y0: 700, k: 2.5, xi: 715, xo: 810, bw: 70 }; // Vin / Vo bars: 2.5 px per volt
+const CIR = { s: 1.3, ox: 120, oy: 415 }; // the circuit is drawn in its own coordinates and scaled onto the panel
+const cm = (x, y) => [CIR.ox + CIR.s * (x - 150), CIR.oy + CIR.s * (y - 470)];
+const TAGS = { row: 782, sw: [452, 140], coil: [262, 225], cap: [650, 205] }; // state tags under the circuit: centre x, width
+const BARS = { y0: 735, k: 2.5, xi: 790, xo: 875, bw: 60 }; // Vin / Vo bars: 2.5 px per volt
 
 // ------------------------------------------------------------------ header and labels
 const header = `
@@ -159,16 +162,27 @@ const lab = (id, cx, cy, w, size, tex, op = 1, color = C.white) =>
   box({ id, cx, cy, w, h: 38, size, color, html: tx(tex), style: op === 1 ? "" : `opacity:${op}` });
 const labels = [
   // circuit
-  lab("lvin", 150, 424, 90, 28, "V_{in}"),
-  lab("lL", 280, 432, 40, 28, "L"),
-  lab("lS", 468, 565, 40, 28, "S"),
-  lab("lD", 492, 430, 40, 28, "D"),
-  lab("lC", 532, 640, 40, 28, "C"),
-  lab("lR", 672, 590, 40, 28, "R"),
-  lab("lVo", 612, 430, 60, 28, "V_{o}"),
+  lab("lvin", ...cm(150, 424), 90, 30, "V_{in}"),
+  lab("lL", ...cm(280, 428), 40, 30, "L"),
+  lab("lS", ...cm(462, 560), 40, 30, "S"),
+  lab("lD", ...cm(492, 430), 40, 30, "D"),
+  lab("lC", ...cm(528, 575), 40, 30, "C"),
+  lab("lR", ...cm(668, 585), 40, 30, "R"),
+  lab("lVo", ...cm(600, 428), 60, 30, "V_{o}"),
+  // the currents
+  lab("liLc", ...cm(280, 512), 60, 28, "i_{L}", 0),
+  lab("liD", ...cm(492, 512), 60, 28, "i_{D}", 0),
+  lab("lio", ...cm(670, 640), 60, 28, "i_{o}", 0),
+  // the live state of the switch, the coil and the capacitor (shown or hidden every frame by the page)
+  lab("lsw1", TAGS.sw[0], TAGS.row, TAGS.sw[1], 26, it("S CLOSED"), 0),
+  lab("lsw0", TAGS.sw[0], TAGS.row, TAGS.sw[1], 26, it("S OPEN"), 0),
+  lab("lcl1", TAGS.coil[0], TAGS.row, TAGS.coil[1], 26, it("L CHARGES"), 0),
+  lab("lcl0", TAGS.coil[0], TAGS.row, TAGS.coil[1], 26, it("L DISCHARGES"), 0),
+  lab("lcp1", TAGS.cap[0], TAGS.row, TAGS.cap[1], 26, it("C DISCHARGES"), 0),
+  lab("lcp0", TAGS.cap[0], TAGS.row, TAGS.cap[1], 26, it("C CHARGES"), 0),
   // bars
-  lab("lbi", BARS.xi + 35, 735, 90, 28, "V_{in}"),
-  lab("lbo", BARS.xo + 35, 735, 70, 28, "V_{o}"),
+  lab("lbi", BARS.xi + BARS.bw / 2, BARS.y0 + 32, 90, 28, "V_{in}"),
+  lab("lbo", BARS.xo + BARS.bw / 2, BARS.y0 + 32, 70, 28, "V_{o}"),
   // panel B
   lab("liL", 165, 858, 60, 30, "i_{L}"),
   lab("lon", 300, 858, 70, 28, it("ON"), 1),
@@ -319,6 +333,8 @@ const CFG = {
   CK,
   GC,
   BARS,
+  CIR,
+  TAGS,
   spark: Array.from({ length: 28 }, () => ({
     a: rnd() * Math.PI * 2,
     d: 160 + rnd() * 320,
