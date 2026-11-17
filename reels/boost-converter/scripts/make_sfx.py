@@ -54,7 +54,7 @@ def fband(x, lo, hi):
     if hi: g *= 1 / (1 + (f / hi) ** 4)
     return np.fft.irfft(X * g)[:m]
 
-FX = 0.42   # every effect (clicks, notes, bells, kicks) is quieter: the coil's voice is the star
+FX = 0.20   # every effect (clicks, notes, bells, kicks) is quieter: the coil's voice is the star
 def place(t0, sig, gain=1.0, pan=0.0, wet=0.2):
     gain = gain * FX
     i = int(round(t0 * SR))
