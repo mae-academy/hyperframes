@@ -16,20 +16,20 @@
     [1.6, "snap"], // rewind
     [2.2, "click"], // the stator field chases the magnet
     [2.4, "snap"], // T = Kt I
-    [4.8, "click"], // six steps of 60 degrees
-    [5.0, "snap"], // 6 x 60 = 360
-    [7.4, "click"], // three Hall sensors
-    [7.6, "snap"], // 3 bits = 6 steps
-    [10.0, "click"], // the motor is also a generator
-    [10.2, "snap"], // e = Ke w
-    [12.8, "click"], // more duty, more speed
-    [13.0, "snap"], // D = 0.4
-    [14.4, "snap"], // D = 0.7
-    [16.4, "snap"], // D = 1
-    [18.6, "thump"], // lock
-    [19.6, "click"], // a magnet, three coils, six switches
-    [21.0, "snap"], // CTA reveal
-    [23.4, "click"], // engagement pulse
+    [5.0, "click"], // six steps of 60 degrees
+    [5.2, "snap"], // 6 x 60 = 360
+    [8.4, "click"], // three Hall sensors
+    [8.6, "snap"], // 3 bits = 6 steps
+    [11.6, "click"], // the motor is also a generator
+    [11.8, "snap"], // e = Ke w
+    [15.0, "click"], // more duty, more speed
+    [15.2, "snap"], // D = 0.4
+    [16.8, "snap"], // D = 0.7
+    [19.0, "snap"], // D = 1
+    [21.2, "thump"], // lock
+    [22.2, "click"], // a magnet, three coils, six switches
+    [23.6, "snap"], // CTA reveal
+    [26.0, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -83,10 +83,22 @@
 
   // the finished picture is on screen at frame 0; its labels leave with the rewind and come back stage by stage
   gsap.set("#lLegCur,#lTd,#ldel", { opacity: 0 });
-  gsap.set("#lLegEmf,#lKV1,#lKV2", { opacity: 1 });
+  gsap.set("#lLegEmf,#lKV1,#lKV2,#lH1,#lH2,#lH3", { opacity: 1 });
   const ROWS = ["#rc0", "#rc1", "#rc2", "#rc3", "#rc4", "#rc5"],
     PAIRS = ["#rp0", "#rp1", "#rp2", "#rp3", "#rp4", "#rp5"];
-  const HOOKED = [...ROWS, ...PAIRS, "#lcodeH", "#lpairH", "#lLegEmf", "#lKV1", "#lKV2"];
+  const BRIDGE = ["#lrp", "#lrn", "#lla", "#llb", "#llc"],
+    HALLS = ["#lH1", "#lH2", "#lH3"];
+  const HOOKED = [
+    ...ROWS,
+    ...PAIRS,
+    "#lcodeH",
+    "#lpairH",
+    "#lLegEmf",
+    "#lKV1",
+    "#lKV2",
+    ...BRIDGE,
+    ...HALLS,
+  ];
 
   // ---------------------------------------------------------------- 0.0 - 2.2  the finished picture, then the rewind
   hit(0.0, "thump", "#flash0");
@@ -120,22 +132,24 @@
   ["#lLegCur", "#lTd", "#ldel"].forEach((s) => pop(s, 2.5, 6));
   bannerAt(1);
   beat(2, T.sw[1]);
-  [...PAIRS, "#lpairH"].forEach((s, i) => pop(s, 5.1 + 0.05 * i, 6));
+  [...PAIRS, "#lpairH"].forEach((s, i) => pop(s, T.sw[1] + 0.1 + 0.05 * i, 6));
+  BRIDGE.forEach((s) => pop(s, T.sw[1] + 0.1, 6));
   bannerAt(2);
   beat(3, T.sw[2]);
-  fade("#lLegCur", 7.6, 0.2);
-  pop("#lLegHall", 7.7, 6);
-  [...ROWS, "#lcodeH"].forEach((s, i) => pop(s, 7.7 + 0.05 * i, 6));
+  fade("#lLegCur", T.sw[2], 0.2);
+  pop("#lLegHall", T.sw[2] + 0.1, 6);
+  HALLS.forEach((s) => pop(s, T.sw[2] + 0.1, 6));
+  [...ROWS, "#lcodeH"].forEach((s, i) => pop(s, T.sw[2] + 0.1 + 0.05 * i, 6));
   bannerAt(3);
   beat(4, T.sw[3]);
-  fade("#lLegHall", 10.2, 0.2);
-  pop("#lLegEmf", 10.3, 6);
+  fade("#lLegHall", T.sw[3], 0.2);
+  pop("#lLegEmf", T.sw[3] + 0.1, 6);
   bannerAt(4);
   beat(5, T.sw[4]);
-  fade("#lTd", 12.8, 0.25);
-  fade("#ldel", 12.8, 0.25);
-  pop("#lKV1", 13.1, 6);
-  pop("#lKV2", 13.1, 6);
+  fade("#lTd", T.st[4], 0.25);
+  fade("#ldel", T.st[4], 0.25);
+  pop("#lKV1", T.sw[4] + 0.1, 6);
+  pop("#lKV2", T.sw[4] + 0.1, 6);
   beat(6, T.sw[5]);
   beat(7, T.sw[6]);
 
@@ -172,7 +186,7 @@
     T.pulse + 0.35,
   );
 
-  tl.to({}, { duration: 0.0001 }, 24.9999);
+  tl.to({}, { duration: 0.0001 }, 27.5999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
 
@@ -189,6 +203,7 @@
     WHITE = "#FFFFFF";
   const PHC = [RED, BLUE, PURPLE];
   const DEG = Math.PI / 180;
+  let gA = 1; // a multiplier on the alpha of everything drawn by the helpers (to fade a whole block in)
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
   const smooth = (v) => {
     v = clamp01(v);
@@ -204,7 +219,7 @@
   function line(pts, color, width, alpha, blur, dash) {
     if (pts.length < 2 || alpha <= 0.001) return;
     ctx.save();
-    ctx.globalAlpha = alpha;
+    ctx.globalAlpha = alpha * gA;
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
     ctx.lineJoin = "round";
@@ -221,7 +236,7 @@
   function dot(x, y, r, color, alpha, blur) {
     if (alpha <= 0.001 || r <= 0) return;
     ctx.save();
-    ctx.globalAlpha = alpha;
+    ctx.globalAlpha = alpha * gA;
     ctx.fillStyle = color;
     ctx.shadowColor = color;
     ctx.shadowBlur = blur === undefined ? 14 : blur;
@@ -272,7 +287,7 @@
 
   // ---------------------------------------------------------------- the rotor angle: the integral of a speed that follows the duty cycle
   const DT = 0.001,
-    NT = Math.ceil(25.0 / DT) + 5;
+    NT = Math.ceil(27.6 / DT) + 5;
   const THETA = new Float64Array(NT);
   {
     let acc = 100 * DEG; // the hook starts with the rotor in the middle of a step
@@ -291,6 +306,27 @@
   const hookA = (t) => (t < T.rewind0 ? 1 : 1 - smooth((t - T.rewind0) / 0.5));
   const norm180 = (d) => (((d % 360) + 540) % 360) - 180;
 
+  // ---------------------------------------------------------------- commutation, smoothed: a real commutation takes a short, finite time
+  const BW = 10; // degrees over which the current moves from one step to the next
+  function blendCur(th) {
+    const x = (((th - 30) % 360) + 360) % 360,
+      k = Math.floor(x / 60),
+      s = x - 60 * k;
+    const cur = BLDC.currents(30 + 60 * k + 0.01, 1),
+      prev = BLDC.currents(30 + 60 * (k - 1) + 0.01, 1);
+    const w = s < BW ? smooth(s / BW) : 1;
+    return { i: cur.map((v, n) => prev[n] * (1 - w) + v * w), w, k };
+  }
+  const HC = [120, 240, 0]; // centres of the high part of the three Hall signals
+  const hallSoft = (th, n) => 1 - smooth((Math.abs(norm180(th - HC[n])) - 87) / 6);
+  const trEl = (id) => document.getElementById(id);
+  const NPOLE = trEl("lNp"),
+    SPOLE = trEl("lSp");
+  const moveLabel = (el, p) => {
+    if (el)
+      el.style.transform = `translate(${(p[0] - MC.x).toFixed(1)}px,${(p[1] - MC.y).toFixed(1)}px)`;
+  };
+
   // ---------------------------------------------------------------- the motor
   const TOOTH = [
     [0, 1],
@@ -306,51 +342,49 @@
     for (let a = a1; a >= a0 - 1e-6; a -= 2) pts.push(pt(a, r0));
     return pts;
   }
-  function drawMotor(th, t) {
+  function drawMotor(th, t, bl) {
     // the stator ring and its teeth
     ctx.save();
     ctx.beginPath();
-    ctx.arc(MC.x, MC.y, 186, 0, 2 * Math.PI);
-    ctx.arc(MC.x, MC.y, 120, 0, 2 * Math.PI, true);
+    ctx.arc(MC.x, MC.y, 190, 0, 2 * Math.PI);
+    ctx.arc(MC.x, MC.y, 122, 0, 2 * Math.PI, true);
     ctx.fillStyle = "rgba(46,46,72,.95)";
     ctx.fill("evenodd");
     ctx.strokeStyle = "rgba(255,255,255,.35)";
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.restore();
-    const cur = BLDC.currents(th, 1);
+    const cur = bl.i;
     for (let k = 0; k < 6; k++) {
       const [n, s] = TOOTH[k],
-        pol = s * cur[n],
-        on = Math.abs(pol),
+        on = Math.abs(s * cur[n]),
         a = 60 * k;
-      poly(wedge(124, 176, a - 13, a + 13));
+      poly(wedge(126, 180, a - 13, a + 13));
       ctx.save();
       ctx.globalAlpha = 0.14 + 0.7 * on;
       ctx.fillStyle = PHC[n];
-      if (on) {
+      if (on > 0.05) {
         ctx.shadowColor = PHC[n];
         ctx.shadowBlur = 14;
       }
       ctx.fill();
       ctx.restore();
-      // the winding on the tooth
       for (let j = 0; j < 5; j++) {
-        const r = 132 + j * 9;
-        line([pt(a - 11, r), pt(a + 11, r)], PHC[n], 3, 0.35 + 0.6 * on, on ? 6 : 0);
+        const r = 134 + j * 9;
+        line([pt(a - 11, r), pt(a + 11, r)], PHC[n], 3, 0.35 + 0.6 * on, on > 0.05 ? 6 : 0);
       }
     }
     // the rotor: a permanent magnet, north half red, south half blue
     const phi = BLDC.rotorAngle(th);
     ctx.save();
     ctx.beginPath();
-    ctx.arc(MC.x, MC.y, 106, 0, 2 * Math.PI);
+    ctx.arc(MC.x, MC.y, 110, 0, 2 * Math.PI);
     ctx.fillStyle = "rgba(20,20,34,.95)";
     ctx.fill();
     ctx.restore();
     const half = (a0, color) => {
       const pts = [];
-      for (let a = a0; a <= a0 + 180 + 1e-6; a += 6) pts.push(pt(a, 98));
+      for (let a = a0; a <= a0 + 180 + 1e-6; a += 6) pts.push(pt(a, 102));
       poly(pts);
       ctx.save();
       ctx.fillStyle = color;
@@ -363,26 +397,38 @@
     half(phi - 90, RED);
     half(phi + 90, BLUE);
     dot(MC.x, MC.y, 12, WHITE, 0.7, 0);
-    // the Hall sensors sit on the inner face of the stator and light up when they read 1
-    const hs = BLDC.hall(th);
-    [30, 150, 270].forEach((a, i) => {
-      const p = pt(a, 128);
-      ctx.save();
-      ctx.fillStyle = hs[i] ? WHITE : "rgba(255,255,255,.12)";
-      ctx.strokeStyle = WHITE;
-      ctx.lineWidth = 2;
-      if (hs[i]) {
-        ctx.shadowColor = WHITE;
-        ctx.shadowBlur = 12;
-      }
-      ctx.fillRect(p[0] - 8, p[1] - 8, 16, 16);
-      ctx.strokeRect(p[0] - 8, p[1] - 8, 16, 16);
-      ctx.restore();
-    });
-    // the stator field (white) always runs 60 to 120 degrees ahead of the north pole (red)
-    const m = BLDC.mmfAngle(th),
-      mp = pt(m, 96),
-      rp = pt(phi, 74);
+    moveLabel(NPOLE, pt(phi, 70));
+    moveLabel(SPOLE, pt(phi + 180, 70));
+    // the Hall sensors sit on the inner face of the stator; they appear with their stage and light up smoothly when they read 1
+    const aHs = t < 2.1 ? hookA(t) : smooth((t - T.sw[2]) / 0.4);
+    if (aHs > 0.001)
+      [30, 150, 270].forEach((a, i) => {
+        const p = pt(a, 131),
+          h = hallSoft(th, i);
+        ctx.save();
+        ctx.globalAlpha = aHs;
+        ctx.fillStyle = `rgba(255,255,255,${0.1 + 0.9 * h})`;
+        ctx.strokeStyle = WHITE;
+        ctx.lineWidth = 2;
+        if (h > 0.5) {
+          ctx.shadowColor = WHITE;
+          ctx.shadowBlur = 12;
+        }
+        ctx.fillRect(p[0] - 9, p[1] - 9, 18, 18);
+        ctx.strokeRect(p[0] - 9, p[1] - 9, 18, 18);
+        ctx.restore();
+      });
+    // the stator field (white) is the sum of the phase axes weighted by the currents: it turns smoothly through each commutation
+    let vx = 0,
+      vy = 0;
+    for (let n = 0; n < 3; n++) {
+      vx += cur[n] * Math.cos(120 * n * DEG);
+      vy += cur[n] * Math.sin(120 * n * DEG);
+    }
+    const m = Math.atan2(vy, vx) / DEG,
+      len = (100 * Math.hypot(vx, vy)) / 1.7321;
+    const mp = pt(m, len),
+      rp = pt(phi, 76);
     line([[MC.x, MC.y], rp], RED, 5, 0.95, 8);
     line([[MC.x, MC.y], mp], WHITE, 7, 0.95, 14);
     arrowHead(mp[0], mp[1], -m * DEG, WHITE, 0.95, 13);
@@ -394,31 +440,34 @@
     ctx.strokeStyle = WHITE;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(MC.x, MC.y, 46, -phi * DEG, -(phi + d) * DEG, d > 0);
+    ctx.arc(MC.x, MC.y, 48, -phi * DEG, -(phi + d) * DEG, d > 0);
     ctx.stroke();
     ctx.restore();
-    void t;
     return d;
   }
 
   // ---------------------------------------------------------------- the six-step table
-  function drawTable(th, aT) {
+  function drawTable(bl, aT) {
     if (aT <= 0.001) return;
-    const k = BLDC.stepOf(th),
-      y = TBL.y0 + k * TBL.dy,
-      p = BLDC.PAIRS[k][0];
-    ctx.save();
-    ctx.globalAlpha = aT;
-    ctx.fillStyle = "rgba(255,255,255,.10)";
-    ctx.strokeStyle = PHC[p];
-    ctx.lineWidth = 3;
-    ctx.shadowColor = PHC[p];
-    ctx.shadowBlur = 14;
-    ctx.beginPath();
-    ctx.roundRect(612, y - 23, 340, 46, 14);
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
+    const hl = (k, al) => {
+      if (al <= 0.001) return;
+      const y = TBL.y0 + k * TBL.dy,
+        p = BLDC.PAIRS[k][0];
+      ctx.save();
+      ctx.globalAlpha = aT * al;
+      ctx.fillStyle = "rgba(255,255,255,.10)";
+      ctx.strokeStyle = PHC[p];
+      ctx.lineWidth = 3;
+      ctx.shadowColor = PHC[p];
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.roundRect(612, y - 23, 340, 46, 14);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    };
+    hl((bl.k + 5) % 6, 1 - bl.w);
+    hl(bl.k, bl.w);
   }
 
   // ---------------------------------------------------------------- the waveforms over one electrical turn
@@ -427,12 +476,12 @@
     Y0 = PLOT.y0,
     K = PLOT.k;
   const xU = (u) => X0 + (PW * u) / 360;
-  function drawWaves(t, th, D) {
+  function drawWaves(t, th, D, bl) {
     seg(X0, Y0, X0 + PW, Y0, WHITE, 2, 0.3);
     const aHook = t < 2.1 ? hookA(t) : 0;
-    const aCur = t < 2.1 ? 0 : smooth((t - 2.4) / 0.4) * (1 - smooth((t - 7.6) / 0.3));
-    const aHall = t < 2.1 ? 0 : smooth((t - 7.6) / 0.3) * (1 - smooth((t - 10.2) / 0.3));
-    const aEmf = t < 2.1 ? aHook : smooth((t - 10.2) / 0.4);
+    const aCur = t < 2.1 ? 0 : smooth((t - T.sw[0]) / 0.4) * (1 - smooth((t - T.sw[2]) / 0.3));
+    const aHall = t < 2.1 ? 0 : smooth((t - T.sw[2]) / 0.3) * (1 - smooth((t - T.sw[3]) / 0.3));
+    const aEmf = t < 2.1 ? aHook : smooth((t - T.sw[3]) / 0.4);
     const U = [];
     for (let u = 0; u <= 360; u += 2) U.push(u);
     // the phase currents of six-step commutation: +I for 120 degrees, 0 for 60, -I for 120, 0 for 60
@@ -477,52 +526,54 @@
     }
     if (aCur > 0.001)
       for (let n = 0; n < 3; n++)
-        dot(xc, Y0 - K * BLDC.currents(th, 1)[n] + (n - 1) * 2.5, 6, PHC[n], aC * aCur, 12);
+        dot(xc, Y0 - K * bl.i[n] + (n - 1) * 2.5, 6, PHC[n], aC * aCur, 12);
   }
 
   // ---------------------------------------------------------------- the inverter bridge: the two switches of the step light up
-  function drawBridge(th, t) {
-    const k = BLDC.stepOf(th),
-      [pp, mm] = BLDC.PAIRS[k];
-    const a = 1;
-    seg(135, BR.top, 385, BR.top, WHITE, 3, 0.7 * a);
-    seg(150, BR.top - 16, 150, BR.top, WHITE, 3, 0.7 * a);
-    seg(130, BR.top - 16, 170, BR.top - 16, WHITE, 3, 0.7 * a);
-    seg(135, BR.bot, 385, BR.bot, WHITE, 3, 0.7 * a);
-    seg(150, BR.bot, 150, BR.bot + 14, WHITE, 3, 0.7 * a);
-    seg(130, BR.bot + 14, 170, BR.bot + 14, WHITE, 3, 0.7 * a);
+  function drawBridge(bl, aBr) {
+    if (aBr <= 0.001) return;
+    gA = aBr;
+    seg(135, BR.top, 385, BR.top, WHITE, 3, 0.7);
+    seg(150, BR.top - 16, 150, BR.top, WHITE, 3, 0.7);
+    seg(130, BR.top - 16, 170, BR.top - 16, WHITE, 3, 0.7);
+    seg(135, BR.bot, 385, BR.bot, WHITE, 3, 0.7);
+    seg(150, BR.bot, 150, BR.bot + 14, WHITE, 3, 0.7);
+    seg(130, BR.bot + 14, 170, BR.bot + 14, WHITE, 3, 0.7);
     BR.xs.forEach((x, n) => {
-      const upOn = n === pp,
-        loOn = n === mm;
+      // the upper switch closes while the phase current is positive, the lower one while it is negative (smoothly through the commutation)
+      const up = clamp01(bl.i[n]),
+        lo = clamp01(-bl.i[n]);
       const sw = (cy, on) => {
         ctx.save();
-        if (on) {
-          ctx.fillStyle = PHC[n];
-          ctx.shadowColor = PHC[n];
-          ctx.shadowBlur = 16;
-          ctx.fillRect(x - 14, cy - 15, 28, 30);
-        } else {
-          ctx.strokeStyle = "rgba(255,255,255,.35)";
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x - 14, cy - 15, 28, 30);
-        }
+        ctx.globalAlpha = gA * (0.35 * (1 - on));
+        ctx.strokeStyle = WHITE;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x - 14, cy - 15, 28, 30);
+        ctx.globalAlpha = gA * on;
+        ctx.fillStyle = PHC[n];
+        ctx.shadowColor = PHC[n];
+        ctx.shadowBlur = 16;
+        ctx.fillRect(x - 14, cy - 15, 28, 30);
         ctx.restore();
       };
-      const c = (on) => (on ? PHC[n] : "rgba(255,255,255,.35)");
-      seg(x, BR.top, x, 1097, c(upOn), 3, 1);
-      sw(1112, upOn);
-      seg(x, 1127, x, 1146, c(upOn), 3, 1);
-      seg(x, 1146, x, 1162, c(loOn), 3, 1);
-      sw(1177, loOn);
-      seg(x, 1192, x, BR.bot, c(loOn), 3, 1);
-      dot(x, 1146, 6, upOn || loOn ? PHC[n] : WHITE, upOn || loOn ? 1 : 0.5, 10);
+      const wire = (y0, y1, on) => {
+        seg(x, y0, x, y1, WHITE, 3, 0.35);
+        seg(x, y0, x, y1, PHC[n], 3, on);
+      };
+      wire(BR.top, 1097, up);
+      sw(1112, up);
+      wire(1127, 1146, up);
+      wire(1146, 1162, lo);
+      sw(1177, lo);
+      wire(1192, BR.bot, lo);
+      dot(x, 1146, 6, up + lo > 0.2 ? PHC[n] : WHITE, up + lo > 0.2 ? 1 : 0.5, 10);
     });
-    void t;
+    gA = 1;
   }
 
   // ---------------------------------------------------------------- the right of the bottom panel: torque against angle, then the voltage balance
   function drawBottomRight(t, d, D) {
-    const aTq = t < 2.1 ? 0 : smooth((t - 2.4) / 0.4) * (1 - smooth((t - 12.8) / 0.3));
+    const aTq = t < 2.1 ? 0 : smooth((t - T.sw[0]) / 0.4) * (1 - smooth((t - T.st[4]) / 0.3));
     if (aTq > 0.001) {
       const x0 = 600,
         w = 350,
@@ -537,7 +588,7 @@
       dot(xs(d), base - h * Math.sin(d * DEG), 8, WHITE, aTq, 14);
       seg(xs(d), base, xs(d), base - h * Math.sin(d * DEG), WHITE, 2, 0.5 * aTq, 0, [5, 5]);
     }
-    const aKV = t < 2.1 ? hookA(t) : smooth((t - 13.0) / 0.4);
+    const aKV = t < 2.1 ? hookA(t) : smooth((t - T.sw[4]) / 0.4);
     if (aKV > 0.001) {
       const sx = 740,
         k = 8.5,
@@ -639,12 +690,18 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, 1080, 1920);
     const D = BLDC.Dat(t),
-      th = thetaDeg(t);
-    const d = drawMotor(th, t);
+      th = thetaDeg(t),
+      bl = blendCur(th);
+    const d = drawMotor(th, t, bl);
     const aTbl = t < 2.1 ? hookA(t) : smooth((t - T.sw[1]) / 0.4);
-    drawTable(th, aTbl);
-    drawWaves(t, th, D);
-    drawBridge(th, t);
+    drawTable(bl, aTbl);
+    // what the two arrows are
+    seg(630, 748, 668, 748, WHITE, 6, 1, 8);
+    arrowHead(672, 748, 0, WHITE, 1, 11);
+    seg(630, 780, 668, 780, RED, 5, 1, 8);
+    arrowHead(672, 780, 0, RED, 1, 10);
+    drawWaves(t, th, D, bl);
+    drawBridge(bl, t < 2.1 ? hookA(t) : smooth((t - T.sw[1]) / 0.4));
     drawBottomRight(t, Math.abs(d), D);
     drawLock(t);
   }

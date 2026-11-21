@@ -173,11 +173,11 @@ def mono(keys, x):
                     + u * u * (3 - 2 * u) * ys[i + 1] + u * u * (u - 1) * dt * m[i + 1])
     return out
 T0 = float(sched["t0"])
-DK = [(0, .7), (1.6, .7), (2.4, .4), (14.4, .4), (15.6, .7), (16.4, .7), (17.6, 1.0), (40, 1.0)]
+DK = [(0, .7), (1.6, .7), (2.4, .4), (16.8, .4), (18.0, .7), (19.0, .7), (20.2, 1.0), (40, 1.0)]
 D_t = mono(DK, t)
-w_vis = ((D_t * 24 - 2) / 0.05) / 86.0                        # rad/s on screen (slowed down 86 times)
+w_vis = ((D_t * 24 - 2) / 0.05) / 144.0                       # rad/s on screen (slowed down 144 times)
 theta = np.cumsum(w_vis) / SR + 100 * np.pi / 180
-w_ref = ((0.4 * 24 - 2) / 0.05) / 86.0
+w_ref = ((0.4 * 24 - 2) / 0.05) / 144.0
 f_voice = 110.0 * w_vis / w_ref                               # 110 Hz at D = 0.4 ... about 320 Hz at D = 1
 phv = 2 * np.pi * np.cumsum(f_voice) / SR
 duty = (D_t - 0.4) / 0.6

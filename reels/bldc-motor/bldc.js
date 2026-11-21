@@ -6,7 +6,7 @@ globalThis.BLDC = (function () {
     KE = 0.05,
     RLL = 1.0,
     TL = 0.1,
-    SLOW = 86; // the picture is slowed down by this factor
+    SLOW = 144; // the picture is slowed down by this factor
   const DEG = Math.PI / 180;
   /** normalised trapezoid: +1 for 120 degrees, -1 for 120 degrees, 60 degree ramps between (x in degrees) */
   function trap(x) {
@@ -100,10 +100,10 @@ globalThis.BLDC = (function () {
     [0, 0.7],
     [1.6, 0.7],
     [2.4, 0.4],
-    [14.4, 0.4],
-    [15.6, 0.7],
-    [16.4, 0.7],
-    [17.6, 1.0],
+    [16.8, 0.4],
+    [18.0, 0.7],
+    [19.0, 0.7],
+    [20.2, 1.0],
     [40, 1.0],
   ];
   const Dat = (t) => mono(DK, t);

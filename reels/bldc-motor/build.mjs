@@ -14,19 +14,19 @@ const BLDC = new Function(bldcSrc + "\nreturn globalThis.BLDC;")();
 const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF" };
 const W = 1080,
   H = 1920,
-  DUR = 25.0;
+  DUR = 27.6;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
   rewind0: 1.6,
   s1: 2.2,
   t0: 2.4, // the duty drops to 0.4 and the rotor settles at its slow speed
-  st: [2.2, 4.8, 7.4, 10.0, 12.8], // banners
-  sw: [2.4, 5.0, 7.6, 10.2, 13.0, 14.4, 16.4], // counters (the snap)
-  lock: 18.6,
-  banF: 19.6,
-  card: 21.0,
-  pulse: 23.4,
+  st: [2.2, 5.0, 8.4, 11.6, 15.0], // banners
+  sw: [2.4, 5.2, 8.6, 11.8, 15.2, 16.8, 19.0], // counters (the snap)
+  lock: 21.2,
+  banF: 22.2,
+  card: 23.6,
+  pulse: 26.0,
 };
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
@@ -150,7 +150,7 @@ const HANDLE = (s) =>
 const PA = [90, 340, 900, 460]; // the motor (left), the step table (right)
 const PB = [90, 820, 900, 220]; // currents, Hall signals, back-EMF over one electrical turn
 const PC = [90, 1060, 900, 170]; // the inverter bridge (left), torque against angle then the voltage balance (right)
-const MC = { x: 305, y: 578 }; // motor centre
+const MC = { x: 334, y: 572 }; // motor centre
 const PLOT = { x0: 130, w: 830, y0: 930, k: 42 };
 const BR = { xs: [175, 265, 355], top: 1086, bot: 1206 };
 const TBL = { x: 790, y0: 420, dy: 58 }; // the six-step table
@@ -178,13 +178,21 @@ const PAIRTEX = [
   "C^{+}B^{-}",
 ];
 const labels = [
-  lab("lslow", MC.x, 362, 300, 26, it("SLOW MOTION ") + "\\times86", 1),
-  lab("lH1", ...hp(30, 202), 50, 26, "H_{1}"),
-  lab("lH2", ...hp(150, 202), 50, 26, "H_{2}"),
-  lab("lH3", ...hp(270, 200), 50, 26, "H_{3}"),
+  lab("lslow", MC.x, 358, 320, 24, it("SLOW MOTION ") + "\\times144", 1),
+  // the three stator phases (windings on the six teeth: a prime is the winding in the opposite sense)
+  ...["A", "C^{\\prime}", "B", "A^{\\prime}", "C", "B^{\\prime}"].map((p, k) =>
+    lab("lt" + k, ...hp(60 * k, 214), 50, 30, p),
+  ),
+  lab("lH1", ...hp(30, 206), 50, 24, "H_{1}", 0),
+  lab("lH2", ...hp(150, 206), 50, 24, "H_{2}", 0),
+  lab("lH3", ...hp(270, 204), 50, 24, "H_{3}", 0),
+  lab("lNp", MC.x, MC.y, 40, 36, "N"),
+  lab("lSp", MC.x, MC.y, 40, 36, "S"),
+  lab("lgF", 800, 748, 230, 26, it("STATOR FIELD")),
+  lab("lgR", 800, 780, 230, 26, it("ROTOR NORTH")),
   // the six-step table: the Hall code and the two switches it closes
-  ...CODES.map((c, k) => lab("rc" + k, TBL.x - 110, TBL.y0 + k * TBL.dy, 110, 30, c)),
-  ...PAIRTEX.map((p, k) => lab("rp" + k, TBL.x + 50, TBL.y0 + k * TBL.dy, 140, 30, p)),
+  ...CODES.map((c, k) => lab("rc" + k, TBL.x - 110, TBL.y0 + k * TBL.dy, 110, 34, c)),
+  ...PAIRTEX.map((p, k) => lab("rp" + k, TBL.x + 50, TBL.y0 + k * TBL.dy, 140, 34, p)),
   lab("lcodeH", TBL.x - 110, TBL.y0 - 44, 170, 24, "H_{1}H_{2}H_{3}"),
   lab("lpairH", TBL.x + 50, TBL.y0 - 44, 140, 24, it("SWITCHES")),
   // the waveforms
@@ -251,7 +259,7 @@ const FORM = [
   ["f4", "K_{e}=0.05\\,\\textit{Vs/rad}", 50],
   ["f5", "\\omega=\\dfrac{D\\,V_{dc}-I\\,R}{K_{e}}", 44],
   ["f6", "I=\\dfrac{T_{L}}{K_{t}}=2\\,\\textit{A}", 44],
-  ["f7", it("SLOWED DOWN ") + "\\times86", 50],
+  ["f7", it("SLOWED DOWN ") + "\\times144", 50],
   ["f8", "T=K_{t}\\,I\\;\\;\\;e=K_{e}\\,\\omega", 50],
 ];
 const formulas = FORM.map(([id, t, s, hid]) => mkF(id, t, s, hid === undefined ? true : hid)).join(
