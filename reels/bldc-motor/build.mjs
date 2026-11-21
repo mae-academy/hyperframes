@@ -14,19 +14,20 @@ const BLDC = new Function(bldcSrc + "\nreturn globalThis.BLDC;")();
 const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF" };
 const W = 1080,
   H = 1920,
-  DUR = 27.6;
+  DUR = 28.6;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
   rewind0: 1.6,
   s1: 2.2,
   t0: 2.4, // the duty drops to 0.4 and the rotor settles at its slow speed
-  st: [2.2, 5.0, 8.4, 11.6, 15.0], // banners
-  sw: [2.4, 5.2, 8.6, 11.8, 15.2, 16.8, 19.0], // counters (the snap)
-  lock: 21.2,
-  banF: 22.2,
-  card: 23.6,
-  pulse: 26.0,
+  st: [2.2, 5.2, 8.6, 12.0, 15.4], // banners
+  sw: [2.4, 5.4, 8.8, 12.2, 15.6, 17.2, 19.4], // counters (the snap)
+  asm: [6.4, 6.9, 7.5], // the stator, the Hall boards and the rotor arrive (a clack each)
+  lock: 22.2,
+  banF: 23.2,
+  card: 24.6,
+  pulse: 27.0,
 };
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
@@ -147,67 +148,44 @@ const HANDLE = (s) =>
   `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="margin-right:14px;flex:none"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="#fff"/></svg>`;
 
 // ------------------------------------------------------------------ geometry
-const PA = [90, 340, 900, 460]; // the motor (left), the step table (right)
-const PB = [90, 820, 900, 220]; // currents, Hall signals, back-EMF over one electrical turn
-const PC = [90, 1060, 900, 170]; // the inverter bridge (left), torque against angle then the voltage balance (right)
-const MC = { x: 334, y: 572 }; // motor centre
-const PLOT = { x0: 130, w: 830, y0: 930, k: 42 };
-const BR = { xs: [175, 265, 355], top: 1086, bot: 1206 };
-const TBL = { x: 790, y0: 420, dy: 58 }; // the six-step table
+const PAT = 330; // top of the 3D panel
+const PB1 = [90, 985, 440, 245]; // inverter bridge, then the voltage balance
+const PB2 = [550, 985, 440, 245]; // currents, Hall signals, back-EMF over one electrical turn
+const PLOT = { x0: 580, w: 360, y0: 1115, k: 34 };
+const BR = { xs: [190, 290, 390], top: 1040, bot: 1200 };
+const VIEW = { cx: 540, cy: 650, F: 1350 };
 
 // ------------------------------------------------------------------ header and labels
 const header = `
 <div id="flash0"></div>
 ${box({ id: "h-title", cx: 540, cy: 180, w: 1020, h: 90, size: 58, color: C.red, html: tx("\\textbf{\\textit{THE BRUSHLESS DC MOTOR}}"), style: "text-shadow:0 0 22px rgba(255,0,68,.35)" })}
-${box({ id: "h-sub", cx: 540, cy: 236, w: 1000, h: 50, size: 35, color: C.purple, html: tx(it("A MAGNET, THREE COILS, SIX SWITCHES")) })}
+${box({ id: "h-sub", cx: 540, cy: 236, w: 1000, h: 50, size: 35, color: C.purple, html: tx(it("NO BRUSHES, NO SPARKS")) })}
 <div id="h-rule" style="position:absolute;left:480px;top:274px;width:120px;height:3px;border-radius:2px;background:linear-gradient(90deg,${C.red},${C.purple},${C.blue})"></div>
 ${box({ id: "wm", cx: 540, cy: 800, w: 1000, h: 160, size: 130, color: "rgba(255,0,68,.12)", html: tx(it("@MAE.Academy")), cls: "wm" }).replace('class="t wm"', 'class="t wm" data-layout-ignore')}`;
 const lab = (id, cx, cy, w, size, tex, op = 1, color = C.white) =>
   box({ id, cx, cy, w, h: 38, size, color, html: tx(tex), style: op === 1 ? "" : `opacity:${op}` });
-const hp = (deg, r) => [
-  MC.x + r * Math.cos((deg * Math.PI) / 180),
-  MC.y - r * Math.sin((deg * Math.PI) / 180),
-];
-const CODES = ["101", "100", "110", "010", "011", "001"];
-const PAIRTEX = [
-  "A^{+}B^{-}",
-  "A^{+}C^{-}",
-  "B^{+}C^{-}",
-  "B^{+}A^{-}",
-  "C^{+}A^{-}",
-  "C^{+}B^{-}",
-];
 const labels = [
-  lab("lslow", MC.x, 358, 320, 24, it("SLOW MOTION ") + "\\times144", 1),
-  // the three stator phases (windings on the six teeth: a prime is the winding in the opposite sense)
-  ...["A", "C^{\\prime}", "B", "A^{\\prime}", "C", "B^{\\prime}"].map((p, k) =>
-    lab("lt" + k, ...hp(60 * k, 214), 50, 30, p),
-  ),
-  lab("lH1", ...hp(30, 206), 50, 24, "H_{1}", 0),
-  lab("lH2", ...hp(150, 206), 50, 24, "H_{2}", 0),
-  lab("lH3", ...hp(270, 204), 50, 24, "H_{3}", 0),
-  lab("lNp", MC.x, MC.y, 40, 36, "N"),
-  lab("lSp", MC.x, MC.y, 40, 36, "S"),
-  lab("lgF", 800, 748, 230, 26, it("STATOR FIELD")),
-  lab("lgR", 800, 780, 230, 26, it("ROTOR NORTH")),
-  // the six-step table: the Hall code and the two switches it closes
-  ...CODES.map((c, k) => lab("rc" + k, TBL.x - 110, TBL.y0 + k * TBL.dy, 110, 34, c)),
-  ...PAIRTEX.map((p, k) => lab("rp" + k, TBL.x + 50, TBL.y0 + k * TBL.dy, 140, 34, p)),
-  lab("lcodeH", TBL.x - 110, TBL.y0 - 44, 170, 24, "H_{1}H_{2}H_{3}"),
-  lab("lpairH", TBL.x + 50, TBL.y0 - 44, 140, 24, it("SWITCHES")),
+  lab("lslow", 820, 362, 330, 24, it("SLOW MOTION ") + "\\times100", 1),
+  // the 3D annotations: moved every frame to the part they name (their resting place is the centre of the 3D view)
+  lab("l3brush", VIEW.cx, VIEW.cy, 170, 28, it("CARBON BRUSH"), 0),
+  lab("l3comm", VIEW.cx, VIEW.cy, 220, 28, it("COMMUTATOR"), 0),
+  lab("l3spark", VIEW.cx, VIEW.cy, 170, 28, it("SPARKS"), 0),
+  lab("l3stator", VIEW.cx, VIEW.cy, 250, 28, it("STATOR COILS"), 0),
+  lab("l3rotor", VIEW.cx, VIEW.cy, 280, 28, it("MAGNET ROTOR"), 0),
+  lab("l3hall", VIEW.cx, VIEW.cy, 250, 28, it("HALL SENSOR"), 0),
+  lab("lNp", VIEW.cx, VIEW.cy, 40, 40, "N", 0),
+  lab("lSp", VIEW.cx, VIEW.cy, 40, 40, "S", 0),
   // the waveforms
-  lab("lLegCur", 330, 856, 150, 30, "i_{a}\\;i_{b}\\;i_{c}", 1),
-  lab("lLegHall", 330, 856, 170, 30, "H_{1}\\;H_{2}\\;H_{3}", 0),
-  lab("lLegEmf", 330, 856, 150, 30, "e_{a}\\;e_{b}\\;e_{c}", 0),
+  lab("lLegCur", 680, 1010, 150, 28, "i_{a}\\;i_{b}\\;i_{c}", 0),
+  lab("lLegHall", 680, 1010, 170, 28, "H_{1}\\;H_{2}\\;H_{3}", 0),
+  lab("lLegEmf", 680, 1010, 150, 28, "e_{a}\\;e_{b}\\;e_{c}", 0),
   // the bridge (T-shaped DC rails)
-  lab("lrp", 452, BR.top, 100, 26, "+V_{dc}"),
-  lab("lrn", 430, BR.bot, 40, 26, "0"),
-  ...["a", "b", "c"].map((p, n) => lab("ll" + p, BR.xs[n] + 26, 1149, 30, 24, p)),
-  // torque against the angle, then the voltage balance
-  lab("lTd", 760, 1082, 210, 26, "T\\propto\\sin\\delta"),
-  lab("ldel", 962, 1214, 30, 24, "\\delta"),
-  lab("lKV1", 640, 1118, 120, 26, "D\\,V_{dc}", 0),
-  lab("lKV2", 640, 1166, 170, 26, "K_{e}\\omega\\!+\\!IR", 0),
+  lab("lrp", 470, BR.top, 100, 26, "+V_{dc}", 0),
+  lab("lrn", 452, BR.bot, 40, 26, "0", 0),
+  ...["a", "b", "c"].map((p, n) => lab("ll" + p, BR.xs[n] + 26, 1122, 30, 24, p, 0)),
+  // the voltage balance
+  lab("lKV1", 205, 1085, 120, 26, "D\\,V_{dc}", 0),
+  lab("lKV2", 215, 1140, 180, 26, "K_{e}\\omega\\!+\\!IR", 0),
 ].join("");
 
 // ------------------------------------------------------------------ counters, formulas, banners
@@ -228,15 +206,15 @@ const mkC = (id, tex, color = C.blue, size = 52, hidden = true) =>
   });
 const rpmTxt = (D, dtxt) => `D=${dtxt}\\;\\Rightarrow\\;${RPM[D]}\\,\\textit{rpm}`;
 const counters = [
-  mkC("c0", "T=K_{t}\\,I\\;\\;\\;e=K_{e}\\,\\omega", C.blue, 52, false),
-  mkC("c1", "T=K_{t}\\,I", C.blue, 56),
-  mkC("c2", "6\\times60^{\\circ}=360^{\\circ}", C.blue, 56),
-  mkC("c3", "3\\,\\textit{bits}\\;\\Rightarrow\\;6\\,\\textit{steps}", C.blue, 52),
-  mkC("c4", "e=K_{e}\\,\\omega", C.blue, 56),
+  mkC("c0", it("NO BRUSHES, NO SPARKS"), C.blue, 52, false),
+  mkC("c1", it("SPARKS, WEAR, NOISE"), C.blue, 54),
+  mkC("c2", it("NO SLIDING CONTACT"), C.blue, 54),
+  mkC("c3", "6\\times60^{\\circ}=360^{\\circ}", C.blue, 56),
+  mkC("c4", "3\\,\\textit{bits}\\;\\Rightarrow\\;6\\,\\textit{steps}", C.blue, 52),
   mkC("c5", rpmTxt(0.4, "0.4"), C.blue, 52),
   mkC("c6", rpmTxt(0.7, "0.7"), C.blue, 52),
   mkC("c7", rpmTxt(1, "1"), C.blue, 52),
-  mkC("cfin", it("NO BRUSHES, NO SPARKS"), C.blue, 52),
+  mkC("cfin", it("A MAGNET, THREE COILS, SIX SWITCHES"), C.blue, 40),
 ].join("");
 const mkF = (id, tex, size = 46, hidden = true) =>
   box({
@@ -253,13 +231,13 @@ const mkF = (id, tex, size = 46, hidden = true) =>
   });
 const FORM = [
   ["fm0", "\\omega=\\dfrac{D\\,V_{dc}-I\\,R}{K_{e}}", 44, false],
-  ["f1", "K_{t}=0.05\\,\\textit{Nm/A}", 50],
-  ["f2", it("TWO PHASES ON, ONE FLOATING"), 38],
-  ["f3", "101\\to100\\to110\\to010\\to011\\to001", 44],
-  ["f4", "K_{e}=0.05\\,\\textit{Vs/rad}", 50],
+  ["f1", it("THE BRUSHES RUB EVERY TURN"), 38],
+  ["f2", "T=K_{t}\\,I", 56],
+  ["f3", it("TWO PHASES ON, ONE FLOATING"), 38],
+  ["f4", "101\\to100\\to110\\to010\\to011\\to001", 44],
   ["f5", "\\omega=\\dfrac{D\\,V_{dc}-I\\,R}{K_{e}}", 44],
-  ["f6", "I=\\dfrac{T_{L}}{K_{t}}=2\\,\\textit{A}", 44],
-  ["f7", it("SLOWED DOWN ") + "\\times144", 50],
+  ["f6", "e=K_{e}\\,\\omega", 56],
+  ["f7", it("SLOWED DOWN ") + "\\times100", 50],
   ["f8", "T=K_{t}\\,I\\;\\;\\;e=K_{e}\\,\\omega", 50],
 ];
 const formulas = FORM.map(([id, t, s, hid]) => mkF(id, t, s, hid === undefined ? true : hid)).join(
@@ -271,15 +249,15 @@ const bn = (id, l1, l2, op) =>
   `<div id="${id}" class="ba" style="opacity:${op}"><div class="l1">${tx(l1)}</div><div class="l2">${tx(l2)}</div></div>`;
 const banners = [
   bn("bn0", it("HOW DOES A MOTOR SPIN WITHOUT BRUSHES?"), it("ELECTRONICS SWITCH THE COILS"), 1),
-  bn("bn1", it("THE STATOR FIELD CHASES THE MAGNET"), "T=K_{t}\\,I", 0),
+  bn("bn1", it("A BRUSHED MOTOR: BRUSHES RUB THE COMMUTATOR"), it("SPARKS, WEAR, NOISE"), 0),
+  bn("bn2", it("SWAP THE ROLES"), it("MAGNETS SPIN, COILS STAY STILL"), 0),
   bn(
-    "bn2",
-    it("SIX STEPS OF 60") + "^{\\circ}" + it(" EACH"),
-    it("TWO PHASES ON, ONE FLOATING"),
+    "bn3",
+    it("ELECTRONICS REPLACE THE BRUSHES"),
+    it("SIX SWITCHES, SIX STEPS OF 60") + "^{\\circ}",
     0,
   ),
-  bn("bn3", it("THREE HALL SENSORS READ THE ROTOR"), it("3 BITS = 6 STEPS"), 0),
-  bn("bn4", it("THE MOTOR IS ALSO A GENERATOR"), "\\textit{BACK-EMF }e=K_{e}\\,\\omega", 0),
+  bn("bn4", it("THREE HALL SENSORS READ THE ROTOR"), it("3 BITS = 6 STEPS"), 0),
   bn("bn5", it("MORE DUTY, MORE SPEED"), "\\omega=(D\\,V_{dc}-I\\,R)/K_{e}", 0),
   bn("bnF", it("A MAGNET, THREE COILS, SIX SWITCHES"), it("NO BRUSHES TO WEAR OUT"), 0),
 ].join("\n");
@@ -341,13 +319,12 @@ html,body{background:#0A0A10;width:${W}px;height:${H}px;overflow:hidden}
 const anim = fs.readFileSync(new URL("./anim.js", import.meta.url), "utf8");
 const CFG = {
   T,
-  PA,
-  PB,
-  PC,
-  MC,
+  PAT,
+  PB1,
+  PB2,
   PLOT,
   BR,
-  TBL,
+  VIEW,
   spark: Array.from({ length: 28 }, () => ({
     a: rnd() * Math.PI * 2,
     d: 160 + rnd() * 320,
@@ -366,9 +343,6 @@ function page(gsapSrc) {
 <body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="${DUR}" data-width="${W}" data-height="${H}" data-fps="60">
 ${header}
-<div class="panel" style="left:${PA[0]}px;top:${PA[1]}px;width:${PA[2]}px;height:${PA[3]}px"></div>
-<div class="panel" style="left:${PB[0]}px;top:${PB[1]}px;width:${PB[2]}px;height:${PB[3]}px"></div>
-<div class="panel" style="left:${PC[0]}px;top:${PC[1]}px;width:${PC[2]}px;height:${PC[3]}px"></div>
 <div id="glow" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(176,38,255,.35),transparent 70%);opacity:0"></div>
 <div id="rw" style="position:absolute;left:90px;top:340px;width:900px;height:890px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(255,0,68,.30),transparent 75%);opacity:0"></div>
 <canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>

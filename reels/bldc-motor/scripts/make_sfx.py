@@ -173,11 +173,14 @@ def mono(keys, x):
                     + u * u * (3 - 2 * u) * ys[i + 1] + u * u * (u - 1) * dt * m[i + 1])
     return out
 T0 = float(sched["t0"])
-DK = [(0, .7), (1.6, .7), (2.4, .4), (16.8, .4), (18.0, .7), (19.0, .7), (20.2, 1.0), (40, 1.0)]
+DK = [(0, .7), (1.6, .7), (2.4, .4), (17.2, .4), (18.4, .7), (19.4, .7), (20.6, 1.0), (40, 1.0)]
 D_t = mono(DK, t)
-w_vis = ((D_t * 24 - 2) / 0.05) / 144.0                       # rad/s on screen (slowed down 144 times)
-theta = np.cumsum(w_vis) / SR + 100 * np.pi / 180
-w_ref = ((0.4 * 24 - 2) / 0.05) / 144.0
+w_vis = ((D_t * 24 - 2) / 0.05) / 100.0                       # rad/s on screen (slowed down 100 times)
+def _smooth(x):
+    x = np.clip(x, 0, 1); return x * x * (3 - 2 * x)
+spin_mul = 1 + 1.6 * _smooth((t - SWAPS[0]) / 0.4) * (1 - _smooth((t - (float(sched["st"][1]) - 0.2)) / 0.4))   # the brushed motor spins faster while it is on screen
+theta = np.cumsum(w_vis * spin_mul) / SR + 100 * np.pi / 180
+w_ref = ((0.4 * 24 - 2) / 0.05) / 100.0
 f_voice = 110.0 * w_vis / w_ref                               # 110 Hz at D = 0.4 ... about 320 Hz at D = 1
 phv = 2 * np.pi * np.cumsum(f_voice) / SR
 duty = (D_t - 0.4) / 0.6
@@ -189,11 +192,27 @@ motor_env = smooth(env([(0, 0.0), (T0 - 0.05, 0.0), (T0 + 0.35, 1.0), (LOCK, 1.0
 coil = 0.20 * motor_env * v_motor * step_am * (0.8 + 0.2 * duty)
 dry[0] += coil * 0.95; dry[1] += coil * 1.05
 send += coil * 0.16
+
+# the brushed motor: a crackle at every spark (a gap of the commutator passes a brush), with a rough brush-on-copper bed under the tone
+spark_ix = np.nonzero(np.diff(np.floor(((np.degrees(theta) - 210.0) % 360.0) / 60.0)) != 0)[0]
+for ix in spark_ix:
+    tt = ix / SR
+    if SWAPS[0] <= tt <= 5.2:
+        k = int(SR * 0.03); tk = np.arange(k) / SR
+        burst = fband(rng.uniform(-1, 1, k), 1800, 6500) * np.exp(-tk / 0.007)
+        burst /= np.max(np.abs(burst)) + 1e-9
+        place(float(tt), burst, 0.55, rng.uniform(-0.3, 0.3), 0.1)
+bed_env = smooth(env([(0, 0.0), (SWAPS[0], 0.0), (SWAPS[0] + 0.4, 1.0), (5.0, 1.0), (5.6, 0.0), (DUR, 0.0)]), 0.05)
+bed = fband(rng.uniform(-1, 1, n), 350, 3200)
+dry[0] += 0.05 * bed_env * bed; dry[1] += 0.05 * bed_env * np.roll(bed, 313)
+# the parts of the brushless motor arrive: a soft clack each, the rotor last
+for ta in sched["asm"]:
+    kick(float(ta), 0.30); click(float(ta) + 0.01, 0.8)
 # a quiet tick at every commutation step while the six steps are being explained
 step = np.floor(((np.degrees(theta) - 30.0) % 360.0) / 60.0)
 for ix in np.nonzero(np.diff(step) != 0)[0]:
     tt = ix / SR
-    if SWAPS[1] <= tt <= SWAPS[3]:
+    if SWAPS[2] <= tt <= SWAPS[4]:
         click(float(tt), 0.5)
 
 # ------------------------------------------------------------------ events
