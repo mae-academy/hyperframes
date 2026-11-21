@@ -14,18 +14,18 @@ const BLDC = new Function(bldcSrc + "\nreturn globalThis.BLDC;")();
 const C = { red: "#FF0044", blue: "#0088FF", purple: "#B026FF", white: "#FFFFFF" };
 const W = 1080,
   H = 1920,
-  DUR = 28.6;
+  DUR = 23.6;
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
-  t0: 2.4, // the duty drops to 0.4 and the rotor settles at its slow speed
-  st: [2.2, 5.2, 8.6, 12.0, 15.4], // banners
-  sw: [2.4, 5.4, 8.8, 12.2, 15.6, 17.2, 19.4], // counters (the snap)
-  asm: [6.4, 6.9, 7.5], // the stator, the Hall boards and the rotor arrive (a clack each)
-  lock: 22.2,
-  banF: 23.2,
-  card: 24.6,
-  pulse: 27.0,
+  t0: 2.0, // the duty drops to 0.4 and the rotor settles at its slow speed
+  st: [1.8, 3.8, 6.4, 9.0, 11.6], // banners
+  sw: [2.0, 4.0, 6.6, 9.2, 11.8, 13.2, 15.0], // counters (the snap)
+  asm: [4.6, 5.0, 5.5], // the stator, the Hall boards and the rotor arrive (a clack each)
+  lock: 17.2,
+  banF: 18.2,
+  card: 19.6,
+  pulse: 22.0,
 };
 
 // ------------------------------------------------------------------ maths first (asserted, the build fails otherwise)
@@ -163,7 +163,7 @@ ${box({ id: "wm", cx: 540, cy: 800, w: 1000, h: 160, size: 130, color: "rgba(255
 const lab = (id, cx, cy, w, size, tex, op = 1, color = C.white) =>
   box({ id, cx, cy, w, h: 38, size, color, html: tx(tex), style: op === 1 ? "" : `opacity:${op}` });
 const labels = [
-  lab("lslow", 820, 362, 330, 24, it("SLOW MOTION ") + "\\times100", 1),
+  lab("lslow", 820, 362, 330, 24, it("SLOW MOTION ") + "\\times50", 1),
   // the 3D annotations: moved every frame to the part they name (their resting place is the centre of the 3D view)
   lab("l3brush", VIEW.cx, VIEW.cy, 230, 28, it("CARBON BRUSH"), 0),
   lab("l3comm", VIEW.cx, VIEW.cy, 220, 28, it("COMMUTATOR"), 0),
@@ -251,7 +251,7 @@ const FORM = [
   ["f4", "101\\to100\\to110\\to010\\to011\\to001", 44],
   ["f5", "\\omega=\\dfrac{D\\,V_{dc}-I\\,R}{K_{e}}", 44],
   ["f6", "e=K_{e}\\,\\omega", 56],
-  ["f7", it("SLOWED DOWN ") + "\\times100", 50],
+  ["f7", it("SLOWED DOWN ") + "\\times50", 50],
   ["f8", "T=K_{t}\\,I\\;\\;\\;e=K_{e}\\,\\omega", 50],
 ];
 const formulas = FORM.map(([id, t, s, hid]) => mkF(id, t, s, hid === undefined ? true : hid)).join(

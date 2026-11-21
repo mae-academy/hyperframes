@@ -173,14 +173,14 @@ def mono(keys, x):
                     + u * u * (3 - 2 * u) * ys[i + 1] + u * u * (u - 1) * dt * m[i + 1])
     return out
 T0 = float(sched["t0"])
-DK = [(0, .4), (17.2, .4), (18.4, .7), (19.4, .7), (20.6, 1.0), (40, 1.0)]
+DK = [(0, .4), (13.2, .4), (14.2, .7), (15.0, .7), (16.0, 1.0), (40, 1.0)]
 D_t = mono(DK, t)
-w_vis = ((D_t * 24 - 2) / 0.05) / 100.0                       # rad/s on screen (slowed down 100 times)
+w_vis = ((D_t * 24 - 2) / 0.05) / 50.0                       # rad/s on screen (slowed down 50 times)
 def _smooth(x):
     x = np.clip(x, 0, 1); return x * x * (3 - 2 * x)
 spin_mul = 1 + 1.6 * (1 - _smooth((t - (float(sched["st"][1]) - 0.2)) / 0.4))   # the brushed motor spins faster while it is on screen
 theta = np.cumsum(w_vis * spin_mul) / SR + 100 * np.pi / 180
-w_ref = ((0.4 * 24 - 2) / 0.05) / 100.0
+w_ref = ((0.4 * 24 - 2) / 0.05) / 50.0
 f_voice = 110.0 * w_vis / w_ref                               # 110 Hz at D = 0.4 ... about 320 Hz at D = 1
 phv = 2 * np.pi * np.cumsum(f_voice) / SR
 duty = (D_t - 0.4) / 0.6

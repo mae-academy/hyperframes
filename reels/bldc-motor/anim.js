@@ -1,4 +1,4 @@
-// Timeline for "THE BRUSHLESS DC MOTOR" (28.6 s): a real-time 3D scene drawn on a canvas from the time alone (hf-seek protocol).
+// Timeline for "THE BRUSHLESS DC MOTOR" (23.6 s): a real-time 3D scene drawn on a canvas from the time alone (hf-seek protocol).
 // A brushed motor (commutator, carbon brushes, sparks) is replaced by a brushless one that assembles part by part: laminated stator with
 // three phases of coils, a magnet rotor, Hall sensors. The stator field turns smoothly through the six commutation steps; the speed follows
 // the duty cycle. Text, counters and cards are GSAP. Everything is a pure function of timeline time: no callbacks, no clocks, no randomness.
@@ -12,22 +12,22 @@
   // @CUES-BEGIN
   const CUES = [
     [0.0, "thump"], // opening impact on the finished picture
-    [2.2, "click"], // a brushed motor
-    [2.4, "snap"], // sparks, wear, noise
-    [5.2, "click"], // swap the roles
-    [5.4, "snap"], // no sliding contact
-    [8.6, "click"], // electronics replace the brushes
-    [8.8, "snap"], // six steps of 60 degrees
-    [12.0, "click"], // three Hall sensors
-    [12.2, "snap"], // 3 bits = 6 steps
-    [15.4, "click"], // more duty, more speed
-    [15.6, "snap"], // D = 0.4
-    [17.2, "snap"], // D = 0.7
-    [19.4, "snap"], // D = 1
-    [22.2, "thump"], // lock
-    [23.2, "click"], // a magnet, three coils, six switches
-    [24.6, "snap"], // CTA reveal
-    [27.0, "click"], // engagement pulse
+    [1.8, "click"], // a brushed motor
+    [2.0, "snap"], // sparks, wear, noise
+    [3.8, "click"], // swap the roles
+    [4.0, "snap"], // no sliding contact
+    [6.4, "click"], // electronics replace the brushes
+    [6.6, "snap"], // six steps of 60 degrees
+    [9.0, "click"], // three Hall sensors
+    [9.2, "snap"], // 3 bits = 6 steps
+    [11.6, "click"], // more duty, more speed
+    [11.8, "snap"], // D = 0.4
+    [13.2, "snap"], // D = 0.7
+    [15.0, "snap"], // D = 1
+    [17.2, "thump"], // lock
+    [18.2, "click"], // a magnet, three coils, six switches
+    [19.6, "snap"], // CTA reveal
+    [22.0, "click"], // engagement pulse
   ];
   // @CUES-END
   const EXPORT = [];
@@ -130,7 +130,7 @@
     T.pulse + 0.35,
   );
 
-  tl.to({}, { duration: 0.0001 }, 28.5999);
+  tl.to({}, { duration: 0.0001 }, 23.5999);
   if (used.size !== CUES.length) throw new Error("some CUES entries have no visual event");
   window.__CUES = EXPORT.sort((a, b) => a.t - b.t || a.kind.localeCompare(b.kind));
 
@@ -252,7 +252,7 @@
 
   // ---------------------------------------------------------------- the rotor angle: the integral of a speed that follows the duty cycle
   const DT = 0.001,
-    NT = Math.ceil(28.6 / DT) + 5;
+    NT = Math.ceil(23.6 / DT) + 5;
   const THETA = new Float64Array(NT);
   {
     let acc = 100 * DEG;
@@ -338,16 +338,16 @@
   // [t, yaw, pitch, camera distance, target z]
   const CAMK = [
     [0.0, 36, 15, 6.6, 0.8],
-    [2.4, 20, 14, 7.0, 0.8],
-    [5.2, 56, 18, 7.2, 0.8],
-    [5.4, -30, 22, 10.2, 0.3],
-    [7.6, -12, 22, 9.4, 0.3],
-    [8.8, 18, 18, 8.6, 0.4],
-    [12.0, -20, 30, 7.8, 0.5],
-    [15.4, 34, 16, 8.8, 0.4],
-    [19.4, 56, 14, 10.2, 0.4],
-    [21.4, 26, 18, 8.6, 0.4],
-    [28.6, -22, 20, 9.2, 0.4],
+    [2.0, 20, 14, 7.0, 0.8],
+    [3.8, 56, 18, 7.2, 0.8],
+    [4.0, -30, 22, 10.2, 0.3],
+    [5.6, -12, 22, 9.4, 0.3],
+    [6.6, 18, 18, 8.6, 0.4],
+    [9.0, -20, 30, 7.8, 0.5],
+    [11.6, 34, 16, 8.8, 0.4],
+    [15.0, 56, 14, 10.2, 0.4],
+    [16.6, 26, 18, 8.6, 0.4],
+    [23.6, -22, 20, 9.2, 0.4],
   ];
   function setCam(t, cy) {
     const k = monoEval(CAMK, t);
@@ -432,7 +432,7 @@
     const strips = (o && o.strips) || 1,
       sp = (o && o.sp) || 0,
       tag = o && o.tag !== undefined ? o.tag : -1;
-    const na = 4,
+    const na = Math.max(4, Math.ceil((a1 - a0) / 2)),
       da = (a1 - a0) / na;
     for (let s = 0; s < strips; s++) {
       const ra = r0 + ((r1 - r0) * s) / strips,
@@ -496,9 +496,9 @@
   const stator = mkPart(),
     rotor = mkPart(),
     hall = mkPart();
-  for (let s = 0; s < 14; s++) {
-    const z0 = -0.7 + (1.4 * s) / 14,
-      z1 = -0.7 + (1.4 * (s + 1)) / 14;
+  for (let s = 0; s < 8; s++) {
+    const z0 = -0.7 + (1.4 * s) / 8,
+      z1 = -0.7 + (1.4 * (s + 1)) / 8;
     sideSurf(
       stator,
       1.95,
@@ -506,16 +506,16 @@
       z1,
       0,
       360,
-      5,
+      2.5,
       (a) => scaleC(STEEL, (s % 2 ? 0.86 : 1) * (0.9 + 0.1 * Math.cos(a * DEG * 3))),
       0.3,
       false,
     );
   }
-  sideSurf(stator, 2.12, -0.98, -0.7, 0, 360, 6, STEELD, 0.25, false);
-  annulus(stator, 1.95, 2.12, -0.7, 0, 360, 6, 1, STEELD, 0.25);
-  annulus(stator, 1.5, 1.95, 0.7, 0, 360, 5, 1, STEEL, 0.25);
-  sideSurf(stator, 1.5, -0.7, 0.7, 0, 360, 6, STEELD, 0, true);
+  sideSurf(stator, 2.12, -0.98, -0.7, 0, 360, 2, STEELD, 0.25, false);
+  annulus(stator, 1.95, 2.12, -0.7, 0, 360, 2, 1, STEELD, 0.25);
+  annulus(stator, 1.5, 1.95, 0.7, 0, 360, 2, 1, STEEL, 0.25);
+  sideSurf(stator, 1.5, -0.7, 0.7, 0, 360, 2, STEELD, 0, true);
   for (let k = 0; k < 6; k++) {
     const a = 60 * k,
       n = TOOTH[k][0];
@@ -528,14 +528,14 @@
     });
   }
   // the rotor: a permanent magnet (north half red, south half blue) on a steel shaft; its local angle 0 is the north pole
-  sideSurf(rotor, 0.95, -0.6, 0.6, -90, 90, 3, [235, 20, 70], 0.55, false);
-  sideSurf(rotor, 0.95, -0.6, 0.6, 90, 270, 3, [20, 120, 235], 0.55, false);
-  annulus(rotor, 0.3, 0.95, 0.6, -90, 90, 3, 1, [255, 60, 100], 0.45);
-  annulus(rotor, 0.3, 0.95, 0.6, 90, 270, 3, 1, [40, 150, 255], 0.45);
-  annulus(rotor, 0, 0.3, 0.64, 0, 360, 10, 1, STEELL, 0.8);
-  sideSurf(rotor, 0.22, 0.6, 1.9, 0, 360, 15, STEELL, 0.85, false);
-  sideSurf(rotor, 0.22, -1.4, -0.6, 0, 360, 15, STEELL, 0.85, false);
-  annulus(rotor, 0, 0.22, 1.9, 0, 360, 15, 1, [215, 218, 232], 0.9);
+  sideSurf(rotor, 0.95, -0.6, 0.6, -90, 90, 2, [235, 20, 70], 0.55, false);
+  sideSurf(rotor, 0.95, -0.6, 0.6, 90, 270, 2, [20, 120, 235], 0.55, false);
+  annulus(rotor, 0.3, 0.95, 0.6, -90, 90, 2, 1, [255, 60, 100], 0.45);
+  annulus(rotor, 0.3, 0.95, 0.6, 90, 270, 2, 1, [40, 150, 255], 0.45);
+  annulus(rotor, 0, 0.3, 0.64, 0, 360, 4, 1, STEELL, 0.8);
+  sideSurf(rotor, 0.22, 0.6, 1.9, 0, 360, 6, STEELL, 0.85, false);
+  sideSurf(rotor, 0.22, -1.4, -0.6, 0, 360, 6, STEELL, 0.85, false);
+  annulus(rotor, 0, 0.22, 1.9, 0, 360, 6, 1, [215, 218, 232], 0.9);
   // three Hall boards on the front of the stator, between the teeth; each carries a sensor chip that lights up when it reads 1
   [30, 150, 270].forEach((a, i) => {
     const c = pol(1.32, a, 0),
@@ -561,21 +561,21 @@
   const bHouse = mkPart(),
     bRotor = mkPart(),
     bBrush = mkPart();
-  sideSurf(bHouse, 1.75, -0.8, 0.8, 0, 360, 6, STEELD, 0.25, false);
-  annulus(bHouse, 1.55, 1.75, 0.8, 0, 360, 6, 1, STEEL, 0.25);
+  sideSurf(bHouse, 1.75, -0.8, 0.8, 0, 360, 2, STEELD, 0.25, false);
+  annulus(bHouse, 1.55, 1.75, 0.8, 0, 360, 2, 1, STEEL, 0.25);
   sectorBlock(bHouse, 1.1, 1.55, -48, 48, -0.7, 0.7, [235, 20, 70], { sp: 0.5 });
   sectorBlock(bHouse, 1.1, 1.55, 132, 228, -0.7, 0.7, [20, 120, 235], { sp: 0.5 });
-  sideSurf(bRotor, 0.98, -0.6, 0.6, 0, 360, 6, STEELD, 0.3, false);
+  sideSurf(bRotor, 0.98, -0.6, 0.6, 0, 360, 2, STEELD, 0.3, false);
   for (let k = 0; k < 6; k++)
-    annulus(bRotor, 0.44, 0.98, 0.6, 60 * k, 60 * k + 60, 6, 1, k % 2 ? STEEL : COPPER, 0.4);
+    annulus(bRotor, 0.44, 0.98, 0.6, 60 * k, 60 * k + 60, 2, 1, k % 2 ? STEEL : COPPER, 0.4);
   for (let k = 0; k < 6; k++) {
-    sideSurf(bRotor, 0.42, 0.6, 1.15, 60 * k + 3, 60 * k + 57, 6, [214, 124, 90], 0.7, false);
-    sideSurf(bRotor, 0.42, 0.6, 1.15, 60 * k + 57, 60 * k + 63, 3, [14, 14, 24], 0, false);
+    sideSurf(bRotor, 0.42, 0.6, 1.15, 60 * k + 3, 60 * k + 57, 2, [214, 124, 90], 0.7, false);
+    sideSurf(bRotor, 0.42, 0.6, 1.15, 60 * k + 57, 60 * k + 63, 2, [14, 14, 24], 0, false);
   }
-  annulus(bRotor, 0, 0.42, 1.15, 0, 360, 10, 1, [24, 24, 38], 0.3);
-  sideSurf(bRotor, 0.16, 1.15, 1.75, 0, 360, 15, STEELL, 0.85, false);
-  sideSurf(bRotor, 0.16, -1.2, -0.6, 0, 360, 15, STEELL, 0.85, false);
-  annulus(bRotor, 0, 0.16, 1.75, 0, 360, 15, 1, [215, 218, 232], 0.9);
+  annulus(bRotor, 0, 0.42, 1.15, 0, 360, 4, 1, [24, 24, 38], 0.3);
+  sideSurf(bRotor, 0.16, 1.15, 1.75, 0, 360, 6, STEELL, 0.85, false);
+  sideSurf(bRotor, 0.16, -1.2, -0.6, 0, 360, 6, STEELL, 0.85, false);
+  annulus(bRotor, 0, 0.16, 1.75, 0, 360, 6, 1, [215, 218, 232], 0.9);
   boxPart(bBrush, 0, 0.66, 0.88, 0.17, 0.26, 0.26, 0, CARBON, 0.1);
   boxPart(bBrush, 0, -0.66, 0.88, 0.17, 0.26, 0.26, 0, CARBON, 0.1);
   boxPart(bBrush, 0, 1.06, 0.88, 0.24, 0.14, 0.32, 0, STEELL, 0.5);
@@ -886,7 +886,7 @@
     }
     ctx.restore();
     // ---- annotations
-    const aS1 = box(t, 0.9, T.st[1], 0.4, 0.3),
+    const aS1 = box(t, 0.7, T.st[1], 0.4, 0.3),
       aS2 = box(t, T.asm[1] + 0.3, T.sw[2] - 0.1, 0.4, 0.3),
       aS4 = box(t, T.sw[3] + 0.1, T.st[4], 0.4, 0.3);
     annotate("l3brush", [0, 0.88, 0.9], [150, -70], aS1);
@@ -924,7 +924,7 @@
       }
       tagLabel(id, world, al);
     };
-    const aMag = box(t, 1.0, T.st[1], 0.4, 0.3);
+    const aMag = box(t, 0.8, T.st[1], 0.4, 0.3);
     badge("lmN", [1.34, 0, 0.8], RED, aMag, 19);
     badge("lmS", [-1.34, 0, 0.8], BLUE, aMag, 19);
     badge("lbp", [0, 1.32, 0.95], RED, aMag, 17);
