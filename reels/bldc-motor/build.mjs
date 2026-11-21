@@ -18,8 +18,6 @@ const W = 1080,
 
 // ------------------------------------------------------------------ timeline constants (shared with anim.js and the sound)
 const T = {
-  rewind0: 1.6,
-  s1: 2.2,
   t0: 2.4, // the duty drops to 0.4 and the rotor settles at its slow speed
   st: [2.2, 5.2, 8.6, 12.0, 15.4], // banners
   sw: [2.4, 5.4, 8.8, 12.2, 15.6, 17.2, 19.4], // counters (the snap)
@@ -167,12 +165,28 @@ const lab = (id, cx, cy, w, size, tex, op = 1, color = C.white) =>
 const labels = [
   lab("lslow", 820, 362, 330, 24, it("SLOW MOTION ") + "\\times100", 1),
   // the 3D annotations: moved every frame to the part they name (their resting place is the centre of the 3D view)
-  lab("l3brush", VIEW.cx, VIEW.cy, 170, 28, it("CARBON BRUSH"), 0),
+  lab("l3brush", VIEW.cx, VIEW.cy, 230, 28, it("CARBON BRUSH"), 0),
   lab("l3comm", VIEW.cx, VIEW.cy, 220, 28, it("COMMUTATOR"), 0),
   lab("l3spark", VIEW.cx, VIEW.cy, 170, 28, it("SPARKS"), 0),
   lab("l3stator", VIEW.cx, VIEW.cy, 250, 28, it("STATOR COILS"), 0),
   lab("l3rotor", VIEW.cx, VIEW.cy, 280, 28, it("MAGNET ROTOR"), 0),
   lab("l3hall", VIEW.cx, VIEW.cy, 250, 28, it("HALL SENSOR"), 0),
+  // colours explained: the poles of the brushed motor, and the phase letters and the N / S polarity of every stator pole
+  lab("lmN", VIEW.cx, VIEW.cy, 40, 34, "N", 0, "#0A0A10"),
+  lab("lmS", VIEW.cx, VIEW.cy, 40, 34, "S", 0, "#0A0A10"),
+  lab("lbp", VIEW.cx, VIEW.cy, 40, 34, "+", 0, "#0A0A10"),
+  lab("lbm", VIEW.cx, VIEW.cy, 40, 34, "-", 0, "#0A0A10"),
+  ...["A", "C^{\\prime}", "B", "A^{\\prime}", "C", "B^{\\prime}"].map((p, k) =>
+    lab("lt" + k, VIEW.cx, VIEW.cy, 50, 30, p, 0),
+  ),
+  ...[0, 1, 2, 3, 4, 5].map((k) => lab("lpn" + k, VIEW.cx, VIEW.cy, 30, 24, "N", 0, "#0A0A10")),
+  ...[0, 1, 2, 3, 4, 5].map((k) => lab("lps" + k, VIEW.cx, VIEW.cy, 30, 24, "S", 0, "#0A0A10")),
+  lab("lgA", 215, 366, 140, 22, it("PHASE A"), 0),
+  lab("lgB", 365, 366, 140, 22, it("PHASE B"), 0),
+  lab("lgC", 515, 366, 140, 22, it("PHASE C"), 0),
+  lab("lgG", 275, 398, 300, 22, it("GLOW = CURRENT FLOWS"), 0),
+  lab("lgN", 505, 398, 120, 22, it("N POLE"), 0),
+  lab("lgS", 655, 398, 120, 22, it("S POLE"), 0),
   lab("lNp", VIEW.cx, VIEW.cy, 40, 40, "N", 0),
   lab("lSp", VIEW.cx, VIEW.cy, 40, 40, "S", 0),
   // the waveforms
@@ -206,7 +220,7 @@ const mkC = (id, tex, color = C.blue, size = 52, hidden = true) =>
   });
 const rpmTxt = (D, dtxt) => `D=${dtxt}\\;\\Rightarrow\\;${RPM[D]}\\,\\textit{rpm}`;
 const counters = [
-  mkC("c0", it("NO BRUSHES, NO SPARKS"), C.blue, 52, false),
+  mkC("c0", it("A BRUSHED DC MOTOR"), C.blue, 54, false),
   mkC("c1", it("SPARKS, WEAR, NOISE"), C.blue, 54),
   mkC("c2", it("NO SLIDING CONTACT"), C.blue, 54),
   mkC("c3", "6\\times60^{\\circ}=360^{\\circ}", C.blue, 56),
@@ -230,7 +244,7 @@ const mkF = (id, tex, size = 46, hidden = true) =>
     style: hidden ? "opacity:0" : "",
   });
 const FORM = [
-  ["fm0", "\\omega=\\dfrac{D\\,V_{dc}-I\\,R}{K_{e}}", 44, false],
+  ["fm0", it("BRUSHES RUB THE COMMUTATOR"), 38, false],
   ["f1", it("THE BRUSHES RUB EVERY TURN"), 38],
   ["f2", "T=K_{t}\\,I", 56],
   ["f3", it("TWO PHASES ON, ONE FLOATING"), 38],

@@ -54,7 +54,7 @@ def fband(x, lo, hi):
     if hi: g *= 1 / (1 + (f / hi) ** 4)
     return np.fft.irfft(X * g)[:m]
 
-FX = 0.20   # every effect (clicks, notes, bells, kicks) is quieter: the coil's voice is the star
+FX = 0.45   # every effect (clicks, notes, bells, kicks): each one has its own clear character, the motor's voice stays the biggest sound
 def place(t0, sig, gain=1.0, pan=0.0, wet=0.2):
     gain = gain * FX
     i = int(round(t0 * SR))
@@ -133,7 +133,7 @@ SWAPS = [float(x) for x in sched["sw"]]
 
 # the pad opens (more harmonics) as the duty cycle rises
 prog = smooth(env([(0, 0.3), (SWAPS[0], 0.4), (SWAPS[5], 1.0), (DUR, 1.0)]), 0.1)
-pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (float(sched["s1"]), 0.6), (SWAPS[0], 0.8), (LOCK, 1.15), (LOCK + 2, 1.2), (DUR - 1.5, 0.95), (DUR, 0.5)]), 0.25)
+pad_gain = smooth(env([(0, 0.0), (0.4, 0.5), (SWAPS[0], 0.8), (LOCK, 1.15), (LOCK + 2, 1.2), (DUR - 1.5, 0.95), (DUR, 0.5)]), 0.25)
 pad = np.zeros(n)
 def voice(f0, amp, lfo_hz, ph):
     out = np.zeros(n)
@@ -173,12 +173,12 @@ def mono(keys, x):
                     + u * u * (3 - 2 * u) * ys[i + 1] + u * u * (u - 1) * dt * m[i + 1])
     return out
 T0 = float(sched["t0"])
-DK = [(0, .7), (1.6, .7), (2.4, .4), (17.2, .4), (18.4, .7), (19.4, .7), (20.6, 1.0), (40, 1.0)]
+DK = [(0, .4), (17.2, .4), (18.4, .7), (19.4, .7), (20.6, 1.0), (40, 1.0)]
 D_t = mono(DK, t)
 w_vis = ((D_t * 24 - 2) / 0.05) / 100.0                       # rad/s on screen (slowed down 100 times)
 def _smooth(x):
     x = np.clip(x, 0, 1); return x * x * (3 - 2 * x)
-spin_mul = 1 + 1.6 * _smooth((t - SWAPS[0]) / 0.4) * (1 - _smooth((t - (float(sched["st"][1]) - 0.2)) / 0.4))   # the brushed motor spins faster while it is on screen
+spin_mul = 1 + 1.6 * (1 - _smooth((t - (float(sched["st"][1]) - 0.2)) / 0.4))   # the brushed motor spins faster while it is on screen
 theta = np.cumsum(w_vis * spin_mul) / SR + 100 * np.pi / 180
 w_ref = ((0.4 * 24 - 2) / 0.05) / 100.0
 f_voice = 110.0 * w_vis / w_ref                               # 110 Hz at D = 0.4 ... about 320 Hz at D = 1
@@ -188,32 +188,45 @@ bright = 0.12 + 0.25 * duty
 v_motor = np.sin(phv) + bright * np.sin(2 * phv) + 0.5 * bright * np.sin(3 * phv)
 v_motor = fband(v_motor, 70, 3200)
 step_am = 0.78 + 0.22 * (0.5 + 0.5 * np.cos(6 * theta))       # one soft pulse per commutation step
-motor_env = smooth(env([(0, 0.0), (T0 - 0.05, 0.0), (T0 + 0.35, 1.0), (LOCK, 1.0), (LOCK + 1.2, 0.0), (DUR, 0.0)]), 0.05)
-coil = 0.20 * motor_env * v_motor * step_am * (0.8 + 0.2 * duty)
+motor_env = smooth(env([(0, 0.0), (0.25, 1.0), (LOCK, 1.0), (LOCK + 1.2, 0.0), (DUR, 0.0)]), 0.05)
+coil = 0.24 * motor_env * v_motor * step_am * (0.8 + 0.2 * duty)
 dry[0] += coil * 0.95; dry[1] += coil * 1.05
 send += coil * 0.16
 
-# the brushed motor: a crackle at every spark (a gap of the commutator passes a brush), with a rough brush-on-copper bed under the tone
+# the brushed motor: every gap of the commutator that leaves a brush is a spark: a sharp crack plus a short high "zzt", over a rough bed of
+# carbon rubbing on copper. They stop when the brushed motor is replaced.
 spark_ix = np.nonzero(np.diff(np.floor(((np.degrees(theta) - 210.0) % 360.0) / 60.0)) != 0)[0]
 for ix in spark_ix:
     tt = ix / SR
-    if SWAPS[0] <= tt <= 5.2:
-        k = int(SR * 0.03); tk = np.arange(k) / SR
-        burst = fband(rng.uniform(-1, 1, k), 1800, 6500) * np.exp(-tk / 0.007)
-        burst /= np.max(np.abs(burst)) + 1e-9
-        place(float(tt), burst, 0.55, rng.uniform(-0.3, 0.3), 0.1)
-bed_env = smooth(env([(0, 0.0), (SWAPS[0], 0.0), (SWAPS[0] + 0.4, 1.0), (5.0, 1.0), (5.6, 0.0), (DUR, 0.0)]), 0.05)
-bed = fband(rng.uniform(-1, 1, n), 350, 3200)
-dry[0] += 0.05 * bed_env * bed; dry[1] += 0.05 * bed_env * np.roll(bed, 313)
-# the parts of the brushless motor arrive: a soft clack each, the rotor last
-for ta in sched["asm"]:
-    kick(float(ta), 0.30); click(float(ta) + 0.01, 0.8)
-# a quiet tick at every commutation step while the six steps are being explained
+    if tt <= float(sched["st"][1]):
+        k = int(SR * 0.05); tk = np.arange(k) / SR
+        crack = fband(rng.uniform(-1, 1, k), 1800, 7500) * np.exp(-tk / 0.009)
+        crack /= np.max(np.abs(crack)) + 1e-9
+        f = 4200 - 2700 * np.minimum(1, tk / 0.03)
+        zap = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tk / 0.012)
+        pan = rng.uniform(-0.4, 0.4)
+        place(float(tt), 0.8 * crack + 0.35 * zap, 1.0, pan, 0.12)
+bed_env = smooth(env([(0, 1.0), (float(sched["st"][1]), 1.0), (float(sched["st"][1]) + 0.5, 0.0), (DUR, 0.0)]), 0.05)
+bed = fband(rng.uniform(-1, 1, n), 400, 3800)
+dry[0] += 0.09 * bed_env * bed; dry[1] += 0.09 * bed_env * np.roll(bed, 313)
+# the parts of the brushless motor arrive: a metallic clack (two inharmonic partials) and a soft thud, the rotor last
+for j, ta in enumerate(sched["asm"]):
+    kk = int(SR * 0.25); tk = np.arange(kk) / SR
+    clk = sum(a_ * np.sin(2 * np.pi * f_ * tk) * np.exp(-tk / d_) for f_, a_, d_ in [(760.0 * (1 + 0.1 * j), 1.0, 0.09), (1210.0 * (1 + 0.1 * j), 0.5, 0.06), (1890.0, 0.25, 0.04)])
+    place(float(ta), clk, 0.55, -0.2 + 0.2 * j, 0.25)
+    kick(float(ta), 0.34)
+# the six commutation steps: a note per step while they are explained (one pitch per step), then a bright tick per Hall transition
+PENT6 = [440.0, 493.88, 554.37, 659.26, 739.99, 880.0]
 step = np.floor(((np.degrees(theta) - 30.0) % 360.0) / 60.0)
 for ix in np.nonzero(np.diff(step) != 0)[0]:
-    tt = ix / SR
-    if SWAPS[2] <= tt <= SWAPS[4]:
-        click(float(tt), 0.5)
+    tt = float(ix / SR); kstep = int(step[ix + 1]) % 6
+    if SWAPS[2] <= tt < SWAPS[3]:
+        click(tt, 0.6); marimba(tt + 0.003, PENT6[kstep], 0.20, 0.5, pan=-0.35 + 0.14 * kstep)
+    elif SWAPS[3] <= tt < SWAPS[4]:
+        kk = int(SR * 0.02); tk = np.arange(kk) / SR
+        tick = fband(rng.uniform(-1, 1, kk), 2600, 8000) * np.exp(-tk / 0.0028)
+        tick /= np.max(np.abs(tick)) + 1e-9
+        place(tt, tick + 0.4 * np.sin(2 * np.pi * 3300 * tk) * np.exp(-tk / 0.006), 0.9, 0.0, 0.12)
 
 # ------------------------------------------------------------------ events
 # one note per stage (A-major pentatonic); the duty raises climb
@@ -231,11 +244,7 @@ for c in cues:
         if abs(t0 - PULSE) < 1e-6:                       # engagement ping
             bell(t0 + 0.01, 1760.0, 0.07, 0.8); bell(t0 + 0.07, 2217.5, 0.05, 0.8)
     elif k == "snap":
-        if abs(t0 - float(sched["rewind0"])) < 1e-6:     # the rewind: a short descending run, soft marimba, not a whoosh
-            for i, fz in enumerate([880.0, 739.99, 659.26, 554.37, 440.0]):
-                marimba(t0 + 0.045 * i, fz, 0.16, 0.5, pan=0.25 - 0.1 * i)
-                click(t0 + 0.045 * i, 0.35)
-        elif near(t0, SWAPS):                            # a new stage: a note of the ladder
+        if near(t0, SWAPS):                            # a new stage: a note of the ladder
             i = [abs(t0 - x) < 1e-6 for x in SWAPS].index(True)
             click(t0 - 0.004, 0.8)
             marimba(t0 + 0.004, STAGE[i], 0.32, 1.2, pan=-0.3 + 0.12 * i)

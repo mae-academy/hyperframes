@@ -95,11 +95,9 @@ globalThis.BLDC = (function () {
       h11 = u * u * (u - 1);
     return h00 * keys[i][1] + h10 * dt * tang(i) + h01 * keys[i + 1][1] + h11 * dt * tang(i + 1);
   }
-  // the duty cycle through the reel: 0.7 for the hook, 0.4, then up to 0.7 and 1.0
+  // the duty cycle through the reel: 0.4, then up to 0.7 and 1.0
   const DK = [
-    [0, 0.7],
-    [1.6, 0.7],
-    [2.4, 0.4],
+    [0, 0.4],
     [17.2, 0.4],
     [18.4, 0.7],
     [19.4, 0.7],

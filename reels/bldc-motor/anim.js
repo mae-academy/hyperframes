@@ -12,7 +12,6 @@
   // @CUES-BEGIN
   const CUES = [
     [0.0, "thump"], // opening impact on the finished picture
-    [1.6, "snap"], // rewind
     [2.2, "click"], // a brushed motor
     [2.4, "snap"], // sparks, wear, noise
     [5.2, "click"], // swap the roles
@@ -70,24 +69,10 @@
     ft(n, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out" }, t + 0.08);
     curForm = n;
   }
-  const fade = (sel, at, d) =>
-    ft(sel, { opacity: 1 }, { opacity: 0, duration: d || 0.25, ease: "power1.in" }, at);
 
-  // ---------------------------------------------------------------- 0.0 - 2.2  the finished picture, then the rewind
+  // ---------------------------------------------------------------- 0.0 - 2.2  a sparking DC motor, from the first frame
   hit(0.0, "thump", "#flash0");
   ft("#flash0", { opacity: 0.6 }, { opacity: 0, duration: 0.7, ease: "power2.out" }, 0);
-  hit(T.rewind0, "snap", "#rw");
-  ft("#rw", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, T.rewind0);
-  tl.fromTo(
-    "#rw",
-    { opacity: 1 },
-    { opacity: 0, duration: 0.7, ease: "power2.in", immediateRender: false },
-    T.rewind0 + 0.4,
-  );
-  fade("#c0", T.rewind0, 0.3);
-  fade("#fm0", T.rewind0, 0.3);
-  curCount = null;
-  curForm = null;
 
   /** one beat: the counter and the formula (the picture moves in the canvas) */
   function beat(ci, at) {
@@ -274,7 +259,7 @@
     for (let i = 0; i < NT; i++) {
       THETA[i] = acc;
       const tt = i * DT,
-        mul = 1 + 1.6 * smooth((tt - T.sw[0]) / 0.4) * (1 - smooth((tt - (T.st[1] - 0.2)) / 0.4));
+        mul = 1 + 1.6 * (1 - smooth((tt - (T.st[1] - 0.2)) / 0.4));
       acc += BLDC.omegaVis(BLDC.Dat(tt)) * mul * DT;
     }
   }
@@ -284,7 +269,12 @@
       u = f - i;
     return ((THETA[i] + (THETA[i + 1] - THETA[i]) * u) / DEG) % 360;
   };
-  const hookA = (t) => (t < T.rewind0 ? 1 : 1 - smooth((t - T.rewind0) / 0.5));
+  const thetaUnwrapped = (t) => {
+    const f = Math.max(0, t) / DT,
+      i = Math.min(NT - 2, Math.floor(f)),
+      u = f - i;
+    return (THETA[i] + (THETA[i + 1] - THETA[i]) * u) / DEG;
+  };
   const norm180 = (d) => (((d % 360) + 540) % 360) - 180;
 
   // commutation, smoothed: a real commutation takes a short, finite time
@@ -347,8 +337,7 @@
   };
   // [t, yaw, pitch, camera distance, target z]
   const CAMK = [
-    [0.0, 38, 20, 9.2, 0.4],
-    [T.rewind0, 30, 18, 9.2, 0.4],
+    [0.0, 36, 15, 6.6, 0.8],
     [2.4, 20, 14, 7.0, 0.8],
     [5.2, 56, 18, 7.2, 0.8],
     [5.4, -30, 22, 10.2, 0.3],
@@ -685,6 +674,17 @@
     "l3hall",
     "lNp",
     "lSp",
+    "lmN",
+    "lmS",
+    "lbp",
+    "lbm",
+    "lgA",
+    "lgB",
+    "lgC",
+    "lgG",
+    "lgN",
+    "lgS",
+    ...[0, 1, 2, 3, 4, 5].flatMap((k) => ["lt" + k, "lpn" + k, "lps" + k]),
     "lLegCur",
     "lLegHall",
     "lLegEmf",
@@ -725,12 +725,11 @@
   // ================================================================ the scene at time t
   function drawScene(t, th, bl, aLow, panelH) {
     const phi = BLDC.rotorAngle(th);
-    const hook = t < 2.1;
     // ---- visibility and the assembly of the brushless motor
-    const aBrushed = hook ? 0 : box(t, T.sw[0], T.st[1], 0.4, 0.5);
+    const aBrushed = 1 - smooth((t - T.st[1]) / 0.5);
     const part = (a, b, dz0) => {
       const u = easeOut((t - a) / (b - a));
-      return { dz: hook ? 0 : dz0 * (1 - u), al: hook ? hookA(t) : smooth((t - a) / 0.4) };
+      return { dz: dz0 * (1 - u), al: smooth((t - a) / 0.4) };
     };
     const ps = part(T.st[1] + 0.3, T.asm[0], -3.6),
       ph = part(T.asm[0] - 0.4, T.asm[1], 3.2),
@@ -747,8 +746,8 @@
     const sc = 1 - 0.1 * (1 - aBrushed);
     bHouse.sc = bRotor.sc = bBrush.sc = sc;
     // ---- the coils glow with their currents, the Hall chips with their signals
-    const aOn = hook ? hookA(t) : smooth((t - T.sw[2]) / 0.5),
-      aHs = hook ? hookA(t) : smooth((t - T.sw[3]) / 0.5);
+    const aOn = smooth((t - T.sw[2]) / 0.5),
+      aHs = smooth((t - T.sw[3]) / 0.5);
     for (const pl of stator.polys)
       if (pl.tag >= 0) {
         const [n, s] = TOOTH[pl.tag],
@@ -786,32 +785,77 @@
     ctx.fill();
     ctx.restore();
     drawParts([bHouse, stator, hall, bRotor, rotor, bBrush]);
-    // ---- the brushed motor: sparks where a brush leaves a commutator segment, with a spring pressing each brush
+    // ---- the brushed motor: where a gap of the commutator passes under a brush the current is cut: an arc, rays and embers
     if (aBrushed > 0.01) {
+      const pu = thetaUnwrapped(t) - 180,
+        w = Math.max(20, (thetaUnwrapped(t + 0.01) - thetaUnwrapped(t)) / 0.01); // degrees per second
       [90, 270].forEach((b) => {
         const cp = [0, 0.43 * Math.sin(b * DEG), 0.88],
           p0 = screenOf(cp);
-        let dmin = 99;
-        for (let k = 0; k < 6; k++) dmin = Math.min(dmin, Math.abs(norm180(phi + 60 * k + 60 - b)));
-        const I = clamp01(1 - dmin / 9);
-        if (I > 0.04) {
-          const rev = Math.floor((phi + 3600) / 60);
-          for (let j = 0; j < 9; j++) {
-            const hsh = Math.sin((rev * 12.9898 + j * 78.233 + b) * 43758.5453),
-              ang = (hsh - Math.floor(hsh)) * 2 * Math.PI,
-              len = 16 + 34 * I * (0.5 + 0.5 * Math.sin(j * 7.1 + rev));
-            line(
-              [p0, [p0[0] + Math.cos(ang) * len, p0[1] + Math.sin(ang) * len]],
-              WHITE,
-              2.5,
-              I * aBrushed,
-              10,
-            );
+        for (let k = 0; k < 6; k++) {
+          const gu = pu + 60 * k + 60 - b,
+            mm = Math.round(gu / 360),
+            s = gu - 360 * mm,
+            age = s / w; // seconds since the gap left the brush (negative: it is about to)
+          const id = k * 1000 + mm * 7 + (b === 90 ? 0 : 3);
+          const core = Math.max(0, 1 - Math.abs(age) / 0.07);
+          if (core > 0.02) {
+            const gl = ctx.createRadialGradient(p0[0], p0[1], 4, p0[0], p0[1], 170);
+            gl.addColorStop(0, `rgba(255,120,120,${(0.35 * core * aBrushed).toFixed(3)})`);
+            gl.addColorStop(1, "rgba(255,0,68,0)");
+            ctx.fillStyle = gl;
+            ctx.fillRect(p0[0] - 170, p0[1] - 170, 340, 340);
+            dot(p0[0], p0[1], 20 * core, WHITE, core * aBrushed, 40);
+            dot(p0[0], p0[1], 46 * core, RED, 0.6 * core * aBrushed, 54);
+            // the arc across the gap
+            const q = screenOf([0.22 * (b === 90 ? 1 : -1), 0.43 * Math.sin(b * DEG), 0.9]);
+            line([p0, q], WHITE, 3, core * aBrushed, 12);
           }
-          dot(p0[0], p0[1], 10 * I, WHITE, I * aBrushed, 26);
-          dot(p0[0], p0[1], 20 * I, RED, 0.5 * I * aBrushed, 30);
+          if (age > -0.02 && age < 0.75) {
+            for (let j = 0; j < 22; j++) {
+              const hsh = Math.sin((id * 12.9898 + j * 78.233) * 43758.5453),
+                h2 = Math.sin((id * 4.1414 + j * 19.19) * 24634.6345),
+                ang = (hsh - Math.floor(hsh)) * 2 * Math.PI,
+                sp = 220 + 520 * (h2 - Math.floor(h2)),
+                tt = Math.max(0, age),
+                x1 = p0[0] + Math.cos(ang) * sp * tt,
+                y1 = p0[1] + Math.sin(ang) * sp * tt + 520 * tt * tt;
+              const tp = Math.max(0, tt - 0.035),
+                x0 = p0[0] + Math.cos(ang) * sp * tp,
+                y0 = p0[1] + Math.sin(ang) * sp * tp + 520 * tp * tp;
+              const fade = Math.pow(clamp01(1 - tt / 0.75), 1.2) * aBrushed;
+              line(
+                [
+                  [x0, y0],
+                  [x1, y1],
+                ],
+                tt < 0.22 ? WHITE : RED,
+                4.2 * (1 - tt),
+                fade,
+                14,
+              );
+              if (j % 2 === 0) dot(x1, y1, 3.6 * (1 - tt), WHITE, fade, 12);
+            }
+          }
         }
       });
+      // the current path: in at the + brush, across the commutator, out at the - brush
+      const aCur2 = aBrushed * smooth((t - 0.6) / 0.5) * (1 - smooth((t - (T.st[1] - 0.3)) / 0.3));
+      if (aCur2 > 0.01) {
+        const path = [
+          screenOf([0, 1.25, 0.9]),
+          screenOf([0, 0.92, 0.9]),
+          screenOf([0, 0.5, 1.18]),
+          screenOf([0, -0.5, 1.18]),
+          screenOf([0, -0.92, 0.9]),
+          screenOf([0, -1.25, 0.9]),
+        ];
+        ctx.save();
+        ctx.setLineDash([12, 10]);
+        ctx.lineDashOffset = -t * 90;
+        line(path, RED, 4, 0.9 * aCur2, 10, [12, 10]);
+        ctx.restore();
+      }
     }
     // ---- the stator field (white) is the sum of the phase axes weighted by the currents; the rotor's north pole is the red arrow
     let vx = 0,
@@ -822,7 +866,7 @@
     }
     const m = Math.atan2(vy, vx) / DEG,
       len = (1.5 * Math.hypot(vx, vy)) / 1.7321;
-    const aArrow = aOn * (hook ? 1 : pr.al);
+    const aArrow = aOn * pr.al;
     if (aArrow > 0.01) {
       const z = 1.0 + ps.dz * 0,
         o = screenOf([0, 0, z]);
@@ -842,15 +886,15 @@
     }
     ctx.restore();
     // ---- annotations
-    const aS1 = box(t, 2.8, T.st[1], 0.3, 0.3),
-      aS2 = box(t, T.asm[2] + 0.5, T.st[3], 0.4, 0.3),
+    const aS1 = box(t, 0.9, T.st[1], 0.4, 0.3),
+      aS2 = box(t, T.asm[1] + 0.3, T.sw[2] - 0.1, 0.4, 0.3),
       aS4 = box(t, T.sw[3] + 0.1, T.st[4], 0.4, 0.3);
     annotate("l3brush", [0, 0.88, 0.9], [150, -70], aS1);
     annotate("l3comm", [0.36, -0.1, 1.15], [-150, 80], aS1);
     annotate("l3stator", pol(1.32, 60, 0.88), [170, -90], aS2);
     annotate("l3rotor", pol(0.8, -50, 0.64), [-185, 92], aS2);
     annotate("l3hall", pol(1.3, 150, 0.84), [-170, -80], aS4);
-    const aNS = hook ? hookA(t) : smooth((t - T.asm[2] - 0.3) / 0.4);
+    const aNS = smooth((t - T.asm[2] - 0.3) / 0.4);
     tagLabel(
       "lNp",
       [0.62 * Math.cos(phi * DEG), 0.62 * Math.sin(phi * DEG), 0.7 + rotor.off[2]],
@@ -861,6 +905,61 @@
       [0.62 * Math.cos((phi + 180) * DEG), 0.62 * Math.sin((phi + 180) * DEG), 0.7 + rotor.off[2]],
       aNS,
     );
+    // ---- the colours around the poles, explained: poles of the brushed motor, phase letters and N / S polarity of every stator pole
+    const badge = (id, world, color, al, r) => {
+      const p = screenOf(world);
+      if (al > 0.01) {
+        ctx.save();
+        ctx.globalAlpha = al;
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], r, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = WHITE;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+      tagLabel(id, world, al);
+    };
+    const aMag = box(t, 1.0, T.st[1], 0.4, 0.3);
+    badge("lmN", [1.34, 0, 0.8], RED, aMag, 19);
+    badge("lmS", [-1.34, 0, 0.8], BLUE, aMag, 19);
+    badge("lbp", [0, 1.32, 0.95], RED, aMag, 17);
+    badge("lbm", [0, -1.32, 0.95], BLUE, aMag, 17);
+    const aLet = smooth((t - T.asm[2] - 0.2) / 0.4);
+    for (let k = 0; k < 6; k++) {
+      const [n, s] = TOOTH[k],
+        pl = s * bl.i[n],
+        a = 60 * k;
+      const lp = screenOf(pol(2.38, a, 0.3 + ps.dz)),
+        inside =
+          lp[0] > 115 &&
+          lp[0] < 960 &&
+          lp[1] > PAT + 28 &&
+          lp[1] < PAT + panelH - 28 &&
+          !(lp[1] < PAT + 100 && lp[0] < 740) &&
+          !(lp[1] < PAT + 70 && lp[0] > 640);
+      tagLabel("lt" + k, pol(2.38, a, 0.3 + ps.dz), inside ? aLet : 0);
+      const front = pol(1.32, a, 0.97 + ps.dz);
+      badge("lpn" + k, front, RED, clamp01((pl - 0.15) / 0.6) * aOn * aLet, 17);
+      badge("lps" + k, front, BLUE, clamp01((-pl - 0.15) / 0.6) * aOn * aLet, 17);
+    }
+    // the legend of the colours (phases, glow, poles)
+    const aLeg = smooth((t - T.sw[2]) / 0.5);
+    [
+      ["lgA", 130, 366, PHC[0]],
+      ["lgB", 280, 366, PHC[1]],
+      ["lgC", 430, 366, PHC[2]],
+      ["lgG", 132, 398, WHITE],
+      ["lgN", 438, 398, RED],
+      ["lgS", 588, 398, BLUE],
+    ].forEach(([id, x, y, c]) => {
+      setOp(id, aLeg);
+      dot(x, y, id === "lgG" ? 8 : 9, c, aLeg, id === "lgG" ? 18 : 10);
+    });
   }
 
   // ================================================================ the 2D insets
@@ -870,10 +969,9 @@
     K = PLOT.k;
   const xU = (u) => X0 + (PW * u) / 360;
   function drawWaves(t, th, D, bl, aLow) {
-    const aHook = t < 2.1 ? hookA(t) : 0;
-    const aCur = t < 2.1 ? 0 : box(t, T.sw[2], T.sw[3], 0.4, 0.3) * aLow;
-    const aHall = t < 2.1 ? 0 : box(t, T.sw[3], T.sw[4], 0.3, 0.3) * aLow;
-    const aEmf = (t < 2.1 ? aHook : smooth((t - T.sw[4]) / 0.4)) * (t < 2.1 ? 1 : aLow);
+    const aCur = box(t, T.sw[2], T.sw[3], 0.4, 0.3) * aLow;
+    const aHall = box(t, T.sw[3], T.sw[4], 0.3, 0.3) * aLow;
+    const aEmf = smooth((t - T.sw[4]) / 0.4) * aLow;
     seg(X0, Y0, X0 + PW, Y0, WHITE, 2, 0.3 * Math.max(aCur, aHall, aEmf));
     const U = [];
     for (let u = 0; u <= 360; u += 3) U.push(u);
@@ -1078,7 +1176,7 @@
       th = thetaDeg(t),
       bl = blendCur(th);
     // the lower panels slide in when the electronics are introduced; the 3D panel gives them room
-    const aLow = t < 2.1 ? hookA(t) : smooth((t - T.st[2]) / 0.5);
+    const aLow = smooth((t - T.st[2]) / 0.5);
     const panelH = 640 + (1 - aLow) * 260;
     panel(90, PAT, 900, panelH, 1);
     panel(PB1[0], PB1[1], PB1[2], PB1[3], aLow);
@@ -1086,8 +1184,8 @@
     setCam(t, PAT + panelH / 2);
     drawScene(t, th, bl, aLow, panelH);
     drawWaves(t, th, D, bl, aLow);
-    const aBridge = t < 2.1 ? 0 : box(t, T.sw[2], T.st[4], 0.4, 0.3) * aLow;
-    const aKV = (t < 2.1 ? hookA(t) : smooth((t - T.sw[4]) / 0.4)) * (t < 2.1 ? 1 : aLow);
+    const aBridge = box(t, T.sw[2], T.st[4], 0.4, 0.3) * aLow;
+    const aKV = smooth((t - T.sw[4]) / 0.4) * aLow;
     drawBridge(bl, aBridge);
     drawKV(D, aKV);
     drawLock(t);
