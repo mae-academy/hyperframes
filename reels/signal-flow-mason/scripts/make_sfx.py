@@ -54,7 +54,7 @@ def fband(x, lo, hi):
     if hi: g *= 1 / (1 + (f / hi) ** 4)
     return np.fft.irfft(X * g)[:m]
 
-FX = 0.45   # every effect (clicks, notes, bells, kicks): clear, with the tracer voice underneath
+FX = 0.55   # every effect: clear, with the tracer voice and a light groove underneath
 def place(t0, sig, gain=1.0, pan=0.0, wet=0.2):
     gain = gain * FX
     i = int(round(t0 * SR))
@@ -192,12 +192,96 @@ coil = 0.16 * tracer
 dry[0] += coil * 0.95; dry[1] += coil * 1.05
 send += coil * 0.20
 
+# ------------------------------------------------------------------ new voices: laser pluck, flying whoosh, riser, bass line
+def place_pan(t0, sig, gain, pans, wet=0.2):
+    """like place, but the pan moves along the sound (a number flying across the picture)"""
+    gain = gain * FX
+    i = int(round(t0 * SR))
+    if i >= n: return
+    j = min(n, i + len(sig))
+    s = sig[: j - i] * gain
+    p = pans[: j - i]
+    l = np.cos((p + 1) * np.pi / 4); r = np.sin((p + 1) * np.pi / 4)
+    dry[0, i:j] += s * l * 1.414
+    dry[1, i:j] += s * r * 1.414
+    send[i:j] += s * wet
+
+def zip_(t0, f0, f1, pan, amp=0.5):
+    """a branch is drawn: a short electric pluck that sweeps up (the signal being laid down), panned where the branch is"""
+    k = int(SR * 0.30); tt = np.arange(k) / SR
+    f = f0 * (f1 / f0) ** np.minimum(1, tt / 0.09)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    s = np.sin(ph) + 0.35 * np.sin(2 * ph) * np.exp(-tt / 0.05)
+    s *= np.exp(-tt / 0.09) * np.minimum(1, tt / 0.001)
+    sp = fband(noise_burst(10, 2.0), 3000, 9000)
+    sp /= np.max(np.abs(sp)) + 1e-9
+    s[: len(sp)] += 0.25 * sp
+    place(t0, s, amp, pan, 0.25)
+
+def whoosh(t0, dur, x0, x1, amp=0.5):
+    """a number leaves the graph and flies to the table: a rising band of air plus a pitch glide, panned along its path"""
+    k = int((dur + 0.25) * SR); tt = np.arange(k) / SR
+    nz = rng.uniform(-1, 1, k)
+    out = np.zeros(k)
+    for fc, tc in [(350, 0.18), (800, 0.40), (1700, 0.65), (3300, 0.88)]:
+        band = fband(nz, fc * 0.7, fc * 1.5)
+        out += band * np.exp(-(((tt / dur) - tc) / 0.22) ** 2)
+    out = out / (np.max(np.abs(out)) + 1e-9)
+    f = 300 * (1400 / 300) ** np.minimum(1, tt / dur)
+    out += 0.35 * np.sin(2 * np.pi * np.cumsum(f) / SR)
+    out *= np.minimum(1, tt / 0.01) * np.exp(-np.maximum(0, tt - dur) / 0.06)
+    pans = np.clip(((x0 + (x1 - x0) * np.minimum(1, tt / dur)) - 540) / 420, -1, 1)
+    place_pan(t0, out, amp, pans, 0.25)
+
+def hat(t0, amp=0.1):
+    h = fband(noise_burst(30, 5.0), 6500, 11000)
+    h /= np.max(np.abs(h)) + 1e-9
+    place(t0, h, amp, rng.uniform(-0.3, 0.3), 0.08)
+
+def bass(t0, f0, amp=0.3):
+    k = int(SR * 0.30); tt = np.arange(k) / SR
+    ph = 2 * np.pi * f0 * tt
+    s = np.sin(ph) + 0.45 * np.sin(2 * ph) + 0.2 * np.sin(3 * ph)
+    s *= np.exp(-tt / 0.11) * np.minimum(1, tt / 0.003)
+    place(t0, s, amp, 0.0, 0.05)
+
+# the groove under the picture (120 bpm, from the first banner to the lock): felt kick on the beat, hat on the off-beat, a plucked
+# A-minor-pentatonic bass line on the eighths. It is felt more than heard, and it opens as the answer gets closer.
+BEAT = 0.5
+RH0 = float(sched["st"][0]) + 0.3
+RH1 = LOCK - 1.4
+BASSLINE = [110.0, 110.0, 164.81, 110.0, 98.0, 110.0, 164.81, 146.83]
+k_beat = 0
+tb = RH0
+while tb < RH1:
+    amp = float(np.clip((tb - RH0) / 2.0, 0, 1)) * (0.65 + 0.35 * float(np.clip((tb - RH0) / (RH1 - RH0), 0, 1)))
+    kick(tb, 0.30 * amp)
+    hat(tb + BEAT / 2, 0.10 * amp)
+    bass(tb, BASSLINE[(2 * k_beat) % 8], 0.26 * amp)
+    bass(tb + BEAT / 2, BASSLINE[(2 * k_beat + 1) % 8], 0.20 * amp)
+    k_beat += 1
+    tb += BEAT
+
+# the riser into the lock and the sub drop on it
+rk = int(1.3 * SR); rt_ = np.arange(rk) / SR; ru = rt_ / 1.3
+rn = fband(rng.uniform(-1, 1, rk), 400, 9000) * ru ** 2.2
+rn /= np.max(np.abs(rn)) + 1e-9
+rs = np.sin(2 * np.pi * np.cumsum(180 * (1800 / 180) ** ru) / SR) * ru ** 2
+place(LOCK - 1.3, 0.5 * rn + 0.5 * rs, 0.6, 0.0, 0.3)
+sk = int(1.2 * SR); st_ = np.arange(sk) / SR
+sub = np.sin(2 * np.pi * np.cumsum(45 + 50 * np.exp(-st_ / 0.25)) / SR) * np.exp(-st_ / 0.5)
+place(LOCK, sub, 0.8, 0.0, 0.1)
+
 # ------------------------------------------------------------------ events
 STAGE = [440.0, 554.37, 659.26, 739.99, 880.0, 1108.7, 1318.5]        # one note per counter (A-major pentatonic)
 CELLS = [float(x) for x in sched["cells"]]
+FLY = [float(x) for x in sched["fly"]]
+EG = [float(x) for x in sched["eg"]]
+EDGEX, FLYX, CELLX = sched["edgex"], sched["flyx"], list(sched["cellx"]) + [325, 755]
 CELL_NOTE = [440.0, 554.37, 440.0, 493.88, 554.37, 659.26, 739.99, 880.0, 1108.7, 880.0, 1108.7]
-STARTS = [float(x) for x in sched["st"]]
+LADDER = [523.25, 587.33, 659.26, 783.99, 880.0, 987.77, 1174.7, 1318.5, 1568.0, 1760.0]
 near = lambda x, ys: any(abs(x - y) < 1e-6 for y in ys)
+idx = lambda x, ys: [abs(x - y) < 1e-6 for y in ys].index(True)
 
 counts = {"click": 0, "snap": 0, "thump": 0}
 for c in cues:
@@ -206,10 +290,15 @@ for c in cues:
         raise SystemExit(f"unknown cue kind {k}")
     counts[k] += 1
     if k == "click":
-        if near(t0, CELLS):                              # a table cell lands: a soft marimba note and a tick
-            i = [abs(t0 - x) < 1e-6 for x in CELLS].index(True)
-            click(t0 - 0.004, 0.5)
-            marimba(t0 + 0.004, CELL_NOTE[i], 0.26, 0.9, pan=-0.35 + 0.07 * i)
+        if near(t0, EG):                                 # a branch label pops: the laser pluck, panned where the branch is
+            i = idx(t0, EG)
+            zip_(t0 - 0.12, LADDER[i] * 0.7, LADDER[i] * 1.8, float(np.clip((EDGEX[i] - 540) / 450, -0.85, 0.85)), 0.55)
+            click(t0, 0.35)
+        elif near(t0, CELLS):                            # a number lands in its cell: a marimba note, a coin-like ding, a tick
+            i = idx(t0, CELLS)
+            click(t0 - 0.004, 0.55)
+            marimba(t0 + 0.004, CELL_NOTE[i], 0.30, 0.9, pan=float(np.clip((CELLX[i] - 540) / 450, -0.8, 0.8)))
+            bell(t0 + 0.02, CELL_NOTE[i] * 4, 0.05, 0.6, pan=0.0)
         else:
             click(t0, 1.0)
         if abs(t0 - PULSE) < 1e-6:                       # engagement ping
@@ -219,14 +308,19 @@ for c in cues:
             for i, fz in enumerate([880.0, 739.99, 659.26, 554.37, 440.0]):
                 marimba(t0 + 0.045 * i, fz, 0.16, 0.5, pan=0.25 - 0.1 * i)
                 click(t0 + 0.045 * i, 0.35)
+        elif near(t0, FLY):                              # a number leaves the graph for the table: pop, then a panned whoosh
+            i = idx(t0, FLY)
+            zip_(t0, 880.0, 2400.0, float(np.clip((FLYX[i] - 540) / 450, -0.85, 0.85)), 0.35)
+            whoosh(t0 + 0.05, CELLS[i] - t0 - 0.05, FLYX[i], CELLX[i], 0.55)
         elif near(t0, SWAPS):                            # a new counter: a note of the ladder
-            i = [abs(t0 - x) < 1e-6 for x in SWAPS].index(True)
+            i = idx(t0, SWAPS)
             click(t0 - 0.004, 0.8)
             marimba(t0 + 0.004, STAGE[i], 0.32, 1.2, pan=-0.3 + 0.12 * i)
             bell(t0 + 0.02, STAGE[i] * 2, 0.04, 1.0)
             if i == 6:                                   # the answer: a quick rising run
-                for j, fz in enumerate([659.26, 880.0, 1108.7]):
-                    marimba(t0 + 0.04 * j, fz, 0.10, 1.0, pan=-0.2 + 0.2 * j)
+                for j, fz in enumerate([659.26, 880.0, 1108.7, 1318.5, 1760.0]):
+                    marimba(t0 + 0.05 * j, fz, 0.12, 1.0, pan=-0.3 + 0.15 * j)
+                    bell(t0 + 0.05 * j, fz * 2, 0.04, 0.8, pan=-0.3 + 0.15 * j)
         else:                                            # CTA reveal: two bells, a fifth apart
             click(t0, 0.9)
             bell(t0 + 0.02, 659.26, 0.11, 1.0, -0.15); bell(t0 + 0.11, 880.0, 0.09, 1.0, 0.15)

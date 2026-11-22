@@ -20,7 +20,9 @@ const T = {
   st: [2.2, 5.2, 8.8, 13.8, 15.8], // banners
   sw: [2.4, 5.4, 7.2, 9.0, 14.0, 16.0, 17.6], // counters (the snap)
   // table cells: P1, P2, L1..L6, the non-touching pair, Delta_1, Delta_2
-  cells: [5.6, 7.4, 9.2, 9.95, 10.7, 11.45, 12.2, 12.95, 14.2, 16.4, 16.7],
+  cells: [7.05, 8.75, 10.0, 10.7, 11.4, 12.1, 12.8, 13.5, 15.55, 16.4, 16.7], // the numbers land here
+  fly: [6.55, 8.25, 9.55, 10.25, 10.95, 11.65, 12.35, 13.05, 15.05], // the numbers leave the graph
+  eg: [2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.45, 4.7, 4.95, 5.15], // the gain labels pop
   ns: [2.4, 2.5, 2.6, 2.7, 2.8, 2.9], // nodes R x1 x2 x3 x4 C
   es: [2.6, 2.85, 3.1, 3.35, 3.6, 3.85, 4.3, 4.55, 4.8, 5.0], // edges e0..e9
   ed: [0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.35, 0.35, 0.5, 0.35],
@@ -203,40 +205,28 @@ const PB = [90, 910, 900, 320]; // the table of paths, loops and cofactors
 const NY = 620;
 const NX = [150, 300, 450, 600, 750, 900];
 const NR = 28;
-const bez2 = (p0, c, p1, n = 60) =>
-  Array.from({ length: n + 1 }, (_, i) => {
-    const t = i / n,
-      u = 1 - t;
-    return [
-      u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0],
-      u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1],
-    ];
-  });
-const bez3 = (p0, c1, c2, p1, n = 90) =>
-  Array.from({ length: n + 1 }, (_, i) => {
-    const t = i / n,
-      u = 1 - t;
-    return [
-      u ** 3 * p0[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t ** 3 * p1[0],
-      u ** 3 * p0[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t ** 3 * p1[1],
-    ];
-  });
 const straight = (i) => {
   const a = NX[i] + NR + 4,
     b = NX[i + 1] - NR - 6;
   return Array.from({ length: 31 }, (_, k) => [a + ((b - a) * k) / 30, NY]);
 };
+const arc = (cx, cy, r, a0, a1, n = 90) =>
+  Array.from({ length: n + 1 }, (_, k) => {
+    const a = a0 + ((a1 - a0) * k) / n;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  });
+// true semicircles: G4 over x3 (x2 -> x4), the three short feedback arcs and the long one (x4 -> x1) below the row
 const EDGE_PTS = [
   straight(0),
   straight(1),
   straight(2),
   straight(3),
   straight(4),
-  bez3([450, NY - NR - 2], [450, 410], [750, 410], [750, NY - NR - 6]), // G4 over x3
-  bez2([580, 640], [525, 740], [474, 644]), // H1: x3 -> x2
-  bez2([730, 640], [675, 740], [624, 644]), // H2: x4 -> x3
-  bez3([750, NY + NR + 2], [750, 870], [300, 870], [300, NY + NR + 6]), // H3: x4 -> x1
-  bez2([880, 640], [825, 740], [774, 644]), // H4: C -> x4
+  arc(600, NY - NR, 150, Math.PI, 2 * Math.PI), // G4: x2 -> x4, over the top
+  arc(525, NY + 24, 61, 0, Math.PI), // H1: x3 -> x2
+  arc(675, NY + 24, 61, 0, Math.PI), // H2: x4 -> x3
+  arc(525, NY + NR, 225, 0, Math.PI, 150), // H3: x4 -> x1
+  arc(825, NY + 24, 61, 0, Math.PI), // H4: C -> x4
 ];
 const EDGE_LAB = [
   [225, 585],
@@ -244,26 +234,22 @@ const EDGE_LAB = [
   [525, 585],
   [675, 585],
   [825, 585],
-  [600, 436],
-  [525, 724],
-  [675, 724],
-  [525, 850],
-  [825, 724],
+  [600, 412],
+  [525, 736],
+  [675, 736],
+  [525, 836],
+  [825, 736],
 ];
 const gainTex = (e) => (e[3] === "1" ? "1" : `${e[3][0]}_{${e[3][1]}}=${e[2]}`);
 
 // the highlight windows: path / loop, colour, edges in walking order
+const LT0 = [9.0, 9.7, 10.4, 11.1, 11.8, 12.5];
 const HL = [
-  { t0: 5.4, t1: 7.0, c: "blue", e: PATHS[0] },
-  { t0: 7.2, t1: 8.6, c: "purple", e: PATHS[1] },
-  ...LOOPS.map((e, i) => ({
-    t0: [9.0, 9.75, 10.5, 11.25, 12.0, 12.75][i],
-    t1: [9.0, 9.75, 10.5, 11.25, 12.0, 12.75][i] + 0.7,
-    c: "red",
-    e,
-  })),
-  { t0: 14.0, t1: 15.6, c: "purple", e: LOOPS[0] },
-  { t0: 14.0, t1: 15.6, c: "purple", e: LOOPS[4] },
+  { t0: 5.4, t1: 6.7, c: "blue", e: PATHS[0] },
+  { t0: 7.2, t1: 8.4, c: "purple", e: PATHS[1] },
+  ...LOOPS.map((e, i) => ({ t0: LT0[i], t1: LT0[i] + 0.7, c: "red", e })),
+  { t0: 14.0, t1: 15.2, c: "purple", e: LOOPS[0] },
+  { t0: 14.0, t1: 15.2, c: "purple", e: LOOPS[4] },
 ];
 
 // ------------------------------------------------------------------ header and labels
@@ -318,6 +304,37 @@ const table = [
   cell("tD1", 325, 1198, "\\Delta_{1}=1", C.blue),
   cell("tD2", 755, 1198, "\\Delta_{2}=1", C.purple),
 ].join("");
+// the numbers that leave the graph and land in the table (start point, the text, its colour, the cell it lands in)
+const CELLC = [
+  [325, 950],
+  [755, 950],
+  ...Array.from({ length: 6 }, (_, i) => [i % 2 ? 755 : 325, 1004 + 46 * Math.floor(i / 2)]),
+  [540, 1148],
+];
+const FLY = [
+  { sx: 900, sy: 556, v: RESULT.Pk[0], col: C.blue },
+  { sx: 900, sy: 556, v: RESULT.Pk[1], col: C.purple },
+  { sx: 525, sy: 690, v: lv[0], col: C.red },
+  { sx: 675, sy: 690, v: lv[1], col: C.red },
+  { sx: 525, sy: 790, v: lv[2], col: C.red },
+  { sx: 600, sy: 470, v: lv[3], col: C.red },
+  { sx: 825, sy: 690, v: lv[4], col: C.red },
+  { sx: 700, sy: 520, v: lv[5], col: C.red },
+  { sx: 675, sy: 700, v: lv[0] * lv[4], col: C.purple },
+];
+const flyers = FLY.map((f, i) =>
+  box({
+    id: "fl" + i,
+    cx: f.sx,
+    cy: f.sy,
+    w: 90,
+    h: 56,
+    size: 44,
+    color: f.col,
+    html: tx(f.col === C.red ? sg(f.v) : String(f.v)),
+    style: "opacity:0",
+  }),
+).join("");
 const labels = [nodeLabels, edgeLabels, table].join("");
 
 // ------------------------------------------------------------------ counters, formulas, banners
@@ -400,7 +417,7 @@ const card = `<div id="card" style="left:${CARD.x}px;top:${CARD.y}px;width:${CAR
 </div>`;
 
 // ------------------------------------------------------------------ guards
-const allHtml = [header, labels, counters, formulas, banner, card].join("");
+const allHtml = [header, labels, flyers, counters, formulas, banner, card].join("");
 if (/class="[^"]*\b(mathbf|mathrm|mathbb|mathsf|mathtt|textrm|textsf|texttt)\b/.test(allHtml))
   throw new Error("upright / bold math style found");
 const boldCount = (allHtml.match(/class="[^"]*\btextbf\b/g) || []).length;
@@ -416,7 +433,14 @@ console.log("typography ok: no \\mathbf / \\mathrm / upright math; one \\textbf 
 fs.mkdirSync(new URL("./assets/", import.meta.url), { recursive: true });
 fs.writeFileSync(
   new URL("./assets/sched.json", import.meta.url),
-  JSON.stringify({ ...T, dur: DUR, hl: HL }),
+  JSON.stringify({
+    ...T,
+    dur: DUR,
+    hl: HL,
+    flyx: FLY.map((f) => f.sx),
+    cellx: CELLC.map((c) => c[0]),
+    edgex: EDGE_LAB.map((p) => p[0]),
+  }),
 );
 
 // ------------------------------------------------------------------ css
@@ -452,6 +476,13 @@ const CFG = {
   NR,
   EDGES: EDGE_PTS,
   HL,
+  EN: E.map((e) => [e[0], e[1]]),
+  FLY: FLY.map((f, i) => ({
+    launch: T.fly[i],
+    land: T.cells[i],
+    dx: CELLC[i][0] - f.sx,
+    dy: CELLC[i][1] - f.sy,
+  })),
   spark: Array.from({ length: 28 }, () => ({
     a: rnd() * Math.PI * 2,
     d: 160 + rnd() * 320,
@@ -476,6 +507,7 @@ ${header}
 <div id="rw" style="position:absolute;left:90px;top:350px;width:900px;height:880px;border-radius:40px;background:radial-gradient(ellipse at center,rgba(255,0,68,.30),transparent 75%);opacity:0"></div>
 <canvas id="cv" data-layout-allow-overflow data-layout-ignore></canvas>
 ${labels}
+${flyers}
 ${counters}
 ${formulas}
 ${banner}

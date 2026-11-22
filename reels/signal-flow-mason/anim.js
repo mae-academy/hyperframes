@@ -4,7 +4,7 @@
 // function of timeline time: no callbacks, no clocks, no unseeded randomness.
 (function () {
   const CFG = window.__CFG;
-  const { T, NODES, NR, EDGES, HL } = CFG;
+  const { T, NODES, NR, EDGES, HL, EN } = CFG;
   const tl = gsap.timeline({ paused: true });
   const ft = (target, from, to, at) =>
     tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
@@ -15,22 +15,41 @@
     [1.6, "snap"], // rewind
     [2.2, "click"], // a signal flow graph
     [2.4, "snap"], // Mason's formula
+    [2.75, "click"], // the gain labels pop one by one as the branches are drawn
+    [3.0, "click"],
+    [3.25, "click"],
+    [3.5, "click"],
+    [3.75, "click"],
+    [4.0, "click"],
+    [4.45, "click"],
+    [4.7, "click"],
+    [4.95, "click"],
+    [5.15, "click"],
     [5.2, "click"], // forward paths
     [5.4, "snap"], // P1
-    [5.6, "click"], // P1 = 6 lands in the table
+    [6.55, "snap"], // the number 6 leaves the graph
+    [7.05, "click"], // ... and lands in the table
     [7.2, "snap"], // P2
-    [7.4, "click"], // P2 = 4 lands in the table
+    [8.25, "snap"], // the number 4 leaves
+    [8.75, "click"], // ... and lands
     [8.8, "click"], // loops
     [9.0, "snap"], // sum of loops
-    [9.2, "click"], // L1
-    [9.95, "click"], // L2
-    [10.7, "click"], // L3
-    [11.45, "click"], // L4
-    [12.2, "click"], // L5
-    [12.95, "click"], // L6
+    [9.55, "snap"], // the loop gains leave the graph one by one
+    [10.0, "click"], // ... and land
+    [10.25, "snap"],
+    [10.7, "click"],
+    [10.95, "snap"],
+    [11.4, "click"],
+    [11.65, "snap"],
+    [12.1, "click"],
+    [12.35, "snap"],
+    [12.8, "click"],
+    [13.05, "snap"],
+    [13.5, "click"],
     [13.8, "click"], // non-touching loops
     [14.0, "snap"], // L1 L5
-    [14.2, "click"], // the product lands
+    [15.05, "snap"], // the product leaves
+    [15.55, "click"], // ... and lands
     [15.8, "click"], // the determinant
     [16.0, "snap"], // Delta = 15
     [16.4, "click"], // Delta_1
@@ -128,7 +147,30 @@
 
   // the graph builds: nodes, then the branches with their gains
   NODEL.forEach((s, i) => pop(s, T.ns[i], 6));
-  EDGEL.forEach((s, i) => pop(s, T.es[i] + 0.15, 6));
+  EDGEL.forEach((s, i) => {
+    hit(T.eg[i], "click", s);
+    pop(s, T.eg[i], 6);
+  });
+  // the numbers leave the graph (pop, glide) and land in their cell of the table
+  const flyAt = (i) => {
+    const f = CFG.FLY[i],
+      sel = "#fl" + i;
+    hit(f.launch, "snap", sel);
+    ft(
+      sel,
+      { opacity: 0, scale: 0.6, x: 0, y: 0 },
+      { opacity: 1, scale: 2.3, duration: 0.12, ease: "back.out(2)" },
+      f.launch,
+    );
+    ft(
+      sel,
+      { x: 0, y: 0, scale: 2.3 },
+      { x: f.dx, y: f.dy, scale: 1, duration: f.land - f.launch - 0.12, ease: "power2.inOut" },
+      f.launch + 0.12,
+    );
+    ft(sel, { opacity: 1 }, { opacity: 0, duration: 0.08, ease: "power1.in" }, f.land);
+  };
+  for (let i = 0; i < CFG.FLY.length; i++) flyAt(i);
 
   /** one beat: the counter and the formula (the picture moves in the canvas) */
   function beat(ci, fi, at) {
@@ -306,13 +348,57 @@
   const tr = (t, start, dur) =>
     t < 2.1 ? { a: hookA(t), p: 1 } : { a: 1, p: clamp01((t - start) / dur) };
 
+  // the moment each node is reached: by its own pop, and by the tracer of every highlighted path or loop
+  const invSmooth = (f) => {
+    let lo = 0,
+      hi = 1;
+    for (let k = 0; k < 30; k++) {
+      const m = (lo + hi) / 2;
+      if (m * m * (3 - 2 * m) < f) lo = m;
+      else hi = m;
+    }
+    return (lo + hi) / 2;
+  };
+  const RIPPLES = [];
+  NODES.forEach((_, i) =>
+    RIPPLES.push({
+      t: T.ns[i] + 0.05,
+      node: i,
+      col: i === 0 ? RED : i === NODES.length - 1 ? BLUE : WHITE,
+    }),
+  );
+  HL.forEach((h) => {
+    const total = h.e.reduce((s, e) => s + EG[e].len, 0);
+    let acc = 0;
+    h.e.forEach((e) => {
+      acc += EG[e].len;
+      RIPPLES.push({
+        t: h.t0 + 0.05 + invSmooth(acc / total) * (h.t1 - h.t0 - 0.2),
+        node: EN[e][1],
+        col: COL[h.c],
+      });
+    });
+  });
+  /** the point at arc length s along branch e */
+  function at(e, s) {
+    const g = EG[e];
+    let k = 1;
+    while (k < g.pts.length - 1 && g.cum[k] < s) k++;
+    const u = (s - g.cum[k - 1]) / (g.cum[k] - g.cum[k - 1] || 1);
+    return [
+      g.pts[k - 1][0] + (g.pts[k][0] - g.pts[k - 1][0]) * u,
+      g.pts[k - 1][1] + (g.pts[k][1] - g.pts[k - 1][1]) * u,
+    ];
+  }
+
   function drawGraph(t) {
+    const busy = HL.some((h) => t >= h.t0 - 0.1 && t <= h.t1 + 0.3);
     // the branches
     for (let e = 0; e < EG.length; e++) {
       const { a, p } = tr(t, T.es[e], T.ed[e]);
       if (a <= 0.001 || p <= 0) continue;
       const s = sub(e, easeOut(p));
-      line(s.pts, WHITE, 4, 0.78 * a);
+      line(s.pts, WHITE, 4, 0.62 * a);
       if (p >= 0.98)
         arrowHead(
           EG[e].pts[EG[e].pts.length - 1][0],
@@ -322,6 +408,21 @@
           0.9 * a,
           13,
         );
+      else if (t >= 2.1) dot(s.head[0], s.head[1], 7, WHITE, 1, 18); // the spark at the tip of the branch that is being drawn
+    }
+    // the signal flows: dots travel along every finished branch (blue forward, red feedback), dimmed while a path or loop is traced
+    for (let e = 0; e < EG.length; e++) {
+      const done = t < 2.1 ? hookA(t) : smooth((t - T.es[e] - T.ed[e]) / 0.4);
+      if (done <= 0.01) continue;
+      const len = EG[e].len,
+        n = Math.max(1, Math.round(len / 105)),
+        gap = len / n;
+      for (let j = 0; j < n; j++) {
+        const s = (t * 170 + j * gap) % len;
+        const edgeFade = clamp01(Math.min(s, len - s) / 26);
+        const [x, y] = at(e, s);
+        dot(x, y, 5.5, e >= 6 ? RED : BLUE, done * edgeFade * (busy ? 0.25 : 1), 16);
+      }
     }
     // the highlights: a path or a loop is walked by a tracer that leaves a glowing wake
     for (const h of HL) {
@@ -340,13 +441,13 @@
         if (left <= 0) break;
         const fr = Math.min(1, left / EG[e].len);
         const s = sub(e, fr);
-        line(s.pts, col, 8, 0.95 * al, 18);
+        line(s.pts, col, 9, 0.95 * al, 20);
         head = s.head;
         left -= EG[e].len;
       }
       if (head && prog < 0.995) {
-        dot(head[0], head[1], 11, WHITE, al, 16);
-        dot(head[0], head[1], 5, RED, al, 0);
+        dot(head[0], head[1], 13, WHITE, al, 18);
+        dot(head[0], head[1], 6, RED, al, 0);
       }
     }
     // the nodes
@@ -365,6 +466,22 @@
       ctx.beginPath();
       ctx.arc(x, y, NR, 0, 2 * Math.PI);
       ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+    // ripples: a ring leaves a node the instant it is reached
+    for (const r of RIPPLES) {
+      const u = (t - r.t) / 0.5;
+      if (u <= 0 || u >= 1) continue;
+      const [x, y] = NODES[r.node];
+      ctx.save();
+      ctx.globalAlpha = (1 - u) * 0.9;
+      ctx.strokeStyle = r.col;
+      ctx.lineWidth = 3.5;
+      ctx.shadowColor = r.col;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(x, y, NR + 4 + 34 * easeOut(u), 0, 2 * Math.PI);
       ctx.stroke();
       ctx.restore();
     }
