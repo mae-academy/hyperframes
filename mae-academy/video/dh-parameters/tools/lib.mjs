@@ -1,4 +1,5 @@
 // Shared helpers for the DH-parameters film generator.
+import { tex } from "./tex.mjs";
 export const C = {
   ink: "#0B1F3A",
   blue: "#1565FF",
@@ -9,9 +10,24 @@ export const C = {
   gold: "#FFC21A",
   goldDark: "#E89B00",
   teal: "#18B5C8",
-  soft: "#F1F5FF",
+  soft: "#FFFFFF",
   muted: "#4A5B73",
-  line: "#C9D6EE",
+  line: "#BFD0F0",
+  bgA: "#F6F9FF",
+  bgB: "#E4EDFD",
+};
+// LaTeX (MathJax) -> inline svg. colour comes from CSS `color`.
+export const TX = (latex, px = 48, color = "") =>
+  `<span class="tx" style="${color ? `color:${color};` : ""}">${tex(latex, px).svg}</span>`;
+// LaTeX label inside an svg scene: <g id data-w data-h> (positioned at runtime), optional white pill behind it
+export const TXG = (id, latex, px, color, pill = true) => {
+  const t = tex(latex, px),
+    pad = 10;
+  const w = t.w + (pill ? pad * 2 : 0),
+    h = t.h + (pill ? pad : 0),
+    ox = pill ? pad : 0,
+    oy = pill ? pad / 2 : 0;
+  return `<g id="${id}" class="lbl" data-w="${w.toFixed(1)}" data-h="${h.toFixed(1)}" style="color:${color}" opacity="0">${pill ? `<rect x="0" y="0" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="${(h / 2).toFixed(1)}" fill="#fff" fill-opacity=".92" stroke="${color}" stroke-width="3"/>` : ""}${t.svg.replace("<svg ", `<svg x="${ox}" y="${oy}" `)}</g>`;
 };
 
 export const FONT_CSS = `
@@ -21,11 +37,10 @@ export const FONT_CSS = `
 `;
 
 export const BASE_CSS = `
-#root{position:absolute;inset:0;background:#fff;overflow:hidden;font-family:'Plex Arabic','Inter',sans-serif;color:${C.ink};direction:rtl}
+#root{position:absolute;inset:0;background:linear-gradient(160deg,${C.bgA} 0%,${C.bgB} 100%);overflow:hidden;font-family:'Plex Arabic','Inter',sans-serif;color:${C.ink};direction:rtl}
 #root *{box-sizing:border-box}
 .wrap{position:absolute;inset:0}
-.sym{font-family:'Inter',sans-serif;font-weight:800;direction:ltr;unicode-bidi:isolate;display:inline-block;letter-spacing:0}
-.sym sub{font-size:max(.6em,28px);font-weight:700;vertical-align:-.22em;line-height:0;margin-left:.04em}
+.tx{display:inline-block;direction:ltr;unicode-bidi:isolate}
 .en{font-family:'Inter','Plex Arabic',sans-serif;font-weight:700;direction:ltr;unicode-bidi:isolate;display:inline-block}
 .w{display:inline-block;white-space:nowrap}
 .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
@@ -41,25 +56,26 @@ export const EN = (t, color = "") =>
 
 // split caption html into animatable word units (top-level words / whole inline elements stay together)
 export function words(html) {
+  // TeX spans (inline svg) are atomic: swap them for placeholders while tokenising, then restore
+  const stash = [];
+  html = html.replace(/<span class="tx"[^>]*>[\s\S]*?<\/svg><\/span>/g, (m) => {
+    stash.push(m);
+    return `\uE000${stash.length - 1}\uE001`;
+  });
   const parts = html.split(/(<[^>]+>)/).filter((x) => x !== "");
   const units = [];
   let buf = "",
     depth = 0;
   for (const p of parts) {
     if (p.startsWith("<")) {
-      const closing = p.startsWith("</"),
-        selfc = p.endsWith("/>") || /^<(br|img|path|circle)/.test(p);
+      const closing = p.startsWith("</");
       if (depth === 0 && !closing) {
-        depth = selfc ? 0 : 1;
+        depth = 1;
         buf = p;
-        if (selfc) {
-          units.push(buf);
-          buf = "";
-        }
         continue;
       }
       buf += p;
-      if (!selfc) depth += closing ? -1 : 1;
+      depth += closing ? -1 : 1;
       if (depth === 0) {
         units.push(buf);
         buf = "";
@@ -67,7 +83,9 @@ export function words(html) {
     } else if (depth > 0) buf += p;
     else for (const t of p.split(/\s+/)) if (t) units.push(t);
   }
-  return units.map((u) => `<span class="w">${u}</span>`).join(" ");
+  return units
+    .map((u) => `<span class="w">${u.replace(/\uE000(\d+)\uE001/g, (_, n) => stash[+n])}</span>`)
+    .join(" ");
 }
 
 // ---- audio cues, collected across scenes (absolute film seconds)
