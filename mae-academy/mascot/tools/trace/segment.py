@@ -26,6 +26,7 @@ def segment(rgb):
     d = np.stack([((blur - c) ** 2).sum(-1) for c in cen], -1)
     lab = d.argmin(-1)
     masks = {n: (lab == i) & ~bg for i, n in enumerate(NAMES)}
+    raw_hair = masks["hair"].copy()
     # anti-aliased rims (ink↔white) get mis-labelled as colour fills: open + area-filter them away
     for n in ("hair", "red", "mouth", "tongue"):
         k_ = 5 if n == "hair" else 9      # hair also holds the thin dark-brown shirt rim (~9px) – keep it
@@ -48,4 +49,4 @@ def segment(rgb):
     filled = big.copy()
     for i in range(1, n2):
         if st2[i, cv2.CC_STAT_AREA] < 3000: filled[cc2 == i] = 1
-    return {"bg": bg, "sil": filled.astype(bool), **masks}
+    return {"bg": bg, "sil": filled.astype(bool), "hair_raw": raw_hair, **masks}

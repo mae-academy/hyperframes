@@ -4,10 +4,13 @@ import { readFileSync } from "node:fs";
 export const RIG = JSON.parse(readFileSync(new URL("./rig.json", import.meta.url), "utf8"));
 export const SIZE = RIG.size,
   HEAD = RIG.head_circle; // [cx, cy, r]
-const INK = "#060606",
-  MOUTH = "#3e2624",
+const INK = "#030401",
+  MOUTH = "#51413e",
   TONGUE = "#d48881";
-const path = (l) => `<path fill="${l.fill}" fill-rule="evenodd" d="${l.d}"/>`;
+const path = (l) =>
+  l.stroke
+    ? `<path fill="none" stroke="${l.stroke}" stroke-width="${l.width}" stroke-linecap="round" stroke-linejoin="round" d="${l.d}"/>`
+    : `<path fill="${l.fill}" fill-rule="evenodd" d="${l.d}"/>`;
 const paths = (ls = []) => ls.map(path).join("");
 
 /* ---------------- eyes ---------------- */
@@ -144,7 +147,7 @@ export const NATIVE = (p) => ({
 export function head(e) {
   const h = RIG.head,
     [cx, cy] = HEAD;
-  return `<g transform="rotate(${e.tilt || 0} ${cx} ${cy})">${path(h.white)}${eyeSvg(e.eyeL, "L")}${eyeSvg(e.eyeR, "R")}${path(h.hair)}${path(h.ink)}${path(h.glasses)}${browSvg(e.brow, "L")}${browSvg(e.brow, "R")}${mouthSvg(e.mouth)}</g>`;
+  return `<g transform="rotate(${e.tilt || 0} ${cx} ${cy})">${path(h.white)}${path(h.ring)}${eyeSvg(e.eyeL, "L")}${eyeSvg(e.eyeR, "R")}${path(h.hair)}${path(h.ink)}${path(h.glasses)}${browSvg(e.brow, "L")}${browSvg(e.brow, "R")}${mouthSvg(e.mouth)}</g>`;
 }
 export function pose(
   poseName,

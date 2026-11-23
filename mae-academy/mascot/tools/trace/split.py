@@ -24,10 +24,10 @@ def comps(m, min_area=200):
     return [dict(id=i, mask=(cc == i), area=int(st[i, 4]), bbox=tuple(int(v) for v in st[i, :4]), c=tuple(cen[i]))
             for i in range(1, n) if st[i, 4] >= min_area]
 
-def split(seg, hand_box=None):
+def split(seg, hand_box=None, D_over=None):
     H, W = seg["ink"].shape
     ink, sil = seg["ink"], seg["sil"]
-    D = disc((H, W), R + 3)
+    D = D_over if D_over is not None else disc((H, W), R + 3)
     hair_h = seg["hair"].copy(); hair_h[1350:] = False      # real hair only (the shirt rim is hair-coloured too)
     hair_d = dil(hair_h, 30)
     # the head is not a perfect circle at the chin (flatter than the fit): carve the shirt top (+ its outline) out of the head region
