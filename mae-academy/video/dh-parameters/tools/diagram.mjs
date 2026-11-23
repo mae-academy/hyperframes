@@ -3,7 +3,7 @@ import { C, FONT_CSS, BASE_CSS, S, EN, words, cue, exitTL, entryTL, MAS } from "
 
 // ---------------------------------------------------------------- geometry (shared by build + runtime)
 export const GEOM = `
-const A=3.4, AL=35*Math.PI/180, D=1.25, TH=40*Math.PI/180;
+const A=3.4, AL=35*Math.PI/180, D=1.2, TH=40*Math.PI/180;
 const OX=330, OY=520, SC=160, PSI=-22*Math.PI/180, PHI=24*Math.PI/180;
 const cps=Math.cos(PSI), sps=Math.sin(PSI), cph=Math.cos(PHI), sph=Math.sin(PHI);
 const P=v=>{const y1=v[0]*sps+v[1]*cps; return [OX+SC*(v[0]*cps-v[1]*sps), OY-SC*(y1*sph+v[2]*cph)];};
@@ -83,7 +83,7 @@ export function buildDiagram(startAbs) {
   const bar0 = P([0.5, 0, 0]),
     bar1 = P([A - 0.55, 0, 0]);
   const z0 = arrow([0, 0, -0.6], [0, 0, 1], 3.8),
-    z1 = arrow(add(Q, mul(Zi, -0.6)), Zi, 3.8),
+    z1 = arrow(add(Q, mul(Zi, -0.6)), Zi, 5.0),
     x0 = arrow([0, 0, 0], [1, 0, 0], A + 1.6);
   const axis = (id, a, col, w = 9) =>
     `<g id="${id}"><path id="${id}-l" d="${a.line}" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/><path id="${id}-h" d="${a.head}" fill="${col}" opacity="0"/></g>`;
@@ -91,8 +91,8 @@ export function buildDiagram(startAbs) {
   const tape = [0, 0, -0.78];
   const svg = `
 <svg id="dg-svg" viewBox="0 0 1260 720" width="1260" height="720" style="position:absolute;left:60px;top:110px;overflow:visible" data-layout-allow-overflow>
- <g id="dg-ground" opacity="0">${ground([0, 0])}${ground([A, 0])}</g>
- <g id="dg-j0" opacity="0">${cylinder([0, 0, 0], [0, 0, 1], 0.52, -0.45, 1.75, "dg-j0c")}</g>
+ <g id="dg-ground" opacity="1">${ground([0, 0])}</g><g id="dg-ground1" opacity="0">${ground([A, 0])}</g>
+ <g id="dg-j0" opacity="1">${cylinder([0, 0, 0], [0, 0, 1], 0.52, -0.45, 1.75, "dg-j0c")}</g>
  <g id="dg-link" opacity="0"><path id="dg-linkp" d="M${bar0[0].toFixed(1)},${bar0[1].toFixed(1)}L${bar1[0].toFixed(1)},${bar1[1].toFixed(1)}" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" stroke="${C.ink}" stroke-width="54" stroke-linecap="round" fill="none"/>
    <path id="dg-linkq" d="M${bar0[0].toFixed(1)},${bar0[1].toFixed(1)}L${bar1[0].toFixed(1)},${bar1[1].toFixed(1)}" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" stroke="${C.teal}" stroke-width="40" stroke-linecap="round" fill="none"/></g>
  <g id="dg-j1" opacity="0">${cylinder(Q, Zi, 0.52, -0.45, 1.75, "dg-j1c")}</g>
@@ -185,7 +185,7 @@ export function buildDiagram(startAbs) {
       "c1",
       0.9,
       4.3,
-      `هاي ذراع روبوت بسيطة: ${"<b class=k>رابط</b>"} واحد (${EN("Link")}) بين مفصلين (${EN("Joints")})`,
+      `ذراع روبوت بسيطة: <b class="k">رابط</b> واحد اسمه ${EN("Link")} بين مفصلين اسمهم ${EN("Joints")}`,
     ],
     ["c2", 5.4, 4.2, `كل ${EN("Joint")} بيلف حوالين محور اسمه ${S("Z", "", "red")}`],
     ["c3", 9.8, 4.5, `وعلى كل مفصل بنحط نظام إحداثيات اسمه ${EN("Frame")}`],
@@ -402,8 +402,7 @@ ${caps.map(([id, s, dur]) => `cascade('${id}',${s});tl.fromTo('#dg-${id} .cap-in
 // mascot expression swaps
 const MK=['tn','tz','te','th','tu','tp','wk'];
 function mas(t,k){ MK.forEach(m=>tl.set('#dg-m-'+m,{opacity:m===k?1:0},t)); tl.fromTo('.mas',{scale:0.965,transformOrigin:'50% 100%'},{scale:1,duration:0.28,ease:'power4.out',immediateRender:false},t); }
-tl.fromTo('.mas',{y:70,opacity:0},{y:0,opacity:1,duration:0.5,ease:'power4.out'},0.35);
-mas(0.35,'tz'); mas(5.4,'te'); mas(9.8,'tz'); mas(14.6,'th');
+mas(0,'tz'); mas(5.4,'te'); mas(9.8,'tz'); mas(14.6,'th');
 mas(${TM.a},'te'); mas(${TM.a + 4.7},'th'); mas(${TM.a + 6.2},'tz'); mas(${TM.a + 7.0},'te');
 mas(${TM.al},'te'); mas(${TM.al + 6.4},'tp'); mas(${TM.d},'tz'); mas(${TM.d + 6.0},'te');
 mas(${TM.th},'te'); mas(${TM.th + 6.4},'tz'); mas(${TM.th + 8.1},'tu');
@@ -411,12 +410,10 @@ mas(${TM.as},'tz'); mas(${TM.as + 6.5},'wk'); mas(${TM.as + 8.6},'tp');
 
 // ---------------- setup: link + two joints + axes + frame
 const ease='power4.out';
-tl.fromTo('#dg-ground',{opacity:0},{opacity:1,duration:0.5,ease:'none'},0.5);
-tl.fromTo('#dg-j0',{opacity:0,y:40},{opacity:1,y:0,duration:0.45,ease},0.7);
 tl.fromTo('#dg-lj0',{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease},1.3);
 tl.fromTo('#dg-link',{opacity:0},{opacity:1,duration:0.01},2.2); tl.fromTo('#dg-linkp,#dg-linkq',{strokeDashoffset:1.1},{strokeDashoffset:0,duration:1.1,ease:'power2.inOut'},2.2);
 tl.fromTo('#dg-llink',{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease},3.0);
-tl.fromTo('#dg-j1',{opacity:0,y:40},{opacity:1,y:0,duration:0.45,ease},3.5);
+tl.fromTo('#dg-j1',{opacity:0,y:40},{opacity:1,y:0,duration:0.45,ease},3.5); tl.fromTo('#dg-ground1',{opacity:0},{opacity:1,duration:0.4,ease:'none'},3.5);
 tl.fromTo('#dg-lj1',{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease},4.1);
 tl.to('#dg-lj0,#dg-llink,#dg-lj1',{opacity:0,duration:0.3,ease:'none'},9.4);
 tl.fromTo('#dg-z0-l',{strokeDashoffset:1.1},{strokeDashoffset:0,duration:0.9,ease:'power2.inOut'},5.6); tl.fromTo('#dg-z0-h',{opacity:0},{opacity:1,duration:0.05},6.45);

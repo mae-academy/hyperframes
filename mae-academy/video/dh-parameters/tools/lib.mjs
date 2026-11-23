@@ -28,6 +28,7 @@ export const BASE_CSS = `
 .sym sub{font-size:max(.6em,28px);font-weight:700;vertical-align:-.22em;line-height:0;margin-left:.04em}
 .en{font-family:'Inter','Plex Arabic',sans-serif;font-weight:700;direction:ltr;unicode-bidi:isolate;display:inline-block}
 .w{display:inline-block;white-space:nowrap}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
 .blue{color:${C.blue}} .purple{color:${C.purple}} .orange{color:${C.orange}} .green{color:${C.green}} .red{color:${C.red}}
 b.k{font-weight:700}
 `;
@@ -93,7 +94,7 @@ export const cue = (name, t, vol = 0.5) => cues.push({ name, t: +t.toFixed(3), v
 export const SEAM = { dur: 0.34, dx: 230 };
 export const exitTL = (sel, endT) =>
   `tl.to("${sel}",{x:-${SEAM.dx},duration:${SEAM.dur},ease:"power4.in"},${(endT - SEAM.dur).toFixed(3)});` +
-  `tl.to("${sel}",{opacity:0,duration:0.2,ease:"none"},${(endT - SEAM.dur).toFixed(3)});`;
+  `tl.to("${sel}",{opacity:0,duration:${(SEAM.dur - 0.03).toFixed(2)},ease:"none"},${(endT - SEAM.dur).toFixed(3)});`;
 export const entryTL = (sel) =>
   `tl.fromTo("${sel}",{x:${SEAM.dx},opacity:0.35},{x:0,opacity:1,duration:${SEAM.dur},ease:"power4.out"},0);`;
 

@@ -92,14 +92,14 @@ export function buildHook(startAbs) {
     BY = 640;
   const arm = `<svg class="arm" viewBox="0 0 1260 700" width="1260" height="700" data-layout-allow-overflow>
  <rect x="150" y="${BY + 2}" width="300" height="50" rx="16" fill="${C.ink}"/>
- <g id="hk-arm" opacity="0">
+ <g id="hk-arm">
   <path id="hk-l1" d="" stroke="${C.ink}" stroke-width="60" stroke-linecap="round" fill="none"/><path id="hk-l1b" d="" stroke="${C.teal}" stroke-width="44" stroke-linecap="round" fill="none"/>
   <path id="hk-l2" d="" stroke="${C.ink}" stroke-width="54" stroke-linecap="round" fill="none"/><path id="hk-l2b" d="" stroke="${C.teal}" stroke-width="38" stroke-linecap="round" fill="none"/>
   <circle id="hk-j0" r="46" fill="${C.gold}" stroke="${C.ink}" stroke-width="8"/><circle id="hk-j1" r="42" fill="${C.gold}" stroke="${C.ink}" stroke-width="8"/>
   <path id="hk-grip" d="" stroke="${C.ink}" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
  </g>
  <g id="hk-q" class="qb"><circle id="hk-qc" r="46" fill="#fff" stroke="${C.red}" stroke-width="8"/><text id="hk-qt" font-family="Inter" font-weight="900" font-size="64" fill="${C.red}" text-anchor="middle" dy="22">?</text></g>
- <text id="hk-coord" class="coord qb" text-anchor="start">(x, y, z) = ?</text>
+ <text id="hk-coord" class="coord qb" text-anchor="start" style="direction:ltr;unicode-bidi:isolate">(x, y, z) = ?</text>
 </svg>`;
   const js = `
 const tl=gsap.timeline({paused:true});
@@ -121,14 +121,12 @@ function R(){
 tl.eventCallback('onUpdate',R);
 ${CASCADE}
 ${caps.map(([id, s, d]) => capJs("hk", id, s, d)).join("\n")}
-tl.fromTo('#hk-arm',{opacity:0,y:40},{opacity:1,y:0,duration:0.5,ease:'power4.out'},0.45);
 tl.to(st,{t1:30*Math.PI/180,t2:-55*Math.PI/180,duration:2.2,ease:'power2.inOut'},1.2);
 tl.fromTo('#hk-q',{opacity:0,scale:0.2,transformOrigin:'50% 50%'},{opacity:1,scale:1,duration:0.35,ease:'back.out(1.7)'},3.7);
 tl.fromTo('#hk-coord',{opacity:0},{opacity:1,duration:0.3,ease:'none'},4.0);
 tl.to('#hk-q,#hk-coord',{opacity:0,duration:0.3,ease:'none'},5.4);
 ['hk-b1','hk-b2','hk-b3','hk-b4'].forEach((id,i)=>{ const t=6.0+i*0.28; tl.set('#'+id,{opacity:1},t); tl.fromTo('#'+id,{scale:0.3,transformOrigin:'50% 50%'},{scale:1,duration:0.34,ease:'back.out(1.6)'},t); });
-tl.fromTo('.mas',{y:80,opacity:0},{y:0,opacity:1,duration:0.5,ease:'power4.out'},0.3);
-tl.set('#hk-mt',{opacity:1},0.3); tl.set('#hk-mt',{opacity:0},9.6); tl.set('#hk-mw',{opacity:0},0); tl.set('#hk-mw',{opacity:1},9.6);
+tl.set('#hk-mt',{opacity:1},0); tl.set('#hk-mt',{opacity:0},9.6); tl.set('#hk-mw',{opacity:0},0); tl.set('#hk-mw',{opacity:1},9.6);
 tl.fromTo('.mas',{scale:0.96,transformOrigin:'50% 100%'},{scale:1,duration:0.3,ease:'power4.out'},9.6);
 R();
 window.__timelines['hook']=tl;`;
@@ -201,7 +199,7 @@ export function buildSummary(startAbs) {
 .ttl2{position:absolute;left:120px;top:76px;font-family:'Inter';font-weight:800;font-size:44px;color:${C.muted};direction:ltr}
 .tbl{position:absolute;left:100px;top:150px;width:1720px;direction:rtl}
 .hd,.r{display:grid;grid-template-columns:260px 470px 520px 470px;align-items:center;column-gap:0}
-.hd{height:60px;font-size:34px;font-weight:700;color:${C.muted};border-bottom:4px solid ${C.line};padding:0 10px;opacity:0}
+.hd{height:60px;font-size:34px;font-weight:700;color:${C.muted};border-bottom:4px solid ${C.line};padding:0 10px}
 .r{height:104px;margin-top:10px;border-radius:24px;border:5px solid var(--c);background:#fff;padding:0 10px;opacity:0}
 .r>div{text-align:center;direction:ltr} .c1{font-size:68px;color:var(--c)} .c2{display:flex;flex-direction:column;line-height:1.18} .en2{font-family:'Inter';font-weight:800;font-size:40px} .ar2{font-size:34px;font-weight:600;color:${C.muted};direction:rtl}
 .c3{font-size:46px} .c4{font-family:'Inter';font-weight:700;font-size:42px;color:var(--c)}
@@ -213,8 +211,6 @@ export function buildSummary(startAbs) {
 const tl=gsap.timeline({paused:true});
 ${entryTL(".wrap")}
 ${exitTL(".wrap", dur)}
-tl.fromTo('.ttl',{y:40},{y:0,duration:0.3,ease:'power4.out'},0.2); tl.set('.ttl,.ttl2',{opacity:0},0); tl.set('.ttl,.ttl2',{opacity:1},0.2);
-tl.set('.hd',{opacity:1},0.6); tl.fromTo('.hd',{y:30},{y:0,duration:0.3,ease:'power4.out'},0.6);
 ['a','al','d','th'].forEach((id,i)=>{ const t=1.2+i*1.15; tl.set('#sm-r-'+id,{opacity:1},t); tl.fromTo('#sm-r-'+id,{y:60},{y:0,duration:0.22,ease:'power4.out'},t); });
 ['sm-cd1','sm-cd2'].forEach((id,i)=>{ const t=6.2+i*1.3; tl.set('#'+id,{opacity:1},t); tl.fromTo('#'+id,{y:70},{y:0,duration:0.25,ease:'power4.out'},t); });
 tl.set('.foot',{opacity:1},10.0); tl.fromTo('.foot',{y:50},{y:0,duration:0.3,ease:'power4.out'},10.0);
@@ -234,10 +230,10 @@ window.__timelines['summary']=tl;`;
  <div class="ttl">ملخص: الأرقام الأربعة</div><div class="ttl2">DH Parameters</div>
  <div class="tbl"><div class="hd"><div>الرمز</div><div>الاسم</div><div>القياس من ← إلى</div><div>على طول / حوالين</div></div>${rowHtml}</div>
  <div class="cards">
-  <div class="cd" id="sm-cd1" style="--c:${C.green}"><h3>${EN("Revolute joint")} · مفصل دوّار</h3><p>المتغير: <span class="big">${S("θ", "i", "green")}</span><br>الثوابت: ${S("a", "", "blue")} ${S("α", "", "purple")} ${S("d", "", "orange")}</p></div>
-  <div class="cd" id="sm-cd2" style="--c:${C.orange}"><h3>${EN("Prismatic joint")} · مفصل انزلاقي</h3><p>المتغير: <span class="big">${S("d", "i", "orange")}</span><br>الثوابت: ${S("a", "", "blue")} ${S("α", "", "purple")} ${S("θ", "", "green")}</p></div>
+  <div class="cd" id="sm-cd1" style="--c:${C.green}"><h3>${EN("Revolute joint")} · مفصل دوّار</h3><p>المتغير: <span class="big">${S("θ", "i", "green")}</span><br>الثوابت: <span class="ltr">${S("a", "", "blue")} ${S("α", "", "purple")} ${S("d", "", "orange")}</span></p></div>
+  <div class="cd" id="sm-cd2" style="--c:${C.orange}"><h3>${EN("Prismatic joint")} · مفصل انزلاقي</h3><p>المتغير: <span class="big">${S("d", "i", "orange")}</span><br>الثوابت: <span class="ltr">${S("a", "", "blue")} ${S("α", "", "purple")} ${S("θ", "", "green")}</span></p></div>
  </div>
- <div class="foot">روبوت بـ ${S("n")} مفصل = <span class="green">${"3"}${S("n")}</span> رقم ثابت + ${S("n")} رقم متغير</div>
+ <div class="foot">روبوت بـ ${S("n")} مفصل = <span class="ltr green">${S("3n")}</span> رقم ثابت + ${S("n")} رقم متغير</div>
 </div></div><script>${js}</script></template>`;
   return { html, dur };
 }
@@ -252,7 +248,6 @@ export function buildOutro(startAbs) {
   );
   const css = `${FONT_CSS}${BASE_CSS}${BADGE_CSS}
 .line{position:absolute;left:100px;width:1230px;top:250px;font-size:92px;font-weight:700;line-height:1.3;text-align:right;direction:rtl}
-.line .w{opacity:0}
 .row{position:absolute;left:130px;top:520px;display:flex;gap:30px;direction:ltr} .bdg{opacity:0}
 .brand{position:absolute;left:130px;top:760px;font-family:'Inter';font-weight:900;font-size:110px;color:${C.ink};direction:ltr;opacity:0;display:flex;align-items:center;gap:26px}
 .brand i{display:block;width:26px;height:110px;border-radius:13px;background:${C.red}}
@@ -263,11 +258,9 @@ export function buildOutro(startAbs) {
 const tl=gsap.timeline({paused:true});
 ${entryTL(".wrap")}
 ${CASCADE}
-cascade('.line',0.5,0.11);
 ['ou-b1','ou-b2','ou-b3','ou-b4'].forEach((id,i)=>{ const t=1.8+i*0.22; tl.set('#'+id,{opacity:1},t); tl.fromTo('#'+id,{scale:0.3,transformOrigin:'50% 50%'},{scale:1,duration:0.34,ease:'back.out(1.6)'},t); });
 tl.set('.brand',{opacity:1},3.2); tl.fromTo('.brand',{y:70},{y:0,duration:0.3,ease:'power4.out'},3.2);
-tl.fromTo('.mas',{y:80,opacity:0},{y:0,opacity:1,duration:0.5,ease:'power4.out'},0.4);
-tl.set('#ou-m1',{opacity:1},0.4); tl.set('#ou-m1',{opacity:0},2.8); tl.set('#ou-m2',{opacity:0},0); tl.set('#ou-m2',{opacity:1},2.8);
+ tl.set('#ou-m1',{opacity:0},2.8); tl.set('#ou-m2',{opacity:0},0); tl.set('#ou-m2',{opacity:1},2.8);
 tl.fromTo('.mas',{scale:0.96,transformOrigin:'50% 100%'},{scale:1,duration:0.3,ease:'power4.out'},2.8);
 window.__timelines['outro']=tl;`;
   sfx("whoosh-short", 0.05, 0.3);
@@ -280,7 +273,7 @@ window.__timelines['outro']=tl;`;
  <div class="line">${line}</div>
  <div class="row">${badge("ou-b1", C.blue, "a", "i−1")}${badge("ou-b2", C.purple, "α", "i−1")}${badge("ou-b3", C.orange, "d", "i")}${badge("ou-b4", C.green, "θ", "i")}</div>
  <div class="brand"><i></i>MAE <span>Academy</span></div>
- <div class="mas"><img id="ou-m1" class="mimg" src="${MAS("wink_point-wink")}" alt="" style="opacity:0"><img id="ou-m2" class="mimg" src="${MAS("wave-joy")}" alt="" style="opacity:0"></div>
+ <div class="mas"><img id="ou-m1" class="mimg" src="${MAS("wink_point-wink")}" alt=""><img id="ou-m2" class="mimg" src="${MAS("wave-joy")}" alt="" style="opacity:0"></div>
 </div></div><script>${js}</script></template>`;
   return { html, dur };
 }
