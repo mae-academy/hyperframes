@@ -427,6 +427,7 @@
     const mn = (u, v, w) => (ax === "z" ? [u, v, w] : ax === "y" ? [u, w, v] : [w, u, v]);
     const k = (r1 - r0) / (w1 - w0);
     const kn = Math.hypot(1, k);
+    const so = Object.assign({}, o, { edge: null });
     for (let a = 0; a < 360 - 1e-9; a += da) {
       const b = a + da,
         m = ((a + b) / 2) * DEG;
@@ -444,7 +445,7 @@
         ],
         mn(Math.cos(m) / kn, Math.sin(m) / kn, -k / kn),
         col,
-        o,
+        so,
       );
     }
     if (o && o.caps) {
@@ -465,7 +466,7 @@
       const w = w0 + ((w1 - w0) * (i + 0.5)) / n;
       cylP(part, ax, c0, c1, r * 1.13, r * 1.13, w - 0.05, w + 0.05, 10, rib, {
         caps: true,
-        sp: 0.3,
+        edge: EDGE,
       });
     }
   }
@@ -476,10 +477,10 @@
     cX = mkPart(),
     cS = mkPart(),
     cZ = mkPart();
-  const BODY = [38, 42, 70],
-    BODYD = [26, 28, 46],
-    RIB = [150, 156, 190],
-    GRIP = [210, 214, 232];
+  const BODY = [26, 30, 56],
+    BODYD = [17, 19, 36],
+    RIB = [58, 64, 104],
+    GRIP = [88, 94, 132];
   // plate: a slab with two nested square outlines
   boxP(plate, -3.9, 3.9, 0, 0.3, -3.2, 3.2, BODYD, { edge: EDGE });
   for (const [hx, hz, w] of [
@@ -560,7 +561,7 @@
         const toCam = [-mx, -my, cam.dist - mz];
         if (n[0] * toCam[0] + n[1] * toCam[1] + n[2] * toCam[2] <= 0) continue;
         const d = Math.max(0, n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]);
-        const k = 0.5 + 0.85 * d;
+        const k = 0.8 + 0.4 * d;
         let r = pl.c[0] * k,
           g = pl.c[1] * k,
           b = pl.c[2] * k;
@@ -568,7 +569,7 @@
           const s =
             Math.pow(Math.max(0, n[0] * HALF[0] + n[1] * HALF[1] + n[2] * HALF[2]), 24) *
             pl.sp *
-            255;
+            40;
           r += s;
           g += s;
           b += s;
@@ -593,8 +594,12 @@
     for (const it of items) {
       ctx.globalAlpha = it.a;
       ctx.fillStyle = it.col;
-      ctx.strokeStyle = it.edge || it.col;
-      ctx.lineWidth = it.edge ? 1.4 : 0.9;
+      ctx.strokeStyle = it.edge || "rgba(215,224,255,0.30)";
+      ctx.lineWidth = it.edge ? 1.9 : 1.0;
+      if (it.edge && !it.glow) {
+        ctx.shadowColor = "rgba(140,180,255,0.6)";
+        ctx.shadowBlur = 5;
+      }
       if (it.glow) {
         ctx.shadowColor = `rgb(${it.glow[0]},${it.glow[1]},${it.glow[2]})`;
         ctx.shadowBlur = 16;
@@ -605,7 +610,7 @@
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      if (it.glow) ctx.shadowBlur = 0;
+      ctx.shadowBlur = 0;
     }
     ctx.globalAlpha = 1;
   }
