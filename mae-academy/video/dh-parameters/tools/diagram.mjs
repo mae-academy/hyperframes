@@ -83,7 +83,7 @@ export function buildDiagram(startAbs) {
       "s1",
       TM.as + 0.5,
       6.2,
-      `نرجّع المفصل الشفاف للبداية ونعيد الخطوات: ${T("a", C.blue)} ثم ${T("\\alpha", C.purple)} ثم ${T("d", C.orange)} ثم ${T("\\theta", C.green)}`,
+      `نرجّع المفصل الشفاف للبداية ونعيد الخطوات: <span class="ltr" dir="ltr">${T("a", C.blue)} <span dir="rtl" style="unicode-bidi:isolate">ثم</span> ${T("\\alpha", C.purple)} <span dir="rtl" style="unicode-bidi:isolate">ثم</span> ${T("d", C.orange)} <span dir="rtl" style="unicode-bidi:isolate">ثم</span> ${T("\\theta", C.green)}</span>`,
     ],
     [
       "s2",
@@ -220,7 +220,7 @@ function R(){
   // ghost = transparent copy of joint {i-1} riding with the moving frame
   drawJoint('dg-g',FM.o,FM.x,FM.y,FM.z);
   const gx=setAxis('dg-gx',FM.o,FM.x,1.9,32,0),gz=setAxis('dg-gz',FM.o,FM.z,2.3,32,0);
-  const gq=cyl(FM.o,FM.x,FM.y,FM.z,0.52,-1.25,1.05);setD('#dg-gl',gq.body);const pk=P(add(FM.o,mul(FM.z,1.55))),ck=sel('#dg-ck');ck.setAttribute('transform','translate('+f1(pk[0]+62)+','+f1(pk[1]-26)+')');
+  const gq=cyl(FM.o,FM.x,FM.y,FM.z,0.52,-1.25,1.05);setD('#dg-gl',gq.body);const pk=P(add(FM.o,mul(FM.z,0.15))),ck=sel('#dg-ck');ck.setAttribute('transform','translate('+f1(pk[0])+','+f1(pk[1])+')');
   const pm=P(FM.o),go2=sel('#dg-go2');go2.setAttribute('cx',f1(pm[0]));go2.setAttribute('cy',f1(pm[1]));
   // trail of the moving origin
   setD('#dg-trail',Lp([P(O0),P([st.a,0,0]),P(FM.o)]));
@@ -243,11 +243,11 @@ function R(){
   const tp=[];for(let k=0;k<=N;k++){const u=st.th*k/N;tp.push(add(FM.o,mul(add(mul([1,0,0],Math.cos(u)),mul(yd,Math.sin(u))),1.25)));}
   setD('#dg-th-a',st.th>0.01?Lp(tp.map(P)):'');setD('#dg-th-w',st.th>0.01?Dp([P(FM.o)].concat(tp.map(P))):'');
   if(st.th>0.05){const e=P(tp[N]),s2=P(tp[N-2]);const dx=e[0]-s2[0],dy=e[1]-s2[1],L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,h=34;setD('#dg-th-h','M'+f1(e[0]+ux*h*.7)+','+f1(e[1]+uy*h*.7)+'L'+f1(e[0]+nx*h*.55)+','+f1(e[1]+ny*h*.55)+'L'+f1(e[0]-nx*h*.55)+','+f1(e[1]-ny*h*.55)+'Z');}else setD('#dg-th-h','');
-  const um=Math.max(st.th,TH)/2;place('dg-L-th',add(FM.o,mul(add(mul([1,0,0],Math.cos(um)),mul(yd,Math.sin(um))),2.2)),0,0);
+  const um=Math.max(st.th,TH)/2;place('dg-L-th',add(FM.o,mul(add(mul([1,0,0],Math.cos(um)),mul(yd,Math.sin(um))),0.72)),0,0);
   // static labels
-  place('dg-L-j0',add(O0,[0,0,-1.4]),-50,75);place('dg-L-lk',[A*0.36,0,0],-20,-100);place('dg-L-j1',add(FI.o,[0,0,-1.3]),90,75);
+  place('dg-L-j0',add(O0,[0,0,-1.4]),-50,75);place('dg-L-lk',[A*0.4,0,0],-40,122);place('dg-L-j1',add(FI.o,[0,0,-1.3]),90,75);
   place('dg-L-z0',add(O0,[0,0,3.1]),44,-2);place('dg-L-z1',add(Q,mul(Zd(AL),3.2)),48,-4);place('dg-L-x0',[A+1.7,0,0],48,18);place('dg-L-f0',O0,-150,-30);place('dg-L-gi',FI.o,100,56);
-  place('dg-L-xi',add(FI.o,mul(FI.x,1.9)),46,-10);place('dg-L-xp',add(FM.o,mul(FM.x,1.9)),44,-26);
+  place('dg-L-xi',add(FI.o,mul(FI.x,1.9)),46,-10);{const t2=P(add(FM.o,mul(FM.x,1.9))),t0=P(FM.o),rx=t2[0]-t0[0],ry=t2[1]-t0[1],rl=Math.hypot(rx,ry)||1;placeXY('dg-L-xp',t2[0]+rx/rl*80,t2[1]+ry/rl*80);}
   // numbers
   const set=(id,t)=>{const e=sel('#'+id);if(e)e.textContent=t;};
   set('dg-n-a',n1(st.a));set('dg-n-al',deg(st.al));set('dg-n-d',n1(st.d));set('dg-n-th',deg(st.th));
@@ -327,7 +327,7 @@ tl.to(st,{d:D,duration:1.1,ease:'power2.inOut'},${TM.as + 4.0}); tl.set('#dg-ch-
 tl.to(st,{th:TH,duration:1.1,ease:'power2.inOut'},${TM.as + 5.3}); tl.set('#dg-ch-th',{className:'chip on'},${TM.as + 5.3});
 tl.set('#dg-ch-a,#dg-ch-al,#dg-ch-d,#dg-ch-th',{className:'chip'},${TM.as + 0.1}); tl.set('#dg-ch-a',{className:'chip on'},${TM.as + 1.4});
 tl.to('#dg-L-z1',{opacity:0,duration:0.2,ease:'none'},${TM.as + 6.3});
-tl.fromTo('#dg-L-xp',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.d + 2.0}); tl.to('#dg-L-xp',{opacity:0,duration:0.3,ease:'none'},${TM.as + 6.0});
+tl.fromTo('#dg-L-xp',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.d + 2.0}); tl.to('#dg-L-xp',{opacity:0,duration:0.3,ease:'none'},${TM.th + 3.5}); tl.to('#dg-L-xp',{opacity:1,duration:0.3,ease:'none'},${TM.th + 7.8}); tl.to('#dg-L-xp',{opacity:0,duration:0.3,ease:'none'},${TM.th + 11.7});
 const landed=t=>{tl.fromTo('#dg-ck2',{opacity:0,scale:0.3,transformOrigin:'50% 50%'},{opacity:1,scale:1,duration:0.3,ease:'back.out(2.2)',immediateRender:false},t);tl.to('#dg-ck2',{opacity:0,duration:0.3,ease:'none'},t+1.3);
   tl.fromTo('#dg-gl',{opacity:0},{opacity:0.95,duration:0.18,ease:'power2.out',immediateRender:false},t);tl.to('#dg-gl',{opacity:0,duration:0.7,ease:'power2.in'},t+0.18);};
 [${TM.a + 4.7},${TM.al + 4.8},${TM.d + 4.6},${TM.th + 4.8},${TM.as + 6.5}].forEach(landed);

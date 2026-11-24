@@ -75,11 +75,12 @@ export function buildExample(startAbs) {
   ];
   const cols = [C.purple, C.blue, C.orange, C.green];
   const tab = `<div class="dtab">${hdr.map(([l, c], k) => `<div class="th" id="ex-h${k}" style="color:${c}">${TX(l, 40, c)}</div>`).join("")}
-${vals.map((r, i) => `<div class="td" id="ex-c${i}-j">${TX(String(i + 1), 44, C.ink)}</div>${r.map((v, k) => `<div class="td v" id="ex-c${i}-${k}" style="--c:${cols[k]}">${TX(v, 46, cols[k])}</div>`).join("")}<div class="td v" id="ex-c${i}-q" style="--c:${C.green}">${TX("\\theta", 46, C.green)}<small>(variable)</small></div>`).join("")}
+${vals.map((r, i) => `<div class="td" id="ex-c${i}-j">${TX(String(i + 1), 44, C.ink)}</div>${r.map((v, k) => `<div class="td v" id="ex-c${i}-${k}" data-c="${cols[k]}"><span class="vx">${TX(v, 46, cols[k])}</span></div>`).join("")}<div class="td v" id="ex-c${i}-q" data-c="${C.green}"><span class="vx">${TX("\\theta", 46, C.green)}<small>(variable)</small></span></div>`).join("")}
 </div>`;
 
   const lb = (id, latex, px, col, pill = true) => TXG(id, latex, px, col, pill);
   const labels = [
+    lb("ex-L-f01", "\\{0\\}\\equiv\\{1\\}", 46, C.ink),
     lb("ex-L-f0", "\\{0\\}", 46, C.ink),
     lb("ex-L-f1", "\\{1\\}", 46, C.ink),
     lb("ex-L-f2", "\\{2\\}", 46, C.ink),
@@ -111,9 +112,9 @@ ${vals.map((r, i) => `<div class="td" id="ex-c${i}-j">${TX(String(i + 1), 44, C.
 .dtab{position:absolute;left:1040px;top:124px;width:790px;display:grid;grid-template-columns:140px repeat(4,1fr) 170px;gap:10px;direction:ltr}
 .th{height:104px;border-radius:20px;background:#fff;border:4px solid ${C.line};display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(11,31,58,.08)}
 .td{height:124px;border-radius:20px;background:#fff;border:4px solid ${C.line};display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter';font-weight:700;font-size:50px;box-shadow:0 6px 16px rgba(11,31,58,.08)}
-.td.v{border-color:var(--c);opacity:0}.td small{font-size:20px;color:${C.muted};font-weight:600;line-height:1.1;margin-left:4px}
+.td.v .vx{opacity:0;display:inline-flex;align-items:center;gap:8px}.td small{font-size:20px;color:${C.muted};font-weight:600;line-height:1.1;margin-left:4px}
 
-.notes{position:absolute;left:1040px;top:640px;width:790px;height:230px}.nc{position:absolute;inset:0;border-radius:30px;background:#fff;border:6px solid var(--c);display:flex;align-items:center;justify-content:center;gap:26px;opacity:0;box-shadow:0 10px 26px rgba(11,31,58,.12);direction:ltr;font-family:'Inter';font-weight:700;font-size:40px;color:${C.ink}}
+.nc#ex-n2{inset:auto;left:0;top:0;height:200px;width:max-content;padding:0 46px}.notes{position:absolute;left:1040px;top:640px;width:790px;height:230px}.nc{position:absolute;inset:0;border-radius:30px;background:#fff;border:6px solid var(--c);display:flex;align-items:center;justify-content:center;gap:26px;opacity:0;box-shadow:0 10px 26px rgba(11,31,58,.12);direction:ltr;font-family:'Inter';font-weight:700;font-size:40px;color:${C.ink}}
 `;
 
   const js = `
@@ -126,7 +127,7 @@ function R(){camSet();floor('ex-fl',-1.45,-2.5,6.8,-4,4.2,1);
   const d1=[Math.cos(t1),Math.sin(t1),0],d2=[Math.cos(a2),Math.sin(a2),0],d3=[Math.cos(a3),Math.sin(a3),0];
   const J1=[0,0,0],J2=add(J1,mul(d1,L1)),J3=add(J2,mul(d2,L2)),EE=add(J3,mul(d3,L3));
   const bs=d=>[-d[1],d[0],0];
-  drawJoint('ex-j1',J1,d1,bs(d1),Z);drawJoint('ex-j2',J2,d2,bs(d2),Z);drawJoint('ex-j3',J3,d3,bs(d3),Z);
+  drawJoint('ex-j1',J1,d1,bs(d1),Z);drawJoint('ex-j2',J2,d2,bs(d2),Z);drawJoint('ex-j3',J3,d3,bs(d3),Z,0.72,0.5);
   capsule('ex-k1',J1,J2);capsule('ex-k2',J2,J3);drawGripper('ex-gp',add(J3,mul(d3,0.5)),d3,bs(d3),0.4);
   const obj=sel('#ex-obj');[['ex-j1',dep(J1)],['ex-k1',dep(add(J1,mul(d1,L1/2)))],['ex-j2',dep(J2)],['ex-k2',dep(add(J2,mul(d2,L2/2)))],['ex-j3',dep(J3)],['ex-gp',dep(add(J3,mul(d3,1.2)))]].sort((p,q)=>q[1]-p[1]).forEach(it=>obj.appendChild(sel('#'+it[0])));
   // frames: X along each link, Z up (all parallel)
@@ -138,11 +139,11 @@ function R(){camSet();floor('ex-fl',-1.45,-2.5,6.8,-4,4.2,1);
   const arc=(id,wid,c,a0,a1)=>{const pts=[];const n=24;for(let k=0;k<=n;k++){const a=a0+(a1-a0)*k/n;pts.push(add(c,[Math.cos(a)*1.0,Math.sin(a)*1.0,0.0]));}setD('#'+id,Lp(pts.map(P)));setD('#'+wid,Dp([P(c)].concat(pts.map(P))));};
   arc('ex-r1','ex-w1',J1,0,t1);arc('ex-r2','ex-w2',J2,t1,a2);arc('ex-r3','ex-w3',J3,a2,a3);
   // labels
-  place('ex-L-f0',J1,-95,52);place('ex-L-f1',J1,85,70);place('ex-L-f2',J2,70,70);place('ex-L-f3',J3,70,70);
+  place('ex-L-f01',J1,-110,58);place('ex-L-f0',J1,-78,64);place('ex-L-f1',J1,78,64);place('ex-L-f2',J2,70,70);place('ex-L-f3',J3,70,70);
   place('ex-L-z1',add(J1,[0,0,2.2]),44,0);place('ex-L-z2',add(J2,[0,0,2.2]),44,0);place('ex-L-z3',add(J3,[0,0,2.2]),44,0);
-  place('ex-L-l1',add(J1,mul(d1,L1/2)),0,-64);place('ex-L-l2',add(J2,mul(d2,L2/2)),0,-64);
+  place('ex-L-l1',add(J1,mul(d1,L1/2)),0,78);place('ex-L-l2',add(J2,mul(d2,L2/2)),0,78);
   const mid=(c,a0,a1)=>add(c,[Math.cos((a0+a1)/2)*1.55,Math.sin((a0+a1)/2)*1.55,0]);
-  place('ex-L-t1',mid(J1,0,t1),0,0);place('ex-L-t2',mid(J2,t1,a2),0,0);place('ex-L-t3',mid(J3,a2,a3),0,0);
+  place('ex-L-t1',mid(J1,0,t1),0,0);place('ex-L-t2',mid(J2,t1,a2),0,0);place('ex-L-t3',add(J3,[Math.cos(a2-0.6)*1.95,Math.sin(a2-0.6)*1.95,0]),0,0);
   place('ex-L-xy',EE,70,-60);}
 const tl=gsap.timeline({paused:true});
 tl.eventCallback('onUpdate',R);
@@ -151,20 +152,19 @@ ${exitTL(".wrap", EX_DUR)}
 ${CASCADE}
 ${caps.map(([id, s, dur]) => `cascade('#ex-${id}',${s});tl.fromTo('#ex-${id} .cap-in',{opacity:1},{opacity:0,duration:0.2,ease:'none'},${(s + dur - 0.22).toFixed(2)});`).join("\n")}
 const ease='power4.out';
-tl.set('.td.v',{opacity:0},0);tl.set('.nc',{opacity:0},0);
+tl.set('.nc',{opacity:0},0);
 const note=(id,t0,t1)=>{tl.fromTo('#ex-'+id,{opacity:0,y:30},{opacity:1,y:0,duration:0.35,ease:'power4.out',immediateRender:false},t0);tl.to('#ex-'+id,{opacity:0,duration:0.3,ease:'none'},t1);};
-const pop=(id,t)=>{tl.set('#'+id,{opacity:1},t);tl.fromTo('#'+id,{scale:0.5,transformOrigin:'50% 50%'},{scale:1,duration:0.34,ease:'back.out(1.8)'},t);};
+const pop=(id,t)=>{const c=document.getElementById(id).getAttribute('data-c');tl.set('#'+id+' .vx',{opacity:1},t);tl.set('#'+id,{borderColor:c},t);tl.fromTo('#'+id+' .vx',{scale:0.4},{scale:1,duration:0.34,ease:'back.out(1.8)'},t);};
 const hl=(ids,t0,t1)=>ids.forEach(i=>{tl.set('#'+i,{backgroundColor:'#FFF4C2',borderColor:'#FFC21A'},t0);tl.set('#'+i,{backgroundColor:'#FFFFFF',borderColor:'#BFD0F0'},t1);});
 // first beat: the arm in its book pose, (x,y) marker
 tl.fromTo('#ex-L-xy',{opacity:0},{opacity:1,duration:0.3,ease:'none'},2.2);
-tl.fromTo('.dtab .th',{opacity:0,y:30},{opacity:1,y:0,duration:0.3,ease,stagger:0.08},1.4);
 tl.to(cam,{psi:-48,duration:7,ease:'power1.inOut'},0);
 // e2: all joint variables to zero, frames appear
 tl.to('#ex-L-xy',{opacity:0,duration:0.3,ease:'none'},7.4);
 tl.to(st,{t1:0,t2:0,t3:0,duration:2.4,ease:'power2.inOut'},8.2);
 tl.to(cam,{psi:-30,phi:24,sc:126,tx:2.6,ty:0,duration:3.2,ease:'power2.inOut'},7.6);
-tl.to(ap,{f1:1,duration:0.8,ease:'power2.inOut'},10.8); tl.fromTo('#ex-L-f1',{opacity:0},{opacity:1,duration:0.3,ease:'none'},11.5);
-tl.to(ap,{f0:1,duration:0.8,ease:'power2.inOut'},11.9); tl.fromTo('#ex-L-f0',{opacity:0},{opacity:1,duration:0.3,ease:'none'},12.6);
+tl.to(ap,{f1:1,duration:0.8,ease:'power2.inOut'},10.8); tl.fromTo('#ex-L-f01',{opacity:0},{opacity:1,duration:0.3,ease:'none'},11.5); tl.to('#ex-L-f01',{opacity:0,duration:0.3,ease:'none'},16.0); tl.fromTo('#ex-L-f1',{opacity:0},{opacity:1,duration:0.3,ease:'none'},16.2);
+tl.to(ap,{f0:1,duration:0.8,ease:'power2.inOut'},11.9); tl.fromTo('#ex-L-f0',{opacity:0},{opacity:1,duration:0.3,ease:'none'},16.2);
 tl.to(ap,{f2:1,duration:0.8,ease:'power2.inOut'},13.0); tl.fromTo('#ex-L-f2',{opacity:0},{opacity:1,duration:0.3,ease:'none'},13.7);
 tl.to(ap,{f3:1,duration:0.8,ease:'power2.inOut'},14.1); tl.fromTo('#ex-L-f3',{opacity:0},{opacity:1,duration:0.3,ease:'none'},14.8);
 note('n2',12.0,15.6);note('n3',17.0,23.6);note('n4',25.0,31.6);note('n5',35.0,41.6);note('n6',44.0,51.6);

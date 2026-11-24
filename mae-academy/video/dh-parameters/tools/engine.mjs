@@ -37,13 +37,14 @@ function drawJoint(p,c,X,Y,Z,s,ls){s=s||1;ls=ls||1;const parts=[['base',0.64*s,-
     }
   else{setD('#'+p+'-hub','');setD('#'+p+'-notch','');}}
 function arrowPaths(o,dir,len,head,len0){const s=P(add(o,mul(dir,len0||0))),e=P(add(o,mul(dir,len)));const dx=e[0]-s[0],dy=e[1]-s[1];const L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
+  if(L<10)return {line:'',head:'',tip:e};
   const h=Math.min(head||30,L*0.6),b=[e[0]-ux*h,e[1]-uy*h],nx=-uy,ny=ux;
   return {line:'M'+f1(s[0])+','+f1(s[1])+'L'+f1(b[0])+','+f1(b[1]),head:'M'+f1(e[0])+','+f1(e[1])+'L'+f1(b[0]+nx*h*.46)+','+f1(b[1]+ny*h*.46)+'L'+f1(b[0]-nx*h*.46)+','+f1(b[1]-ny*h*.46)+'Z',tip:e};}
 function setAxis(id,o,dir,len,head,len0){const a=arrowPaths(o,dir,len,head,len0);setD('#'+id+'-l',a.line);setD('#'+id+'-h',a.head);return a;}
 const seg3=(p,q)=>Lp([P(p),P(q)]);
 function place(id,pt,dx,dy){const g=sel('#'+id);if(!g)return;const w=+g.getAttribute('data-w'),h=+g.getAttribute('data-h');const q=P(pt);g.setAttribute('transform','translate('+f1(q[0]+(dx||0)-w/2)+','+f1(q[1]+(dy||0)-h/2)+')');}
 function placeXY(id,x,y){const g=sel('#'+id);if(!g)return;const w=+g.getAttribute('data-w'),h=+g.getAttribute('data-h');g.setAttribute('transform','translate('+f1(x-w/2)+','+f1(y-h/2)+')');}
-function capsule(id,a,b,w){const A=P(a),B=P(b);const d='M'+f1(A[0])+','+f1(A[1])+'L'+f1(B[0])+','+f1(B[1]);setD('#'+id+'-o',d);setD('#'+id+'-t',d);
+function capsule(id,a,b,w){const A=P(a),B=P(b);if(Math.hypot(A[0]-B[0],A[1]-B[1])<6){setD('#'+id+'-o','');setD('#'+id+'-t','');setD('#'+id+'-s','');return;}const d='M'+f1(A[0])+','+f1(A[1])+'L'+f1(B[0])+','+f1(B[1]);setD('#'+id+'-o',d);setD('#'+id+'-t',d);
   const off=[-7,-8];setD('#'+id+'-s','M'+f1(A[0]+off[0])+','+f1(A[1]+off[1])+'L'+f1(B[0]+off[0])+','+f1(B[1]+off[1]));}
 function floor(id,z,x0,x1,y0,y1,step){let d='';for(let x=x0;x<=x1+1e-6;x+=step)d+=seg3([x,y0,z],[x,y1,z]);for(let y=y0;y<=y1+1e-6;y+=step)d+=seg3([x0,y,z],[x1,y,z]);setD('#'+id+'-g',d);
   setD('#'+id+'-p',Dp([P([x0,y0,z]),P([x1,y0,z]),P([x1,y1,z]),P([x0,y1,z])]));}

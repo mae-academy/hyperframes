@@ -18,7 +18,7 @@ export const C = {
 };
 // LaTeX (MathJax) -> inline svg. colour comes from CSS `color`.
 export const TX = (latex, px = 48, color = "") =>
-  `<span class="tx" style="${color ? `color:${color};` : ""}">${tex(latex, px).svg}</span>`;
+  `<span class="tx" dir="ltr" style="${color ? `color:${color};` : ""}">${tex(latex, px).svg}</span>`;
 // LaTeX label inside an svg scene: <g id data-w data-h> (positioned at runtime), optional white pill behind it
 export const TXG = (id, latex, px, color, pill = true) => {
   const t = tex(latex, px),

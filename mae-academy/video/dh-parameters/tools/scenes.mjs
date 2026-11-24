@@ -37,7 +37,7 @@ const frame=(a,al,d,th)=>{const z=Zd(al),y=Yd(al);const x=[Math.cos(th),Math.sin
 const Q=[A,0,0],O0=[0,0,0],FI=frame(A,AL,D,TH);
 Object.assign(cam,{psi:${psi0},phi:20,sc:${sc},tx:1.9,ty:0,tz:0.5,sx:1560,sy:600});
 function R3(){camSet();floor('m3-fl',-1.45,-1.5,6,-3,3,1);
-  drawJoint('m3-j0',O0,[1,0,0],[0,1,0],[0,0,1]);drawJoint('m3-j1',FI.o,FI.x,FI.y,FI.z);capsule('m3-lk',[0.62,0,0],[A-0.53,0,0]);
+  drawJoint('m3-j0',O0,[1,0,0],[0,1,0],[0,0,1]);drawJoint('m3-j1',FI.o,FI.x,FI.y,FI.z);capsule('m3-lk',[0.62,0,0],[A,0,0]);
   const obj=sel('#m3-obj');[['m3-j0',dep(O0)],['m3-lk',dep([A/2,0,0])],['m3-j1',dep(FI.o)]].sort((p,q)=>q[1]-p[1]).forEach(it=>obj.appendChild(sel('#'+it[0])));
   setAxis('m3-z0',O0,[0,0,1],3.5,34,-1.4);setAxis('m3-z1',Q,Zd(AL),3.2,34,-1.9);setAxis('m3-x0',O0,[1,0,0],A+1.7,34,0);
   ${ghost ? "drawJoint('m3-g',FI.o,FI.x,FI.y,FI.z);" : "setD('#m3-g-base-b','');"}}
@@ -245,10 +245,9 @@ export function buildOutro(startAbs) {
   const js = `
 const tl=gsap.timeline({paused:true});
 ${entryTL(".wrap")}
-${m.js(-24, -52, dur, true)}
+${m.js(-24, -52, dur, false)}
 ['ou-b1','ou-b2','ou-b3','ou-b4'].forEach((id,i)=>{ const t=1.2+i*0.22; tl.set('#'+id,{opacity:1},t); tl.fromTo('#'+id,{scale:0.3,transformOrigin:'50% 50%'},{scale:1,duration:0.34,ease:'back.out(1.6)'},t); });
 tl.set('.brand',{opacity:1},3.2); tl.fromTo('.brand',{y:70},{y:0,duration:0.3,ease:'power4.out'},3.2);
-tl.fromTo('#m3-gh',{opacity:0},{opacity:1,duration:0.6,ease:'none'},0.4);
 R3();
 window.__timelines['outro']=tl;`;
   sfx("whoosh-short", 0.05, 0.3);
