@@ -87,8 +87,8 @@ export function buildDiagram(startAbs) {
     ],
     [
       "s2",
-      TM.as + 7.4,
-      4.9,
+      TM.as + 7.2,
+      4.2,
       `هيك انطبق على ${EN("Joint")} ${T("i")} <b class="k">بأربع أرقام بس!</b>`,
     ],
   ];
@@ -142,9 +142,8 @@ export function buildDiagram(startAbs) {
     lb("dg-L-al", "\\alpha_{i-1}", 70, C.purple),
     lb("dg-L-d", "d_i", 70, C.orange),
     lb("dg-L-th", "\\theta_i", 70, C.green),
-    lb("dg-L-xi", "X_i", 58, C.ink, false),
-    lb("dg-L-zi", "Z_i", 58, C.red, false),
-    lb("dg-L-fi", "\\{i\\}", 56, C.ink),
+    lb("dg-L-xi", "X_i", 58, C.green, false),
+    lb("dg-L-xp", "X'", 54, C.ink, false),
     lb("dg-L-gi", "\\{i\\}", 52, C.ink),
   ].join("");
   const svg = `
@@ -152,8 +151,10 @@ export function buildDiagram(startAbs) {
  <g id="dg-fl"><path id="dg-fl-p" fill="#D3E1FA" fill-opacity=".75"/><path id="dg-fl-g" fill="none" stroke="#A9C0EC" stroke-width="2.5"/></g>
  <g id="dg-obj">${jointDom("dg-j0")}${capsuleDom("dg-lk")}${jointDom("dg-j1")}</g>
  <g id="dg-ax">${axisDom("dg-z0", C.red)}${axisDom("dg-z1", C.red)}${axisDom("dg-x0", C.ink, 8)}<circle id="dg-o0" r="13" fill="#fff" stroke="${C.ink}" stroke-width="6"/></g>
- <g id="dg-goal" opacity="0"><path id="dg-gx-l" fill="none" stroke="${C.ink}" stroke-width="9" stroke-dasharray="16 12" stroke-linecap="round"/><path id="dg-gx-h" fill="${C.ink}"/><path id="dg-gz-l" fill="none" stroke="${C.red}" stroke-width="9" stroke-dasharray="16 12" stroke-linecap="round"/><path id="dg-gz-h" fill="${C.red}"/><circle id="dg-go" r="13" fill="#fff" stroke="${C.ink}" stroke-width="6"/>
-   <g id="dg-qm" opacity="0"><circle id="dg-qc" r="52" fill="#fff" stroke="${C.red}" stroke-width="8"/><text id="dg-qt" font-family="Inter,sans-serif" font-weight="900" font-size="72" fill="${C.red}" text-anchor="middle" dy="25">?</text></g></g>
+ <g id="dg-fi">${axisDom("dg-xi", C.green, 10)}<circle id="dg-oi" r="13" fill="#fff" stroke="${C.green}" stroke-width="6" opacity="0"/></g>
+ <g id="dg-qm" opacity="0"><circle id="dg-qc" r="52" fill="#fff" stroke="${C.red}" stroke-width="8"/><text id="dg-qt" font-family="Inter,sans-serif" font-weight="900" font-size="72" fill="${C.red}" text-anchor="middle" dy="25">?</text></g>
+ <g id="dg-ck"><g id="dg-ck2" opacity="0"><circle r="30" fill="${C.green}" stroke="#fff" stroke-width="5"/><path d="M-13 1L-4 11L14 -10" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+ <path id="dg-gl" fill="none" stroke="${C.green}" stroke-width="12" stroke-linejoin="round" opacity="0"/>
  <g id="dg-help">
   <g id="dg-hp-a" opacity="0"><path id="dg-a-t" fill="none" stroke="${C.blue}" stroke-width="16" stroke-linecap="round"/><circle id="dg-a-0" r="11" fill="${C.blue}"/><circle id="dg-a-1" r="11" fill="${C.blue}"/></g>
   <g id="dg-hp-al" opacity="0"><path id="dg-al-q" fill="${C.purple}" fill-opacity=".07" stroke="${C.purple}" stroke-opacity=".5" stroke-width="3" stroke-dasharray="12 9"/><path id="dg-al-z" fill="none" stroke="${C.red}" stroke-width="6" stroke-dasharray="14 10" opacity=".8"/><path id="dg-al-w" fill="${C.purple}" fill-opacity=".30"/><path id="dg-al-a" fill="none" stroke="${C.purple}" stroke-width="13" stroke-linecap="round"/><path id="dg-al-h" fill="${C.purple}"/></g>
@@ -192,7 +193,7 @@ export function buildDiagram(startAbs) {
   const js = `
 ${ENGINE}
 const A=${A},AL=${AL}*DEG,D=${D},TH=${TH}*DEG;
-const st={a:0,al:0,d:0,th:0}, ap={j0:1,j1:0,lk:0,z0:0,z1:0,x0:0};
+const st={a:0,al:0,d:0,th:0}, ap={j0:1,j1:0,lk:0,z0:0,z1:0,x0:0,xi:0};
 const Zd=al=>[0,-Math.sin(al),Math.cos(al)],Yd=al=>[0,Math.cos(al),Math.sin(al)];
 const frame=(a,al,d,th)=>{const z=Zd(al),y=Yd(al);const x=[Math.cos(th),Math.sin(th)*y[1],Math.sin(th)*y[2]];return {o:add([a,0,0],mul(z,d)),x,z,y:cross(z,x)};};
 const Q=[A,0,0], O0=[0,0,0], FI=frame(A,AL,D,TH);
@@ -200,12 +201,12 @@ const deg=r=>Math.round(r/DEG)+'\\u00B0';
 function R(){
   camSet();
   const FM=frame(st.a,st.al,st.d,st.th);
-  floor('dg-fl',-1.2,-3,8.5,-4.5,4.5,1);
+  floor('dg-fl',-1.45,-3,8.5,-4.5,4.5,1);
   // joint 0 (frame {i-1}) and joint i (frame {i}); parts drop in from above
   const c0=add(O0,[0,0,(1-ap.j0)*3]), cI=add(FI.o,[0,0,(1-ap.j1)*3]);
   drawJoint('dg-j0',c0,[1,0,0],[0,1,0],[0,0,1]);
   drawJoint('dg-j1',cI,FI.x,FI.y,FI.z);
-  capsule('dg-lk',[0.62,0,0],[0.62+(A-1.15-0.62)*ap.lk,0,0]);
+  capsule('dg-lk',[0.62,0,0],[0.62+(A-0.62)*ap.lk,0,0]);
   // depth order of the solid objects
   const obj=sel('#dg-obj'), items=[['dg-j0',dep(c0)],['dg-lk',dep([A/2,0,0])],['dg-j1',dep(cI)]].sort((p,q)=>q[1]-p[1]);
   items.forEach(it=>obj.appendChild(sel('#'+it[0])));
@@ -214,12 +215,12 @@ function R(){
   const x0a=setAxis('dg-x0',O0,[1,0,0],(A+1.7)*ap.x0,34,0);
   const po=P(O0),o0=sel('#dg-o0');o0.setAttribute('cx',f1(po[0]));o0.setAttribute('cy',f1(po[1]));
   // goal preview (frame {i})
-  const ga=arrowPaths(FI.o,FI.x,1.9,32),gb=arrowPaths(FI.o,FI.z,2.3,32);setD('#dg-gx-l',ga.line);setD('#dg-gx-h',ga.head);setD('#dg-gz-l',gb.line);setD('#dg-gz-h',gb.head);
-  const pg=P(FI.o);const go=sel('#dg-go');go.setAttribute('cx',f1(pg[0]));go.setAttribute('cy',f1(pg[1]));
+  const xia=setAxis('dg-xi',FI.o,FI.x,1.9*ap.xi,32,0);const pg=P(FI.o),oi=sel('#dg-oi');oi.setAttribute('cx',f1(pg[0]));oi.setAttribute('cy',f1(pg[1]));
   const qm=sel('#dg-qm'),pq=P(add(FI.o,[0,0,2.9]));qm.setAttribute('transform','translate('+f1(pq[0])+','+f1(pq[1])+')');
   // ghost = transparent copy of joint {i-1} riding with the moving frame
   drawJoint('dg-g',FM.o,FM.x,FM.y,FM.z);
   const gx=setAxis('dg-gx',FM.o,FM.x,1.9,32,0),gz=setAxis('dg-gz',FM.o,FM.z,2.3,32,0);
+  const gq=cyl(FM.o,FM.x,FM.y,FM.z,0.52,-1.25,1.05);setD('#dg-gl',gq.body);const pk=P(add(FM.o,mul(FM.z,1.55))),ck=sel('#dg-ck');ck.setAttribute('transform','translate('+f1(pk[0]+62)+','+f1(pk[1]-26)+')');
   const pm=P(FM.o),go2=sel('#dg-go2');go2.setAttribute('cx',f1(pm[0]));go2.setAttribute('cy',f1(pm[1]));
   // trail of the moving origin
   setD('#dg-trail',Lp([P(O0),P([st.a,0,0]),P(FM.o)]));
@@ -244,9 +245,9 @@ function R(){
   if(st.th>0.05){const e=P(tp[N]),s2=P(tp[N-2]);const dx=e[0]-s2[0],dy=e[1]-s2[1],L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,h=34;setD('#dg-th-h','M'+f1(e[0]+ux*h*.7)+','+f1(e[1]+uy*h*.7)+'L'+f1(e[0]+nx*h*.55)+','+f1(e[1]+ny*h*.55)+'L'+f1(e[0]-nx*h*.55)+','+f1(e[1]-ny*h*.55)+'Z');}else setD('#dg-th-h','');
   const um=Math.max(st.th,TH)/2;place('dg-L-th',add(FM.o,mul(add(mul([1,0,0],Math.cos(um)),mul(yd,Math.sin(um))),2.2)),0,0);
   // static labels
-  place('dg-L-j0',add(O0,[0,0,-1.15]),-30,70);place('dg-L-lk',[A/2,0,0],0,-80);place('dg-L-j1',add(FI.o,[0,0,-1.15]),70,70);
-  place('dg-L-z0',add(O0,[0,0,3.1]),44,-2);place('dg-L-z1',add(Q,mul(Zd(AL),3.2)),48,-4);place('dg-L-x0',[A+1.7,0,0],48,18);place('dg-L-f0',O0,-88,-12);place('dg-L-gi',FI.o,90,62);
-  place('dg-L-xi',add(FM.o,mul(FM.x,1.9)),40,-8);place('dg-L-zi',add(FM.o,mul(FM.z,2.3)),40,-8);place('dg-L-fi',FM.o,95,58);
+  place('dg-L-j0',add(O0,[0,0,-1.4]),-50,75);place('dg-L-lk',[A*0.36,0,0],-20,-100);place('dg-L-j1',add(FI.o,[0,0,-1.3]),90,75);
+  place('dg-L-z0',add(O0,[0,0,3.1]),44,-2);place('dg-L-z1',add(Q,mul(Zd(AL),3.2)),48,-4);place('dg-L-x0',[A+1.7,0,0],48,18);place('dg-L-f0',O0,-150,-30);place('dg-L-gi',FI.o,100,56);
+  place('dg-L-xi',add(FI.o,mul(FI.x,1.9)),46,-10);place('dg-L-xp',add(FM.o,mul(FM.x,1.9)),44,-26);
   // numbers
   const set=(id,t)=>{const e=sel('#'+id);if(e)e.textContent=t;};
   set('dg-n-a',n1(st.a));set('dg-n-al',deg(st.al));set('dg-n-d',n1(st.d));set('dg-n-th',deg(st.th));
@@ -278,9 +279,9 @@ tl.to(ap,{z1:1,duration:0.9,ease:'power2.inOut'},7.2); tl.fromTo('#dg-L-z1',{opa
 tl.fromTo('#dg-o0',{opacity:0},{opacity:1,duration:0.3,ease:'none'},10.0); tl.set('#dg-o0',{opacity:0},0);
 tl.to(ap,{x0:1,duration:1.0,ease:'power2.inOut'},10.3); tl.fromTo('#dg-L-x0',{opacity:0,y:18},{opacity:1,y:0,duration:0.3,ease},11.3);
 tl.fromTo('#dg-L-f0',{opacity:0,y:18},{opacity:1,y:0,duration:0.3,ease},12.2);
-tl.fromTo('#dg-goal',{opacity:0},{opacity:1,duration:0.45,ease:'none'},15.1); tl.fromTo('#dg-L-gi',{opacity:0},{opacity:1,duration:0.3,ease:'none'},15.4);
+tl.fromTo('#dg-oi',{opacity:0},{opacity:1,duration:0.3,ease:'none'},10.9); tl.to(ap,{xi:1,duration:1.0,ease:'power2.inOut'},11.2); tl.fromTo('#dg-L-xi',{opacity:0},{opacity:1,duration:0.3,ease:'none'},12.2); tl.fromTo('#dg-L-gi',{opacity:0},{opacity:1,duration:0.3,ease:'none'},12.6);
 tl.fromTo('#dg-qm',{opacity:0,scale:0.3,transformOrigin:'50% 50%'},{opacity:1,scale:1,duration:0.35,ease:'back.out(1.7)'},17.3);
-tl.to('#dg-goal,#dg-L-gi',{opacity:0,duration:0.4,ease:'none'},${TM.a - 0.4});
+tl.to('#dg-qm',{opacity:0,duration:0.3,ease:'none'},${TM.a - 0.4});
 // ---- parameter phases
 function card(id,t){['a','al','d','th','as'].forEach(c=>tl.set('#dg-pc-'+c,{opacity:c===id?1:0},t));tl.fromTo('#dg-pc-'+id,{x:90},{x:0,duration:0.4,ease:'power4.out'},t);}
 function dotOn(id,t){tl.set('#dg-dot-'+id,{className:'dot on'},t);}
@@ -290,32 +291,33 @@ tl.set('.dot',{className:'dot'},0);
 const hp=(id,t)=>tl.fromTo('#dg-hp-'+id,{opacity:0},{opacity:1,duration:0.5,ease:'none'},t);
 const dim=(id,t,o)=>tl.to('#dg-hp-'+id,{opacity:o,duration:0.4,ease:'none'},t);
 // a
-camTo('a',${TM.a - 0.2},1.8); card('a',${TM.a}); val('a',${TM.a + 0.4}); dotOn('a',${TM.a});
+camTo('a',${TM.a - 1.4},2.8); card('a',${TM.a}); val('a',${TM.a + 0.4}); dotOn('a',${TM.a});
 tl.fromTo('#dg-gh',{opacity:0},{opacity:1,duration:0.5,ease:'none'},${TM.a + 0.9}); tl.fromTo('#dg-trail',{opacity:0},{opacity:0.9,duration:0.4,ease:'none'},${TM.a + 1.4});
 hp('a',${TM.a + 1.0}); tl.to(st,{a:A,duration:3.0,ease:'power2.inOut'},${TM.a + 1.7});
 tl.fromTo('#dg-L-a',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.a + 4.6});
 tl.fromTo('#dg-L-lk',{opacity:0,y:20},{opacity:1,y:0,duration:0.3,ease:'power4.out',immediateRender:false},${TM.a + 6.6}); tl.to('#dg-L-lk',{opacity:0,duration:0.3,ease:'none'},${TM.a + 10.9});
 [${TM.a + 6.9},${TM.a + 8.7}].forEach(t=>tl.fromTo('#dg-lk-t',{strokeWidth:48},{strokeWidth:70,duration:0.35,ease:'power2.out',yoyo:true,repeat:1,immediateRender:false},t));
 // alpha
+tl.to('#dg-L-x0',{opacity:0,duration:0.3,ease:'none'},${TM.al - 1.4}); tl.to('#dg-L-x0',{opacity:1,duration:0.3,ease:'none'},${TM.d + 1.5});
 dim('a',${TM.al},0.3); tl.to('#dg-L-a',{opacity:0,duration:0.3,ease:'none'},${TM.al});
-camTo('al',${TM.al - 0.2},1.8); card('al',${TM.al}); val('al',${TM.al + 0.4}); dotOn('al',${TM.al});
+camTo('al',${TM.al - 1.4},2.8); card('al',${TM.al}); val('al',${TM.al + 0.4}); dotOn('al',${TM.al});
 hp('al',${TM.al + 1.0}); tl.fromTo('#dg-L-al',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.al + 4.8});
 tl.to(st,{al:AL,duration:3.0,ease:'power2.inOut'},${TM.al + 1.8});
 tl.to(st,{al:0,duration:1.1,ease:'power2.inOut'},${TM.al + 7.4}); tl.to(st,{al:AL,duration:1.1,ease:'power2.inOut'},${TM.al + 9.6});
 // d
 dim('al',${TM.d},0.3); tl.to('#dg-L-al',{opacity:0,duration:0.3,ease:'none'},${TM.d});
-camTo('d',${TM.d - 0.2},1.8); card('d',${TM.d}); val('d',${TM.d + 0.4}); dotOn('d',${TM.d});
+camTo('d',${TM.d - 1.4},2.8); card('d',${TM.d}); val('d',${TM.d + 0.4}); dotOn('d',${TM.d});
 hp('d',${TM.d + 1.0}); tl.fromTo('#dg-L-d',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.d + 4.5});
 tl.to(st,{d:D,duration:2.8,ease:'power2.inOut'},${TM.d + 1.8});
 tl.to(st,{d:-0.55,duration:1.2,ease:'power2.inOut'},${TM.d + 7.0}); tl.to(st,{d:D,duration:1.2,ease:'power2.inOut'},${TM.d + 9.0});
 // theta
 dim('d',${TM.th},0.3); tl.to('#dg-L-d',{opacity:0,duration:0.3,ease:'none'},${TM.th});
-camTo('th',${TM.th - 0.2},1.8); card('th',${TM.th}); val('th',${TM.th + 0.4}); dotOn('th',${TM.th});
+camTo('th',${TM.th - 2.4},3.8); card('th',${TM.th}); val('th',${TM.th + 0.4}); dotOn('th',${TM.th});
 hp('th',${TM.th + 1.0}); tl.fromTo('#dg-L-th',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.th + 4.8});
 tl.to(st,{th:TH,duration:3.0,ease:'power2.inOut'},${TM.th + 1.8});
 tl.to(st,{th:1.48,duration:1.5,ease:'power2.inOut'},${TM.th + 8.0}); tl.to(st,{th:TH,duration:1.4,ease:'power2.inOut'},${TM.th + 9.9});
 // assemble: rewind, replay, land
-dim('th',${TM.as},0); tl.to('#dg-L-th,#dg-trail',{opacity:0,duration:0.3,ease:'none'},${TM.as}); camTo('as',${TM.as},2.0);
+dim('th',${TM.as},0); tl.to('#dg-L-th,#dg-trail',{opacity:0,duration:0.3,ease:'none'},${TM.as}); camTo('as',${TM.as - 0.4},2.8);
 card('as',${TM.as}); tl.to('#dg-v-th',{opacity:0,duration:0.2,ease:'none'},${TM.as});
 tl.to(st,{th:0,d:0,al:0,a:0,duration:0.9,ease:'power2.inOut'},${TM.as + 0.2});
 tl.fromTo('#dg-trail',{opacity:0},{opacity:0.9,duration:0.3,ease:'none',immediateRender:false},${TM.as + 1.2});
@@ -325,7 +327,10 @@ tl.to(st,{d:D,duration:1.1,ease:'power2.inOut'},${TM.as + 4.0}); tl.set('#dg-ch-
 tl.to(st,{th:TH,duration:1.1,ease:'power2.inOut'},${TM.as + 5.3}); tl.set('#dg-ch-th',{className:'chip on'},${TM.as + 5.3});
 tl.set('#dg-ch-a,#dg-ch-al,#dg-ch-d,#dg-ch-th',{className:'chip'},${TM.as + 0.1}); tl.set('#dg-ch-a',{className:'chip on'},${TM.as + 1.4});
 tl.to('#dg-L-z1',{opacity:0,duration:0.2,ease:'none'},${TM.as + 6.3});
-tl.fromTo('#dg-L-xi,#dg-L-zi,#dg-L-fi',{opacity:0,scale:0.6},{opacity:1,scale:1,duration:0.4,ease:'back.out(1.5)',immediateRender:false},${TM.as + 6.5});
+tl.fromTo('#dg-L-xp',{opacity:0},{opacity:1,duration:0.3,ease:'none'},${TM.d + 2.0}); tl.to('#dg-L-xp',{opacity:0,duration:0.3,ease:'none'},${TM.as + 6.0});
+const landed=t=>{tl.fromTo('#dg-ck2',{opacity:0,scale:0.3,transformOrigin:'50% 50%'},{opacity:1,scale:1,duration:0.3,ease:'back.out(2.2)',immediateRender:false},t);tl.to('#dg-ck2',{opacity:0,duration:0.3,ease:'none'},t+1.3);
+  tl.fromTo('#dg-gl',{opacity:0},{opacity:0.95,duration:0.18,ease:'power2.out',immediateRender:false},t);tl.to('#dg-gl',{opacity:0,duration:0.7,ease:'power2.in'},t+0.18);};
+[${TM.a + 4.7},${TM.al + 4.8},${TM.d + 4.6},${TM.th + 4.8},${TM.as + 6.5}].forEach(landed);
 R();
 window.__timelines['diagram']=tl;
 `;
@@ -345,12 +350,12 @@ window.__timelines['diagram']=tl;
     [t.d, 4.65],
     [t.th, 4.85],
   ]) {
-    sfx("whoosh", T0 - 0.2, 0.4);
+    sfx("whoosh-short", T0 - 0.2, 0.25);
+    sfx("servo", T0 + 1.75, 0.2);
     sfx("click-soft", T0 + 1.8, 0.4);
     sfx("ping", T0 + dur, 0.5);
   }
-  sfx("sparkle", t.th + 8.1, 0.45);
-  sfx("notification", t.th + 10.9, 0.25);
+  sfx("sparkle", t.th + 8.1, 0.35);
   sfx("whoosh", t.as + 0.2, 0.4);
   [1.4, 2.7, 4.0, 5.3].forEach((x) => sfx("click-soft", t.as + x, 0.45));
   sfx("riser", t.as + 6.7 - 10.03, 0.25);

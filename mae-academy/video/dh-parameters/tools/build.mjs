@@ -3,6 +3,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { cues, cue, SFX_DUR } from "./lib.mjs";
 import { buildDiagram } from "./diagram.mjs";
 import { buildIntro, buildHook, buildSummary, buildOutro } from "./scenes.mjs";
+import { buildExample, EX_DUR } from "./example.mjs";
 mkdirSync("compositions", { recursive: true });
 
 const plan = [
@@ -10,6 +11,7 @@ const plan = [
   ["hook", buildHook, 12.0],
   ["diagram", buildDiagram, 80.4],
   ["summary", buildSummary, 13.0],
+  ["example", buildExample, EX_DUR],
   ["outro", buildOutro, 6.0],
 ];
 let t = 0;

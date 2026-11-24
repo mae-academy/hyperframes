@@ -29,12 +29,12 @@ function cyl(c,X,Y,Z,r,t0,t1,n){n=n||36;const f=FWD(),topVis=dot(Z,f)<0;const R0
   const tc=topVis?t1:t0,cap=[];for(let k=0;k<n;k++){const a=k/n*Math.PI*2;cap.push(P(add(add(c,mul(Z,tc)),mul(add(mul(X,Math.cos(a)),mul(Y,Math.sin(a))),r))));}
   return {body:Dp(hull(R0.concat(R1))),lit:L0.length>2?Dp(hull(L0.concat(L1))):'',cap:Dp(cap),topVis,tc};}
 // the joint: base disc + steel body + gold rotating head + hub + a notch that shows the joint's own X direction
-function drawJoint(p,c,X,Y,Z,s,ls){s=s||1;ls=ls||1;const parts=[['base',0.64*s,-1.15*ls,-1.0*ls],['body',0.5*s,-1.0*ls,0.45*ls],['head',0.44*s,0.45*ls,1.05*ls]];
+function drawJoint(p,c,X,Y,Z,s,ls){s=s||1;ls=ls||1;const parts=[['base',0.64*s,-1.4*ls,-1.25*ls],['body',0.5*s,-1.25*ls,0.45*ls],['head',0.44*s,0.45*ls,1.05*ls]];
   for(const [k,r,t0,t1] of parts){const q=cyl(c,X,Y,Z,r,t0,t1);setD('#'+p+'-'+k+'-b',q.body);setD('#'+p+'-'+k+'-l',q.lit);setD('#'+p+'-'+k+'-c',q.cap);}
   const f=FWD(),top=dot(Z,f)<0,ctop=add(c,mul(Z,1.05*ls));
   if(top){const ring=[];for(let k=0;k<20;k++){const a=k/20*Math.PI*2;ring.push(P(add(ctop,mul(add(mul(X,Math.cos(a)),mul(Y,Math.sin(a))),0.15*s))));}
     setD('#'+p+'-hub',Dp(ring));const a=P(ctop),b=P(add(ctop,mul(X,0.42*s)));setD('#'+p+'-notch',Lp([a,b]));
-    const d=sel('#'+p+'-dot');if(d){d.setAttribute('cx',f1(b[0]));d.setAttribute('cy',f1(b[1]));}}
+    }
   else{setD('#'+p+'-hub','');setD('#'+p+'-notch','');}}
 function arrowPaths(o,dir,len,head,len0){const s=P(add(o,mul(dir,len0||0))),e=P(add(o,mul(dir,len)));const dx=e[0]-s[0],dy=e[1]-s[1];const L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
   const h=Math.min(head||30,L*0.6),b=[e[0]-ux*h,e[1]-uy*h],nx=-uy,ny=ux;
@@ -47,6 +47,8 @@ function capsule(id,a,b,w){const A=P(a),B=P(b);const d='M'+f1(A[0])+','+f1(A[1])
   const off=[-7,-8];setD('#'+id+'-s','M'+f1(A[0]+off[0])+','+f1(A[1]+off[1])+'L'+f1(B[0]+off[0])+','+f1(B[1]+off[1]));}
 function floor(id,z,x0,x1,y0,y1,step){let d='';for(let x=x0;x<=x1+1e-6;x+=step)d+=seg3([x,y0,z],[x,y1,z]);for(let y=y0;y<=y1+1e-6;y+=step)d+=seg3([x0,y,z],[x1,y,z]);setD('#'+id+'-g',d);
   setD('#'+id+'-p',Dp([P([x0,y0,z]),P([x1,y0,z]),P([x1,y1,z]),P([x0,y1,z])]));}
+function drawGripper(p,H,u,n,open){open=open==null?0.45:open;const Y=cross(u,n);drawJoint(p+'-w',H,n,Y,u,0.36,0.5);
+  const pl=add(H,mul(u,0.7)),a=add(pl,mul(n,open)),b=add(pl,mul(n,-open));capsule(p+'-pm',a,b);capsule(p+'-f1',a,add(a,mul(u,0.75)));capsule(p+'-f2',b,add(b,mul(u,0.75)));}
 `;
 
 // DOM for one joint. ghost=true -> transparent copy that travels with a frame
@@ -54,20 +56,22 @@ export const jointDom = (p, ghost = false) => `<g id="${p}" class="joint${ghost 
  <path id="${p}-base-b" class="b j-base-b"/><path id="${p}-base-c" class="c j-base-c"/>
  <path id="${p}-body-b" class="b j-body-b"/><path id="${p}-body-l" class="l j-body-l"/><path id="${p}-body-c" class="c j-body-c"/>
  <path id="${p}-head-b" class="b j-head-b"/><path id="${p}-head-l" class="l j-head-l"/><path id="${p}-head-c" class="c j-head-c"/>
- <path id="${p}-hub" class="j-hub"/><path id="${p}-notch" class="j-notch" fill="none"/><circle id="${p}-dot" class="j-dot" r="9"/>
+ <path id="${p}-hub" class="j-hub"/><path id="${p}-notch" class="j-notch" fill="none"/>
 </g>`;
 export const axisDom = (id, col, w = 9) =>
   `<g id="${id}"><path id="${id}-l" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/><path id="${id}-h" fill="${col}" stroke="${col}" stroke-width="2" stroke-linejoin="round"/></g>`;
-export const capsuleDom = (id) =>
-  `<g id="${id}" fill="none" stroke-linecap="round"><path id="${id}-o" stroke="#0B1F3A" stroke-width="62"/><path id="${id}-t" stroke="#18B5C8" stroke-width="48"/><path id="${id}-s" stroke="#8FE3EE" stroke-width="12" opacity=".75"/></g>`;
+export const capsuleDom = (id, wo = 62, wt = 48, ws = 12) =>
+  `<g id="${id}" fill="none" stroke-linecap="round"><path id="${id}-o" stroke="#0B1F3A" stroke-width="${wo}"/><path id="${id}-t" stroke="#18B5C8" stroke-width="${wt}"/><path id="${id}-s" stroke="#8FE3EE" stroke-width="${ws}" opacity=".75"/></g>`;
+export const gripperDom = (p) =>
+  `<g id="${p}">${jointDom(p + "-w")}${capsuleDom(p + "-pm", 44, 32, 9)}${capsuleDom(p + "-f1", 30, 20, 6)}${capsuleDom(p + "-f2", 30, 20, 6)}</g>`;
 
 export const CSS3D = `
 .joint path.b,.joint path.c{stroke:#0B1F3A;stroke-width:5;stroke-linejoin:round}
 .joint path.l{stroke:none}
 .j-base-b{fill:#16294D}.j-base-c{fill:#223A66}.j-body-b{fill:#2E4D80}.j-body-l{fill:#6E93D8}.j-body-c{fill:#4A6DAA}
 .j-head-b{fill:#E8A300}.j-head-l{fill:#FFD54A}.j-head-c{fill:#FFE38A}.j-hub{fill:#0B1F3A;stroke:none}
-.j-notch{stroke:#0B1F3A;stroke-width:12;stroke-linecap:round}.j-dot{fill:#E5173F;stroke:#fff;stroke-width:4}
-.gh path.b,.gh path.c{fill:#8FB0F5;fill-opacity:.22;stroke:#1565FF;stroke-width:4.5;stroke-dasharray:14 9}
-.gh path.l{display:none}.gh .j-hub{fill:#1565FF;fill-opacity:.55;stroke:none}.gh .j-notch{stroke:#1565FF}.gh .j-dot{fill:#1565FF}
+.j-notch{stroke:#0B1F3A;stroke-width:12;stroke-linecap:round}
+.gh path.b,.gh path.c{fill:#8FB0F5;fill-opacity:var(--gf,.22);stroke:var(--gc,#1565FF);stroke-width:var(--gw,4.5px);stroke-dasharray:14 9}
+.gh path.l{display:none}.gh .j-hub{fill:#1565FF;fill-opacity:.55;stroke:none}.gh .j-notch{stroke:var(--gc,#1565FF)}
 .lbl{pointer-events:none}.tx{display:inline-block;direction:ltr;unicode-bidi:isolate}
 `;

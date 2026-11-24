@@ -1,5 +1,5 @@
 import { C, FONT_CSS, BASE_CSS, EN, TX, words, cue, exitTL, entryTL } from "./lib.mjs";
-import { ENGINE, jointDom, axisDom, capsuleDom, CSS3D } from "./engine.mjs";
+import { ENGINE, jointDom, axisDom, capsuleDom, gripperDom, CSS3D } from "./engine.mjs";
 
 const CAP_CSS = (right, width) => `
 .cap{position:absolute;right:${right}px;width:${width}px;bottom:48px;min-height:150px;direction:rtl}
@@ -36,7 +36,7 @@ const Zd=al=>[0,-Math.sin(al),Math.cos(al)],Yd=al=>[0,Math.cos(al),Math.sin(al)]
 const frame=(a,al,d,th)=>{const z=Zd(al),y=Yd(al);const x=[Math.cos(th),Math.sin(th)*y[1],Math.sin(th)*y[2]];return {o:add([a,0,0],mul(z,d)),x,z,y:cross(z,x)};};
 const Q=[A,0,0],O0=[0,0,0],FI=frame(A,AL,D,TH);
 Object.assign(cam,{psi:${psi0},phi:20,sc:${sc},tx:1.9,ty:0,tz:0.5,sx:1560,sy:600});
-function R3(){camSet();floor('m3-fl',-1.2,-1.5,6,-3,3,1);
+function R3(){camSet();floor('m3-fl',-1.45,-1.5,6,-3,3,1);
   drawJoint('m3-j0',O0,[1,0,0],[0,1,0],[0,0,1]);drawJoint('m3-j1',FI.o,FI.x,FI.y,FI.z);capsule('m3-lk',[0.62,0,0],[A-0.53,0,0]);
   const obj=sel('#m3-obj');[['m3-j0',dep(O0)],['m3-lk',dep([A/2,0,0])],['m3-j1',dep(FI.o)]].sort((p,q)=>q[1]-p[1]).forEach(it=>obj.appendChild(sel('#'+it[0])));
   setAxis('m3-z0',O0,[0,0,1],3.5,34,-1.4);setAxis('m3-z1',Q,Zd(AL),3.2,34,-1.9);setAxis('m3-x0',O0,[1,0,0],A+1.7,34,0);
@@ -115,7 +115,7 @@ export function buildHook(startAbs) {
  <g><path id="hk-fl-p" fill="#D3E1FA" fill-opacity=".75"/><path id="hk-fl-g" fill="none" stroke="#A9C0EC" stroke-width="2.5"/></g>
  <g id="hk-obj"><g id="hk-pd"><path id="hk-pd-b" class="joint" fill="#16294D" stroke="${C.ink}" stroke-width="5" stroke-linejoin="round"/><path id="hk-pd-l" fill="#2E4D80" stroke="${C.ink}" stroke-width="5" stroke-linejoin="round"/><path id="hk-pd-c" fill="#4A6DAA" stroke="${C.ink}" stroke-width="5" stroke-linejoin="round"/></g>
   ${jointDom("hk-j0")}${capsuleDom("hk-k1")}${jointDom("hk-j1")}${capsuleDom("hk-k2")}
-  <path id="hk-gr" fill="none" stroke="${C.ink}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></g>
+  ${gripperDom("hk-gp")}</g>
  <g id="hk-q" opacity="0"><circle r="50" fill="#fff" stroke="${C.red}" stroke-width="8"/><text font-family="Inter,sans-serif" font-weight="900" font-size="70" fill="${C.red}" text-anchor="middle" dy="24">?</text></g>
  <text id="hk-co" class="coord" opacity="0" style="direction:ltr;unicode-bidi:isolate">(x, y, z) = ?</text>
 </svg>`;
@@ -130,8 +130,8 @@ function R(){camSet();floor('hk-fl',-0.05,-3,8,-4.5,4.5,1);
   capsule('hk-k1',J0,j1);capsule('hk-k2',j1,H);
   const q=cyl([0,0,0],[1,0,0],[0,1,0],[0,0,1],0.75,0,J0[2]-0.2);setD('#hk-pd-b',q.body);setD('#hk-pd-l',q.lit);setD('#hk-pd-c',q.cap);
   const u=[Math.cos(a2),0,Math.sin(a2)],n=[-Math.sin(a2),0,Math.cos(a2)],tip=add(H,mul(u,0.55));
-  setD('#hk-gr',Lp([P(add(add(H,mul(u,0.3)),mul(n,0.4))),P(add(tip,mul(n,0.4))),P(add(H,mul(n,0.4))),P(add(H,mul(n,-0.4))),P(add(tip,mul(n,-0.4))),P(add(add(H,mul(u,0.3)),mul(n,-0.4)))]));
-  const obj=sel('#hk-obj');[['hk-pd',dep([0,0,0.4])],['hk-j0',dep(J0)],['hk-k1',dep(add(J0,mul(sub(j1,J0),0.5)))],['hk-j1',dep(j1)],['hk-k2',dep(add(j1,mul(sub(H,j1),0.5)))],['hk-gr',dep(tip)]].sort((p,q)=>q[1]-p[1]).forEach(it=>obj.appendChild(sel('#'+it[0])));
+  drawGripper('hk-gp',add(H,mul(u,0.1)),u,n,0.42);
+  const obj=sel('#hk-obj');[['hk-pd',dep([0,0,0.4])],['hk-j0',dep(J0)],['hk-k1',dep(add(J0,mul(sub(j1,J0),0.5)))],['hk-j1',dep(j1)],['hk-k2',dep(add(j1,mul(sub(H,j1),0.5)))],['hk-gp',dep(tip)]].sort((p,q)=>q[1]-p[1]).forEach(it=>obj.appendChild(sel('#'+it[0])));
   const ph=P(H),qb=sel('#hk-q');qb.setAttribute('transform','translate('+f1(ph[0]+150)+','+f1(ph[1]-110)+')');const co=sel('#hk-co');co.setAttribute('x',f1(ph[0]+60));co.setAttribute('y',f1(ph[1]+130));}
 const tl=gsap.timeline({paused:true});
 tl.eventCallback('onUpdate',R);
@@ -204,8 +204,8 @@ ${exitTL(".wrap", dur)}
 ['sm-cd1','sm-cd2'].forEach((id,i)=>{ const t=6.2+i*1.3; tl.set('#'+id,{opacity:1},t); tl.fromTo('#'+id,{y:70},{y:0,duration:0.25,ease:'power4.out'},t); });
 tl.set('.foot',{opacity:1},10.0); tl.fromTo('.foot',{y:50},{y:0,duration:0.3,ease:'power4.out'},10.0);
 tl.set('#sm-rv',{attr:{transform:'translate(52 104) rotate(-8)'}},0);
-tl.to('#sm-rv',{attr:{transform:'translate(52 104) rotate(-52)'},duration:1.6,ease:'power2.inOut'},6.6); tl.to('#sm-rv',{attr:{transform:'translate(52 104) rotate(-8)'},duration:1.6,ease:'power2.inOut'},9.0);
-tl.to('#sm-pr',{x:46,duration:1.6,ease:'power2.inOut'},7.9); tl.to('#sm-pr',{x:0,duration:1.4,ease:'power2.inOut'},9.8);
+[0,1,2].forEach(k=>{const t=6.6+k*3.4;tl.to('#sm-rv',{attr:{transform:'translate(52 104) rotate(-52)'},duration:1.6,ease:'power2.inOut'},t);tl.to('#sm-rv',{attr:{transform:'translate(52 104) rotate(-8)'},duration:1.6,ease:'power2.inOut'},t+1.7);});
+[0,1,2].forEach(k=>{const t=7.4+k*3.0;tl.to('#sm-pr',{x:46,duration:1.4,ease:'power2.inOut'},t);tl.to('#sm-pr',{x:0,duration:1.4,ease:'power2.inOut'},t+1.5);});
 window.__timelines['summary']=tl;`;
   [1.2, 2.35, 3.5, 4.65].forEach((t) => {
     sfx("pop", t, 0.45);
@@ -215,7 +215,7 @@ window.__timelines['summary']=tl;`;
   sfx("pop", 6.2, 0.5);
   sfx("pop", 7.5, 0.5);
   sfx("ping", 10.05, 0.5);
-  sfx("chime", 10.1, 0.3);
+  sfx("click-soft", 10.1, 0.35);
   const html = `<template><style>${css}</style>
 <div id="root" data-composition-id="summary" data-width="1920" data-height="1080"><div class="wrap">
  <div class="ttl">ملخص: الأرقام الأربعة</div><div class="ttl2">DH Parameters</div>
@@ -254,7 +254,7 @@ window.__timelines['outro']=tl;`;
   sfx("whoosh-short", 0.05, 0.3);
   sfx("pop", 0.55, 0.4);
   [1.2, 1.42, 1.64, 1.86].forEach((t, i) => sfx("pop", t, 0.5 - i * 0.04));
-  sfx("chime", 3.2, 0.4);
+  sfx("click-soft", 3.2, 0.4);
   sfx("sparkle", 3.3, 0.45);
   const html = `<template><style>${css}</style>
 <div id="root" data-composition-id="outro" data-width="1920" data-height="1080"><div class="wrap">

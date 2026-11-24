@@ -104,6 +104,7 @@ export const SFX_DUR = {
   notification: 2.46,
   typing: 1.5,
   "key-press": 0.4,
+  servo: 1.3,
 };
 export const cues = [];
 export const cue = (name, t, vol = 0.5) => cues.push({ name, t: +t.toFixed(3), vol });
