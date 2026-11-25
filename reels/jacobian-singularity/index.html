@@ -67,7 +67,7 @@ window.__CFG = {"T":{"rewind0":1.6,"st":[2.4,4.2,6,7.8,9.8,12.4,15,17.4],"sw":[2
 // between them is det J = L1 L2 sin(theta2). Text, counters and cards are GSAP. Everything is a pure function of timeline time.
 (function () {
   const CFG = window.__CFG;
-  const { T, VIEW, HUD, DK, L1, L2, PL, PR } = CFG;
+  const { T, VIEW, HUD, DK, L1, L2, PL } = CFG;
   const tl = gsap.timeline({ paused: true });
   const ft = (target, from, to, at) =>
     tl.fromTo(target, from, Object.assign({ immediateRender: false }, to), at);
