@@ -1,0 +1,126 @@
+// [file, globalStart, volume, duration, mediaStart, fadeIn]. Every effect is caused by something on screen.
+const W = "whoosh",
+  WS = "whoosh-short",
+  P = "pop",
+  K = "click",
+  KS = "click-soft",
+  SV = "servo";
+const dur = {
+  whoosh: 0.57,
+  "whoosh-short": 0.57,
+  pop: 0.55,
+  click: 0.37,
+  "click-soft": 0.37,
+  servo: 4.0,
+  sparkle: 1.8,
+  riser: 10.03,
+  "impact-bass-2": 2.59,
+};
+const ev = [
+  // hook + setup
+  [P, 4.0, 0.3],
+  [P, 9.3, 0.3],
+  [WS, 12.2, 0.25],
+  [KS, 15.9, 0.35],
+  [P, 16.5, 0.3],
+  [WS, 17.3, 0.22],
+  [P, 20.5, 0.3],
+  // step 1
+  [W, 25.85, 0.32],
+  [P, 26.5, 0.28],
+  [WS, 26.2, 0.2],
+  [P, 27.4, 0.25],
+  [P, 28.4, 0.25],
+  [SV, 30.6, 0.24, 4.0],
+  [K, 35.7, 0.42],
+  [P, 36.3, 0.3],
+  [WS, 38.3, 0.22],
+  [SV, 39.2, 0.2, 2.4],
+  [P, 43.7, 0.34],
+  // step 2
+  [W, 46.85, 0.32],
+  [P, 47.5, 0.28],
+  [WS, 47.1, 0.2],
+  [SV, 51.7, 0.24, 4.0],
+  [K, 56.6, 0.42],
+  [P, 57.2, 0.3],
+  [SV, 58.9, 0.2, 2.9],
+  [P, 62.9, 0.34],
+  // step 3
+  [W, 65.85, 0.32],
+  [P, 66.5, 0.28],
+  [WS, 66.1, 0.2],
+  [P, 68.2, 0.25],
+  [SV, 70.6, 0.24, 3.5],
+  [K, 74.5, 0.42],
+  [P, 75.1, 0.3],
+  [SV, 77.1, 0.2, 3.3],
+  [P, 81.1, 0.34],
+  // step 4
+  [W, 82.85, 0.32],
+  [P, 83.5, 0.28],
+  [WS, 83.1, 0.2],
+  [P, 85.0, 0.25],
+  [SV, 87.8, 0.24, 4.0],
+  [K, 93.2, 0.42],
+  [P, 93.8, 0.3],
+  [SV, 94.7, 0.2, 3.5],
+  [P, 99.5, 0.34],
+  // recap
+  [W, 101.9, 0.3],
+  [WS, 104.5, 0.25],
+  [P, 105.0, 0.25],
+  [P, 107.5, 0.25],
+  [P, 110.0, 0.25],
+  [KS, 112.6, 0.3],
+  // table
+  [W, 113.85, 0.32],
+  [P, 115.4, 0.3],
+  [P, 118.7, 0.28],
+  [P, 122.5, 0.28],
+  [P, 126.2, 0.28],
+  [P, 129.7, 0.28],
+  // example
+  [W, 132.85, 0.32],
+  [P, 134.6, 0.26],
+  [P, 135.2, 0.26],
+  [P, 135.8, 0.26],
+  [P, 136.4, 0.26],
+  [P, 138.3, 0.28],
+  [P, 142.0, 0.28],
+  [P, 145.6, 0.28],
+  [P, 149.4, 0.28],
+  [P, 153.1, 0.28],
+  [P, 156.9, 0.3],
+  [K, 160.2, 0.42],
+  // outro: whoosh into scene, riser into the final impact, sparkle when the line aligns
+  [W, 161.85, 0.32],
+  ["sparkle", 164.5, 0.3],
+  ["riser", 163.0, 0.3, 3.6, 0.6, 0.6],
+  ["impact-bass-2", 166.6, 0.5],
+];
+export const SFX = ev.map(([f, t, v, d, ms, fi]) => ({
+  f,
+  t,
+  v,
+  d: d ?? dur[f],
+  ms: ms ?? 0,
+  fi: fi ?? 0,
+}));
+export function sfxHtml() {
+  const lane = {
+    whoosh: 20,
+    "whoosh-short": 27,
+    pop: 21,
+    click: 22,
+    "click-soft": 22,
+    servo: 23,
+    riser: 24,
+    sparkle: 25,
+    "impact-bass-2": 26,
+  };
+  return SFX.map(
+    (s, i) =>
+      `<audio id="sfx-${String(i + 1).padStart(3, "0")}" class="clip" src="assets/sfx/${s.f}.mp3" data-start="${s.t.toFixed(2)}" data-duration="${s.d.toFixed(2)}"${s.ms ? ` data-media-start="${s.ms}"` : ""} data-track-index="${lane[s.f]}" data-volume="${s.v}"${s.fi ? ` data-fade-in="${s.fi}"` : ""}></audio>`,
+  ).join("\n      ");
+}

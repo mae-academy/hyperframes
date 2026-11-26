@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#F6F9FF}
+      #root{position:relative;width:1920px;height:1080px;overflow:hidden}
+      .ground{position:absolute;inset:0;background:linear-gradient(160deg,#F6F9FF 0%,#E4EDFD 100%)}
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="170" data-width="1920" data-height="1080">
+      <div class="ground"></div>
+      <div id="lab" class="clip" data-composition-id="lab" data-composition-src="compositions/lab.html" data-start="0" data-duration="114" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="table" class="clip" data-composition-id="table" data-composition-src="compositions/table.html" data-start="114" data-duration="19" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="example" class="clip" data-composition-id="example" data-composition-src="compositions/example.html" data-start="133" data-duration="29" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="outro" class="clip" data-composition-id="outro" data-composition-src="compositions/outro.html" data-start="162" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      /*__SFX__*/
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

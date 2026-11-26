@@ -1,0 +1,641 @@
+<template>
+  <style>
+/*__COMMON_CSS__*/
+    #lab-3d{position:absolute;left:0;top:0;width:1920px;height:1080px}
+    #labels{position:absolute;inset:0;pointer-events:none}
+    .lb{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;font-size:56px;font-weight:700;line-height:1;text-shadow:0 0 10px #fff,0 0 5px #fff}
+    .lb.sm{font-size:44px}
+    .lb .m{font-size:1em}
+    .lb.ar{font-family:"IBM Plex Sans Arabic",sans-serif}
+    .c-or{color:#D45A00}.c-gr{color:var(--green)}.c-bl{color:var(--blue)}.c-pu{color:var(--purple)}.c-nv{color:var(--navy)}.c-tl{color:var(--teal)}.c-gd{color:#B88A00}
+    /* cards */
+    .card{position:absolute;left:60px;top:96px;width:720px}
+    .card .panel{padding:22px 34px 20px;min-height:262px;direction:rtl;opacity:0}
+    .card .step{font-size:38px;font-weight:700;color:var(--navy);display:inline-block;border-bottom:7px solid var(--c);padding-bottom:2px}
+    .card .q{font-size:52px;line-height:1.3;font-weight:700;margin-top:6px;color:var(--navy)}
+    .card .nm{font-family:"Inter",sans-serif;font-weight:900;line-height:1.0;direction:ltr;text-align:left;margin-top:14px;color:var(--ct,var(--c));min-height:92px}
+    .card .nm .tw{display:inline-block}
+    .big{font-size:104px;line-height:1.15;text-align:center;font-weight:700}
+    .fpanel{position:absolute;left:60px;top:500px;width:720px}
+    .fpanel .panel{padding:22px 30px;text-align:center;opacity:0;min-height:170px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+    .fpanel .f1{font-size:80px;color:var(--navy)}
+    .fpanel .f2{font-size:56px;color:var(--navy)}
+    /* HUD chips */
+    .hud{position:absolute;left:1000px;top:70px;width:860px;height:110px}
+    .chip{position:absolute;top:0;height:104px;padding:0 24px;display:flex;align-items:center;gap:14px;direction:ltr;font-family:"Inter",sans-serif;opacity:0}
+    .chip .cs{font-size:60px;font-weight:700}
+    .chip .eq{font-size:52px;font-weight:700;color:var(--navy)}
+    .chip .cv{font-size:64px;font-weight:900;min-width:132px;text-align:right;font-variant-numeric:tabular-nums}
+    .chip .cu{font-size:38px;font-weight:700;color:var(--navy)}
+    .chip.in{left:0;width:420px;--c:var(--orange)}.chip.in .cs,.chip.in .cv{color:#D45A00}
+    .chip.out{left:446px;width:414px;--c:var(--green)}.chip.out .cs,.chip.out .cv{color:var(--green)}
+    .chip .chk{position:absolute;left:-26px;top:-30px;width:64px;height:64px;opacity:0}
+    .edge{position:absolute;left:60px;top:772px;width:720px;text-align:center;font-size:44px;line-height:1.3;font-weight:700;color:var(--navy);direction:rtl;opacity:0;background:#fff;border:8px solid var(--purple);border-radius:28px;padding:14px 22px;box-shadow:0 18px 40px rgba(11,31,58,.14)}
+    .edge .m{font-size:1em}
+    .note{position:absolute;left:1120px;top:880px;width:740px;text-align:center;font-size:28px;font-weight:600;color:rgba(11,31,58,.6);direction:rtl;opacity:0}
+    /* scope */
+    #scope{position:absolute;left:1120px;top:560px;width:740px;height:316px;--c:var(--blue)}
+    #scope .panel{position:absolute;inset:0;opacity:0}
+    #scope svg{position:absolute;left:0;top:0}
+    #scope .axl{position:absolute;font-size:40px;opacity:0;font-weight:700;color:var(--navy)}
+    #recap{position:absolute;left:60px;top:96px;width:720px}
+    #recap .panel{padding:24px 30px;direction:rtl;opacity:0;--c:var(--navy)}
+    #recap .rw{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:40px;padding:14px 16px;border-radius:16px;margin:8px 0;opacity:.35}
+    #recap .rw b{font-family:"Inter",sans-serif;font-weight:900;font-size:40px;direction:ltr;color:var(--navy)}
+    #recap .rw span{color:var(--green);font-weight:700}
+    #recap h3{font-size:44px;font-weight:700;color:var(--navy);margin-bottom:6px}
+    #qmark{position:absolute;left:0;top:0;font-size:170px;font-weight:900;color:var(--purple);opacity:0;line-height:1}
+  </style>
+  <div id="root" data-composition-id="lab" data-width="1920" data-height="1080">
+    <div class="stage" id="st-lab">
+      <svg id="lab-3d" viewBox="0 0 1920 1080" width="1920" height="1080"><g id="gGrid" data-layout-ignore></g><g id="gSolids"></g><g id="gGhost"></g><g id="gGizmo" data-layout-ignore></g></svg>
+      <div id="labels">
+        <div class="lb c-or" id="L-x">[[x]]</div>
+        <div class="lb c-or" id="L-d">[[d]]</div>
+        <div class="lb c-bl" id="L-E">[[E]]</div>
+        <div class="lb c-nv" id="L-L">[[L]]</div>
+        <div class="lb c-gr" id="L-V">[[V]]</div>
+        <div class="lb c-pu" id="L-RL">[[RL]]</div>
+        <div class="lb c-or" id="L-g">[[d]]</div>
+        <div class="lb c-gr" id="L-C">[[C]]</div>
+        <div class="lb c-nv sm" id="L-P1">[[P1]]</div>
+        <div class="lb c-nv sm" id="L-P2">[[P2]]</div>
+        <div class="lb c-or" id="L-x3">[[x]]</div>
+        <div class="lb c-gr sm" id="L-E1">[[E1]]</div>
+        <div class="lb c-gr sm" id="L-E2">[[E2]]</div>
+        <div class="lb c-gr sm" id="L-dE">[[dE]]</div>
+        <div class="lb c-bl sm" id="L-P">[[P1]]</div>
+        <div class="lb c-gr sm" id="L-S1">[[ES1]]</div>
+        <div class="lb c-gr sm" id="L-S2">[[ES2]]</div>
+        <div class="lb c-gr sm" id="L-E0">[[E0]]</div>
+        <div class="lb c-or" id="L-x4">[[x]]</div>
+        <div class="lb ar c-nv sm" id="L-core">قلب</div>
+        <div class="lb ar c-nv sm" id="L-load">حِمل</div>
+        <div id="qmark">؟</div>
+      </div>
+
+      <!-- cards: what it does first, name last -->
+      <div id="card-s0" class="card clip" data-start="20.2" data-duration="5.8"><div class="panel" style="--c:var(--navy)"><div class="step">المشكلة</div><div class="big" style="font-size:84px;margin-top:10px"><span style="color:var(--orange)">حركة</span> ← <span style="color:var(--green)">كهربا</span></div></div></div>
+      <div id="card-s1" class="card clip" data-start="26" data-duration="21"><div class="panel" style="--c:var(--blue)"><div class="step">الخطوة ١</div><div class="q">كيف نقسم الجهد حسب مكان الزلاجة؟</div><div class="nm" style="font-size:84px"><span class="tw">Potentiometer</span></div></div></div>
+      <div id="card-s2" class="card clip" data-start="47" data-duration="19"><div class="panel" style="--c:var(--teal);--ct:#0E8FA0"><div class="step">الخطوة ٢</div><div class="q">كيف نخلّي المسافة تغيّر السعة؟</div><div class="nm" style="font-size:62px"><span class="tw">Capacitance</span> <span class="tw">transducer</span></div></div></div>
+      <div id="card-s3" class="card clip" data-start="66" data-duration="17"><div class="panel" style="--c:var(--green)"><div class="step">الخطوة ٣</div><div class="q">كيف نخلّي الجواب خطّي وبالنص صفر؟</div><div class="nm" style="font-size:62px"><span class="tw">Differential</span> <span class="tw">capacitor</span></div></div></div>
+      <div id="card-s4" class="card clip" data-start="83" data-duration="19"><div class="panel" style="--c:var(--purple)"><div class="step">الخطوة ٤</div><div class="q">كيف نقيس الحركة بالمغناطيس؟</div><div class="nm" style="font-size:130px"><span class="tw">LVDT</span></div></div></div>
+      <div id="recap" class="clip" data-start="102" data-duration="12"><div class="panel">
+        <h3>شو غيّرنا كل مرة؟</h3>
+        <div class="rw" id="rw1"><b>Potentiometer</b><span>مقاومة</span></div>
+        <div class="rw" id="rw2"><b>Capacitance</b><span>سعة</span></div>
+        <div class="rw" id="rw3"><b>Differential</b><span>فرق سعتين</span></div>
+        <div class="rw" id="rw4"><b>LVDT</b><span>تحريض</span></div>
+      </div></div>
+
+      <!-- formulas (appear only when the value has landed) -->
+      <div id="fp-s1" class="fpanel clip" data-start="36.2" data-duration="10.8"><div class="panel" style="--c:var(--blue)"><div class="f1">[[f_pot]]</div></div></div>
+      <div id="fp-s2" class="fpanel clip" data-start="57.0" data-duration="9"><div class="panel" style="--c:var(--teal)"><div class="f1" style="font-size:72px">[[f_cap]]</div><div class="f2" style="font-size:48px">[[s_cap]]</div></div></div>
+      <div id="fp-s3" class="fpanel clip" data-start="75.0" data-duration="8"><div class="panel" style="--c:var(--green)"><div class="f1" style="font-size:64px">[[f_diff]]</div><div class="f2">[[s_diff]]</div></div></div>
+      <div id="fp-s4" class="fpanel clip" data-start="93.6" data-duration="8.4"><div class="panel" style="--c:var(--purple)"><div class="f1" style="font-size:76px">[[f_lvdt]]</div></div></div>
+
+      <!-- HUD counters -->
+      <div id="hud0" class="hud clip" data-start="12.4" data-duration="13.6">
+        <div class="chip panel in"><span class="cs">[[x]]</span><span class="eq">=</span><span class="cv" id="n-x0">0</span><span class="cu">mm</span><svg class="chk" id="chk0" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#00945E" stroke="#fff" stroke-width="5"/><path d="M17 33l10 10 20-22" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="chip panel out"><span class="cs">[[V]]</span><span class="eq">=</span><span class="cv" id="n-V0">?</span><span class="cu">V</span></div>
+      </div>
+      <div id="hud1" class="hud clip" data-start="26" data-duration="21">
+        <div class="chip panel in"><span class="cs">[[d]]</span><span class="eq">=</span><span class="cv" id="n-d1">0</span><span class="cu">mm</span></div>
+        <div class="chip panel out"><span class="cs">[[V]]</span><span class="eq">=</span><span class="cv" id="n-V1">0.0</span><span class="cu">V</span><svg class="chk" id="chk1" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#00945E" stroke="#fff" stroke-width="5"/><path d="M17 33l10 10 20-22" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div id="hud2" class="hud clip" data-start="47" data-duration="19">
+        <div class="chip panel in"><span class="cs">[[d]]</span><span class="eq">=</span><span class="cv" id="n-g2">60</span><span class="cu">mm</span></div>
+        <div class="chip panel out"><span class="cs">[[C]]</span><span class="eq">=</span><span class="cv" id="n-C2">0.00</span><span class="cu">pF</span><svg class="chk" id="chk2" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#00945E" stroke="#fff" stroke-width="5"/><path d="M17 33l10 10 20-22" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div id="hud3" class="hud clip" data-start="66" data-duration="17">
+        <div class="chip panel in"><span class="cs">[[x]]</span><span class="eq">=</span><span class="cv" id="n-x3">0</span><span class="cu">mm</span></div>
+        <div class="chip panel out"><span class="cs">[[dE]]</span><span class="eq">=</span><span class="cv" id="n-dE3">0.0</span><span class="cu">V</span><svg class="chk" id="chk3" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#00945E" stroke="#fff" stroke-width="5"/><path d="M17 33l10 10 20-22" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div id="hud4" class="hud clip" data-start="83" data-duration="19">
+        <div class="chip panel in"><span class="cs">[[x]]</span><span class="eq">=</span><span class="cv" id="n-x4">0</span><span class="cu">mm</span></div>
+        <div class="chip panel out"><span class="cs">[[E0]]</span><span class="eq">=</span><span class="cv" id="n-E04">0.0</span><span class="cu">V</span><svg class="chk" id="chk4" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#00945E" stroke="#fff" stroke-width="5"/><path d="M17 33l10 10 20-22" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div id="edge1" class="edge clip" data-start="39.0" data-duration="5">خطأ التحميل: الجهد أقل من المثالي</div>
+      <div id="edge2" class="edge clip" data-start="58.8" data-duration="4.2">مش خطّية: [[S]] بتكبر كل ما [[d]] بيصغر</div>
+      <div id="edge3" class="edge clip" data-start="77.0" data-duration="3.8">بالنص صفر، والإشارة بتنقلب</div>
+      <div id="edge4" class="edge clip" data-start="94.6" data-duration="4.4">برا المدى الخطّي: بينحني</div>
+      <div id="note1" class="note clip" data-start="29.0" data-duration="18">الأرقام توضيحية، والرموز من الكتاب</div>
+
+      <div id="scope" class="clip" data-start="29" data-duration="85">
+        <div class="panel"></div>
+        <svg id="scope-svg" viewBox="0 0 740 316" width="740" height="316"></svg>
+        <div class="axl" id="ax1" style="left:640px;top:224px">[[d]]</div>
+        <div class="axl" id="ay1" style="left:108px;top:-2px">[[V]]</div>
+        <div class="axl" id="ax2" style="left:640px;top:224px">[[d]]</div>
+        <div class="axl" id="ay2" style="left:108px;top:-2px">[[C]]</div>
+        <div class="axl" id="ax3" style="left:640px;top:224px">[[x]]</div>
+        <div class="axl" id="ay3" style="left:108px;top:-2px">[[dE]]</div>
+        <div class="axl" id="ax4" style="left:640px;top:224px">[[x]]</div>
+        <div class="axl" id="ay4" style="left:108px;top:-2px">[[E0]]</div>
+      </div>
+      /*__CAPTIONS__*/
+    </div>
+  </div>
+  <script>
+/*__COMMON_JS__*/
+  window.__hf = window.__hf || {};
+  (function () {
+    const D = "__DATA__";
+    const COL = { navy: "#0B1F3A", blue: "#1565FF", purple: "#7A3CFF", orange: "#F26B00", green: "#00945E", red: "#E5173F", gold: "#FFC21A", teal: "#18B5C8", steel: "#8195B0" };
+    const mix = (a, b, t) => { const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
+    const f1 = (v) => v.toFixed(1), f0 = (v) => Math.round(v).toString(), f2 = (v) => v.toFixed(2);
+    const tl = gsap.timeline({ paused: true });
+
+    // ===================== state =====================
+    const cam = { yaw: -0.95, pitch: 0.5, dist: 34, tx: 0, ty: 0, tz: 0.5, cx: 1240, cy: 372, f: 1500 };
+    const P = {
+      rail: 0, slider: 1, arrow: 0, meter: 0, link: 0, s1a: 0, s1b: 0, s1c: 0, load: 0, hide0: 1,
+      d: 20, k: 0, gap: 60, x3: 0, x4: 0,
+      m12: 0, m23: 0, m34: 0, ghostOn: 1,
+      lab: { x: 0, d: 0, E: 0, L: 0, V: 0, RL: 0, g: 0, C: 0, P1: 0, x3: 0, E1: 0, dE: 0, P: 0, S1: 0, E0: 0, x4: 0, core: 0, load: 0 },
+      sc: { op: 0, k1: 0, k2: 0, k3: 0, k4: 0, lo1: 0, hi1: 0, lo2: 60, hi2: 60, lo3: 0, hi3: 0, lo4: 0, hi4: 0 },
+      gz: 0, ph: 0, q: 0, grid: 1,
+    };
+    const ST = { yaw: 0, pitch: 0, dist: 0 };
+    // ===================== models (all numbers from D) =====================
+    const capC = (g) => (D.cap.epsR * D.cap.eps0 * (D.cap.A_mm2 * 1e-6)) / (g * 1e-3);
+    const M = {
+      V: (d, k) => { const r = d / D.pot.L; return D.pot.E * r / (1 + r * (1 - r) * k); },
+      C: (g) => capC(g),
+      dE: (x) => (x / D.diff.d) * D.diff.E,
+      f: (u) => { const a = Math.abs(u), s = Math.sign(u); return a <= 1 ? u : s * (a - 0.5 * (a - 1) * (a - 1)); },
+      E0: (x) => D.lvdt.E0atRange * M.f(x / D.lvdt.xr),
+    };
+    // ===================== tiny SVG 3D engine =====================
+    const gGrid = document.getElementById("gGrid"), gSolids = document.getElementById("gSolids"), gGhost = document.getElementById("gGhost"), gGizmo = document.getElementById("gGizmo");
+    let camPos = [0, 0, 0];
+    function project(p) {
+      const x = p[0] - cam.tx, y = p[1] - cam.ty, z = p[2] - cam.tz;
+      const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw), cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+      const x1 = x * cy + y * sy, y1 = -x * sy + y * cy;
+      const dep = y1 * cp - z * sp + cam.dist, k = cam.f / dep;
+      return [cam.cx + x1 * k, cam.cy - (y1 * sp + z * cp) * k, dep, k];
+    }
+    function setCamPos() {
+      const dx = -Math.cos(cam.pitch) * Math.sin(cam.yaw), dy = Math.cos(cam.pitch) * Math.cos(cam.yaw), dz = -Math.sin(cam.pitch);
+      camPos = [cam.tx - dx * cam.dist, cam.ty - dy * cam.dist, cam.tz - dz * cam.dist];
+    }
+    const LIGHT = (() => { const v = [-0.45, -0.7, 0.65], n = Math.hypot(...v); return v.map((a) => a / n); })();
+    const FACES = [[[1, 0, 0], [[1, -1, -1], [1, 1, -1], [1, 1, 1], [1, -1, 1]]], [[-1, 0, 0], [[-1, -1, -1], [-1, -1, 1], [-1, 1, 1], [-1, 1, -1]]],
+      [[0, 1, 0], [[-1, 1, -1], [-1, 1, 1], [1, 1, 1], [1, 1, -1]]], [[0, -1, 0], [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]]],
+      [[0, 0, 1], [[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]]], [[0, 0, -1], [[-1, -1, -1], [-1, 1, -1], [1, 1, -1], [1, -1, -1]]]];
+    const shade = (col, n) => { const k = n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]; return k > 0 ? mix(col, "#ffffff", k * 0.38) : mix(col, "#0B1F3A", -k * 0.28); };
+    function addBox(out, c, s, col, op, sw) {
+      if (op <= 0.01) return;
+      for (const [n, vs] of FACES) {
+        const pts = vs.map((v) => [c[0] + v[0] * s[0] / 2, c[1] + v[1] * s[1] / 2, c[2] + v[2] * s[2] / 2]);
+        const fc = [c[0] + n[0] * s[0] / 2, c[1] + n[1] * s[1] / 2, c[2] + n[2] * s[2] / 2];
+        if (n[0] * (camPos[0] - fc[0]) + n[1] * (camPos[1] - fc[1]) + n[2] * (camPos[2] - fc[2]) <= 0) continue;
+        out.push({ k: "p", pts, fill: shade(col, n), op, sw: sw || 4 });
+      }
+    }
+    // prism along X (octagon): returns faces
+    function addPrismX(out, c, len, r, n, col, op) {
+      if (op <= 0.01) return;
+      const rings = []; for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2 + Math.PI / n; rings.push([Math.cos(a), Math.sin(a)]); }
+      for (let i = 0; i < n; i++) {
+        const A = rings[i], B = rings[(i + 1) % n], nm = [0, (A[0] + B[0]) / 2, (A[1] + B[1]) / 2], l = Math.hypot(nm[1], nm[2]); nm[1] /= l; nm[2] /= l;
+        const pts = [[c[0] - len / 2, c[1] + A[0] * r, c[2] + A[1] * r], [c[0] + len / 2, c[1] + A[0] * r, c[2] + A[1] * r], [c[0] + len / 2, c[1] + B[0] * r, c[2] + B[1] * r], [c[0] - len / 2, c[1] + B[0] * r, c[2] + B[1] * r]];
+        const fc = [c[0], c[1] + nm[1] * r * 0.92, c[2] + nm[2] * r * 0.92];
+        if (nm[1] * (camPos[1] - fc[1]) + nm[2] * (camPos[2] - fc[2]) <= 0) continue;
+        out.push({ k: "p", pts, fill: shade(col, nm), op, sw: 4 });
+      }
+      for (const sgn of [-1, 1]) {
+        const pts = rings.map((q) => [c[0] + sgn * len / 2, c[1] + q[0] * r, c[2] + q[1] * r]);
+        if (sgn * (camPos[0] - (c[0] + sgn * len / 2)) <= 0) continue;
+        out.push({ k: "p", pts, fill: shade(col, [sgn, 0, 0]), op, sw: 4 });
+      }
+    }
+    const addLine = (out, pts, col, sw, op, dash) => { if (op > 0.01 && pts.length > 1) out.push({ k: "l", pts, col, sw, op, dash }); };
+    const addArrow = (out, p0, p1, col, sw, op) => { if (op > 0.01) out.push({ k: "a", pts: [p0, p1], col, sw, op }); };
+    const addDot = (out, p, r, col, op) => { if (op > 0.01) out.push({ k: "d", pts: [p], r, col, op }); };
+    const partial = (pts, fr) => {
+      if (fr >= 1) return pts; if (fr <= 0) return [];
+      let L = 0; const seg = []; for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2]); seg.push(l); L += l; }
+      let want = L * fr; const out = [pts[0]];
+      for (let i = 0; i < seg.length; i++) { if (want >= seg[i]) { out.push(pts[i + 1]); want -= seg[i]; } else { const t = want / seg[i]; out.push([0, 1, 2].map((j) => pts[i][j] + (pts[i + 1][j] - pts[i][j]) * t)); break; } }
+      return out;
+    };
+    const fmtPts = (a) => a.map((q) => q[0].toFixed(1) + "," + q[1].toFixed(1)).join(" ");
+    function renderPrims(prims) {
+      const items = [];
+      for (const p of prims) {
+        const pr = p.pts.map(project);
+        if (pr.some((q) => q[2] < 2)) { if (p.k === "l") { /* keep visible segments only */ } else continue; }
+        const dep = pr.reduce((s, q) => s + q[2], 0) / pr.length;
+        items.push([dep - (p.bias || 0), p, pr]);
+      }
+      items.sort((a, b) => b[0] - a[0]);
+      let s = "";
+      for (const [, p, pr] of items) {
+        if (p.k === "p") s += `<polygon points="${fmtPts(pr)}" fill="${p.fill}" fill-opacity="${p.op.toFixed(3)}" stroke="${COL.navy}" stroke-opacity="${Math.min(1, p.op * 1.1).toFixed(3)}" stroke-width="${p.sw}" stroke-linejoin="round"/>`;
+        else if (p.k === "l") {
+          const ok = pr.filter((q) => q[2] >= 2); if (ok.length < 2) continue;
+          s += `<polyline points="${fmtPts(ok)}" fill="none" stroke="${p.col}" stroke-opacity="${p.op.toFixed(3)}" stroke-width="${p.sw}" stroke-linecap="round" stroke-linejoin="round"${p.dash ? ` stroke-dasharray="${p.dash}"` : ""}/>`;
+        } else if (p.k === "d") s += `<circle cx="${pr[0][0].toFixed(1)}" cy="${pr[0][1].toFixed(1)}" r="${Math.max(3, p.r * pr[0][3]).toFixed(1)}" fill="${p.col}" fill-opacity="${p.op.toFixed(3)}" stroke="#fff" stroke-width="4" stroke-opacity="${p.op.toFixed(3)}"/>`;
+        else if (p.k === "a") {
+          const [a, b] = pr, ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = 26 + p.sw * 2, W = 14 + p.sw;
+          const bx = b[0] - Math.cos(ang) * L * 0.6, by = b[1] - Math.sin(ang) * L * 0.6;
+          s += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${p.col}" stroke-opacity="${p.op.toFixed(3)}" stroke-width="${p.sw}" stroke-linecap="round"/>`;
+          const h = [[b[0], b[1]], [b[0] - Math.cos(ang) * L + Math.sin(ang) * W / 2, b[1] - Math.sin(ang) * L - Math.cos(ang) * W / 2], [b[0] - Math.cos(ang) * L - Math.sin(ang) * W / 2, b[1] - Math.sin(ang) * L + Math.cos(ang) * W / 2]];
+          s += `<polygon points="${fmtPts(h)}" fill="${p.col}" fill-opacity="${p.op.toFixed(3)}"/>`;
+        }
+      }
+      return s;
+    }
+    // ---------- floor grid ----------
+    const FLOOR = -1.6;
+    function gridSvg() {
+      if (P.grid <= 0.01) return "";
+      let s = ""; const R = 26, step = 2;
+      for (let i = -R; i <= R; i += step) {
+        for (const seg of [[[i, -R, FLOOR], [i, R, FLOOR]], [[-R, i, FLOOR], [R, i, FLOOR]]]) {
+          let a = project(seg[0]), b = project(seg[1]);
+          const n = 2; if (a[2] < n && b[2] < n) continue;
+          if (a[2] < n) { const t = (n - a[2]) / (b[2] - a[2]); a = project([seg[0][0] + (seg[1][0] - seg[0][0]) * t, seg[0][1] + (seg[1][1] - seg[0][1]) * t, FLOOR]); }
+          if (b[2] < n) { const t = (n - b[2]) / (a[2] - b[2]); b = project([seg[1][0] + (seg[0][0] - seg[1][0]) * t, seg[1][1] + (seg[0][1] - seg[1][1]) * t, FLOOR]); }
+          s += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#1565FF" stroke-opacity="${(0.13 * P.grid).toFixed(3)}" stroke-width="2"/>`;
+        }
+      }
+      return s;
+    }
+    function gizmoSvg() {
+      if (P.gz <= 0.01) return "";
+      const o = [850, 640], L = 62, cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw), sp = Math.sin(cam.pitch), cp = Math.cos(cam.pitch);
+      const v = (x, y, z) => { const x1 = x * cy + y * sy, y1 = -x * sy + y * cy; return [o[0] + x1 * L, o[1] - (y1 * sp + z * cp) * L]; };
+      let s = ""; const ax = [[[1, 0, 0], COL.orange, "x"], [[0, 1, 0], COL.navy, "y"], [[0, 0, 1], COL.red, "z"]];
+      for (const [d, c, n] of ax) { const e = v(...d); s += `<line x1="${o[0]}" y1="${o[1]}" x2="${e[0].toFixed(1)}" y2="${e[1].toFixed(1)}" stroke="${c}" stroke-width="6" stroke-linecap="round" stroke-opacity="${P.gz}"/><text x="${(o[0] + (e[0] - o[0]) * 1.28).toFixed(1)}" y="${(o[1] + (e[1] - o[1]) * 1.28 + 10).toFixed(1)}" font-family="Inter" font-weight="900" font-size="32" fill="${c}" fill-opacity="${P.gz}" text-anchor="middle">${n}</text>`; }
+      return s;
+    }
+    // ===================== stage builders =====================
+    const slabC = [0.5, 0, -1.0], slabS = [11.8, 1.4, 0.4];
+    const BAT = -7.0, MET = 7.0, LOAD = 9.1;
+    const sx = () => -5 + P.d / 10; // slider x (u) in S0/S1
+    function stage1(out, a) {
+      const r = P.rail, ra = a * r;
+      addBox(out, [0, 0, 0], [10.4 * Math.max(r, 0.001), 1.4, 0.7], COL.steel, ra);
+      // resistive element (S1b)
+      if (P.s1b > 0.01) {
+        addBox(out, [0, 0, 0.42], [10 * P.s1b, 1.0, 0.14], mix(COL.navy, "#ffffff", 0.18), a * P.s1b);
+        const z = []; const n = 26; for (let i = 0; i <= n; i++) z.push([-5 + (10 * P.s1b * i) / n, i % 2 ? 0.28 : -0.28, 0.52]);
+        addLine(out, z, "#F6F9FF", 4, a * P.s1b);
+      }
+      // slider
+      const sc = P.slider, w = sx();
+      addBox(out, [w, 0, 0.95], [1.2 * sc, 1.6 * sc, 1.0 * sc], COL.gold, a * sc);
+      addBox(out, [w, 0, 0.5], [0.22, 0.22, 0.36 * P.s1b], COL.navy, a * P.s1b);
+      // x arrow
+      if (P.arrow > 0.01) { addArrow(out, [-5, -1.3, 0.2], [lerp(-5, w, P.arrow), -1.3, 0.2], COL.orange, 8, a); addLine(out, [[-5, -1.3, -0.1], [-5, -1.3, 0.5]], COL.orange, 6, a); }
+      // meter
+      if (P.meter > 0.01) {
+        const m = P.meter; addBox(out, [MET, 0, 1.6], [1.8 * m, 1.2 * m, 1.6 * m], COL.steel, a * m);
+        if (m > 0.6) {
+          const V = M.V(P.d, P.k), th = P.s1c > 0.5 ? (V / D.pot.E) * 2 - 1 : -1, ang = th * 1.0, fy = -0.64;
+          out.push({ k: "p", pts: [[MET - 0.8, fy, 0.95], [MET + 0.8, fy, 0.95], [MET + 0.8, fy, 2.3], [MET - 0.8, fy, 2.3]], fill: "#F6F9FF", op: a * m, sw: 3, bias: -0.5 });
+          addLine(out, [[MET, fy - 0.02, 1.15], [MET + Math.sin(ang) * 1.0, fy - 0.02, 1.15 + Math.cos(ang) * 1.0]], COL.green, 6, a * m);
+          addDot(out, [MET, fy - 0.03, 1.15], 0.1, COL.navy, a * m);
+        }
+      }
+      // link x -> V (setup)
+      if (P.link > 0.001 && P.s1c < 0.5) addLine(out, partial([[w, 0, 1.55], [w, 0, 3.6], [MET, 0, 3.6], [MET, 0, 2.45]], P.link), COL.green, 6, a * P.hide0, "14 12");
+      // S1 extras
+      if (P.s1a > 0.01) {
+        const q = P.s1a; addBox(out, [BAT, 0, 0.2], [1.4 * q, 1.0 * q, 1.2 * q], COL.blue, a * q);
+        addLine(out, partial([[BAT, 0.45, 0.85], [BAT, 0.45, 1.9], [-5.4, 0.45, 1.9], [-5.4, 0.45, 0.62]], q), COL.blue, 6, a * q);
+        addLine(out, partial([[BAT, 0.45, -0.4], [BAT, 0.45, -0.95], [5.4, 0.45, -0.95], [5.4, 0.45, 0.62]], q), COL.blue, 6, a * q);
+      }
+      if (P.s1c > 0.01) {
+        const q = P.s1c, H = 3.2, yf = -1.4, z0 = 0.35;
+        out.push({ k: "p", pts: [[-5, yf, z0], [5, yf, z0], [5, yf, z0 + H * q]], fill: COL.green, op: a * 0.22 * q, sw: 3, bias: 1 });
+        addLine(out, [[-5, yf, z0], [5, yf, z0], [5, yf, z0 + H * q], [-5, yf, z0]], COL.green, 4, a * q);
+        const hid = H * (M.V(P.d, 0) / D.pot.E), hv = H * (M.V(P.d, P.k) / D.pot.E);
+        if (P.k > 0.02) addLine(out, [[w, yf, z0], [w, yf, z0 + hid]], COL.green, 6, a * 0.55, "12 10");
+        addLine(out, [[w, yf, z0], [w, yf, z0 + hv]], COL.green, 8, a * q);
+        addDot(out, [w, yf, z0 + hv], 0.2, COL.green, a * q);
+        addLine(out, [[w, 0, 1.55], [w, 0, 3.9], [MET, 0, 3.9], [MET, 0, 2.45]], COL.green, 6, a * q);
+        if (P.load > 0.01) {
+          addBox(out, [LOAD, 0, 1.4], [1.1 * P.load, 1.0 * P.load, 1.8 * P.load], COL.purple, a * P.load);
+          addLine(out, [[MET, 0, 3.9], [LOAD, 0, 3.9], [LOAD, 0, 2.35]], COL.purple, 6, a * P.load);
+          const nz = []; for (let i = 0; i <= 12; i++) nz.push([10.3 + (i % 2 ? 0.28 : -0.28), -0.52, 0.8 + i * 0.12]);
+        }
+      }
+    }
+    const gapCenter = () => -2.6 + P.gap / 10;
+    function slab(out, a) { addBox(out, slabC, slabS, COL.steel, a); }
+    function fieldLines(out, x0, x1, a) {
+      for (const y of [-1.1, 0, 1.1]) for (const z of [0.1, 0.9, 1.7]) addLine(out, [[x0, y, z], [x1, y, z]], COL.teal, 4, a * 0.9);
+    }
+    function stage2(out, a) {
+      if (a <= 0.01) return;
+      const fx = -3, mx = gapCenter();
+      addBox(out, [fx, 0, -0.5], [0.5, 0.5, 0.7], COL.steel, a); addBox(out, [mx, 0, -0.5], [0.5, 0.5, 0.7], COL.gold, a);
+      addBox(out, [fx, 0, 0.9], [0.4, 3.6, 3.6], COL.steel, a); addBox(out, [mx, 0, 0.9], [0.4, 3.6, 3.6], COL.gold, a);
+      fieldLines(out, fx + 0.2, mx - 0.2, a);
+      const g = P.gap / 10; addArrow(out, [(fx + mx) / 2 - 0.02, 0, 3.15], [fx + 0.22, 0, 3.15], COL.orange, 8, a); addArrow(out, [(fx + mx) / 2 + 0.02, 0, 3.15], [mx - 0.22, 0, 3.15], COL.orange, 8, a);
+      // C bar
+      const Cmax = M.C(D.cap.gapMin), h = 3.6 * (M.C(P.gap) / Cmax);
+      addLine(out, [[6.2, -0.7, -0.9], [6.2, -0.7, 2.7], [7.4, -0.7, 2.7], [7.4, -0.7, -0.9], [6.2, -0.7, -0.9]], COL.navy, 4, a * 0.4);
+      addBox(out, [6.8, 0, -0.9 + h / 2], [1.2, 1.2, Math.max(h, 0.02)], COL.green, a);
+    }
+    const x3u = () => (P.x3 / D.diff.d) * 2;
+    function stage3(out, a) {
+      if (a <= 0.01) return;
+      const xm = x3u(), p2 = P.m23 > 0.45 ? clamp((P.m23 - 0.45) / 0.55) : 0;
+      for (const x of [-2, xm, 2]) addBox(out, [x, 0, -0.5], [0.5, 0.5, 0.7], x === xm ? COL.gold : COL.steel, a * (x === 2 ? p2 : 1));
+      addBox(out, [-2, 0, 0.9], [0.3, 3.6, 3.6], COL.steel, a);
+      addBox(out, [2, 0, 0.9], [0.3, 3.6, 3.6], COL.steel, a * p2);
+      addBox(out, [xm, 0, 0.9], [0.3, 3.6, 3.6], COL.gold, a);
+      fieldLines(out, -2 + 0.15, xm - 0.15, a); fieldLines(out, xm + 0.15, 2 - 0.15, a * p2);
+      addArrow(out, [0, 0, 3.3], [xm + (xm >= 0 ? 0.02 : -0.02) * 0, 0, 3.3], COL.orange, 8, a * (Math.abs(xm) > 0.05 ? 1 : 0));
+      addLine(out, [[0, 0, 3.05], [0, 0, 3.55]], COL.navy, 4, a);
+      const E = D.diff.E, d = D.diff.d, E1 = (E * (d + P.x3)) / (2 * d), E2 = (E * (d - P.x3)) / (2 * d), dE = M.dE(P.x3), sc = 3.2 / E, z0 = -0.9;
+      for (const [bx, v] of [[7.2, E1], [8.6, E2]]) {
+        addLine(out, [[bx - 0.6, -0.7, z0], [bx - 0.6, -0.7, z0 + 3.2], [bx + 0.6, -0.7, z0 + 3.2], [bx + 0.6, -0.7, z0], [bx - 0.6, -0.7, z0]], COL.navy, 4, a * 0.35);
+        addBox(out, [bx, 0, z0 + (v * sc) / 2], [1.1, 1.1, Math.max(v * sc, 0.02)], COL.green, a);
+      }
+      const zb = 0.9, hh = Math.abs(dE) * sc;
+      addLine(out, [[9.4, -0.8, zb], [11.4, -0.8, zb]], COL.navy, 4, a * 0.6);
+      addBox(out, [10.4, 0, zb + (Math.sign(dE) * hh) / 2], [1.1, 1.1, Math.max(hh, 0.02)], mix(COL.green, "#ffffff", 0.0), a);
+    }
+    const coil = { s2: [-3.1, 3.0], p: [0, 3.0], s1: [3.1, 3.0] };
+    function windings(out, cx, len, col, a, n = 5) {
+      for (let i = 0; i < n; i++) {
+        const x = cx - len / 2 + 0.25 + ((len - 0.5) * i) / (n - 1), pts = [], N = 14;
+        for (let j = 0; j <= N; j++) { const t = (j / N) * Math.PI * 2; pts.push([x, Math.cos(t) * 1.78, 0.9 + Math.sin(t) * 1.78]); }
+        // split in front/back halves for painter order
+        const front = [], back = [];
+        for (let j = 0; j < pts.length; j++) { (pts[j][1] < 0 ? front : back).push(pts[j]); }
+        addLine(out, back, col, 4, a); addLine(out, front, col, 4, a);
+      }
+    }
+    function stage4(out, a) {
+      if (a <= 0.01) return;
+      const q = clamp((P.m34 - 0.45) / 0.55), xc = (P.x4 / D.lvdt.xr) * 1.2; // core centre (u)
+      for (const [k, c, col, op] of [["s2", coil.s2, COL.green, 1], ["p", coil.p, COL.blue, q], ["s1", coil.s1, COL.green, 1]]) {
+        addBox(out, [c[0], 0, -0.5], [0.6, 0.6, 0.7], COL.steel, a * op);
+        addPrismX(out, [c[0], 0, 0.9], c[1], 1.7, 8, mix(COL.steel, "#ffffff", 0.55), a * op * 0.38);
+        windings(out, c[0], c[1], col, a * op);
+      }
+      addPrismX(out, [xc, 0, 0.9], 5.0, 0.62, 8, COL.gold, a);
+      // flux arcs (teal): coupling from primary through core into each secondary
+      const u = P.x4 / D.lvdt.xr, f = M.f(u), c1 = clamp(0.55 + 0.32 * f, 0.1, 1), c2 = clamp(0.55 - 0.32 * f, 0.1, 1);
+      for (const [tx, c] of [[3.1, c1], [-3.1, c2]]) for (const h of [2.4, 3.1]) {
+        const pts = []; for (let i = 0; i <= 16; i++) { const t = i / 16; pts.push([lerp(0, tx, t), -0.2, 0.9 + Math.sin(Math.PI * t) * h * (0.8 + 0.2 * c)]); }
+        addLine(out, pts, COL.teal, 4, a * q * (0.25 + 0.75 * c));
+      }
+      // output bars
+      const e0 = D.lvdt.E0atRange, base = 2.1, sc = 3.2 / (2.2 * e0), z0 = -0.9;
+      const ES1 = base + 0.5 * M.E0(P.x4) * 1, ES2 = base - 0.5 * M.E0(P.x4) * 1;
+      for (const [bx, v] of [[7.4, ES1], [8.8, ES2]]) {
+        addLine(out, [[bx - 0.6, -0.7, z0], [bx - 0.6, -0.7, z0 + 3.2], [bx + 0.6, -0.7, z0 + 3.2], [bx + 0.6, -0.7, z0], [bx - 0.6, -0.7, z0]], COL.navy, 4, a * 0.35);
+        addBox(out, [bx, 0, z0 + (v * sc) / 2], [1.1, 1.1, Math.max(v * sc, 0.02)], COL.green, a);
+      }
+      const dE = M.E0(P.x4), hh = Math.abs(dE) * sc, zb = 0.9;
+      addLine(out, [[9.6, -0.8, zb], [11.6, -0.8, zb]], COL.navy, 4, a * 0.6);
+      addBox(out, [10.6, 0, zb + (Math.sign(dE) * hh) / 2], [1.1, 1.1, Math.max(hh, 0.02)], COL.green, a);
+      // x arrow
+      addArrow(out, [0, 0, 3.4], [xc, 0, 3.4], COL.orange, 8, a * (Math.abs(xc) > 0.05 ? 1 : 0)); addLine(out, [[0, 0, 3.15], [0, 0, 3.65]], COL.navy, 4, a);
+    }
+    // ---- ghost boxes (previous object travelling onto the next real object) ----
+    function kb(stage) {
+      const w = sx();
+      if (stage === 1) return [{ c: [0, 0, 0], s: [10.4, 1.4, 0.7], col: COL.steel }, { c: [w, 0, 0.95], s: [1.2, 1.6, 1.0], col: COL.gold }];
+      if (stage === 2) return [{ c: [-3, 0, 0.9], s: [0.4, 3.6, 3.6], col: COL.steel }, { c: [gapCenter(), 0, 0.9], s: [0.4, 3.6, 3.6], col: COL.gold }, { c: [-3, 0, 0.9], s: [0.4, 3.6, 3.6], col: COL.steel }];
+      if (stage === 3) return [{ c: [-2, 0, 0.9], s: [0.3, 3.6, 3.6], col: COL.steel }, { c: [x3u(), 0, 0.9], s: [0.3, 3.6, 3.6], col: COL.gold }, { c: [2, 0, 0.9], s: [0.3, 3.6, 3.6], col: COL.steel }];
+      return [{ c: [coil.s2[0], 0, 0.9], s: [coil.s2[1], 3.4, 3.4], col: mix(COL.steel, "#ffffff", 0.5) }, { c: [(P.x4 / D.lvdt.xr) * 1.2, 0, 0.9], s: [5, 1.24, 1.24], col: COL.gold }, { c: [coil.s1[0], 0, 0.9], s: [coil.s1[1], 3.4, 3.4], col: mix(COL.steel, "#ffffff", 0.5) }];
+    }
+    function ghosts(out, from, m) {
+      if (m <= 0.002 || m >= 0.999) return;
+      const A = kb(from), B = kb(from + 1), op = 0.5 * (1 - clamp((m - 0.85) / 0.15)) * clamp(m / 0.12);
+      for (let i = 0; i < 2 + (from >= 2 ? 1 : 0); i++) {
+        const a = A[i] || A[0], b = B[i];
+        if (from === 1 && i >= 2) continue;
+        addBox(out, [0, 1, 2].map((j) => lerp(a.c[j], b.c[j], m)), [0, 1, 2].map((j) => lerp(a.s[j], b.s[j], m)), mix(a.col, b.col, m), op);
+      }
+    }
+    // ===================== frame =====================
+    const labels = [
+      ["L-x", () => [lerp(-5, sx(), 0.5), -1.3, 0.75], () => P.lab.x * (1 - clamp(P.m12 * 2.5)) * (1 - P.s1c)],
+      ["L-d", () => [lerp(-5, sx(), 0.5), -1.3, 0.75], () => P.lab.d * (1 - clamp(P.m12 * 2.5))],
+      ["L-E", () => [BAT, 0, 1.2], () => P.lab.E * (1 - clamp(P.m12 * 2.5))],
+      ["L-L", () => [0, -1.3, -0.55], () => P.lab.L * (1 - clamp(P.m12 * 2.5))],
+      ["L-V", () => [sx(), -1.4, 0.35 + 3.2 * (M.V(P.d, P.k) / D.pot.E) + 0.7], () => P.lab.V * (1 - clamp(P.m12 * 2.5))],
+      ["L-RL", () => [LOAD, 0, 2.7], () => P.lab.RL * (1 - clamp(P.m12 * 2.5))],
+      ["L-load", () => [LOAD, 0, 3.2], () => 0],
+      ["L-g", () => [(-3 + gapCenter()) / 2, 0, 3.45], () => P.lab.g * stageA(2)],
+      ["L-C", () => [6.8, 0, -0.9 + 3.6 * (M.C(P.gap) / M.C(D.cap.gapMin)) + 0.7], () => P.lab.C * stageA(2)],
+      ["L-P1", () => [-2, 0, 3.0], () => P.lab.P1 * stageA(3)],
+      ["L-P2", () => [2, 0, 3.0], () => P.lab.P1 * stageA(3) * clamp((P.m23 - 0.45) / 0.55)],
+      ["L-x3", () => [x3u() / 2, 0, 4.0], () => P.lab.x3 * stageA(3) * (Math.abs(x3u()) > 0.12 ? 1 : 0)],
+      ["L-E1", () => [7.2, 0, -0.9 + 3.2 * ((D.diff.E * (D.diff.d + P.x3)) / (2 * D.diff.d) / D.diff.E) + 0.7], () => P.lab.E1 * stageA(3)],
+      ["L-E2", () => [8.6, 0, -0.9 + 3.2 * ((D.diff.E * (D.diff.d - P.x3)) / (2 * D.diff.d) / D.diff.E) + 0.7], () => P.lab.E1 * stageA(3)],
+      ["L-dE", () => [10.4, 0, 0.9 + Math.max(3.4 * Math.abs(M.dE(P.x3)) / D.diff.E, 0) * (M.dE(P.x3) >= 0 ? 1 : 0) + (M.dE(P.x3) >= 0 ? 0.7 : -3.4 * Math.abs(M.dE(P.x3)) / D.diff.E - 0.7) * 1], () => P.lab.dE * stageA(3)],
+      ["L-P", () => [0, 0, 3.4], () => P.lab.P * stageA(4) * clamp((P.m34 - 0.45) / 0.55)],
+      ["L-S1", () => [3.1, 0, 3.4], () => P.lab.S1 * stageA(4)],
+      ["L-S2", () => [-3.1, 0, 3.4], () => P.lab.S1 * stageA(4)],
+      ["L-core", () => [(P.x4 / D.lvdt.xr) * 1.2, -1.9, 0.0], () => P.lab.core * stageA(4)],
+      ["L-E0", () => [10.6, 0, 0.9 + (M.E0(P.x4) >= 0 ? 3.0 * Math.abs(M.E0(P.x4)) / (2.2 * D.lvdt.E0atRange) + 0.8 : -3.0 * Math.abs(M.E0(P.x4)) / (2.2 * D.lvdt.E0atRange) - 0.8)], () => P.lab.E0 * stageA(4)],
+      ["L-x4", () => [(P.x4 / D.lvdt.xr) * 0.6, 0, 4.5], () => P.lab.x4 * stageA(4) * (Math.abs(P.x4) > 0.8 ? 1 : 0)],
+    ].map(([id, pos, al]) => ({ el: document.getElementById(id), pos, al }));
+    const SM = (a, b, t) => { const x = clamp((t - a) / (b - a)); return x * x * (3 - 2 * x); };
+    function stageA(k) {
+      const o = (m) => 1 - clamp(m * 2.5), n = (m) => clamp((m - 0.45) / 0.55);
+      if (k === 1) return o(P.m12);
+      if (k === 2) return n(P.m12) * o(P.m23);
+      if (k === 3) return n(P.m23) * o(P.m34);
+      return n(P.m34);
+    }
+    const nEls = { x0: "n-x0", d1: "n-d1", V1: "n-V1", g2: "n-g2", C2: "n-C2", x3: "n-x3", dE3: "n-dE3", x4: "n-x4", E04: "n-E04" };
+    for (const k in nEls) nEls[k] = document.getElementById(nEls[k]);
+    const qm = document.getElementById("qmark");
+    function setTxt(el, v) { if (el.textContent !== v) el.textContent = v; }
+    function render() {
+      setCamPos();
+      gGrid.innerHTML = gridSvg();
+      const out = [];
+      stage1(out, stageA(1));
+      slab(out, Math.max(stageA(2), stageA(3), stageA(4)));
+      stage2(out, stageA(2)); stage3(out, stageA(3)); stage4(out, stageA(4));
+      if (P.m12 > 0 && P.m12 < 1) ghosts(out, 1, P.m12); if (P.m23 > 0 && P.m23 < 1) ghosts(out, 2, P.m23); if (P.m34 > 0 && P.m34 < 1) ghosts(out, 3, P.m34);
+      gSolids.innerHTML = renderPrims(out);
+      gGizmo.innerHTML = gizmoSvg();
+      for (const L of labels) { const a = clamp(L.al()); if (a <= 0.01) { if (L.el.style.opacity !== "0") L.el.style.opacity = "0"; continue; } const p = project(L.pos()); L.el.style.opacity = a.toFixed(3); L.el.style.transform = `translate(${p[0].toFixed(1)}px,${p[1].toFixed(1)}px) translate(-50%,-100%)`; }
+      // question mark follows the slider block in the hook
+      if (P.q > 0.01) { const p = project([sx(), 0, 3.1]); qm.style.opacity = P.q.toFixed(3); qm.style.transform = `translate(${p[0].toFixed(1)}px,${p[1].toFixed(1)}px) translate(-50%,-100%)`; } else qm.style.opacity = "0";
+      // counters
+      setTxt(nEls.x0, f0(P.d)); setTxt(nEls.d1, f0(P.d)); setTxt(nEls.V1, f1(M.V(P.d, P.k)));
+      setTxt(nEls.g2, f0(P.gap)); setTxt(nEls.C2, f2(M.C(P.gap)));
+      setTxt(nEls.x3, (P.x3 > 0.05 ? "+" : "") + f0(P.x3)); setTxt(nEls.dE3, (M.dE(P.x3) > 0.05 ? "+" : "") + f1(M.dE(P.x3)));
+      setTxt(nEls.x4, (P.x4 > 0.05 ? "+" : "") + f0(P.x4)); setTxt(nEls.E04, (M.E0(P.x4) > 0.05 ? "+" : "") + f1(M.E0(P.x4)));
+      drawScope();
+    }
+    // ===================== scope =====================
+    const SX0 = 96, SX1 = 700, SY0 = 28, SY1 = 228; // plot box in the 740x316 svg
+    const scopeSvg = document.getElementById("scope-svg");
+    const SPEC = {
+      1: { x: [0, D.pot.L], y: [0, D.pot.E], fn: (x, k) => M.V(x, k), ideal: (x) => M.V(x, 0), cur: () => P.d, lo: () => P.sc.lo1, hi: () => P.sc.hi1, k: () => P.sc.k1, tx: [0, D.pot.L], ty: [0, D.pot.E], c: COL.blue },
+      2: { x: [D.cap.gapMin, D.cap.gapMax], y: [0, M.C(D.cap.gapMin)], fn: (x) => M.C(x), cur: () => P.gap, lo: () => P.sc.lo2, hi: () => P.sc.hi2, k: () => P.sc.k2, tx: [D.cap.gapMin, D.cap.gapMax], ty: [0, M.C(D.cap.gapMin)], c: COL.teal, dec: 2 },
+      3: { x: [-D.diff.xMax, D.diff.xMax], y: [-D.diff.E, D.diff.E], fn: (x) => M.dE(x), cur: () => P.x3, lo: () => P.sc.lo3, hi: () => P.sc.hi3, k: () => P.sc.k3, tx: [-D.diff.xMax, D.diff.xMax], ty: [-D.diff.E, D.diff.E], c: COL.green },
+      4: { x: [-D.lvdt.xMax, D.lvdt.xMax], y: [-8, 8], fn: (x) => M.E0(x), ideal: (x) => (x / D.lvdt.xr) * D.lvdt.E0atRange, cur: () => P.x4, lo: () => P.sc.lo4, hi: () => P.sc.hi4, k: () => P.sc.k4, tx: [-D.lvdt.xMax, D.lvdt.xMax], ty: [-D.lvdt.E0atRange * 2, D.lvdt.E0atRange * 2], c: COL.purple },
+    };
+    function drawScope() {
+      let s = "";
+      const opAll = P.sc.op; if (opAll <= 0.01) { scopeSvg.innerHTML = ""; return; }
+      for (let k = 1; k <= 4; k++) {
+        const sp = SPEC[k], a = sp.k() * opAll; if (a <= 0.01) continue;
+        const X = (v) => SX0 + ((v - sp.x[0]) / (sp.x[1] - sp.x[0])) * (SX1 - SX0), Y = (v) => SY1 - ((v - sp.y[0]) / (sp.y[1] - sp.y[0])) * (SY1 - SY0);
+        const bip = sp.y[0] < 0;
+        const zeroY = bip ? Y(0) : SY1, zeroX = sp.x[0] < 0 ? X(0) : SX0;
+        s += `<g opacity="${a.toFixed(3)}">`;
+        s += `<line x1="${SX0}" y1="${zeroY}" x2="${SX1}" y2="${zeroY}" stroke="${COL.navy}" stroke-width="4" stroke-linecap="round"/><line x1="${zeroX}" y1="${SY0 - 8}" x2="${zeroX}" y2="${SY1}" stroke="${COL.navy}" stroke-width="4" stroke-linecap="round"/>`;
+        const fmtT = (v) => (Math.abs(v) < 10 && !Number.isInteger(v) ? v.toFixed(2) : String(Math.round(v * 10) / 10));
+        s += `<text x="${SX0}" y="${SY1 + 38}" font-family="Inter" font-weight="700" font-size="30" fill="${COL.navy}" text-anchor="middle">${fmtT(sp.tx[0])}</text><text x="${SX1}" y="${SY1 + 38}" font-family="Inter" font-weight="700" font-size="30" fill="${COL.navy}" text-anchor="middle">${fmtT(sp.tx[1])}</text>`;
+        s += `<text x="${SX0 - 14}" y="${Y(sp.ty[1]) + 10}" font-family="Inter" font-weight="700" font-size="30" fill="${COL.navy}" text-anchor="end">${fmtT(sp.ty[1])}</text>`;
+        if (bip) s += `<text x="${SX0 - 14}" y="${Y(sp.ty[0]) + 6}" font-family="Inter" font-weight="700" font-size="30" fill="${COL.navy}" text-anchor="end">${fmtT(sp.ty[0])}</text>`;
+        const N = 90, kk = k === 1 ? P.k : 0, path = (fn, lo, hi) => { let d = ""; for (let i = 0; i <= N; i++) { const x = lo + ((hi - lo) * i) / N, y = clamp(fn(x, kk), sp.y[0], sp.y[1]); d += (i ? "L" : "M") + X(x).toFixed(1) + " " + Y(y).toFixed(1); } return d; };
+        // faint full curve + dashed ideal
+        s += `<path d="${path(sp.fn, sp.x[0], sp.x[1])}" fill="none" stroke="${sp.c}" stroke-opacity=".22" stroke-width="6" stroke-linecap="round"/>`;
+        if (sp.ideal && (k !== 1 || P.k > 0.02)) s += `<path d="${path(sp.ideal, sp.x[0], sp.x[1])}" fill="none" stroke="${COL.navy}" stroke-opacity=".45" stroke-width="4" stroke-dasharray="12 10"/>`;
+        const lo = Math.min(sp.lo(), sp.hi()), hi = Math.max(sp.lo(), sp.hi());
+        if (hi - lo > 0.01) s += `<path d="${path(sp.fn, lo, hi)}" fill="none" stroke="${P.k > 0.02 && k === 1 ? COL.purple : sp.c}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+        const cx = sp.cur(), cy = clamp(sp.fn(cx, kk), sp.y[0], sp.y[1]);
+        s += `<line x1="${X(cx).toFixed(1)}" y1="${SY1}" x2="${X(cx).toFixed(1)}" y2="${Y(cy).toFixed(1)}" stroke="${COL.orange}" stroke-width="4" stroke-dasharray="8 8" stroke-opacity=".8"/>`;
+        s += `<line x1="${SX0}" y1="${Y(cy).toFixed(1)}" x2="${X(cx).toFixed(1)}" y2="${Y(cy).toFixed(1)}" stroke="${COL.green}" stroke-width="4" stroke-dasharray="8 8" stroke-opacity=".8"/>`;
+        s += `<circle cx="${X(cx).toFixed(1)}" cy="${Y(cy).toFixed(1)}" r="13" fill="${COL.gold}" stroke="${COL.navy}" stroke-width="4"/>`;
+        s += `</g>`;
+      }
+      scopeSvg.innerHTML = s;
+    }
+    const axIds = [["ax1", "ay1"], ["ax2", "ay2"], ["ax3", "ay3"], ["ax4", "ay4"]].map((p) => p.map((i) => document.getElementById(i)));
+    // ===================== timeline =====================
+    const E = { io: "power2.inOut", out: "power4.out", in: "power4.in", lin: "none" };
+    const T = (o, v, t, dur, ease = E.io) => tl.to(o, Object.assign({ duration: dur, ease }, v), t);
+    // --- continuous: render tick + base state
+    // hook: slider alone, "?" lands where it stops
+    T(P, { d: 80 }, 0.5, 2.6, "power2.inOut"); T(P, { q: 1 }, 4.0, 0.3, E.out);
+    T(P, { d: 30 }, 5.0, 1.6, "power2.inOut"); T(P, { d: 62 }, 7.2, 1.4, "power2.inOut");
+    T(P, { q: 0 }, 8.9, 0.3, E.lin);
+    // orbit while building (linear is right for constant-speed camera drift)
+    T(cam, { yaw: -0.38, pitch: 0.34, dist: 27 }, 0, 26, E.lin);
+    // setup build
+    T(P, { rail: 1 }, 9.3, 1.2, E.out); T(P, { arrow: 1 }, 12.4, 0.8, E.out);
+    T(P.lab, { x: 1 }, 12.7, 0.3, E.lin);
+    T(P, { d: 20 }, 13.0, 1.6, E.io); T(P, { d: 60 }, 14.9, 0.95, E.io);
+    T(P, { meter: 1 }, 16.5, 0.6, E.out); T(P, { link: 1 }, 17.4, 1.6, E.lin);
+    T(P, { d: 30 }, 17.6, 1.2, E.io); T(P, { d: 62 }, 19.0, 1.0, E.io);
+    T(P, { d: 92 }, 20.8, 1.5, E.io); T(P, { d: 18 }, 22.6, 2.0, E.io); T(P, { d: 60 }, 24.8, 0.9, E.io);
+    // card s0 / chips s0
+    popIn(tl, "#card-s0 .panel", 20.3, 0.45); tl.fromTo("#card-s0 .big span", { opacity: 0.2 }, { opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.7 }, 21.0); popIn(tl, "#hud0 .chip.in", 12.4, 0.4); popIn(tl, "#hud0 .chip.out", 16.6, 0.4);
+    tl.fromTo("#chk0", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.out" }, 15.95);
+    slideOut(tl, "#card-s0 .panel", 25.65); slideOut(tl, "#hud0 .chip.in", 25.7); slideOut(tl, "#hud0 .chip.out", 25.7);
+    // ---------------- STEP 1: potentiometer ----------------
+    const VIEW = {
+      s1: { yaw: 0.02, pitch: 0.2, dist: 26, tx: -0.3, ty: 0, tz: 1.5 },
+      s2: { yaw: -0.5, pitch: 0.26, dist: 20, tx: 1.7, ty: 0, tz: 0.8 },
+      s3: { yaw: -0.42, pitch: 0.24, dist: 23, tx: 3.7, ty: 0, tz: 0.8 },
+      s4: { yaw: -0.2, pitch: 0.22, dist: 26, tx: 2.4, ty: 0, tz: 0.8 },
+    };
+    const camTo = (v, t, dur) => T(cam, Object.assign({}, v), t, dur, E.io);
+    // the orbit tween above is "linear 0->26"; it owns yaw/pitch/dist, so the stage moves start from where it ends
+    // (overwrite handled by separate tweens starting at 26 with fresh from-values)
+    popIn(tl, "#card-s1 .panel", 26.1, 0.45); popIn(tl, "#hud1 .chip.in", 26.2, 0.4); popIn(tl, "#hud1 .chip.out", 26.3, 0.4);
+    tl.fromTo("#note1", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 29.1);
+    T(P, { gz: 1 }, 26.4, 0.5, E.out);
+    camTo(VIEW.s1, 26.2, 3.2);
+    T(P, { s1a: 1 }, 27.0, 0.9, E.out); T(P.lab, { E: 1 }, 27.3, 0.3, E.lin);
+    T(P, { s1b: 1 }, 28.0, 0.8, E.out); T(P, { s1c: 1 }, 28.6, 1.0, E.out); T(P.lab, { L: 1, V: 1, d: 1 }, 29.0, 0.3, E.lin);
+    T(P, { link: 0, meter: 1 }, 28.4, 0.4, E.lin);
+    T(P.sc, { op: 1, k1: 1 }, 29.0, 0.5, E.out); popIn(tl, "#scope .panel", 29.0, 0.45);
+    tl.fromTo("#ax1,#ay1", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 29.4);
+    T(P, { d: 0 }, 29.5, 0.8, E.io);
+    T(P, { d: D.pot.dEnd }, 30.5, 4.6, "power1.inOut"); T(P.sc, { hi1: D.pot.dEnd }, 30.5, 4.6, "power1.inOut");
+    tl.fromTo("#chk1", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.out" }, 35.7);
+    popIn(tl, "#fp-s1 .panel", 36.2, 0.45);
+    // edge case: loading error
+    T(P, { load: 1 }, 38.4, 0.6, E.out);
+    tl.fromTo("#edge1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 39.1);
+    T(P, { k: D.pot.loadK }, 39.3, 2.2, "power2.inOut");
+    T(P, { k: 0 }, 42.4, 0.5, E.io); T(P, { load: 0 }, 42.6, 0.5, E.in);
+    tl.to("#edge1", { opacity: 0, duration: 0.2 }, 42.8);
+    tl.fromTo("#card-s1 .q", { opacity: 1 }, { opacity: 0.3, duration: 0.3, immediateRender: false }, 43.5);
+    wordsIn(tl, "#card-s1", 43.6);
+    slideOut(tl, "#card-s1 .panel", 46.65); slideOut(tl, "#fp-s1 .panel", 46.65); slideOut(tl, "#hud1 .chip.in", 46.7); slideOut(tl, "#hud1 .chip.out", 46.7); tl.to("#note1", { opacity: 0, duration: 0.2 }, 46.6);
+    T(P.sc, { k1: 0 }, 46.8, 0.3, E.lin); tl.to("#scope .panel", { opacity: 0, duration: 0.25 }, 46.7); tl.to("#ax1,#ay1", { opacity: 0, duration: 0.25 }, 46.7);
+    // ---------------- STEP 2: capacitance (gap) ----------------
+    popIn(tl, "#card-s2 .panel", 47.1, 0.45); popIn(tl, "#hud2 .chip.in", 47.2, 0.4); popIn(tl, "#hud2 .chip.out", 47.3, 0.4);
+    camTo(VIEW.s2, 47.0, 3.2); T(P, { m12: 1 }, 47.0, 3.2, E.io);
+    T(P.lab, { g: 1, C: 1 }, 50.2, 0.3, E.lin);
+    T(P.sc, { k2: 1 }, 50.4, 0.4, E.out); popIn(tl, "#scope .panel", 50.2, 0.45); tl.fromTo("#ax2,#ay2", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 50.5);
+    T(P, { gap: D.cap.gapLand }, 51.6, 4.5, "power1.inOut"); T(P.sc, { lo2: D.cap.gapLand }, 51.6, 4.5, "power1.inOut");
+    tl.fromTo("#chk2", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.out" }, 56.6);
+    popIn(tl, "#fp-s2 .panel", 57.0, 0.45);
+    tl.fromTo("#edge2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 58.8);
+    T(P, { gap: D.cap.gapMin }, 59.2, 2.6, "power2.in"); T(P.sc, { lo2: D.cap.gapMin }, 59.2, 2.6, "power2.in");
+    tl.to("#edge2", { opacity: 0, duration: 0.2 }, 62.1);
+    T(P, { gap: D.cap.gapLand }, 62.0, 0.8, E.io);
+    tl.fromTo("#card-s2 .q", { opacity: 1 }, { opacity: 0.3, duration: 0.3, immediateRender: false }, 62.7); wordsIn(tl, "#card-s2", 62.8);
+    slideOut(tl, "#card-s2 .panel", 65.65); slideOut(tl, "#fp-s2 .panel", 65.65); slideOut(tl, "#hud2 .chip.in", 65.7); slideOut(tl, "#hud2 .chip.out", 65.7);
+    T(P.sc, { k2: 0 }, 65.8, 0.3, E.lin); tl.to("#scope .panel", { opacity: 0, duration: 0.25 }, 65.7); tl.to("#ax2,#ay2", { opacity: 0, duration: 0.25 }, 65.7);
+    // ---------------- STEP 3: differential ----------------
+    popIn(tl, "#card-s3 .panel", 66.1, 0.45); popIn(tl, "#hud3 .chip.in", 66.2, 0.4); popIn(tl, "#hud3 .chip.out", 66.3, 0.4);
+    camTo(VIEW.s3, 66.0, 3.2); T(P, { m23: 1 }, 66.0, 3.2, E.io);
+    T(P.lab, { P1: 1, x3: 1, E1: 1, dE: 1 }, 69.4, 0.3, E.lin);
+    T(P.sc, { k3: 1 }, 69.6, 0.4, E.out); popIn(tl, "#scope .panel", 69.4, 0.45); tl.fromTo("#ax3,#ay3", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 69.7);
+    T(P, { x3: 14 }, 70.6, 3.6, "power1.inOut"); T(P.sc, { hi3: 14 }, 70.6, 3.6, "power1.inOut");
+    tl.fromTo("#chk3", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.out" }, 74.5);
+    popIn(tl, "#fp-s3 .panel", 75.0, 0.45);
+    tl.fromTo("#edge3", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 77.0);
+    T(P, { x3: -14 }, 77.3, 3.2, "power1.inOut"); T(P.sc, { lo3: -14 }, 77.3, 3.2, "power1.inOut");
+    tl.to("#edge3", { opacity: 0, duration: 0.2 }, 80.7);
+    T(P, { x3: 0 }, 80.6, 0.8, E.io);
+    tl.fromTo("#card-s3 .q", { opacity: 1 }, { opacity: 0.3, duration: 0.3, immediateRender: false }, 80.9); wordsIn(tl, "#card-s3", 81.0);
+    slideOut(tl, "#card-s3 .panel", 82.65); slideOut(tl, "#fp-s3 .panel", 82.65); slideOut(tl, "#hud3 .chip.in", 82.7); slideOut(tl, "#hud3 .chip.out", 82.7);
+    T(P.sc, { k3: 0 }, 82.8, 0.3, E.lin); tl.to("#scope .panel", { opacity: 0, duration: 0.25 }, 82.7); tl.to("#ax3,#ay3", { opacity: 0, duration: 0.25 }, 82.7);
+    // ---------------- STEP 4: LVDT ----------------
+    popIn(tl, "#card-s4 .panel", 83.1, 0.45); popIn(tl, "#hud4 .chip.in", 83.2, 0.4); popIn(tl, "#hud4 .chip.out", 83.3, 0.4);
+    camTo(VIEW.s4, 83.0, 3.2); T(P, { m34: 1 }, 83.0, 3.2, E.io);
+    T(P.lab, { P: 1, S1: 1, E0: 1, core: 1, x4: 1 }, 86.4, 0.3, E.lin);
+    T(P.sc, { k4: 1 }, 86.6, 0.4, E.out); popIn(tl, "#scope .panel", 86.4, 0.45); tl.fromTo("#ax4,#ay4", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 86.7);
+    T(P, { x4: D.lvdt.xr }, 87.7, 4.6, "power1.inOut"); T(P.sc, { hi4: D.lvdt.xr }, 87.7, 4.6, "power1.inOut");
+    tl.fromTo("#chk4", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.out" }, 93.2);
+    popIn(tl, "#fp-s4 .panel", 93.6, 0.45);
+    tl.fromTo("#edge4", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 94.6);
+    T(P, { x4: D.lvdt.xMax }, 94.9, 3.0, "power1.inOut"); T(P.sc, { hi4: D.lvdt.xMax }, 94.9, 3.0, "power1.inOut");
+    tl.to("#edge4", { opacity: 0, duration: 0.2 }, 98.7);
+    tl.fromTo("#card-s4 .q", { opacity: 1 }, { opacity: 0.3, duration: 0.3, immediateRender: false }, 99.3); wordsIn(tl, "#card-s4", 99.4);
+    slideOut(tl, "#card-s4 .panel", 101.65); slideOut(tl, "#fp-s4 .panel", 101.65); slideOut(tl, "#hud4 .chip.in", 101.7); slideOut(tl, "#hud4 .chip.out", 101.7);
+    // ---------------- RECAP: rewind the transformation, then replay it fast ----------------
+    popIn(tl, "#recap .panel", 102.0, 0.45);
+    const rw = (i, t) => tl.to("#rw" + i, { opacity: 1, duration: 0.2, ease: "power2.out" }, t);
+    const rwOff = (i, t) => tl.to("#rw" + i, { opacity: 0.35, duration: 0.2, ease: "power2.out" }, t);
+    T(P, { x4: 0 }, 102.1, 0.5, E.io); T(P.sc, { k4: 0 }, 102.1, 0.3, E.lin);
+    T(cam, { yaw: -0.3, pitch: 0.3, dist: 33, tx: 2.4, tz: 0.8 }, 102.2, 1.2, E.io);
+    T(P, { m34: 0 }, 102.4, 0.9, E.io); T(P, { m23: 0 }, 103.2, 0.8, E.io); T(P, { m12: 0 }, 104.0, 0.8, E.io);
+    T(P.lab, { P: 0, S1: 0, E0: 0, core: 0, x4: 0, P1: 0, x3: 0, E1: 0, dE: 0, g: 0, C: 0 }, 102.2, 0.3, E.lin);
+    camTo(VIEW.s1, 103.6, 1.2); popIn(tl, "#scope .panel", 104.3, 0.45);
+    tl.fromTo("#ax1,#ay1", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 104.6); tl.to("#ax1,#ay1", { opacity: 0, duration: 0.2 }, 106.3);
+    tl.to("#ax2,#ay2", { opacity: 1, duration: 0.2 }, 107.0); tl.to("#ax2,#ay2", { opacity: 0, duration: 0.2 }, 108.6);
+    tl.to("#ax3,#ay3", { opacity: 1, duration: 0.2 }, 109.3); tl.to("#ax3,#ay3", { opacity: 0, duration: 0.2 }, 110.9);
+    tl.to("#ax4,#ay4", { opacity: 1, duration: 0.2 }, 111.5);
+    T(P, { d: 0 }, 104.4, 0.4, E.io); T(P.sc, { lo1: 0, hi1: 0, k1: 1 }, 104.4, 0.4, E.lin);
+    T(P, { d: D.pot.dEnd }, 104.9, 1.3, E.io); T(P.sc, { hi1: D.pot.dEnd }, 104.9, 1.3, E.io); rw(1, 104.9);
+    rwOff(1, 106.4); T(P.sc, { k1: 0 }, 106.3, 0.2, E.lin);
+    camTo(VIEW.s2, 106.3, 0.9); T(P, { m12: 1 }, 106.3, 0.9, E.io); T(P.sc, { k2: 1, lo2: 60 }, 106.9, 0.3, E.lin); T(P.lab, { g: 1, C: 1 }, 107.0, 0.3, E.lin); T(P, { gap: 60 }, 106.3, 0.01);
+    T(P, { gap: D.cap.gapLand }, 107.3, 1.2, E.io); T(P.sc, { lo2: D.cap.gapLand }, 107.3, 1.2, E.io); rw(2, 107.3); rwOff(2, 108.7); T(P.sc, { k2: 0 }, 108.6, 0.2, E.lin);
+    camTo(VIEW.s3, 108.6, 0.9); T(P, { m23: 1 }, 108.6, 0.9, E.io); T(P.sc, { k3: 1, lo3: 0, hi3: 0 }, 109.1, 0.3, E.lin); T(P.lab, { P1: 1, x3: 1, E1: 1, dE: 1 }, 109.3, 0.3, E.lin);
+    T(P, { x3: 14 }, 109.6, 1.0, E.io); T(P.sc, { hi3: 14 }, 109.6, 1.0, E.io); rw(3, 109.6); rwOff(3, 111.0); T(P.sc, { k3: 0 }, 110.9, 0.2, E.lin);
+    camTo(VIEW.s4, 110.9, 0.9); T(P, { m34: 1 }, 110.9, 0.9, E.io); T(P, { x3: 0 }, 110.9, 0.01); T(P.sc, { k4: 1, lo4: 0, hi4: 0 }, 111.4, 0.3, E.lin); T(P.lab, { P: 1, S1: 1, E0: 1, core: 1, x4: 1 }, 111.6, 0.3, E.lin);
+    T(P, { x4: D.lvdt.xr }, 111.8, 1.0, E.io); T(P.sc, { hi4: D.lvdt.xr }, 111.8, 1.0, E.io); rw(4, 111.8);
+    // value tracks live; initial state is the hook
+    capCascade(tl, "lab"); seamOut(tl, 114, "#st-lab");
+    tl.eventCallback("onUpdate", render);
+    window.__timelines["lab"] = tl;
+    render();
+  })();
+  </script>
+</template>

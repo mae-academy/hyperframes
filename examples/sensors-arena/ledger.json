@@ -1,0 +1,26 @@
+{
+  "fps": 30,
+  "seams": [
+    {
+      "id": "lab→table",
+      "cut": 114,
+      "technique": "cut-the-curve LEFT",
+      "exit": { "selector": "#st-lab", "axis": "x", "dir": -1 },
+      "entry": { "selector": "#st-table", "axis": "x", "dir": -1 }
+    },
+    {
+      "id": "table→example",
+      "cut": 133,
+      "technique": "cut-the-curve LEFT",
+      "exit": { "selector": "#st-table", "axis": "x", "dir": -1 },
+      "entry": { "selector": "#st-example", "axis": "x", "dir": -1 }
+    },
+    {
+      "id": "example→outro",
+      "cut": 162,
+      "technique": "cut-the-curve LEFT",
+      "exit": { "selector": "#st-example", "axis": "x", "dir": -1 },
+      "entry": { "selector": "#st-outro", "axis": "x", "dir": -1 }
+    }
+  ]
+}

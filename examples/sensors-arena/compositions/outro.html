@@ -1,0 +1,138 @@
+<template>
+  <style>
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:400;src:url("assets/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011,U+204F,U+2E41,U+FE80-FEFC}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:600;src:url("assets/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011,U+204F,U+2E41,U+FE80-FEFC}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:700;src:url("assets/fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011,U+204F,U+2E41,U+FE80-FEFC}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:400;src:url("assets/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:600;src:url("assets/fonts/ibm-plex-sans-arabic-latin-600-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:700;src:url("assets/fonts/ibm-plex-sans-arabic-latin-700-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+#root{--navy:#0B1F3A;--blue:#1565FF;--purple:#7A3CFF;--orange:#F26B00;--green:#00945E;--red:#E5173F;--gold:#FFC21A;--teal:#18B5C8;
+  position:absolute;inset:0;overflow:hidden;font-family:"IBM Plex Sans Arabic","Inter",sans-serif;color:var(--navy);font-weight:600}
+#root *{box-sizing:border-box}
+.stage{position:absolute;inset:0}
+.ar{direction:rtl;unicode-bidi:isolate}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.m{display:inline-block;direction:ltr;unicode-bidi:isolate;line-height:1;white-space:nowrap}
+.m svg{display:inline-block;fill:currentColor}
+.panel{background:#fff;border:8px solid var(--c,var(--blue));border-radius:28px;box-shadow:0 18px 40px rgba(11,31,58,.14)}
+.cap{position:absolute;left:0;right:0;bottom:58px;text-align:center;pointer-events:none}
+.cap-in{display:inline-block;direction:rtl;font-size:52px;line-height:1.35;font-weight:700;color:var(--navy);padding:6px 36px;
+  text-shadow:0 0 14px #F6F9FF,0 0 8px #F6F9FF,0 0 3px #F6F9FF;white-space:nowrap}
+.cap .w{display:inline-block;unicode-bidi:isolate;margin:0 .14em}
+.cap .w.ltr{direction:ltr;font-family:"Inter","IBM Plex Sans Arabic",sans-serif;font-weight:700;font-size:.94em}
+.cap .w.rtl{direction:rtl}
+.cap .m{font-size:1em}
+.floor{position:absolute;inset:0}
+
+    #line{position:absolute;left:0;right:0;top:180px;text-align:center;font-size:150px;font-weight:700;line-height:1.2;direction:rtl}
+    #line .tw{display:inline-block}
+    #brand{position:absolute;left:380px;top:560px;width:1160px;height:290px;--c:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0}
+    #brand .b1{font-family:"Inter",sans-serif;font-weight:900;font-size:124px;letter-spacing:-2px;white-space:nowrap;color:var(--navy);line-height:1}
+    #brand .b1 em{font-style:normal;color:var(--blue)}
+    #brand .b2{font-size:44px;font-weight:700;color:var(--navy);direction:rtl}
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1920" data-height="1080">
+    <div class="stage" id="st-outro">
+      <svg class="floor" data-layout-ignore id="fl-outro" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+      <div id="line"><span class="tw" style="color:var(--navy)">كل</span> <span class="tw">حسّاس</span> <span class="tw">بيحوّل</span> <span class="tw" style="color:var(--orange)">الحركة</span> <span class="tw">لـ</span><span class="tw" style="color:var(--green)">جهد</span></div>
+      <div id="brand" class="panel clip" data-start="3.6" data-duration="4.4"><div class="b1">MAE <em>Academy</em></div><div class="b2">هندسة بالبسيط</div></div>
+    </div>
+  </div>
+  <script>
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+function capCascade(tl, scene) {
+  document.querySelectorAll('[id^="cap-' + scene + '-"]').forEach((el) => {
+    const t0 = parseFloat(el.dataset.start),
+      dur = parseFloat(el.dataset.duration);
+    const ws = el.querySelectorAll(".w");
+    ws.forEach((w, i) =>
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.16, ease: "power3.out" },
+        t0 + 0.04 + i * 0.085,
+      ),
+    );
+    tl.fromTo(
+      el.querySelector(".cap-in"),
+      { opacity: 1 },
+      { opacity: 0, duration: 0.14, ease: "power2.in", immediateRender: false },
+      t0 + dur - 0.14,
+    );
+  });
+}
+// cut-the-curve LEFT: exit x 0 -> -230 (power4.in 0.34s, fade done by 0.2s), entry +230 -> 0 (power4.out, 0.42s, ignites at .35)
+function seamIn(tl, st) {
+  tl.fromTo(
+    st,
+    { x: 230, opacity: 0.35 },
+    { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" },
+    0,
+  );
+}
+function seamOut(tl, dur, st) {
+  tl.fromTo(
+    st,
+    { x: 0 },
+    { x: -230, duration: 0.34, ease: "power4.in", immediateRender: false },
+    dur - 0.34,
+  );
+  tl.fromTo(
+    st,
+    { opacity: 1 },
+    { opacity: 0, duration: 0.2, ease: "none", immediateRender: false },
+    dur - 0.34,
+  );
+}
+// word-by-word entry (waterfall entry, binary opacity) for title blocks
+function wordsIn(tl, sel, t0, gap = 0.09) {
+  document
+    .querySelectorAll(sel + " .tw")
+    .forEach((w, i) =>
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.2, ease: "power4.out" },
+        t0 + i * gap,
+      ),
+    );
+}
+// fade-and-rise for a block inside a clip
+function popIn(tl, sel, t0, dur = 0.38, from = { x: 230, opacity: 0 }) {
+  tl.fromTo(sel, from, { x: 0, y: 0, opacity: 1, duration: dur, ease: "power4.out" }, t0);
+}
+function slideOut(tl, sel, t0, dur = 0.34) {
+  tl.fromTo(
+    sel,
+    { x: 0, opacity: 1 },
+    { x: -230, opacity: 0, duration: dur, ease: "power4.in", immediateRender: false },
+    t0,
+  );
+}
+
+// faint perspective floor grid for the 2D scenes (static)
+function drawFloor(svg) {
+  let s = "";
+  const vx = 960,
+    hz = 360;
+  for (let i = 0; i <= 14; i++) {
+    const y = hz + (1080 - hz) * Math.pow(i / 14, 1.8);
+    s += `<line x1="0" y1="${y.toFixed(1)}" x2="1920" y2="${y.toFixed(1)}" stroke="#1565FF" stroke-opacity=".11" stroke-width="2"/>`;
+  }
+  for (let j = -14; j <= 14; j++) {
+    const xb = 960 + j * 230;
+    s += `<line x1="${vx}" y1="${hz}" x2="${xb}" y2="1080" stroke="#1565FF" stroke-opacity=".11" stroke-width="2"/>`;
+  }
+  svg.innerHTML = s;
+}
+
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    drawFloor(document.getElementById("fl-outro"));
+    tl.fromTo("#st-outro", { x: 230, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" }, 0);
+    tl.fromTo("#brand", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.45, ease: "power4.out" }, 3.7);
+    window.__timelines["outro"] = tl;
+  })();
+  </script>
+</template>

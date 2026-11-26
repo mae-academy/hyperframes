@@ -1,0 +1,28 @@
+<template>
+  <style>
+/*__COMMON_CSS__*/
+    #line{position:absolute;left:0;right:0;top:180px;text-align:center;font-size:150px;font-weight:700;line-height:1.2;direction:rtl}
+    #line .tw{display:inline-block}
+    #brand{position:absolute;left:380px;top:560px;width:1160px;height:290px;--c:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0}
+    #brand .b1{font-family:"Inter",sans-serif;font-weight:900;font-size:124px;letter-spacing:-2px;white-space:nowrap;color:var(--navy);line-height:1}
+    #brand .b1 em{font-style:normal;color:var(--blue)}
+    #brand .b2{font-size:44px;font-weight:700;color:var(--navy);direction:rtl}
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1920" data-height="1080">
+    <div class="stage" id="st-outro">
+      <svg class="floor" data-layout-ignore id="fl-outro" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+      <div id="line"><span class="tw" style="color:var(--navy)">كل</span> <span class="tw">حسّاس</span> <span class="tw">بيحوّل</span> <span class="tw" style="color:var(--orange)">الحركة</span> <span class="tw">لـ</span><span class="tw" style="color:var(--green)">جهد</span></div>
+      <div id="brand" class="panel clip" data-start="3.6" data-duration="4.4"><div class="b1">MAE <em>Academy</em></div><div class="b2">هندسة بالبسيط</div></div>
+    </div>
+  </div>
+  <script>
+/*__COMMON_JS__*/
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    drawFloor(document.getElementById("fl-outro"));
+    tl.fromTo("#st-outro", { x: 230, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" }, 0);
+    tl.fromTo("#brand", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.45, ease: "power4.out" }, 3.7);
+    window.__timelines["outro"] = tl;
+  })();
+  </script>
+</template>

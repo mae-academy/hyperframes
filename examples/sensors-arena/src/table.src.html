@@ -1,0 +1,48 @@
+<template>
+  <style>
+/*__COMMON_CSS__*/
+    .ttl{position:absolute;left:0;right:0;top:30px;text-align:center;font-size:112px;font-weight:700;direction:rtl;line-height:1.15}
+    .tbl{position:absolute;left:100px;top:200px;width:1720px}
+    .tr{position:relative;display:flex;direction:rtl;align-items:center;gap:16px;height:140px;margin-bottom:12px;padding:0 24px;opacity:0}
+    .tr.hd{height:64px;border:none;background:none;box-shadow:none;margin-bottom:6px;font-size:32px;color:rgba(11,31,58,.7);font-weight:700;opacity:0}
+    .tr > div{flex:none}
+    .c1{width:330px;font-family:"Inter",sans-serif;font-weight:900;font-size:46px;direction:ltr;text-align:right;line-height:1.1}
+    .c2{width:270px;font-size:44px;font-weight:700;color:var(--green);direction:rtl}
+    .c3{width:520px;font-size:46px;display:flex;justify-content:center;direction:ltr}
+    .c4{width:450px;font-size:34px;line-height:1.3;font-weight:600;direction:rtl}
+    .c4 .m{font-size:1.1em}
+    .hd .c1{font-family:inherit;font-size:32px;font-weight:700;direction:rtl;text-align:right}
+    .src{position:absolute;left:0;right:0;top:878px;text-align:center;font-size:30px;color:rgba(11,31,58,.6);direction:rtl;opacity:0}
+  </style>
+  <div id="root" data-composition-id="table" data-width="1920" data-height="1080">
+    <div class="stage" id="st-table">
+      <svg class="floor" data-layout-ignore id="fl-table" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+      <div class="ttl" id="ttl-table"><span class="tw" style="display:inline-block">خلاصة</span> <span class="tw" style="display:inline-block">الكتاب</span></div>
+      <div class="tbl">
+        <div class="tr hd clip" id="t-hd" data-start="0.6" data-duration="18.4"><div class="c1">الحسّاس</div><div class="c2" style="color:inherit">شو بيتغيّر؟</div><div class="c3" style="font-family:inherit;font-size:32px">المعادلة</div><div class="c4" style="font-size:32px;font-weight:700">من الكتاب</div></div>
+        <div class="tr panel clip" id="t-r1" data-start="4.2" data-duration="14.8" style="--c:var(--blue)"><div class="c1">Potentiometer</div><div class="c2">مقاومة [[R]]</div><div class="c3">[[f_pot]]</div><div class="c4">خطّية {{tb.pot.linMin|2}}–{{tb.pot.linMax}}٪ · بطيئة، دقّتها قليلة</div></div>
+        <div class="tr panel clip" id="t-r2" data-start="8.0" data-duration="11" style="--c:var(--teal)"><div class="c1">Capacitance</div><div class="c2">سعة [[C]]</div><div class="c3">[[f_cap]]</div><div class="c4">مش خطّية: [[S]] بتكبر لما [[d]] يصغر</div></div>
+        <div class="tr panel clip" id="t-r3" data-start="11.5" data-duration="7.5" style="--c:var(--green)"><div class="c1">Differential</div><div class="c2">فرق جهد [[dE]]</div><div class="c3">[[f_diff]]</div><div class="c4">خطّي: [[s_diff]]</div></div>
+        <div class="tr panel clip" id="t-r4" data-start="14.8" data-duration="4.2" style="--c:var(--purple)"><div class="c1">LVDT</div><div class="c2">تحريض [[E0]]</div><div class="c3">[[f_lvdt]]</div><div class="c4">دقّة ≈ {{tb.lvdt.res|2}} مم · مدى {{tb.lvdt.rangeMin}}–{{tb.lvdt.rangeMax}} مم</div></div>
+      </div>
+      <div class="src" id="src">المصدر: الفصل ٣ · Sensors and Transducers</div>
+      /*__CAPTIONS__*/
+    </div>
+  </div>
+  <script>
+/*__COMMON_JS__*/
+  (function () {
+    const tl = gsap.timeline({ paused: true });
+    drawFloor(document.getElementById("fl-table"));
+    seamIn(tl, "#st-table");
+    tl.fromTo("#t-hd", { opacity: 0, x: 230 }, { opacity: 1, x: 0, duration: 0.4, ease: "power4.out" }, 0.7);
+    [["#t-r1", 4.3], ["#t-r2", 8.1], ["#t-r3", 11.6], ["#t-r4", 14.9]].forEach(([s, t]) => {
+      tl.fromTo(s, { opacity: 0, x: 230 }, { opacity: 1, x: 0, duration: 0.45, ease: "power4.out" }, t);
+      [".c1", ".c2", ".c3", ".c4"].forEach((c, i) => tl.fromTo(s + " " + c, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, t + 0.18 + i * 0.22));
+    });
+    tl.fromTo("#src", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 15.4);
+    capCascade(tl, "table"); seamOut(tl, 19, "#st-table");
+    window.__timelines["table"] = tl;
+  })();
+  </script>
+</template>
