@@ -1,0 +1,159 @@
+<template>
+  <style>
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:400;src:url("assets/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011,U+204F,U+2E41,U+FE80-FEFC}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:600;src:url("assets/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011,U+204F,U+2E41,U+FE80-FEFC}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:700;src:url("assets/fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011,U+204F,U+2E41,U+FE80-FEFC}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:400;src:url("assets/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:600;src:url("assets/fonts/ibm-plex-sans-arabic-latin-600-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:700;src:url("assets/fonts/ibm-plex-sans-arabic-latin-700-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+#root{--navy:#0B1F3A;--blue:#1565FF;--purple:#7A3CFF;--orange:#F26B00;--green:#00945E;--red:#E5173F;--gold:#FFC21A;--teal:#18B5C8;
+  position:absolute;inset:0;overflow:hidden;font-family:"IBM Plex Sans Arabic","Inter",sans-serif;color:var(--navy);font-weight:600}
+#root *{box-sizing:border-box}
+.stage{position:absolute;inset:0}
+.ar{direction:rtl;unicode-bidi:isolate}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.m{display:inline-block;direction:ltr;unicode-bidi:isolate;line-height:1;white-space:nowrap}
+.m svg{display:inline-block;fill:currentColor}
+.panel{background:#fff;border:8px solid var(--c,var(--blue));border-radius:28px;box-shadow:0 18px 40px rgba(11,31,58,.14)}
+.cap{position:absolute;left:0;right:0;bottom:58px;text-align:center;pointer-events:none}
+.cap-in{display:inline-block;direction:rtl;font-size:52px;line-height:1.35;font-weight:700;color:var(--navy);padding:6px 36px;
+  text-shadow:0 0 14px #F6F9FF,0 0 8px #F6F9FF,0 0 3px #F6F9FF;white-space:nowrap}
+.cap .w{display:inline-block;unicode-bidi:isolate;margin:0 .14em}
+.cap .w.ltr{direction:ltr;font-family:"Inter","IBM Plex Sans Arabic",sans-serif;font-weight:700;font-size:.94em}
+.cap .w.rtl{direction:rtl}
+.cap .m{font-size:1em}
+.floor{position:absolute;inset:0}
+
+.cap.edge .cap-in{color:var(--purple)}
+
+.ttl{position:absolute;right:90px;top:40px;font-size:96px;font-weight:700;direction:rtl}
+    #ch{position:absolute;left:70px;top:170px;width:900px;height:660px;--c:var(--blue);opacity:0}
+    #ch svg{position:absolute;left:0;top:0}
+    #lgs{position:absolute;left:1000px;top:170px;width:880px}
+    .lgh,.lg{display:grid;grid-template-columns:1.7fr 1fr 1.25fr 1.5fr 1.1fr;gap:8px;align-items:center;direction:rtl;font-size:30px;font-weight:700;padding:0 14px}
+    .lgh{height:60px;color:rgba(11,31,58,.78);opacity:0;font-size:29px}
+    .lg{height:134px;margin-bottom:12px;border-width:6px;opacity:0;line-height:1.25}
+    .lg .n{font-family:"Inter",sans-serif;font-weight:900;font-size:32px;direction:ltr;text-align:right}
+  </style>
+  <div id="root" data-composition-id="arena" data-width="1920" data-height="1080">
+    <div class="stage" id="st-arena"><svg class="floor" id="fl-arena" data-layout-ignore viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
+      <div class="ttl" id="ttl-arena">مقارنة حسّاسات الحرارة</div>
+      <div id="ch" class="panel clip" data-start="0.9" data-duration="18.8"><svg id="chs" viewBox="0 0 980 640" width="900" height="660"></svg></div>
+      <div id="lgs" class="clip" data-start="1.2" data-duration="18.5"><div class="lgh" id="lgh"><div>الحسّاس</div><div>الخطّية</div><div>الحساسية</div><div>المدى</div><div>التلامس</div></div><div class="lg panel" id="lg0" style="--c:#F26B00"><div class="n" style="color:#D45A00">RTD</div><div>خطّي</div><div>متوسطة</div><div style="direction:ltr;font-family:Inter">−100…850 °C</div><div>تلامس</div></div><div class="lg panel" id="lg1" style="--c:#7A3CFF"><div class="n" style="color:#7A3CFF">NTC thermistor</div><div>غير خطّي</div><div>عالية جداً</div><div style="direction:ltr;font-family:Inter">−50…150 °C</div><div>تلامس</div></div><div class="lg panel" id="lg2" style="--c:#00945E"><div class="n" style="color:#00945E">Thermocouple</div><div>شبه خطّي</div><div>قليلة</div><div style="direction:ltr;font-family:Inter">0…1000 °C</div><div>تلامس</div></div><div class="lg panel" id="lg3" style="--c:#E5173F"><div class="n" style="color:#E5173F">Pyrometer</div><div>أُس أربعة</div><div>تزيد مع الحرارة</div><div style="direction:ltr;font-family:Inter">200…1000 °C</div><div>بدون تلامس</div></div></div>
+<div class="cap clip " id="cap-arena-001" data-start="0.80" data-duration="3.60"><div class="cap-in"><span class="w rtl">أربع</span> <span class="w rtl">حسّاسات</span> <span class="w rtl">حرارة</span> <span class="w rtl">على</span> <span class="w rtl">محور</span> <span class="w rtl">واحد.</span></div></div>
+      <div class="cap clip " id="cap-arena-002" data-start="4.70" data-duration="4.70"><div class="cap-in"><span class="w ltr">RTD</span> <span class="w rtl">والمزدوج</span> <span class="w rtl">الحراري</span> <span class="w rtl">خطّيين</span> <span class="w rtl">تقريباً.</span></div></div>
+      <div class="cap clip " id="cap-arena-003" data-start="9.70" data-duration="4.70"><div class="cap-in"><span class="w rtl">الثرمستور</span> <span class="w rtl">حسّاس</span> <span class="w rtl">جداً</span> <span class="w rtl">بس</span> <span class="w rtl">مش</span> <span class="w rtl">خطّي</span> <span class="w rtl">أبداً.</span></div></div>
+      <div class="cap clip " id="cap-arena-004" data-start="14.70" data-duration="4.50"><div class="cap-in"><span class="w rtl">والبيرومتر</span> <span class="w rtl">بيقيس</span> <span class="w rtl">عن</span> <span class="w rtl">بعد،</span> <span class="w rtl">بس</span> <span class="w rtl">بأُس</span> <span class="w rtl">أربعة.</span></div></div>
+    </div></div>
+  <script>
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+function capCascade(tl, scene) {
+  document.querySelectorAll('[id^="cap-' + scene + '-"]').forEach((el) => {
+    const t0 = parseFloat(el.dataset.start),
+      dur = parseFloat(el.dataset.duration);
+    const ws = el.querySelectorAll(".w");
+    ws.forEach((w, i) =>
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.16, ease: "power3.out" },
+        t0 + 0.04 + i * 0.085,
+      ),
+    );
+    tl.fromTo(
+      el.querySelector(".cap-in"),
+      { opacity: 1 },
+      { opacity: 0, duration: 0.14, ease: "power2.in", immediateRender: false },
+      t0 + dur - 0.14,
+    );
+  });
+}
+// cut-the-curve LEFT: exit x 0 -> -230 (power4.in 0.34s, fade done by 0.2s), entry +230 -> 0 (power4.out, 0.42s, ignites at .35)
+function seamIn(tl, st) {
+  tl.fromTo(
+    st,
+    { x: 230, opacity: 0.35 },
+    { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" },
+    0,
+  );
+}
+function seamOut(tl, dur, st) {
+  tl.fromTo(
+    st,
+    { x: 0 },
+    { x: -230, duration: 0.34, ease: "power4.in", immediateRender: false },
+    dur - 0.34,
+  );
+  tl.fromTo(
+    st,
+    { opacity: 1 },
+    { opacity: 0, duration: 0.2, ease: "none", immediateRender: false },
+    dur - 0.34,
+  );
+}
+// word-by-word entry (waterfall entry, binary opacity) for title blocks
+function wordsIn(tl, sel, t0, gap = 0.09) {
+  document
+    .querySelectorAll(sel + " .tw")
+    .forEach((w, i) =>
+      tl.fromTo(
+        w,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.2, ease: "power4.out" },
+        t0 + i * gap,
+      ),
+    );
+}
+// fade-and-rise for a block inside a clip
+function popIn(tl, sel, t0, dur = 0.38, from = { x: 230, opacity: 0 }) {
+  tl.fromTo(sel, from, { x: 0, y: 0, opacity: 1, duration: dur, ease: "power4.out" }, t0);
+}
+function slideOut(tl, sel, t0, dur = 0.34) {
+  tl.fromTo(
+    sel,
+    { x: 0, opacity: 1 },
+    { x: -230, opacity: 0, duration: dur, ease: "power4.in", immediateRender: false },
+    t0,
+  );
+}
+
+// faint perspective floor grid for the 2D scenes (static)
+function drawFloor(svg) {
+  let s = "";
+  const vx = 960,
+    hz = 360;
+  for (let i = 0; i <= 14; i++) {
+    const y = hz + (1080 - hz) * Math.pow(i / 14, 1.8);
+    s += `<line x1="0" y1="${y.toFixed(1)}" x2="1920" y2="${y.toFixed(1)}" stroke="#1565FF" stroke-opacity=".11" stroke-width="2"/>`;
+  }
+  for (let j = -14; j <= 14; j++) {
+    const xb = 960 + j * 230;
+    s += `<line x1="${vx}" y1="${hz}" x2="${xb}" y2="1080" stroke="#1565FF" stroke-opacity=".11" stroke-width="2"/>`;
+  }
+  svg.innerHTML = s;
+}
+
+  (function () {
+    const tl = gsap.timeline({ paused: true }); drawFloor(document.getElementById("fl-arena")); seamIn(tl, "#st-arena");
+    const pop = (s, t, x = 230) => tl.fromTo(s, { opacity: 0, x }, { opacity: 1, x: 0, duration: 0.45, ease: "power4.out" }, t);
+    const K = {"eps0":8.854,"pot":{"E":10,"L":100},"diff":{"E":10,"d":20,"xMax":16},"lvdt":{"xr":12,"E0atRange":4,"xMax":24},"ind":{"Lmax":120,"g0":5,"gap":[2,20]},"rvdt":{"E":5,"thMax":40},"capA":{"w":30,"d":8,"full":60,"w0":36},"capT":{"r":30,"d":5},"capL":{"L":50,"D1":11,"D2":28,"er":2.2},"enc":{"n":24,"bits":4},"lin":{"pitch":10},"moire":{"pitch":0.5,"alpha":0.2},"unb":{"L0":25,"Gf":2},"bon":{"Gf":2.1,"E":5,"epsPerN":20},"pvdf":{"k":1},"pz":{"d":2.3,"m":20,"ab":2.5},"avc":{"f":1},"solid":{"L":1,"W":[25,40]},"dp":{"rho":1000,"A":1,"kinds":{"orifice":{"Cd":0.61,"beta":0.5,"loss":0.7},"nozzle":{"Cd":0.95,"beta":0.5,"loss":0.4},"venturi":{"Cd":0.98,"beta":0.5,"loss":0.12}}},"pitot":{"rho":1.2,"Cv":0.98},"rota":{},"ultra":{"d":0.1,"alpha":45},"drag":{"Cd":1.2,"rho":1000,"A":0.002},"turb":{"K":120},"lda":{"lam":0.6328,"theta":20},"hot":{"A":1.6,"B":1.2},"em":{"B":0.1,"D":50},"rtd":{"R0":100,"a":[0.00385,0.00618]},"thm":{"R0":10,"beta":3950,"T0":25},"tc":{"aS":0.041},"rad":{"sigma":5.67e-8}};
+    const X0 = 90, X1 = 940, Y0 = 570, Y1 = 40, T0 = -100, T1 = 1000, X = (t) => X0 + ((t - T0) / (T1 - T0)) * (X1 - X0), Y = (v) => Y0 - v * (Y0 - Y1);
+    const rtd = (t) => 100 * (1 + 0.00385 * t), thm = (t) => K.thm.R0 * Math.exp(K.thm.beta * (1 / (t + 273.15) - 1 / (K.thm.T0 + 273.15))), rad = (t) => Math.pow(t + 273.15, 4);
+    const C = [
+      ["#F26B00", -100, 850, (t) => (rtd(t) - rtd(-100)) / (rtd(850) - rtd(-100))],
+      ["#7A3CFF", -50, 150, (t) => (thm(-50) - thm(t)) / (thm(-50) - thm(150))],
+      ["#00945E", 0, 1000, (t) => t / 1000],
+      ["#E5173F", 200, 1000, (t) => (rad(t) - rad(200)) / (rad(1000) - rad(200))],
+    ];
+    let s = `<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="#0B1F3A" stroke-width="4" stroke-linecap="round"/><line x1="${X0}" y1="${Y1 - 10}" x2="${X0}" y2="${Y0}" stroke="#0B1F3A" stroke-width="4" stroke-linecap="round"/>`;
+    for (const t of [-100, 200, 500, 800, 1000]) s += `<line x1="${X(t)}" y1="${Y0}" x2="${X(t)}" y2="${Y0 + 10}" stroke="#0B1F3A" stroke-width="4"/><text x="${X(t)}" y="${Y0 + 48}" font-family="Inter" font-weight="700" font-size="30" fill="#0B1F3A" text-anchor="middle">${t}</text>`;
+    s += `<text x="${X1}" y="${Y0 - 14}" font-family="Inter" font-weight="900" font-size="32" fill="#0B1F3A" text-anchor="end">T (°C)</text><text x="${X0 + 16}" y="${Y1 + 8}" font-family="Inter" font-weight="900" font-size="30" fill="#0B1F3A">1.0</text>`;
+    C.forEach(([col, a, b, f], k) => { let d = ""; for (let i = 0; i <= 80; i++) { const t = a + ((b - a) * i) / 80; d += (i ? "L" : "M") + X(t).toFixed(1) + " " + Y(f(t)).toFixed(1); } s += `<path id="cv${k}" d="${d}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>`; });
+    document.getElementById("chs").innerHTML = s;
+    pop("#ttl-arena", 0.4, 0); pop("#ch", 1.0); pop("#lgh", 1.3, 120);
+    C.forEach((c, k) => { const t = 4.4 + k * 4.8; pop("#lg" + k, t - 3.2, 120); tl.fromTo("#cv" + k, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2.2, ease: "power1.inOut" }, t - 3.0); });
+    capCascade(tl, "arena"); seamOut(tl, 20, "#st-arena"); window.__timelines["arena"] = tl;
+  })();
+  </script>
+</template>

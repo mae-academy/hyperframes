@@ -26,15 +26,15 @@
 
 .cap.edge .cap-in{color:var(--purple)}
 
-    #line{position:absolute;left:0;right:0;top:170px;text-align:center;font-size:136px;font-weight:700;line-height:1.25;direction:rtl}
-    #brand{position:absolute;left:380px;top:580px;width:1160px;height:290px;--c:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0}
+#line{position:absolute;left:120px;right:120px;top:150px;text-align:center;font-size:104px;font-weight:700;line-height:1.3;direction:rtl}
+    #brand{position:absolute;left:380px;top:590px;width:1160px;height:290px;--c:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0}
     #brand .b1{font-family:"Inter",sans-serif;font-weight:900;font-size:124px;letter-spacing:-2px;color:var(--navy);line-height:1;white-space:nowrap}
     #brand .b1 em{font-style:normal;color:var(--blue)}
     #brand .b2{font-size:44px;font-weight:700;color:var(--navy);direction:rtl}
   </style>
   <div id="root" data-composition-id="outro" data-width="1920" data-height="1080">
     <div class="stage" id="st-outro"><svg class="floor" id="fl-outro" data-layout-ignore viewBox="0 0 1920 1080" width="1920" height="1080"></svg>
-      <div id="line">كل حسّاس: <span style="color:var(--orange)">تغيّر فيزيائي</span> ← <span style="color:var(--green)">تغيّر كهربائي</span></div>
+      <div id="line">كل حسّاس بيحوّل <span style="color:var(--orange)">ظاهرة فيزيائية</span> لإشارة <span style="color:var(--green)">يفهمها المتحكم</span></div>
       <div id="brand" class="panel clip" data-start="3.6" data-duration="4.4"><div class="b1">MAE <em>Academy</em></div><div class="b2">هندسة بالبسيط</div></div>
     </div></div>
   <script>
@@ -127,10 +127,10 @@ function drawFloor(svg) {
 }
 
   (function () {
-    const tl = gsap.timeline({ paused: true }); drawFloor(document.getElementById("fl-outro"));
-    tl.fromTo("#st-outro", { x: 230, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" }, 0);
-    tl.fromTo("#brand", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.45, ease: "power4.out" }, 3.7);
-    window.__timelines["outro"] = tl;
+    const tl = gsap.timeline({ paused: true }); drawFloor(document.getElementById("fl-outro")); tl.fromTo("#st-outro", { x: 230, opacity: 0.35 }, { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" }, 0);
+    const pop = (s, t, x = 230) => tl.fromTo(s, { opacity: 0, x }, { opacity: 1, x: 0, duration: 0.45, ease: "power4.out" }, t);
+    pop("#brand", 3.7, 0); tl.fromTo("#brand", { y: 80 }, { y: 0, duration: 0.45, ease: "power4.out" }, 3.7);
+     window.__timelines["outro"] = tl;
   })();
   </script>
 </template>

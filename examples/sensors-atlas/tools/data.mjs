@@ -5,9 +5,12 @@ export const D = {
   // physical constants / illustrative parameters shared by models + captions
   k: {
     eps0: 8.854, // pF/m
+    pot: { E: 10, L: 100 },
+    diff: { E: 10, d: 20, xMax: 16 },
+    lvdt: { xr: 12, E0atRange: 4, xMax: 24 },
     ind: { Lmax: 120, g0: 5, gap: [2, 20] }, // mH, mm
     rvdt: { E: 5, thMax: 40 }, // V at +-thMax degrees
-    capA: { w: 30, d: 8, full: 60 }, // mm
+    capA: { w: 30, d: 8, full: 60, w0: 36 }, // mm
     capT: { r: 30, d: 5 }, // mm
     capL: { L: 50, D1: 11, D2: 28, er: 2.2 },
     enc: { n: 24, bits: 4 },
@@ -169,7 +172,8 @@ export const D = {
     unit_mm: "mm",
   },
 };
-const S = (id, ch, name, q, c1, c2, c3, io, f, T = 12) => ({
+let SC = 0;
+const S = (id, ch, name, q, c1, c2, c3, io, f, T = 14, lbl) => ({
   id,
   ch,
   name,
@@ -178,20 +182,54 @@ const S = (id, ch, name, q, c1, c2, c3, io, f, T = 12) => ({
   io,
   f,
   T,
+  lbl,
 });
-// io: [inTex, inUnit, inDec, outTex, outUnit, outDec]
+// io: [inTex, inUnit, inDec, outTex, outUnit, outDec]. ch = act number. Order = the master spec (Scenes 0..32).
 export const SENSORS = [
-  // ---------- chapter 1: motion & position ----------
+  // ---------- ACT 1: the problem + analog motion/position ----------
+  S(
+    "hook",
+    1,
+    "Sensor",
+    "كيف بتعرف الآلة وين صارت إيدها؟",
+    "الروبوت ما عنده عيون! كيف بيعرف وين صارت إيده؟",
+    "هاي إيد الروبوت: زلاجة بتمشي على مسار.",
+    "بدنا نحوّل الحركة [[x]] لكهربا [[V]]. كيف؟",
+    ["x", "mm", 0, "V", "V", 1],
+    ["f_hook"],
+  ),
+  S(
+    "pot",
+    1,
+    "Potentiometer",
+    "كيف نقسم الجهد حسب مكان الزلاجة؟",
+    "بطارية [[E]] بتغذّي مسار طوله [[L]]، والزلاجة على بُعد [[d]].",
+    "الجهد [[V]] بيتناسب مع المسافة بخط مستقيم.",
+    "بس لو الحِمل [[RL]] ضعيف… الجهد بينزل!",
+    ["d", "mm", 0, "V", "V", 1],
+    ["f_pot"],
+  ),
   S(
     "ind",
     1,
     "Variable reluctance",
     "كيف نغيّر الحث بالفجوة الهوائية؟",
     "قلب حديد عليه ملف، وقطعة حديد بتتحرك فوقه.",
-    "كل ما بعدت القطعة، الفجوة [[d]] زادت والحث [[Lind]] نقص.",
-    "بعيد كتير؟ المسار المغناطيسي بيضعف والحث بيهبط.",
+    "كل ما قرّبت القطعة، الفجوة [[d]] صغرت والحث [[Lind]] زاد.",
+    "الحث بيقفز لما [[d]] يقرّب من الصفر: مش خطّي.",
     ["d", "mm", 0, "Lind", "mH", 0],
     ["f_ind", "f_ind2"],
+  ),
+  S(
+    "lvdt",
+    1,
+    "LVDT",
+    "كيف نقيس الحركة بمحوّل تفاضلي؟",
+    "ملف رئيسي بالنص وملفين ثانويين، وقلب بيتحرك جوّاهم.",
+    "بالنص [[ES1]] = [[ES2]] فيصير [[E0]] صفر.",
+    "برا المدى الخطّي: الإشارة بتنحني.",
+    ["x", "mm", 0, "E0", "V", 1],
+    ["f_lvdt"],
   ),
   S(
     "rvdt",
@@ -200,9 +238,20 @@ export const SENSORS = [
     "كيف نقيس الدوران مثل LVDT؟",
     "نفس LVDT، بس القلب بيلف بدل ما يمشي.",
     "اللفّة [[th]] بتحرّك القلب، والفرق [[E0]] بيتناسب معها.",
-    "برا المدى الخطّي الإشارة بتنحني.",
+    "بعد أربعين درجة الإشارة بتنحني.",
     ["th", "°", 0, "E0", "V", 1],
     ["f_rvdt"],
+  ),
+  S(
+    "capG",
+    1,
+    "Capacitance transducer",
+    "كيف نخلّي المسافة تغيّر السعة؟",
+    "صفيحة ثابتة وصفيحة بتنزلق على مسار.",
+    "الفراغ [[d]] بيغيّر السعة [[C]].",
+    "وقت يصير [[d]] صغير، [[C]] بتقفز!",
+    ["d", "mm", 0, "C", "pF", 2],
+    ["f_cap", "s_cap"],
   ),
   S(
     "capA",
@@ -222,7 +271,7 @@ export const SENSORS = [
     "كيف نقيس الزاوية بالسعة؟",
     "نصفين دائرة: وحد ثابت ووحد بيلف.",
     "الزاوية المتداخلة [[th]] بتحدد السعة [[C]].",
-    "بعد نص دورة، التداخل بيبدأ ينقص.",
+    "بعد مئة وثمانين درجة، التداخل بينقص والسعة بترجع.",
     ["th", "°", 0, "C", "pF", 2],
     ["f_capT", "f_capT2"],
   ),
@@ -232,14 +281,26 @@ export const SENSORS = [
     "Liquid-level capacitor",
     "كيف نعرف مستوى السائل بدون ما نلمسه؟",
     "أسطوانتين متداخلتين جوّا خزان.",
-    "السائل أعلى → المادة العازلة أكتر → السعة [[C]] أكبر.",
+    "السائل بيملا الفراغ بينهم: السعة [[C]] بتزيد مع الارتفاع [[h]].",
     "الخزان فاضي؟ السعة مش صفر: الهوا عازل كمان.",
     ["h", "mm", 0, "C", "pF", 2],
     ["f_capL", "f_capL2"],
   ),
   S(
-    "inc",
+    "capD",
     1,
+    "Differential capacitor",
+    "كيف نخلّي الجواب خطّي وبالنص صفر؟",
+    "صفيحتين ثابتتين، والوسطى بتتحرك بينهم.",
+    "الفرق [[dE]] خطّي، وبالنص صفر.",
+    "يمين موجب… يسار سالب: العمود بينزل تحت الصفر.",
+    ["x", "mm", 0, "dE", "V", 1],
+    ["f_diff", "s_diff"],
+  ),
+  // ---------- ACT 2: digital motion ----------
+  S(
+    "inc",
+    2,
     "Incremental encoder",
     "كيف نعدّ الدوران بنبضات؟",
     "قرص فيه شقوق، وضوء بيمرّ منها.",
@@ -250,7 +311,7 @@ export const SENSORS = [
   ),
   S(
     "abs",
-    1,
+    2,
     "Absolute encoder",
     "كيف نعرف الزاوية حتى بعد ما تنقطع الكهربا؟",
     "قرص بحلقات: كل زاوية لها كلمة ثنائية.",
@@ -261,7 +322,7 @@ export const SENSORS = [
   ),
   S(
     "lin",
-    1,
+    2,
     "Linear reflection encoder",
     "كيف نعدّ الحركة الخطّية بالضوء؟",
     "شريط عاكس بيمشي تحت شبكة ثابتة.",
@@ -272,19 +333,19 @@ export const SENSORS = [
   ),
   S(
     "moi",
-    1,
+    2,
     "Moiré fringe",
     "كيف نكبّر الحركة الصغيرة جداً؟",
-    "شبكتين دقيقتين مائلتين شوي عن بعض.",
-    "بتطلع خطوط عريضة بتمشي أكتر بكتير من الحركة الأصلية.",
-    "زاوية الميل أكبر → الخطوط أضيق وأقرب.",
-    ["x", "mm", 2, "N", "", 1],
+    "شبكتين دقيقتين مائلتين بزاوية [[alpha]] عن بعض.",
+    "بتطلع خطوط عريضة: كل ما زادت الزاوية، تضيّقت.",
+    "الخطوط أضيق وأقرب: دقّة أعلى للقياس.",
+    ["alpha", "°", 0, "N", "", 1],
     ["f_moi"],
   ),
-  // ---------- chapter 2: force, tactile, vibration ----------
+  // ---------- ACT 3: force, tactile, vibration ----------
   S(
     "unb",
-    2,
+    3,
     "Unbonded strain gauge",
     "كيف نقيس الشدّ بسلك مشدود؟",
     "أسلاك مشدودة بين إطار ثابت وإطار بيتحرك.",
@@ -295,7 +356,7 @@ export const SENSORS = [
   ),
   S(
     "bon",
-    2,
+    3,
     "Bonded strain gauge",
     "كيف نقيس القوة بلاصقة رقيقة؟",
     "شبكة معدنية لاصقة على عارضة بتنحني.",
@@ -303,45 +364,45 @@ export const SENSORS = [
     "ربع جسر، نص جسر، جسر كامل: الإشارة بتتضاعف.",
     ["F", "N", 0, "V0", "mV", 2],
     ["f_bon", "f_bon2"],
-    15,
+    17,
   ),
   S(
     "tac",
-    2,
+    3,
     "PVDF tactile sensor",
     "كيف يحس الروبوت باللمس؟",
     "غشاء بلاستيكي رقيق تحت إصبع الروبوت.",
-    "الشحنة بتطلع لما الضغط بيتغيّر، مش لما بيثبت.",
+    "الجهد بيطلع لما الضغط بيتغيّر، مش لما بيثبت.",
     "الضغط ثابت؟ الإشارة صفر. شاهد.",
-    ["sg", "kPa", 0, "q", "nC", 1],
+    ["sg", "kPa", 0, "V", "V", 1],
     ["f_tac"],
   ),
   S(
     "pz",
-    2,
+    3,
     "Piezoelectric accelerometer",
     "كيف نقيس التسارع بكريستال؟",
     "كتلة فوق كريستال كوارتز جوّا علبة.",
     "التسارع بيضغط الكريستال، وبتطلع شحنة [[Qm]].",
     "الوضع العرضي: الشحنة أكبر بنسبة a على b.",
     ["a", "m/s²", 0, "Qm", "pC", 1],
-    ["f_pz", "f_pz2"],
+    ["f_pz", "f_pz2", "f_pz3"],
   ),
   S(
     "avc",
-    2,
+    3,
     "Active vibration control",
     "كيف نوقّف الاهتزاز بنفسه؟",
     "عارضة بتهتز، وحسّاس تسارع عليها.",
     "المتحكم بياخد الإشارة وبيشغّل محرك بيعاكس الاهتزاز.",
-    "كل ما زاد الكسب، الاهتزاز أقل.",
+    "كل ما زاد الكسب [[Gk]]، الاهتزاز بيصغّر لين الصفر.",
     ["Gk", "", 2, "amp", "%", 0],
     ["f_avc"],
   ),
-  // ---------- chapter 3: flow ----------
+  // ---------- ACT 4: flow ----------
   S(
     "sol",
-    3,
+    4,
     "Solid flow meter",
     "كيف نعدّ الحبوب اللي بتمرّ على السير؟",
     "سير ناقل بيمرّ على منصّة وزن.",
@@ -352,40 +413,46 @@ export const SENSORS = [
   ),
   S(
     "ori",
-    3,
+    4,
     "Orifice plate",
     "كيف نقيس الجريان بقرص فيه ثقب؟",
-    "ثقب صغير في وسط الأنبوب.",
-    "الثقب بيسرّع الماء، فالضغط [[dP]] بيهبط.",
-    "فرق الضغط بيضيع جزء منه: خسارة دائمة كبيرة.",
+    "ثقب صغير في وسط الأنبوب، ومانومتر قبله وبعده.",
+    "الثقب بيسرّع الماء، فالضغط [[dP]] بيهبط وعمود السائل بينزل.",
+    "دوّامات خلف الثقب: خسارة ضغط دائمة كبيرة.",
     ["Q", "L/s", 1, "dP", "kPa", 1],
     ["f_dp"],
+    14,
+    "المشهد 20 (1/3)",
   ),
   S(
     "noz",
-    3,
+    4,
     "Flow nozzle",
     "كيف نقلّل الخسارة؟",
     "فوهة ناعمة بدل الثقب الحاد.",
     "تضييق تدريجي: فرق الضغط [[dP]] أنظف.",
-    "الخسارة الدائمة أقل من القرص.",
+    "الخسارة الدائمة متوسطة: أقل من القرص.",
     ["Q", "L/s", 1, "dP", "kPa", 1],
     ["f_dp"],
+    14,
+    "المشهد 20 (2/3)",
   ),
   S(
     "ven",
-    3,
+    4,
     "Venturi tube",
     "كيف نقيس بأقل خسارة؟",
     "مخروط يضيق ثم يتسع بنعومة.",
-    "الضغط بيهبط عند الخصر وبيرجع تقريباً كامل.",
+    "الضغط بيهبط عند الخصر وبيرجع تقريباً كامل بالمخروط.",
     "أقل خسارة دائمة من الثلاثة.",
     ["Q", "L/s", 1, "dP", "kPa", 1],
     ["f_dp"],
+    14,
+    "المشهد 20 (3/3)",
   ),
   S(
     "pit",
-    3,
+    4,
     "Pitot tube",
     "كيف نقيس السرعة بأنبوب مقابل الجريان؟",
     "أنبوب على شكل L، فتحته بوجه الماء.",
@@ -396,7 +463,7 @@ export const SENSORS = [
   ),
   S(
     "rot",
-    3,
+    4,
     "Rotameter",
     "كيف نشوف الجريان بعيننا؟",
     "أنبوب زجاج مخروطي وفيه عوّامة.",
@@ -407,7 +474,7 @@ export const SENSORS = [
   ),
   S(
     "ult",
-    3,
+    4,
     "Ultrasonic flow meter",
     "كيف نقيس الجريان بدون ما نلمس الماء؟",
     "مرسلات صوت بزاوية على جانبي الأنبوب.",
@@ -418,7 +485,7 @@ export const SENSORS = [
   ),
   S(
     "drg",
-    3,
+    4,
     "Drag-force flow meter",
     "كيف نقيس الجريان بقوة السحب؟",
     "لوحة داخل الأنبوب على عارضة مرنة.",
@@ -429,7 +496,7 @@ export const SENSORS = [
   ),
   S(
     "trb",
-    3,
+    4,
     "Turbine flow meter",
     "كيف نعدّ لفّات الماء؟",
     "مروحة بالأنبوب، فيها مغناطيس صغير.",
@@ -440,7 +507,7 @@ export const SENSORS = [
   ),
   S(
     "lda",
-    3,
+    4,
     "Laser Doppler anemometer",
     "كيف نقيس السرعة بالليزر؟",
     "شعاعين ليزر بيتقاطعوا جوّا السائل.",
@@ -451,7 +518,7 @@ export const SENSORS = [
   ),
   S(
     "hot",
-    3,
+    4,
     "Hot-wire anemometer",
     "كيف نقيس الهوا بسلك سخن؟",
     "سلك رفيع بيسخن بالتيار.",
@@ -462,7 +529,7 @@ export const SENSORS = [
   ),
   S(
     "emf",
-    3,
+    4,
     "Electromagnetic flow meter",
     "كيف نقيس سائل موصّل بمغناطيس؟",
     "مغناطيس حوالين الأنبوب، وقطبين بالجدار.",
@@ -471,10 +538,10 @@ export const SENSORS = [
     ["v", "m/s", 1, "e", "mV", 1],
     ["f_emf"],
   ),
-  // ---------- chapter 4: temperature ----------
+  // ---------- ACT 5: temperature ----------
   S(
     "rtd",
-    4,
+    5,
     "RTD",
     "كيف نقيس الحرارة بسلك بلاتين؟",
     "سلك بلاتين ملفوف داخل غلاف معدني.",
@@ -485,7 +552,7 @@ export const SENSORS = [
   ),
   S(
     "thm",
-    4,
+    5,
     "NTC thermistor",
     "كيف نقيس بحبّة شبه موصّل؟",
     "حبّة صغيرة من شبه موصّل.",
@@ -496,7 +563,7 @@ export const SENSORS = [
   ),
   S(
     "tc",
-    4,
+    5,
     "Thermocouple",
     "كيف نقيس الحرارة بسلكين مختلفين؟",
     "سلكين من معدنين مختلفين ملتحمين بطرف.",
@@ -507,7 +574,7 @@ export const SENSORS = [
   ),
   S(
     "rad",
-    4,
+    5,
     "Radiative pyrometer",
     "كيف نقيس حرارة جسم بدون ما نلمسه؟",
     "جسم ساخن بيشعّ، وعدسة بتجمع الأشعة.",
@@ -518,12 +585,29 @@ export const SENSORS = [
   ),
 ];
 export const CHAPTERS = [
-  { n: 1, id: "ch1", title: "الحركة والموقع", intro: 8, hook: true },
-  { n: 2, id: "ch2", title: "القوة واللمس والاهتزاز", intro: 3 },
-  { n: 3, id: "ch3", title: "الجريان", intro: 3 },
-  { n: 4, id: "ch4", title: "الحرارة", intro: 3 },
+  {
+    n: 1,
+    id: "a1",
+    title: "الفصل الأول: الحركة والموقع (تناظري)",
+    short: "الحركة والموقع",
+    intro: 3,
+  },
+  { n: 2, id: "a2", title: "الفصل الثاني: الحسّاسات الرقمية", short: "الحسّاسات الرقمية", intro: 3 },
+  {
+    n: 3,
+    id: "a3",
+    title: "الفصل الثالث: القوة واللمس والاهتزاز",
+    short: "القوة واللمس والاهتزاز",
+    intro: 3,
+  },
+  { n: 4, id: "a4", title: "الفصل الرابع: قياس الجريان", short: "قياس الجريان", intro: 3 },
+  { n: 5, id: "a5", title: "الفصل الخامس: الحرارة", short: "الحرارة", intro: 3 },
 ];
-// timing: chapter-local starts, chapter lengths, global offsets
+// scene numbers per the master spec (hook = 0, the three DP meters share 20)
+for (const s of SENSORS) {
+  s.sc = s.id === "hook" ? 0 : s.id === "noz" || s.id === "ven" ? SC : ++SC;
+  if (!s.lbl) s.lbl = s.id === "hook" ? "المشهد 0" : `المشهد ${s.sc}`;
+}
 let g = 0;
 for (const c of CHAPTERS) {
   c.sensors = SENSORS.filter((s) => s.ch === c.n);
@@ -537,21 +621,15 @@ for (const c of CHAPTERS) {
   c.g0 = g;
   g += t;
 }
-export const TAIL = { table: 26, example: 28, outro: 8 };
-D.chapters = CHAPTERS.map((c) => ({ id: c.id, n: c.n, g0: c.g0, len: c.len }));
-D.total = g + TAIL.table + TAIL.example + TAIL.outro;
-D.tail = {
-  table: [g, g + TAIL.table],
-  example: [g + TAIL.table, g + TAIL.table + TAIL.example],
-  outro: [g + TAIL.table + TAIL.example, D.total],
-};
-// example (book): omega = sqrt(F/(m r)) uncertainty
+// tail scenes in order: Act-1 comparison table, Act-5 arena, example 1, example 2, outro
+export const TAIL = { t1: 12, arena: 20, ex1: 30, ex2: 30, outro: 8 };
+// example 1 (book): omega = sqrt(F/(m r)), m = 200 +- 0.01 g, r = 25 +- 0.01 mm, F = 500 N +- 0.1 %
 const F = 500,
-  m = 200,
+  m = 0.2,
   r = 0.025,
   dF = 0.5,
-  dm = 0.01,
-  dr = 0.00001,
+  dm = 0.01e-3,
+  dr = 0.01e-3,
   om = Math.sqrt(F / (m * r));
 const c1 = (om / (2 * F)) * dF,
   c2 = (om / (2 * m)) * dm,
@@ -564,6 +642,96 @@ D.ex = {
   p: [om / (2 * F), om / (2 * m), om / (2 * r)],
   rss: Math.hypot(c1, c2, c3),
 };
+// example 2 (book): RLC impedance
+const rl = { R: 2000, dR: 100, L: 0.8, dL: 0.04, C: 5e-6, dC: 0.25e-6, f: 60 },
+  w = 2 * Math.PI * rl.f;
+const XL = w * rl.L,
+  XC = 1 / (w * rl.C),
+  Z = Math.sqrt(rl.R ** 2 + (XL - XC) ** 2),
+  dXL = w * rl.dL,
+  dXC = XC * (rl.dC / rl.C);
+const pp = { R: rl.R / Z, XL: (XL - XC) / Z, XC: -(XL - XC) / Z },
+  cc = { R: Math.abs(pp.R) * rl.dR, XL: Math.abs(pp.XL) * dXL, XC: Math.abs(pp.XC) * dXC },
+  sm = cc.R + cc.XL + cc.XC;
+D.rlc = { XL, XC, Z, dXL, dXC, p: pp, c: cc, sum: sm, pct: (100 * sm) / Z };
+const f1 = (v, n = 1) => v.toFixed(n);
+Object.assign(D.tex, {
+  giv_m: "m = 200 \\pm 0.01\\ \\mathrm{g}",
+  f_hook: "x \\rightarrow V",
+  f_pot: "V = E\\,\\dfrac{d}{L}",
+  f_ind: "L = \\dfrac{N^{2}}{\\mathcal{R}} = N^{2}\\mu\\,\\dfrac{A}{l}",
+  f_ind2: "\\mathcal{R} = \\dfrac{l}{\\mu A}",
+  f_lvdt: "E_0 = E_{S1} - E_{S2}",
+  f_cap: "C = \\dfrac{\\epsilon_r \\epsilon_0 A}{d}",
+  s_cap: "S = \\dfrac{\\partial C}{\\partial d} = -\\dfrac{\\epsilon_r \\epsilon_0 A}{d^{2}}",
+  f_diff: "\\Delta E = E_1 - E_2 = \\dfrac{x}{d}\\,E",
+  s_diff: "S = \\dfrac{\\Delta E}{x} = \\dfrac{E}{d}",
+  f_pz: "Q = d\\,F,\\quad V = g\\,t\\,P",
+  f_pz2: "Q_{\\text{trans}} = d\\,F\\,\\dfrac{a}{b}",
+  f_pz3: "C_T = C_c + C_{cable} + C_{display}",
+  f_drg: "F_d = \\tfrac{1}{2}\\,C_d\\,\\rho\\,g\\,V^{2}A",
+  f_avc: "a_{\\text{meas}} \\rightarrow K_c \\rightarrow F_{\\text{act}}",
+  giv_R: `R = ${rl.R} \\pm ${rl.dR}\\,\\Omega`,
+  giv_L: `L = ${rl.L} \\pm ${rl.dL}\\,\\mathrm{H}`,
+  giv_C: `C = ${rl.C * 1e6} \\pm ${rl.dC * 1e6}\\,\\mu\\mathrm{F}`,
+  giv_f: `f = ${rl.f}\\,\\mathrm{Hz}`,
+  f_Z: "Z = \\sqrt{R^{2} + (X_L - X_C)^{2}}",
+  f_XL: "X_L = 2\\pi f L",
+  f_XC: "X_C = \\dfrac{1}{2\\pi f C}",
+  f_dZ: "\\Delta Z = \\left|\\dfrac{\\partial Z}{\\partial R}\\right|\\Delta R + \\left|\\dfrac{\\partial Z}{\\partial X_L}\\right|\\Delta X_L + \\left|\\dfrac{\\partial Z}{\\partial X_C}\\right|\\Delta X_C",
+  XL: "X_L",
+  XC: "X_C",
+  dXL: "\\Delta X_L",
+  dXC: "\\Delta X_C",
+  v_R: `${rl.R}\\,\\Omega`,
+  v_XL: `${f1(XL)}\\,\\Omega`,
+  v_XC: `${f1(XC)}\\,\\Omega`,
+  dR_v: `${rl.dR}\\,\\Omega`,
+  dXL_v: `${f1(dXL, 2)}\\,\\Omega`,
+  dXC_v: `${f1(dXC, 2)}\\,\\Omega`,
+  tot2: `\\Delta Z = ${f1(sm)}\\,\\Omega`,
+  pct2: `\\dfrac{\\Delta Z}{Z} = ${f1((100 * sm) / Z, 2)}\\,\\%`,
+  val_Z: `Z = ${f1(Z, 0)}\\,\\Omega`,
+  dF_v: "0.5\\,\\mathrm{N}",
+  dm_v: "0.01\\,\\mathrm{g}",
+  dr_v: "0.01\\,\\mathrm{mm}",
+  v_om: `\\omega = ${om.toFixed(2)}\\ \\mathrm{rad/s}`,
+  tot: `\\Delta\\omega = ${(c1 + c2 + c3).toFixed(3)}\\ \\mathrm{rad/s}`,
+  pct: `\\dfrac{\\Delta\\omega}{\\omega} = ${(((c1 + c2 + c3) / om) * 100).toFixed(3)}\\,\\%`,
+  Z: "Z",
+  m: "m",
+  r: "r",
+  RL: "R_L",
+  dE: "\\Delta E",
+  E1: "E_1",
+  E2: "E_2",
+  Gk: "K_c",
+  alpha: "\\alpha",
+});
+// ---- global layout: Act1, comparison table, Acts 2-5, arena, examples, outro ----
+const seq = [
+  ["a1", "ch"],
+  ["t1"],
+  ["a2", "ch"],
+  ["a3", "ch"],
+  ["a4", "ch"],
+  ["a5", "ch"],
+  ["arena"],
+  ["ex1"],
+  ["ex2"],
+  ["outro"],
+];
+let gt = 0;
+D.layout = {};
+for (const [id, kind] of seq) {
+  const c = kind ? CHAPTERS.find((x) => x.id === id) : null,
+    len = c ? c.len : TAIL[id];
+  if (c) c.g0 = gt;
+  D.layout[id] = [gt, gt + len];
+  gt += len;
+}
+D.total = gt;
+D.chapters = CHAPTERS.map((c) => ({ id: c.id, n: c.n, g0: c.g0, len: c.len }));
 
 // short formulas for the summary table (one line each)
 const SHORT = {

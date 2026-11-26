@@ -53,9 +53,10 @@ const sub = (s) =>
   );
 const COLS = {
   1: ["#1565FF", "#1565FF"],
-  2: ["#00945E", "#00945E"],
-  3: ["#18B5C8", "#0E8FA0"],
-  4: ["#F26B00", "#D45A00"],
+  2: ["#7A3CFF", "#7A3CFF"],
+  3: ["#00945E", "#00945E"],
+  4: ["#18B5C8", "#0E8FA0"],
+  5: ["#F26B00", "#D45A00"],
 };
 
 function wordsHtml(text) {
@@ -85,11 +86,10 @@ const CHK = (id) =>
 function sensorHtml(s, ch) {
   const [c, ct] = COLS[ch.n],
     T = s.T,
-    t0 = s.t0,
-    gi = SENSORS.indexOf(s) + 1;
+    t0 = s.t0;
   const nm = s.name.length <= 13 ? 84 : s.name.length <= 22 ? 62 : 54;
   const q = sub(s.q);
-  const card = `<div id="card-${s.id}" class="card clip" data-start="${t0}" data-duration="${T}"><div class="panel" style="--c:${c};--ct:${ct}"><div class="step">حسّاس ${gi} من ${SENSORS.length}</div><div class="q">${q}</div><div class="nm" style="font-size:${nm}px">${s.name
+  const card = `<div id="card-${s.id}" class="card clip" data-start="${t0}" data-duration="${T}"><div class="panel" style="--c:${c};--ct:${ct}"><div class="step">${s.lbl}</div><div class="q">${q}</div><div class="nm" style="font-size:${nm}px">${s.name
     .split(" ")
     .map((w) => `<span class="tw">${w}</span>`)
     .join(" ")}</div></div></div>`;
@@ -105,10 +105,7 @@ function sensorHtml(s, ch) {
   return card + "\n      " + fp + "\n      " + hud;
 }
 function chapterHtml(ch) {
-  const [c] = COLS[ch.n];
-  const intro = ch.hook
-    ? `<div id="intro" class="clip hook" data-start="0" data-duration="${ch.intro}"><div class="blk"><div class="panel" style="--c:${c}"><div class="t1">كيف بتحس الآلة؟</div><div class="t2">${SENSORS.length} حسّاس · 4 فصول · فكرة وحدة</div></div></div></div>`
-    : `<div id="intro" class="clip" data-start="0" data-duration="${ch.intro}"><div class="blk"><div class="t1" style="color:${COLS[ch.n][1]}">${ch.title}</div><div class="t2">${ch.sensors.length} حسّاسات</div></div></div>`;
+  const intro = `<div id="intro" class="clip" data-start="0" data-duration="${ch.intro}"><div class="blk"><div class="t1" style="color:${COLS[ch.n][1]}">${ch.short}</div><div class="t2">الفصل ${ch.n} · ${ch.sensors.length} مشاهد</div></div></div>`;
   const sens = ch.sensors.map((s) => sensorHtml(s, ch)).join("\n      ");
   const axes = ch.sensors
     .map(
@@ -118,10 +115,7 @@ function chapterHtml(ch) {
     .join("");
   let n = 0;
   const caps = [];
-  if (ch.hook)
-    caps.push(cap(ch.id, ++n, 0.6, 6.2, "الروبوت ما عنده عيون ولا جلد… كيف بيعرف شو حواليه؟"));
-  if (ch.hook) caps.push(cap(ch.id, ++n, 6.4, 7.7, "نبدأ بالحركة."));
-  if (!ch.hook) caps.push(cap(ch.id, ++n, 0.6, ch.intro - 0.6, `فصل ${ch.title}.`));
+  caps.push(cap(ch.id, ++n, 0.6, ch.intro - 0.5, `${ch.title}.`));
   for (const s of ch.sensors) {
     const [a, b, c3] = s.caps,
       t0 = s.t0,

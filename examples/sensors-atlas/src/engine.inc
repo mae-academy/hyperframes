@@ -3,7 +3,7 @@ const COL = { navy: "#0B1F3A", blue: "#1565FF", purple: "#7A3CFF", orange: "#F26
 const mix = (a, b, t) => { const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
 const ease = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 const cam = { yaw: -0.5, pitch: 0.3, dist: 24, tx: 0, ty: 0, tz: 0.5, cx: 1310, cy: 395, f: 1500 };
-let camPos = [0, 0, 0], OUT = [], EA = 1;
+let camPos = [0, 0, 0], OUT = [], EA = 1, MS = 1, MC = [0, 0, 0];
 const FLOORZ = -1.6;
 function project(p) {
   const x = p[0] - cam.tx, y = p[1] - cam.ty, z = p[2] - cam.tz;
@@ -12,6 +12,7 @@ function project(p) {
   const dep = y1 * cp - z * sp + cam.dist, k = cam.f / dep;
   return [cam.cx + x1 * k, cam.cy - (y1 * sp + z * cp) * k, dep, k];
 }
+const projectM = (p) => (MS === 1 ? project(p) : project([MC[0] + (p[0] - MC[0]) * MS, MC[1] + (p[1] - MC[1]) * MS, MC[2] + (p[2] - MC[2]) * MS]));
 function setCamPos() {
   const dx = -Math.cos(cam.pitch) * Math.sin(cam.yaw), dy = Math.cos(cam.pitch) * Math.cos(cam.yaw), dz = -Math.sin(cam.pitch);
   camPos = [cam.tx - dx * cam.dist, cam.ty - dy * cam.dist, cam.tz - dz * cam.dist];
@@ -92,7 +93,7 @@ function shadow(c, sx, sy, o = 0.16) { const pts = []; for (let i = 0; i < 20; i
 const partial = (pts, fr) => { if (fr >= 1) return pts; if (fr <= 0) return []; let L = 0; const seg = []; for (let i = 1; i < pts.length; i++) { const l = Math.hypot(...vsub(pts[i], pts[i - 1])); seg.push(l); L += l; } let want = L * fr; const out = [pts[0]]; for (let i = 0; i < seg.length; i++) { if (want >= seg[i]) { out.push(pts[i + 1]); want -= seg[i]; } else { const t = want / seg[i]; out.push([0, 1, 2].map((j) => pts[i][j] + (pts[i + 1][j] - pts[i][j]) * t)); break; } } return out; };
 // green output bar with frame (v in 0..1); bipolar: v in -1..1 from baseline
 function outBar(x, v, o = 1, z0 = -0.9, H = 3.4, y = 0) { ln([[x - 0.6, y - 0.7, z0], [x - 0.6, y - 0.7, z0 + H], [x + 0.6, y - 0.7, z0 + H], [x + 0.6, y - 0.7, z0], [x - 0.6, y - 0.7, z0]], COL.navy, 4, o * 0.35); const h = Math.abs(v) * H; box([x, y, z0 + (v >= 0 ? h / 2 : -h / 2)], [1.1, 1.1, Math.max(h, 0.03)], COL.green, o); }
-const biBar = (x, v, o = 1, zb = 0.9, H = 1.9) => { ln([[x - 0.9, -0.8, zb], [x + 0.9, -0.8, zb]], COL.navy, 4, o * 0.6); const h = Math.abs(v) * H; box([x, 0, zb + (v >= 0 ? h / 2 : -h / 2)], [1.1, 1.1, Math.max(h, 0.03)], COL.green, o); };
+const biBar = (x, v, o = 1, zb = 0.9, H = 1.9) => { box([x, 0, zb], [2.0, 1.5, 0.05], COL.steel, 0.55 * o); ln([[x - 1.0, -0.8, zb + 0.03], [x + 1.0, -0.8, zb + 0.03]], COL.navy, 4, o * 0.8); const h = Math.abs(v) * H; box([x, 0, zb + (v >= 0 ? h / 2 : -h / 2)], [1.1, 1.1, Math.max(h, 0.03)], COL.green, o); };
 // streamlines inside a pipe: n lines at fractions of radius rf(x); flow offset advances dashes downstream
 function streams(x0, x1, rf, off, o = 1, n = 5, col = COL.teal, sw = 4) {
   for (let k = 0; k < n; k++) { const f = n === 1 ? 0 : -0.8 + (1.6 * k) / (n - 1), pts = []; for (let i = 0; i <= 28; i++) { const x = lerp(x0, x1, i / 28); pts.push([x, 0, rf(x) * f]); } ln(pts, col, sw, o, "16 14", -off, -0.5); }
@@ -105,7 +106,7 @@ const fmtPts = (a) => a.map((q) => q[0].toFixed(1) + "," + q[1].toFixed(1)).join
 function renderPrims(prims) {
   const items = [];
   for (const p of prims) {
-    const pr = p.pts.map(project);
+    const pr = p.pts.map(projectM);
     if (p.k !== "l" && pr.some((q) => q[2] < 2)) continue;
     const dep = pr.reduce((s, q) => s + q[2], 0) / pr.length;
     items.push([dep - (p.bias || 0), p, pr]);

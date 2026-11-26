@@ -160,7 +160,6 @@ const tickAt = (t, g = G.tick, pan = 0) => put(pick("tick"), t, g, pan);
 let sv = 1;
 for (const ch of CHAPTERS) {
   if (ch.g0 > 0) seam(ch.g0);
-  if (ch.hook) popAt(0.9, 0.22);
   ch.sensors.forEach((s, i) => {
     const t0 = ch.g0 + s.t0,
       T = s.T,
@@ -173,44 +172,55 @@ for (const ch of CHAPTERS) {
     put(pick("click"), t0 + 7.5, G.click);
     put(pick("thump"), t0 + 7.5, G.thump);
     popAt(t0 + 7.8, 0.24);
-    put(servo(T - 1.6 - 8.2, 2000 + sv++), t0 + 8.2, G.servo * 0.7, pan, 0, false);
-    popAt(t0 + T - 1.25, 0.28, pan);
+    put(servo(T - 4.0 - 8.2, 2000 + sv++), t0 + 8.2, G.servo * 0.7, pan, 0, false);
+    popAt(t0 + T - 3.05, 0.28, pan);
   });
 }
 {
-  // table pages + rows
-  const t = D.tail.table[0],
-    PG = 6.4;
+  // Act-1 comparison table
+  const t = D.layout.t1[0];
   seam(t);
-  CHAPTERS.forEach((ch, k) => {
-    const p0 = t + 0.3 + PG * k;
-    if (k) put(pick("whooshS"), p0 - 0.05, 0.2, 0.4, -0.8);
-    popAt(p0 + 0.05, 0.24);
-    ch.sensors.forEach((s, i) => tickAt(p0 + 0.5 + i * 0.38 + 0.04, 0.2, i % 2 ? 0.2 : -0.2));
+  [1.4, 3.6, 5.8, 8.0].forEach((r) => popAt(t + r + 0.05, 0.26));
+  popAt(t + 0.75, 0.22);
+}
+{
+  // arena
+  const t = D.layout.arena[0];
+  seam(t);
+  popAt(t + 0.5, 0.22);
+  popAt(t + 1.1, 0.22);
+  [0, 1, 2, 3].forEach((k) => {
+    const a = 4.4 + k * 4.8;
+    popAt(t + a - 3.2 + 0.05, 0.24);
+    put(servo(2.2, 4000 + k), t + a - 3.0, 0.2, 0, 0, false);
   });
 }
 {
-  // example
-  const t = D.tail.example[0];
-  seam(t);
-  popAt(t + 1.0, 0.26);
-  [0, 1, 2, 3].forEach((i) => tickAt(t + 1.55 + i * 0.6, 0.22));
-  popAt(t + 5.4, 0.26);
-  popAt(t + 9.0, 0.26);
-  popAt(t + 10.0, 0.22);
-  [12.6, 16.6, 20.6].forEach((r) => {
-    popAt(t + r + 0.05, 0.26);
-    put(servo(1.0, 3000 + Math.round(r)), t + r + 1.8, 0.2, 0, 0, false);
-  });
-  popAt(t + 23.8, 0.26);
-  put(pick("click"), t + 26.2, G.click);
-  put(pick("thump"), t + 26.2, G.thump);
+  // examples
+  for (const id of ["ex1", "ex2"]) {
+    const t = D.layout[id][0],
+      rows = id === "ex1" ? [13.6, 17.4, 21.2] : [12.6, 16.6, 20.6],
+      fin = id === "ex1" ? 28.0 : 26.2;
+    seam(t);
+    popAt(t + 1.0, 0.26);
+    [0, 1, 2, 3].forEach((i) => tickAt(t + 1.55 + i * 0.7, 0.22));
+    popAt(t + 5.5, 0.26);
+    popAt(t + 9.7, 0.26);
+    popAt(t + 10.5, 0.22);
+    rows.forEach((r, k) => {
+      popAt(t + r + 0.05, 0.26);
+      put(servo(1.0, 3000 + k + (id === "ex1" ? 0 : 10)), t + r + 1.8, 0.2, 0, 0, false);
+    });
+    popAt(t + (id === "ex1" ? 25.6 : 23.8), 0.26);
+    put(pick("click"), t + fin, G.click);
+    put(pick("thump"), t + fin, G.thump);
+  }
 }
 {
   // outro: whoosh in, riser into the final impact, sparkle when the brand card aligns
-  const t = D.tail.outro[0];
+  const t = D.layout.outro[0];
   seam(t);
-  put(lib.riser[0], t + 3.7 - 3.6 + 0.0, G.riser, 0, 0, false);
+  put(lib.riser[0], t + 3.7 - 3.6, G.riser, 0, 0, false);
   put(lib.impact[0], t + 3.7, G.impact);
   put(pick("thump"), t + 3.7, 0.4);
   put(lib.sparkle[0], t + 3.95, G.sparkle, 0, 0, false);
