@@ -11,7 +11,7 @@ one() {
   f=$(printf "%s/seg_%03d.mp4" "$OUT" "$i")
   for try in 1 2 3; do
     [ -s "$f" ] && ffprobe -v error "$f" 2>/dev/null && return 0
-    npx hyperframes render --start $s --end $e --fps $FPS -q $Q -w 1 --quiet -o "$f" >"$OUT/log_$i.txt" 2>&1
+    npx hyperframes render --start $s --end $e --fps $FPS -q $Q -w ${W:-2} --quiet -o "$f" >"$OUT/log_$i.txt" 2>&1
     [ -s "$f" ] && return 0
     echo "segment $i retry $try" >&2
   done
