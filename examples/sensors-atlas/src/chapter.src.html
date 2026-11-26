@@ -1,0 +1,138 @@
+<template>
+  <style>
+/*__COMMON_CSS__*/
+    #cv{position:absolute;left:0;top:0;width:1920px;height:1080px}
+    #labels{position:absolute;inset:0;pointer-events:none}
+    .lb{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;font-size:52px;font-weight:700;line-height:1;text-shadow:0 0 10px #fff,0 0 5px #fff;color:var(--navy)}
+    .lb .m{font-size:1em}
+    .card{position:absolute;left:60px;top:96px;width:720px}
+    .card .panel{padding:22px 34px 20px;min-height:262px;direction:rtl;opacity:0}
+    .card .step{font-size:38px;font-weight:700;color:var(--navy);display:inline-block;border-bottom:7px solid var(--c);padding-bottom:2px}
+    .card .q{font-size:50px;line-height:1.3;font-weight:700;margin-top:6px;color:var(--navy)}
+    .card .nm{font-family:"Inter",sans-serif;font-weight:900;line-height:1.0;direction:ltr;text-align:left;margin-top:14px;color:var(--ct,var(--c));min-height:92px}
+    .card .nm .tw{display:inline-block}
+    .fpanel{position:absolute;left:60px;top:500px;width:720px}
+    .fpanel .panel{padding:22px 30px;text-align:center;opacity:0;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:16px;color:var(--navy)}
+    .fpanel .f1{font-size:62px}.fpanel .f2{font-size:46px}
+    .hud{position:absolute;left:1000px;top:70px;width:860px;height:110px}
+    .chip{position:absolute;top:0;height:104px;padding:0 24px;display:flex;align-items:center;gap:14px;direction:ltr;font-family:"Inter",sans-serif;opacity:0}
+    .chip .cs{font-size:58px;font-weight:700}.chip .eq{font-size:50px;font-weight:700;color:var(--navy)}
+    .chip .cv{font-size:56px;font-weight:900;min-width:128px;text-align:right;font-variant-numeric:tabular-nums}
+    .chip .cu{font-size:32px;font-weight:700;color:var(--navy)}
+    .chip.in{left:0;width:420px;--c:var(--orange)}.chip.in .cs,.chip.in .cv{color:#D45A00}
+    .chip.out{left:446px;width:414px;--c:var(--green)}.chip.out .cs,.chip.out .cv{color:var(--green)}
+    .chip .chk{position:absolute;left:-26px;top:-30px;width:64px;height:64px;opacity:0}
+    #scope{position:absolute;left:1232px;top:628px;width:740px;height:316px;--c:var(--blue);transform:scale(.85);transform-origin:0 0}
+    #scope .panel{position:absolute;inset:0;opacity:0}
+    #scope svg{position:absolute;left:0;top:0}
+    .axl{position:absolute;font-size:40px;opacity:0;font-weight:700;color:var(--navy)}
+    #intro{position:absolute;left:60px;top:96px;width:760px}
+    #intro .t1{font-size:112px;font-weight:700;line-height:1.15;direction:rtl}
+    #intro .t2{font-size:46px;font-weight:600;color:rgba(11,31,58,.75);direction:rtl;margin-top:12px}
+    #intro.hook .t1{font-size:84px}
+    #intro .panel{padding:26px 34px;--c:var(--navy)}
+  </style>
+  <div id="root" data-composition-id="__CH__" data-width="1920" data-height="1080">
+    <div class="stage" id="st-__CH__">
+      <svg id="cv" viewBox="0 0 1920 1080" width="1920" height="1080"><g id="gGrid" data-layout-ignore></g><g id="gSolids"></g><g id="gOv" data-layout-ignore></g><g id="gGizmo" data-layout-ignore></g></svg>
+      <div id="labels"></div>
+      /*__INTRO__*/
+      /*__SENS_HTML__*/
+      <div id="scope" class="clip" data-start="__SCOPE0__" data-duration="__SCOPEDUR__"><div class="panel"></div><svg id="scope-svg" viewBox="0 0 740 316" width="740" height="316"></svg>/*__AXES__*/</div>
+      /*__CAPTIONS__*/
+    </div>
+  </div>
+  <script>
+/*__COMMON_JS__*/
+  (function () {
+    const D = "__DATA__", CH = "__CHJSON__";
+/*__ENGINE__*/
+/*__MODELS__*/
+    const tl = gsap.timeline({ paused: true });
+    const sl = CH.sensors, svgS = document.getElementById("gSolids"), svgG = document.getElementById("gGrid"), svgO = document.getElementById("gOv"), svgZ = document.getElementById("gGizmo"), scopeSvg = document.getElementById("scope-svg");
+    const TEXD = "__TEXPOOL__";
+    // ---------- labels (DOM built once, positioned per frame) ----------
+    const LBL = [];
+    const labRoot = document.getElementById("labels");
+    sl.forEach((s, i) => (SENS[s.id].lab || []).forEach(([k, fn, al]) => { const el = document.createElement("div"); el.className = "lb"; el.innerHTML = '<bdi class="m" dir="ltr">' + TEXD[k] + "</bdi>"; labRoot.appendChild(el); LBL.push({ el, i, fn, al }); }));
+    const cache = {};
+    const $ = (id) => cache[id] || (cache[id] = document.getElementById(id));
+    // ---------- schedule: everything on the 3D side is a pure function of time ----------
+    const EDGE0 = 8.2;
+    function sched(s, loc) {
+      const d = SENS[s.id], [p0, p1, pe] = d.p, q = d.q, edgeEnd = s.T - 1.6, backEnd = s.T - 0.9;
+      const mainK = ease((loc - 3.0) / 4.0), edgeK = ease((loc - EDGE0) / (edgeEnd - EDGE0)), backK = ease((loc - edgeEnd - 0.3) / (backEnd - edgeEnd - 0.3));
+      let p = loc < 3 ? p0 : lerp(p0, p1, mainK), qq = q ? q[0] : 0;
+      let lo = Math.min(p0, p), hi = Math.max(p0, p);
+      if (loc >= EDGE0) {
+        if (q) { qq = lerp(q[0], q[1], edgeK * (1 - backK)); }
+        else { p = lerp(p1, pe, edgeK * (1 - backK)); lo = Math.min(lo, p, p1); hi = Math.max(hi, p, p1); }
+        if (!q && loc > edgeEnd) { lo = Math.min(p0, p1, pe); hi = Math.max(p0, p1, pe); }
+      }
+      return { p, q: qq, lo: Math.min(lo, p1 < p0 ? p1 : lo), hi: Math.max(hi, p1 > p0 ? (loc > 7 ? p1 : hi) : hi) };
+    }
+    const endState = (s) => ({ p: SENS[s.id].p[1], q: SENS[s.id].q ? SENS[s.id].q[0] : 0 });
+    const overview = (v) => ({ yaw: v.yaw - 0.7, pitch: v.pitch + 0.12, dist: v.dist + 9, tx: v.tx, tz: v.tz });
+    const lerpView = (a, b, m) => { for (const k of ["yaw", "pitch", "dist"]) cam[k] = lerp(a[k], b[k], m); cam.dist *= 1.12; cam.tx = lerp(a.tx, b.tx, m); cam.tz = lerp(a.tz, b.tz, m); cam.ty = 0; };
+    const num = (v, d) => v.toFixed(d);
+    function drawScope(s, st, alpha) {
+      const d = SENS[s.id]; if (alpha <= 0.01) return "";
+      const [x0, x1] = d.x, [y0, y1] = d.y, X = (v) => 96 + ((v - x0) / (x1 - x0)) * 604, Y = (v) => 228 - ((v - y0) / (y1 - y0)) * 200, bip = y0 < 0, zy = bip ? Y(0) : 228, zx = x0 < 0 ? X(0) : 96;
+      const cv = d.sc || d.out, N = d.ns || 90, cl = (v) => clamp(v, y0, y1), tk = (v) => (Math.abs(v) >= 100 ? String(Math.round(v)) : String(Math.round(v * 100) / 100));
+      let o = `<g opacity="${alpha.toFixed(3)}"><line x1="96" y1="${zy}" x2="700" y2="${zy}" stroke="${COL.navy}" stroke-width="4" stroke-linecap="round"/><line x1="${zx}" y1="20" x2="${zx}" y2="228" stroke="${COL.navy}" stroke-width="4" stroke-linecap="round"/>`;
+      const tx = (x, v, a) => `<text x="${x}" y="266" font-family="Inter" font-weight="700" font-size="34" fill="${COL.navy}" text-anchor="${a}">${tk(v)}</text>`;
+      o += tx(96, x0, "middle") + tx(700, x1, "middle") + `<text x="84" y="${Y(y1) + 10}" font-family="Inter" font-weight="700" font-size="34" fill="${COL.navy}" text-anchor="end">${tk(y1)}</text>`;
+      if (bip) o += `<text x="84" y="${Y(y0) + 6}" font-family="Inter" font-weight="700" font-size="34" fill="${COL.navy}" text-anchor="end">${tk(y0)}</text>`;
+      const path = (fn, a, b, q) => { let t = ""; for (let i = 0; i <= N; i++) { const x = a + ((b - a) * i) / N; t += (i ? "L" : "M") + X(x).toFixed(1) + " " + Y(cl(fn(x, q))).toFixed(1); } return t; };
+      const q0 = d.q ? d.q[0] : 0, col = s.col;
+      o += `<path d="${path(cv, x0, x1, st.q)}" fill="none" stroke="${col}" stroke-opacity=".22" stroke-width="6" stroke-linecap="round"/>`;
+      if (d.q && Math.abs(st.q - q0) > 1e-3) o += `<path d="${path(cv, x0, x1, q0)}" fill="none" stroke="${COL.navy}" stroke-opacity=".5" stroke-width="4" stroke-dasharray="12 10"/>`;
+      if (d.ideal) o += `<path d="${path(d.ideal, x0, x1, st.q)}" fill="none" stroke="${COL.navy}" stroke-opacity=".5" stroke-width="4" stroke-dasharray="12 10"/>`;
+      if (d.sc2) o += `<path d="${path(d.sc2, x0, x1, st.q)}" fill="none" stroke="${COL.green}" stroke-width="7" stroke-linecap="round"/>`;
+      if (st.hi - st.lo > 1e-6) o += `<path d="${path(cv, st.lo, st.hi, st.q)}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`;
+      const cx = st.p, cy = cl(cv(cx, st.q));
+      o += `<line x1="${X(cx).toFixed(1)}" y1="228" x2="${X(cx).toFixed(1)}" y2="${Y(cy).toFixed(1)}" stroke="${COL.orange}" stroke-width="4" stroke-dasharray="8 8" stroke-opacity=".8"/><line x1="96" y1="${Y(cy).toFixed(1)}" x2="${X(cx).toFixed(1)}" y2="${Y(cy).toFixed(1)}" stroke="${COL.green}" stroke-width="4" stroke-dasharray="8 8" stroke-opacity=".8"/><circle cx="${X(cx).toFixed(1)}" cy="${Y(cy).toFixed(1)}" r="13" fill="${COL.gold}" stroke="${COL.navy}" stroke-width="4"/></g>`;
+      return o;
+    }
+    function render() {
+      const t = tl.time();
+      let cur = 0; for (let j = 0; j < sl.length; j++) if (t >= sl[j].t0) cur = j;
+      const s = sl[cur], d = SENS[s.id], loc = t - s.t0, st = sched(s, Math.max(0, loc));
+      let ph = 0; if (d.phase) { const n = 48, L = Math.max(0, loc); for (let i = 0; i < n; i++) ph += sched(s, ((i + 0.5) / n) * L).p * (L / n); }
+      setCamPos(); OUT = [];
+      let aNew = 1, aOld = 0, m = 1, prev = null;
+      if (cur === 0) { m = ease((t - 0.4) / (s.t0 - 0.5)); lerpView(overview(d.view), d.view, m); aNew = clamp((t - 0.3) / 1.4); }
+      else { prev = sl[cur - 1]; m = ease(loc / 2.6); lerpView(SENS[prev.id].view, d.view, m); aNew = clamp((m - 0.45) / 0.55); aOld = 1 - clamp(m * 2.5); if (loc >= 2.6) { aOld = 0; aNew = 1; } }
+      setCamPos();
+      if (aOld > 0.01) { const e = endState(prev); EA = aOld; SENS[prev.id].build(e.p, e.q, { t, loc: 99, ph: 0 }); }
+      EA = aNew; d.build(st.p, st.q, { t, loc, ph });
+      EA = 1;
+      if (prev && m > 0.002 && m < 0.999) { const A = SENS[prev.id].kb, B = d.kb, op = 0.5 * (1 - clamp((m - 0.85) / 0.15)) * clamp(m / 0.12); for (let i = 0; i < 2; i++) { const a = A[i], b = B[i]; EA = 1; box([0, 1, 2].map((j) => lerp(a.c[j], b.c[j], m)), [0, 1, 2].map((j) => lerp(a.s[j], b.s[j], m)), mix(a.col, b.col, m), op); } }
+      svgG.innerHTML = gridSvg(1); svgS.innerHTML = renderPrims(OUT); svgO.innerHTML = d.ov ? d.ov(st.p, st.q, { t, loc, m }) : ""; svgZ.innerHTML = gizmoSvg(1);
+      for (const L of LBL) { const own = L.i === cur ? aNew * clamp((loc - 1.6) / 0.4 + (cur === 0 ? 0 : 0)) : L.i === cur - 1 ? aOld * 0 : 0; const a = clamp(own * (L.al ? L.al(st.p, st.q) : 1)); if (a <= 0.01) { if (L.el.style.opacity !== "0") L.el.style.opacity = "0"; continue; } const pp = project(L.fn(st.p, st.q)); L.el.style.opacity = a.toFixed(3); L.el.style.transform = `translate(${pp[0].toFixed(1)}px,${pp[1].toFixed(1)}px) translate(-50%,-100%)`; }
+      const i0 = s.io, oo = d.out(st.p, st.q), ii = d.inv ? d.inv(st.p) : st.p;
+      $("n-i-" + s.id).textContent = num(ii, i0[2]); $("n-o-" + s.id).textContent = num(oo, i0[5]);
+      scopeSvg.innerHTML = drawScope(s, st, clamp((loc - 0.4) / 0.4));
+    }
+    // ---------- DOM timeline ----------
+    const ci = document.getElementById("intro");
+    seamIn(tl, "#st-__CH__"); if (CH.n > 0) { /* intro already composed at 0 */ }
+    if (ci) slideOut(tl, "#intro .blk", CH.intro - 0.36);
+    sl.forEach((s, i) => {
+      const t0 = s.t0, T = s.T, id = s.id;
+      popIn(tl, "#card-" + id + " .panel", t0 + 0.08, 0.45); slideOut(tl, "#card-" + id + " .panel", t0 + T - 0.36);
+      popIn(tl, "#hi-" + id + " .chip", t0 + 0.2, 0.4); popIn(tl, "#ho-" + id + " .chip", t0 + 0.3, 0.4); slideOut(tl, "#hi-" + id + " .chip", t0 + T - 0.32); slideOut(tl, "#ho-" + id + " .chip", t0 + T - 0.32);
+      tl.fromTo("#chk-" + id, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power3.out" }, t0 + 7.5);
+      popIn(tl, "#fp-" + id + " .panel", t0 + 7.7, 0.45); slideOut(tl, "#fp-" + id + " .panel", t0 + T - 0.36);
+      tl.fromTo("#ax-" + id + ",#ay-" + id, { opacity: 0 }, { opacity: 1, duration: 0.3 }, t0 + 1.2); tl.to("#ax-" + id + ",#ay-" + id, { opacity: 0, duration: 0.25 }, t0 + T - 0.4);
+      tl.fromTo("#card-" + id + " .q", { opacity: 1 }, { opacity: 0.3, duration: 0.3, immediateRender: false }, t0 + T - 1.45);
+      wordsIn(tl, "#card-" + id, t0 + T - 1.35);
+    });
+    popIn(tl, "#scope .panel", sl[0].t0 + 0.5, 0.45);
+    capCascade(tl, "__CH__"); seamOut(tl, CH.len, "#st-__CH__");
+    tl.eventCallback("onUpdate", render);
+    window.__timelines["__CH__"] = tl;
+    render();
+  })();
+  </script>
+</template>

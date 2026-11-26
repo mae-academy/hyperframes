@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>*{margin:0;padding:0;box-sizing:border-box}html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#F6F9FF}#root{position:relative;width:1920px;height:1080px;overflow:hidden}.ground{position:absolute;inset:0;background:linear-gradient(160deg,#F6F9FF 0%,#E4EDFD 100%)}</style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="442" data-width="1920" data-height="1080">
+      <div class="ground"></div>
+      <div id="ch1" class="clip" data-composition-id="ch1" data-composition-src="compositions/ch1.html" data-start="0" data-duration="116" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="ch2" class="clip" data-composition-id="ch2" data-composition-src="compositions/ch2.html" data-start="116" data-duration="66" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="ch3" class="clip" data-composition-id="ch3" data-composition-src="compositions/ch3.html" data-start="182" data-duration="147" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="ch4" class="clip" data-composition-id="ch4" data-composition-src="compositions/ch4.html" data-start="329" data-duration="51" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="table" class="clip" data-composition-id="table" data-composition-src="compositions/table.html" data-start="380" data-duration="26" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="example" class="clip" data-composition-id="example" data-composition-src="compositions/example.html" data-start="406" data-duration="28" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="outro" class="clip" data-composition-id="outro" data-composition-src="compositions/outro.html" data-start="434" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <audio id="mix" class="clip" src="assets/mix.m4a" data-start="0" data-duration="442" data-track-index="20" data-volume="1"></audio>
+    </div>
+    <script>window.__timelines = window.__timelines || {}; window.__timelines["main"] = gsap.timeline({ paused: true });</script>
+  </body>
+</html>
