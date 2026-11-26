@@ -1,0 +1,5 @@
+renders/
+.hyperframes/
+assets/sfx.wav
+assets/mathjax-tex-svg.js
+node_modules/

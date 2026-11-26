@@ -5,6 +5,10 @@
   },
   "plugins": ["react", "react-hooks", "typescript"],
   "ignorePatterns": [
+    "ch2-spatial/assets/mathjax-tex-svg.js",
+    "ch2-spatial/assets/gsap.min.js",
+    "ch2-spatial/compositions/",
+    "ch2-spatial/index.html",
     ".scratch/",
     "dist/",
     "coverage/",
