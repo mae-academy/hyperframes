@@ -101,7 +101,7 @@
   );
   fade("#c0", T.rewind0, 0.3);
   fade("#fm0", T.rewind0, 0.3);
-  ["#lJ", "#ldet", "#lsp"].forEach((s) => fade(s, T.rewind0, 0.3));
+  ["#lJ", "#lRB", "#ldet", "#lsp"].forEach((s) => fade(s, T.rewind0, 0.3));
   curCount = null;
   curForm = null;
 
@@ -122,7 +122,7 @@
   bannerAt(0);
   beat(1, T.sw[0]);
   popAt(0, ["#lVS"]);
-  popAt(1, ["#lrt1", "#lrt2", "#lrtv"]);
+  popAt(1, ["#lrt1", "#lrt2", "#lrtv", "#lRA"]);
   bannerAt(1);
   beat(2, T.sw[1]);
   bannerAt(2);
@@ -132,8 +132,8 @@
   bannerAt(4);
   beat(5, T.sw[4]);
   // the joint-rate readout gives way to the matrix J
-  ["#lrt1", "#lrt2", "#lrtv"].forEach((s) => fade(s, T.sw[4] - 0.1, 0.2));
-  popAt(2, ["#lJ"]);
+  ["#lrt1", "#lrt2", "#lrtv", "#lRA"].forEach((s) => fade(s, T.sw[4] - 0.1, 0.2));
+  popAt(2, ["#lJ", "#lRB"]);
   bannerAt(5);
   beat(6, T.sw[5]);
   popAt(3, ["#ldet"]);
@@ -732,35 +732,62 @@
       arrow2(P([0, 0]), P(vv), BLUE, 7, aV, 14);
     }
     labelAt("lv", P(vv), aV, vv[0] < 0 ? -22 : 22, -18);
-    // the lost direction at a singularity: outward along the arm, crossed out
-    const aLost = box(t, T.sw[6] + 0.9, T.lock + 0.4, 0.4, 0.5);
-    if (aLost > 0.01) {
-      const rr = Math.hypot(K.p[0], K.p[1]) || 1,
-        u = [K.p[0] / rr, K.p[1] / rr];
-      const q1 = P([0, 0]),
-        q2 = P([u[0] * 2.2, u[1] * 2.2]);
-      line([q1, q2], RED, 5, aLost, 14, [10, 8]);
-      const m = [q2[0], q2[1]];
+    // the target, further out along the straight arm than the arm can reach: the hand cannot go there along the arm
+    const aTg = box(t, T.sw[6] + 0.9, T.lock + 0.4, 0.4, 0.5);
+    const TG = [6.7 * Math.cos(75 * DEG), 6.7 * Math.sin(75 * DEG)];
+    if (aTg > 0.01) {
+      const tgs = screenOf(toPage(TG[0], TG[1], 0.06));
+      line([ts, tgs], RED, 4, 0.8 * aTg, 10, [10, 8]);
+      ctx.save();
+      ctx.globalAlpha = aTg;
+      ctx.strokeStyle = WHITE;
+      ctx.lineWidth = 4;
+      ctx.shadowColor = WHITE;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(tgs[0], tgs[1], 20, 0, 2 * Math.PI);
+      ctx.moveTo(tgs[0] - 30, tgs[1]);
+      ctx.lineTo(tgs[0] + 30, tgs[1]);
+      ctx.moveTo(tgs[0], tgs[1] - 30);
+      ctx.lineTo(tgs[0], tgs[1] + 30);
+      ctx.stroke();
+      ctx.restore();
+      // a red cross over the way there
+      const mid = [(ts[0] + tgs[0]) / 2, (ts[1] + tgs[1]) / 2];
       line(
         [
-          [m[0] - 13, m[1] - 13],
-          [m[0] + 13, m[1] + 13],
+          [mid[0] - 14, mid[1] - 14],
+          [mid[0] + 14, mid[1] + 14],
         ],
         RED,
-        6,
-        aLost,
+        7,
+        aTg,
         10,
       );
       line(
         [
-          [m[0] - 13, m[1] + 13],
-          [m[0] + 13, m[1] - 13],
+          [mid[0] - 14, mid[1] + 14],
+          [mid[0] + 14, mid[1] - 14],
         ],
         RED,
-        6,
-        aLost,
+        7,
+        aTg,
         10,
       );
+      labelAt("lTg", tgs, aTg, 84, 0);
+    } else {
+      labelOp("lTg", 0);
+    }
+    // the path of the hand over the last second: a fading trail
+    const aTr = stageA(t, T.st[1], 0.4);
+    if (aTr > 0.01) {
+      let prev = null;
+      for (let k = 0; k <= 30; k++) {
+        const tt = Math.max(0, t - k * 0.04);
+        const p = screenOf(toPage(kin(thAt(tt)).p[0], kin(thAt(tt)).p[1], 0.06));
+        if (prev) line([prev, p], WHITE, 4, aTr * 0.65 * (1 - k / 30), 8);
+        prev = p;
+      }
     }
     // the tip: a red marker with a white core
     dot(ts[0], ts[1], 16, RED, 0.3, 24);
@@ -968,20 +995,42 @@
       numText(f2(Jm[0][1]), 885, 1030, 36, PURPLE, aJ);
       numText(f2(Jm[1][1]), 885, 1090, 36, PURPLE, aJ);
     }
-    // det J = L1 L2 sin(theta2), in square metres; it turns red as it goes to zero
+    // freedom: how much of the hand's wiggle room is left, |sin(theta2)| = |det J| / (L1 L2); it turns red as it goes to zero
     const aD = stageA(t, T.pops[3], 0.3);
     if (aD > 0.01) {
-      const det = K.det * 0.01;
-      const low = smooth(1 - Math.abs(K.det) / (L1 * L2) / 0.3);
-      numText(det.toFixed(3), 845, 1170, 38, mixc(BLUE, RED, low), aD, "center");
+      const fr = clamp01(Math.abs(K.det) / (L1 * L2));
+      const x0 = 775,
+        x1 = 905,
+        y = 1170;
+      line(
+        [
+          [x0, y],
+          [x1, y],
+        ],
+        "rgba(255,255,255,0.28)",
+        10,
+        aD,
+        0,
+      );
+      line(
+        [
+          [x0, y],
+          [x0 + (x1 - x0) * fr, y],
+        ],
+        mixc(RED, BLUE, fr),
+        10,
+        aD,
+        12,
+      );
+      numText(Math.round(fr * 100) + "%", 950, y, 30, mixc(RED, BLUE, fr), aD, "center");
     }
     // the joint speed needed to move the tip straight out, relative to the best case: 1 / |sin(theta2)|
     const aS = stageA(t, T.pops[4], 0.3);
     if (aS > 0.01) {
       const s = 1 / Math.max(1e-9, Math.abs(Math.sin(th[1] * DEG)));
       const fr = clamp01(Math.log10(s) / 1.7);
-      const x0 = 795,
-        x1 = 915,
+      const x0 = 830,
+        x1 = 930,
         y = 1232;
       line(
         [
@@ -1005,7 +1054,7 @@
       );
       numText(
         s > 50 ? "∞" : "×" + (s < 10 ? s.toFixed(1) : s.toFixed(0)),
-        955,
+        962,
         y,
         30,
         mixc(BLUE, RED, fr),

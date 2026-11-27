@@ -54,7 +54,7 @@ def fband(x, lo, hi):
     if hi: g *= 1 / (1 + (f / hi) ** 4)
     return np.fft.irfft(X * g)[:m]
 
-FX = 0.38   # every effect: clear, with the tracer voice and a light groove underneath
+FX = 0.30   # every effect: clear, with the tracer voice and a light groove underneath
 def place(t0, sig, gain=1.0, pan=0.0, wet=0.2):
     gain = gain * FX
     i = int(round(t0 * SR))
@@ -238,21 +238,12 @@ for i in range(len(JBASE)):
     v = fband(v, 70, 1100)
     gate = np.clip(joint_speed[i] / 1.6, 0, 1) ** 0.6
     fric = fband(rng.uniform(-1, 1, n), 700, 2600) * 0.35
-    sig = 0.075 * v * gate
+    sig = 0.05 * fband(rng.uniform(-1, 1, n), 250, 800) * gate
     pan = np.full(n, JPAN[i])
     l = np.cos((pan + 1) * np.pi / 4); r = np.sin((pan + 1) * np.pi / 4)
     dry[0] += sig * l * 1.2; dry[1] += sig * r * 1.2
     send += sig * 0.18
-    # a soft end-stop tick whenever a joint comes to rest after a real move
-    moving = joint_speed[i] > 0.25
-    idx_stop = np.where(moving[:-1] & ~moving[1:])[0]
-    last = -1.0
-    for j in idx_stop:
-        ts_ = j / SR
-        if ts_ - last < 0.4 or ts_ < 2.3 or ts_ > LOCK - 0.2:
-            continue
-        last = ts_
-        marimba(ts_, JBASE[i] * 4.0 * 2 ** (joint_pos[i][j] * 0.6), 0.12, 0.6, pan=float(JPAN[i]))
+
 
 # the groove under the picture (120 bpm, from the first banner to the lock): felt kick on the beat, hat on the off-beat, a plucked
 # A-minor-pentatonic bass line on the eighths. It is felt more than heard, and it opens as the answer gets closer.
@@ -265,16 +256,16 @@ rk = int(1.3 * SR); rt_ = np.arange(rk) / SR; ru = rt_ / 1.3
 rn = fband(rng.uniform(-1, 1, rk), 400, 9000) * ru ** 2.2
 rn /= np.max(np.abs(rn)) + 1e-9
 rs = np.sin(2 * np.pi * np.cumsum(180 * (1800 / 180) ** ru) / SR) * ru ** 2
-place(LOCK - 1.3, 0.12 * rn + 0.7 * rs, 0.35, 0.0, 0.3)
+place(LOCK - 1.3, 0.08 * rn + 0.5 * rs, 0.25, 0.0, 0.3)
 sk = int(1.2 * SR); st_ = np.arange(sk) / SR
 sub = np.sin(2 * np.pi * np.cumsum(45 + 50 * np.exp(-st_ / 0.25)) / SR) * np.exp(-st_ / 0.5)
-place(LOCK, sub, 0.5, 0.0, 0.1)
+place(LOCK, sub, 0.45, 0.0, 0.1)
 
 # ------------------------------------------------------------------ events
-STAGE = [440.0, 554.37, 659.26, 739.99, 880.0, 1108.7, 1318.5, 1760.0]   # one note per counter (A-major pentatonic)
+STAGE = [220.0, 277.18, 329.63, 369.99, 440.0, 554.37, 659.26, 880.0]   # one note per counter (A-major pentatonic)
 STARTS = [float(x) for x in sched["st"]]
 POPS = [float(x) for x in sched["pops"]]
-POP_NOTE = [659.26, 739.99, 880.0, 987.77, 1108.7]
+POP_NOTE = [329.63, 369.99, 440.0, 493.88, 554.37]
 near = lambda x, ys: any(abs(x - y) < 1e-6 for y in ys)
 idx = lambda x, ys: [abs(x - y) < 1e-6 for y in ys].index(True)
 
@@ -287,35 +278,33 @@ for c in cues:
     if k == "click":
         if near(t0, POPS):                               # a panel gets its title: a soft note and a tick
             i = idx(t0, POPS)
-            click(t0 - 0.004, 0.45)
-            marimba(t0 + 0.004, POP_NOTE[i], 0.26, 1.0, pan=-0.2 + 0.1 * i)
+            click(t0 - 0.004, 0.25)
+            marimba(t0 + 0.004, POP_NOTE[i], 0.22, 1.0, pan=-0.2 + 0.1 * i)
         else:
-            click(t0, 0.55)
+            click(t0, 0.35)
         if abs(t0 - PULSE) < 1e-6:                       # engagement ping
-            bell(t0 + 0.01, 1760.0, 0.07, 0.8); bell(t0 + 0.07, 2217.5, 0.05, 0.8)
+            bell(t0 + 0.01, 880.0, 0.05, 0.8); bell(t0 + 0.07, 1108.7, 0.035, 0.8)
     elif k == "snap":
         if abs(t0 - float(sched["rewind0"])) < 1e-6:     # the robot slides home: a short descending run, soft marimba
-            for i, fz in enumerate([880.0, 739.99, 659.26, 554.37, 440.0]):
-                marimba(t0 + 0.045 * i, fz, 0.16, 0.5, pan=0.25 - 0.1 * i)
-                click(t0 + 0.045 * i, 0.35)
+            for i, fz in enumerate([440.0, 369.99, 329.63, 277.18, 220.0]):
+                marimba(t0 + 0.05 * i, fz, 0.13, 0.5, pan=0.25 - 0.1 * i)
         elif near(t0, SWAPS):                            # a new counter: a note of the ladder
             i = idx(t0, SWAPS)
-            click(t0 - 0.004, 0.4)
-            marimba(t0 + 0.004, STAGE[i], 0.30, 1.2, pan=-0.3 + 0.09 * i)
+            click(t0 - 0.004, 0.22)
+            marimba(t0 + 0.004, STAGE[i], 0.26, 1.2, pan=-0.3 + 0.09 * i)
             if i == 7:                                   # the infinity: a falling-then-rising run
-                for j, fz in enumerate([659.26, 880.0, 1108.7, 1318.5, 1760.0]):
-                    marimba(t0 + 0.05 * j, fz, 0.12, 1.0, pan=-0.3 + 0.15 * j)
-                    bell(t0 + 0.05 * j, fz * 2, 0.04, 0.8, pan=-0.3 + 0.15 * j)
+                for j, fz in enumerate([329.63, 440.0, 554.37, 659.26, 880.0]):
+                    marimba(t0 + 0.06 * j, fz, 0.10, 1.0, pan=-0.3 + 0.15 * j)
         else:                                            # CTA reveal: two bells, a fifth apart
-            click(t0, 0.9)
-            bell(t0 + 0.02, 659.26, 0.11, 1.0, -0.15); bell(t0 + 0.11, 880.0, 0.09, 1.0, 0.15)
+            click(t0, 0.35)
+            bell(t0 + 0.02, 440.0, 0.07, 1.0, -0.15); bell(t0 + 0.11, 554.37, 0.06, 1.0, 0.15)
     elif k == "thump":
         if abs(t0 - LOCK) < 1e-6:                        # the lock: felt kick + bright A-major arpeggio of bells
-            kick(t0, 0.38)
-            for i, fz in enumerate([440.0, 554.37, 659.26, 880.0, 1108.7, 1318.5]):
-                bell(t0 + 0.04 + 0.075 * i, fz, 0.085 - 0.006 * i, 1.2, pan=-0.3 + 0.12 * i)
+            kick(t0, 0.30)
+            for i, fz in enumerate([220.0, 277.18, 329.63, 440.0, 554.37, 659.26]):
+                bell(t0 + 0.04 + 0.09 * i, fz, 0.06 - 0.004 * i, 1.2, pan=-0.3 + 0.12 * i)
         else:
-            kick(t0, 0.42)
+            kick(t0, 0.32)
 
 # ------------------------------------------------------------------ the room: one synthetic plate (seeded), stereo-decorrelated
 def make_ir(seed, sec=1.6):

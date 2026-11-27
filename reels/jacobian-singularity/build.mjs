@@ -47,9 +47,12 @@ const DK = [
   [14.8, 75, 35],
   [15.4, 75, 35],
   [16.6, 75, 0],
-  [18.6, 75, 0],
-  [19.6, 45, 110],
-  [40, 45, 110],
+  [17.8, 75, 0],
+  [18.4, 62, 0],
+  [19.0, 88, 0],
+  [19.8, 88, 0],
+  [21.0, 50, 105],
+  [40, 50, 105],
 ];
 // the same monotone cubic as the page and the sound
 function monoEval(keys, t) {
@@ -258,18 +261,27 @@ const labels = [
   lab("lHY", HUD.xt + 205, HUD.y + 60, 60, 32, "Y", 1, C.purple),
   lab("lHV", HUD.xt + 350, HUD.y + 60, 60, 32, "|v|", 1, C.blue),
   // velocity space
-  lab("lVS", PL[0] + PL[2] / 2, PL[1] + 26, 400, 24, it("VELOCITY SPACE"), 1, C.blue).replace(
-    'style="',
-    'style="opacity:0;',
-  ),
+  lab(
+    "lVS",
+    PL[0] + PL[2] / 2,
+    PL[1] + 26,
+    400,
+    24,
+    it("WHERE CAN THE HAND GO?"),
+    1,
+    C.blue,
+  ).replace('style="', 'style="opacity:0;'),
   // the joint-rate readout (before J)
-  lab("lrt1", 640, 1030, 90, 36, "\\omega_{1}", 0, C.red),
-  lab("lrt2", 640, 1100, 90, 36, "\\omega_{2}", 0, C.purple),
-  lab("lrtv", 640, 1170, 90, 36, "|v|", 0, C.blue),
+  lab("lRA", 765, 986, 420, 22, it("HOW FAST EACH JOINT TURNS"), 0, C.white),
+  lab("lrt1", 640, 1030, 130, 28, it("JOINT 1"), 0, C.red),
+  lab("lrt2", 640, 1100, 130, 28, it("JOINT 2"), 0, C.purple),
+  lab("lrtv", 640, 1170, 130, 28, it("HAND"), 0, C.blue),
+  lab("lRB", 765, 986, 420, 24, it("THE JACOBIAN"), 1, C.white),
   // J, its determinant and the speed meter
   lab("lJ", 605, 1060, 70, 50, "J=", 1, C.white),
-  lab("ldet", 650, 1170, 140, 34, "\\det J=", 1, C.white),
-  lab("lsp", 645, 1232, 190, 26, it("SPEED NEEDED"), 1, C.white),
+  lab("ldet", 640, 1170, 150, 26, it("FREEDOM"), 1, C.white),
+  lab("lsp", 660, 1232, 240, 24, it("MOTOR SPEED NEEDED"), 1, C.white),
+  follow("lTg", 130, 28, it("TARGET"), C.white),
 ].join("");
 
 // ------------------------------------------------------------------ counters, formulas, banners
@@ -289,16 +301,16 @@ const mkC = (id, tex, color = C.blue, size = 50, hidden = true) =>
     style: hidden ? "opacity:0" : "",
   });
 const counters = [
-  mkC("c0", "\\det J=0", C.blue, 56, false),
-  mkC("c1", "v=J\\,\\omega", C.blue, 56),
-  mkC("c2", "\\omega_{1}>0,\\;\\omega_{2}=0", C.red, 50),
-  mkC("c3", "\\omega_{1}=0,\\;\\omega_{2}>0", C.purple, 50),
-  mkC("c4", "v=\\omega_{1}\\,a_{1}+\\omega_{2}\\,a_{2}", C.blue, 50),
-  mkC("c5", "J=\\begin{bmatrix}a_{1}&a_{2}\\end{bmatrix}", C.blue, 50),
-  mkC("c6", "\\det J=L_{1}L_{2}\\sin\\theta_{2}", C.blue, 50),
-  mkC("c7", "\\theta_{2}=0\\;\\Rightarrow\\;\\det J=0", C.blue, 50),
-  mkC("c8", "\\omega=J^{-1}v\\;\\to\\;\\infty", C.blue, 52),
-  mkC("cfin", it("A SINGULARITY LOSES A DIRECTION"), C.blue, 42),
+  mkC("c0", it("THE ARM IS STRAIGHT: IT IS STUCK"), C.blue, 46, false),
+  mkC("c1", it("TURN A JOINT: THE HAND MOVES"), C.blue, 46),
+  mkC("c2", it("JOINT 1 SWINGS THE HAND"), C.red, 48),
+  mkC("c3", it("JOINT 2 SWINGS THE HAND"), C.purple, 48),
+  mkC("c4", it("BOTH: ANY DIRECTION IN THE SHAPE"), C.blue, 44),
+  mkC("c5", it("THE JACOBIAN = THE TWO ARROWS"), C.blue, 44),
+  mkC("c6", it("STRAIGHTEN: THE SHAPE GETS FLAT"), C.blue, 44),
+  mkC("c7", it("A FLAT SHAPE: A DIRECTION IS LOST"), C.blue, 42),
+  mkC("c8", it("THE ROBOT FREEZES"), C.blue, 54),
+  mkC("cfin", it("AVOID THE STRAIGHT ARM"), C.blue, 52),
 ].join("");
 const mkF = (id, tex, size = 46, hidden = true) =>
   box({
@@ -314,16 +326,16 @@ const mkF = (id, tex, size = 46, hidden = true) =>
     style: hidden ? "opacity:0" : "",
   });
 const FORM = [
-  ["fm0", it("THE ARROWS LINE UP: STUCK ALONG THE ARM"), 34, false],
-  ["f1", it("THE JACOBIAN: JOINT SPEEDS TO TIP SPEED"), 33],
-  ["f2", it("JOINT 1 ALONE: THE TIP CIRCLES THE BASE"), 36],
-  ["f3", it("JOINT 2 ALONE: THE TIP CIRCLES THE ELBOW"), 36],
-  ["f4", it("BOTH: THE TWO ARROWS ADD UP"), 38],
-  ["f5", it("THE JACOBIAN: THE TWO ARROWS SIDE BY SIDE"), 33],
-  ["f6", it("THE AREA BETWEEN THE ARROWS"), 42],
-  ["f7", it("THE ARROWS LINE UP: A DIRECTION IS LOST"), 36],
-  ["f8", it("GOING OUTWARD NEEDS INFINITE JOINT SPEED"), 33],
-  ["f9", it("KEEP AWAY FROM THE EDGE OF THE REACH"), 33],
+  ["fm0", "\\det J=0", 46, false],
+  ["f1", "v=J\\,\\omega", 50],
+  ["f2", "\\omega_{1}>0,\\;\\omega_{2}=0", 46],
+  ["f3", "\\omega_{1}=0,\\;\\omega_{2}>0", 46],
+  ["f4", "v=\\omega_{1}\\,a_{1}+\\omega_{2}\\,a_{2}", 46],
+  ["f5", "J=\\begin{bmatrix}a_{1}&a_{2}\\end{bmatrix}", 46],
+  ["f6", "\\det J=L_{1}L_{2}\\sin\\theta_{2}", 46],
+  ["f7", "\\theta_{2}=0\\;\\Rightarrow\\;\\det J=0", 46],
+  ["f8", "\\omega=J^{-1}v\\;\\to\\;\\infty", 46],
+  ["f9", it("A SINGULARITY IS A LOST DIRECTION"), 40],
 ];
 const formulas = FORM.map(([id, t, s, hid]) => mkF(id, t, s, hid === undefined ? true : hid)).join(
   "",
@@ -334,15 +346,15 @@ const bn = (id, l1, l2, op) =>
   `<div id="${id}" class="ba" style="opacity:${op}"><div class="l1">${tx(l1)}</div><div class="l2">${tx(l2)}</div></div>`;
 const banners = [
   bn("bn0", it("WHY DOES A ROBOT SOMETIMES FREEZE?"), it("THE JACOBIAN HAS THE ANSWER"), 1),
-  bn("bn1", it("A TWO-LINK ARM"), it("TWO JOINTS MOVE ONE TIP"), 0),
-  bn("bn2", it("TURN ONLY JOINT 1"), it("THE TIP MOVES ALONG THE RED ARROW"), 0),
-  bn("bn3", it("TURN ONLY JOINT 2"), it("THE TIP MOVES ALONG THE PURPLE ARROW"), 0),
-  bn("bn4", it("TURN BOTH"), it("THE TIP FOLLOWS THE SUM OF THE ARROWS"), 0),
-  bn("bn5", it("THE JACOBIAN"), it("THE TWO ARROWS AS COLUMNS"), 0),
-  bn("bn6", it("THE AREA BETWEEN THE ARROWS"), "\\det J=L_{1}L_{2}\\sin\\theta_{2}", 0),
-  bn("bn7", it("STRAIGHTEN THE ARM"), it("THE ARROWS LINE UP, THE AREA IS ZERO"), 0),
-  bn("bn8", it("A SINGULARITY"), it("THE TIP CANNOT MOVE ALONG THE ARM"), 0),
-  bn("bnF", it("STAY AWAY FROM SINGULARITIES"), "|\\det J|>0", 0),
+  bn("bn1", it("EACH JOINT MOVES THE HAND"), it("TWO JOINTS, ONE HAND"), 0),
+  bn("bn2", it("TURN ONLY JOINT 1"), it("THE HAND FOLLOWS THE RED ARROW"), 0),
+  bn("bn3", it("TURN ONLY JOINT 2"), it("THE HAND FOLLOWS THE PURPLE ARROW"), 0),
+  bn("bn4", it("TURN BOTH JOINTS"), it("THE HAND CAN GO ANYWHERE IN THE SHAPE"), 0),
+  bn("bn5", it("THE JACOBIAN"), it("THE TWO ARROWS, WRITTEN AS NUMBERS"), 0),
+  bn("bn6", it("STRAIGHTEN THE ARM"), it("WATCH THE SHAPE GET FLATTER"), 0),
+  bn("bn7", it("FULLY STRAIGHT: THE SHAPE IS A LINE"), it("THE HAND CAN ONLY MOVE SIDEWAYS"), 0),
+  bn("bn8", it("THE TARGET IS FURTHER OUT"), it("THE ARM CANNOT GO ALONG ITSELF"), 0),
+  bn("bnF", it("KEEP A BEND IN THE ELBOW"), it("SO THE SHAPE NEVER GOES FLAT"), 0),
 ].join("\n");
 const banner = `<div id="banner">${banners}</div>`;
 
